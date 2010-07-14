@@ -1,0 +1,6 @@
+glob:*/obj/*
+glob:*/bin/*
+glob:*.vsmdi
+glob:*.user
+glob:*.suo
+glob:Local.testsettings
