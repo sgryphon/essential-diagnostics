@@ -42,6 +42,7 @@
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>true</RunCodeAnalysis>
+    <DocumentationFile>bin\Debug\Essential.Diagnostics.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -70,9 +71,15 @@
   <ItemGroup>
     <Compile Include="Diagnostics\ActivityScope.cs" />
     <Compile Include="Diagnostics\ColoredConsoleTraceListener.cs" />
+    <Compile Include="ConsoleAdapter.cs" />
+    <Compile Include="Diagnostics\ExpressionFilter.cs" />
+    <Compile Include="Diagnostics\PropertyFilter.cs" />
+    <Compile Include="Diagnostics\TraceConfigurationMonitor.cs" />
+    <Compile Include="IConsole.cs" />
     <Compile Include="Diagnostics\InMemoryTraceListener.cs" />
     <Compile Include="Diagnostics\LogicalOperationScope.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="ExpressionParser.cs" />
     <Compile Include="Resource.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

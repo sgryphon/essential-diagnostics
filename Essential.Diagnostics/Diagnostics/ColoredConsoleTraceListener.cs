@@ -10,16 +10,109 @@ using System.Diagnostics.CodeAnalysis;
 namespace Essential.Diagnostics
 {
     /// <summary>
-    /// Trace listener that outputs to the Console in color. 
+    /// Trace listener that outputs to the console in color, optionally using a custom
+    /// formatting template. 
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The initializeData for the ColoredConsoleTraceListener should contain a boolean
+    /// (true/false) value indicating whether to use the Console.Error stream. The default is
+    /// false, that is to use the normal Console.Out stream.
+    /// </para>
+    /// <para>
+    /// Note that colored output is only used in the normal stream; it is not used
+    /// in the error stream.
+    /// </para>
+    /// <para>
+    /// <list type="">
+    /// <listheader>Configuration options</listheader>
+    /// <item>
+    /// <term>initializeData</term>
+    /// <value>false (default) to use the Console.Out stream; 
+    /// true to use Console.Error</value>
+    /// </item>
+    /// <item>
+    /// <term>template</term>
+    /// <value>Template to use to format trace messages.
+    /// The default format is "{Source} {EventType}: {Id} : {Message}".
+    /// For more information on the template tokens available, <see cref="TraceTemplate"/>.</value>
+    /// </item>
+    /// <item>
+    /// <term>convertWriteToEvent</term>
+    /// <value>If false (default), then calls to <see cref="Write"/>,<see cref="WriteLine"/> 
+    /// and similar methods are output directly to the output stream (using the Verbose color).
+    /// If true, then calls to these methods are instead converted to Verbose trace events and then 
+    /// output using the same format as calls to Trace methods.</value>
+    /// </item>
+    /// <item>
+    /// <term>criticalColor</term>
+    /// <value>Color to use for <see cref="TraceEventType.Critical"/> events.
+    /// The default color for fatal events is <see cref="ConsoleColor.Red"/>.</value>
+    /// </item>
+    /// <item>
+    /// <term>errorColor</term>
+    /// <value>Color to use for <see cref="TraceEventType.Error"/> events.
+    /// The default color for errors is <see cref="ConsoleColor.DarkRed"/>.</value>
+    /// </item>
+    /// <item>
+    /// <term>warningColor</term>
+    /// <value>Color to use for <see cref="TraceEventType.Warning"/> events.
+    /// The default color for warnings is <see cref="ConsoleColor.Yellow"/>.</value>
+    /// </item>
+    /// <item>
+    /// <term>informationColor</term>
+    /// <value>Color to use for <see cref="TraceEventType.Information"/> events.
+    /// The default color for information events is <see cref="ConsoleColor.Gray"/>.</value>
+    /// </item>
+    /// <item>
+    /// <term>verboseColor</term>
+    /// <value>Color to use for <see cref="TraceEventType.Verbose"/> events.
+    /// The default color for verbose messages is <see cref="ConsoleColor.DarkCyan"/>.</value>
+    /// </item>
+    /// <item>
+    /// <term>activityTracingColor</term>
+    /// <value>Color to use for activity tracing (start, stop, transfer, etc) events, 
+    /// unless overridden by a particular color for the specific activity event.
+    /// The default color for activity tracing events is <see cref="ConsoleColor.Gray"/>,
+    /// the same as information events.</value>
+    /// </item>
+    /// <item>
+    /// <term>startColor</term>
+    /// <value>Color to use for <see cref="TraceEventType.Start"/> events.</value>
+    /// </item>
+    /// <item>
+    /// <term>stopColor</term>
+    /// <value>Color to use for <see cref="TraceEventType.Stop"/> events.</value>
+    /// </item>
+    /// <item>
+    /// <term>suspendColor</term>
+    /// <value>Color to use for <see cref="TraceEventType.Suspend"/> events.</value>
+    /// </item>
+    /// <item>
+    /// <term>resumeColor</term>
+    /// <value>Color to use for <see cref="TraceEventType.Resume"/> events.</value>
+    /// </item>
+    /// <item>
+    /// <term>transferColor</term>
+    /// <value>Color to use for <see cref="TraceEventType.Transfer"/> events.</value>
+    /// </item>
+    /// </list>
+    /// </para>
+    /// <para>
+    /// Valid color values are those from the <see cref="ConsoleColor"/> enumeration.
+    /// </para>
+    /// <para>
+    /// When selecting colors note that PowerShell redefines DarkYellow and DarkMagenta and uses them
+    /// as default colors, so best to to avoid those two colors because result is not consistent.
+    /// </para>
+    /// </remarks>
     public class ColoredConsoleTraceListener : TraceListenerBase
     {
         // //////////////////////////////////////////////////////////
         // Fields
 
-        private Dictionary<TraceEventType, ConsoleColor> _colorByEventType = new Dictionary<TraceEventType, ConsoleColor>();
-        private bool _convertWriteToText;
-        private bool _convertWriteToTextInitialized;
+        private IConsole _console = new ConsoleAdapter();
+        private object _consoleLock = new object();
         // Don't want the default to be too overpowering (garish), so limit to a few colors.
         // Use red for errors (including fatal) and yellow for warning, 
         // and standard gray for most other normal messages, including activity tracing.
@@ -33,11 +126,10 @@ namespace Essential.Diagnostics
         };
         private const ConsoleColor _defaultColorOther = ConsoleColor.Gray;
         private const string _defaultTemplate = "{Source} {EventType}: {Id} : {Message}";
-        private string _template;
         private static string[] _supportedAttributes = new string[] 
             { 
-                "template", "Template", "convertWriteToEvent", "convertWriteToEvent",
-                "fatalColor", "FatalColor", "fatalcolor", 
+                "template", "Template", "convertWriteToEvent", "ConvertWriteToEvent",
+                "criticalColor", "CriticalColor", "criticalcolor", 
                 "errorColor", "ErrorColor", "errorcolor",
                 "warningColor", "WarningColor", "warningcolor",
                 "informationColor", "InformationColor", "informationcolor",
@@ -49,8 +141,8 @@ namespace Essential.Diagnostics
                 "transferColor", "TransferColor", "transfercolor",
                 "activityTracingColor", "ActivityTracingColor", "activitytracingcolor",
             };
+        private bool _useErrorStream;
         private TextWriter _writer;
-        bool _useErrorStream;
 
 
         // //////////////////////////////////////////////////////////
@@ -71,15 +163,35 @@ namespace Essential.Diagnostics
         public ColoredConsoleTraceListener(bool useErrorStream)
             : base(string.Empty)
         {
+//#if DEBUG
+//            System.Console.WriteLine("ColoredConsoleTraceListener.ctor {0}", useErrorStream);
+//#endif
+
             // Behaviour consistent with System.Diagnostics.ConsoleTraceListener
             // -- initializeData determines whether stdout or stderr is used.
             _useErrorStream = useErrorStream;
-            _writer = _useErrorStream ? Console.Error : Console.Out;
+            SetWriter();
         }
 
 
         // //////////////////////////////////////////////////////////
         // Public Properties
+
+        /// <summary>
+        /// Gets or sets the console to use; this defaults to an adapter for System.Console.
+        /// </summary>
+        public IConsole Console
+        {
+            get { return _console; }
+            set
+            {
+                lock (_consoleLock)
+                {
+                    _console = value;
+                    SetWriter();
+                }
+            }
+        }
 
         /// <summary>
         /// Gets or sets whether calls to the Trace class static Write and WriteLine methods should be converted to Verbose events,
@@ -92,22 +204,22 @@ namespace Essential.Diagnostics
             {
                 // Default behaviour is to output Trace.Write methods directly to the stream
                 // (with Verbose color); setting this value to true will format as event first.
-                if( ! _convertWriteToTextInitialized )
+                var convertWriteToEvent = false;
+                if (Attributes.ContainsKey("convertWriteToEvent"))
                 {
-                    if (Attributes.ContainsKey("convertWriteToEvent"))
-                    {
-                        // Default is false
-                        bool.TryParse(Attributes["convertWriteToEvent"], out _convertWriteToText);
-                    }
-                    _convertWriteToTextInitialized = true;
+                    bool.TryParse(Attributes["convertWriteToEvent"], out convertWriteToEvent);
                 }
-                return _convertWriteToText;
+                return convertWriteToEvent;
             }
             set
             {
-                _convertWriteToText = value;
-                _convertWriteToTextInitialized = true;
+                Attributes["convertWriteToEvent"] = value.ToString(CultureInfo.InvariantCulture);
             }
+        }
+
+        public override bool IsThreadSafe
+        {
+            get { return true; }
         }
 
         /// <summary>
@@ -118,23 +230,33 @@ namespace Essential.Diagnostics
             get
             {
                 // Default format matches System.Diagnostics.TraceListener
-                if (_template == null)
+                if (Attributes.ContainsKey("template"))
                 {
-                    if (Attributes.ContainsKey("template"))
-                    {
-                        _template = Attributes["template"];
-                    }
-                    else
-                    {
-                        _template = _defaultTemplate;
-                    }
+                    return Attributes["template"];
                 }
-                return _template;
+                else
+                {
+                    return _defaultTemplate;
+                }
             }
             set
             {
-                _template = value;
+                Attributes["template"] = value;
             }
+        }
+
+        /// <summary>
+        /// Gets whether to use the error stream or the standard out stream.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This value is part of initializeData; if the value changes the
+        /// listener is recreated.
+        /// </para>
+        /// </remarks>
+        public bool UseErrorStream
+        {
+            get { return _useErrorStream; }
         }
 
 
@@ -148,50 +270,27 @@ namespace Essential.Diagnostics
         /// <returns>The ConsoleColor used to display the specified TraceEventType.</returns>
         public ConsoleColor GetConsoleColor(TraceEventType eventType)
         {
-            ConsoleColor color;
+            var key = eventType.ToString() + "Color";
+            if (Attributes.ContainsKey(key))
+            {
+                var setting = Attributes[key];
+                if (Enum.IsDefined(typeof (ConsoleColor), setting))
+                {
+                    return (ConsoleColor) Enum.Parse(typeof (ConsoleColor), setting);
+                }
+            }
 
-            if (_colorByEventType.ContainsKey(eventType))
+            if (((int)eventType & (int)SourceLevels.ActivityTracing) > 0
+                && Attributes.ContainsKey("activityTracingColor"))
             {
-                color = _colorByEventType[eventType];
-            }
-            else
-            {
-                string key = eventType.ToString() + "Color";
-                if (Attributes.ContainsKey(key))
+                var setting = Attributes["activityTracingColor"];
+                if (Enum.IsDefined(typeof (ConsoleColor), setting))
                 {
-                    string setting = Attributes[key];
-                    if (Enum.IsDefined(typeof(ConsoleColor), setting))
-                    {
-                        color = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), setting);
-                    }
-                    else
-                    {
-                        color = GetDefaultColor(eventType);
-                    }
+                    return (ConsoleColor) Enum.Parse(typeof (ConsoleColor), setting);
                 }
-                else
-                {
-                    if (((int)eventType & (int)SourceLevels.ActivityTracing) > 0
-                        && Attributes.ContainsKey("ActivityTracingColor"))
-                    {
-                        string setting = Attributes["ActivityTracingColor"];
-                        if (Enum.IsDefined(typeof(ConsoleColor), setting))
-                        {
-                            color = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), setting);
-                        }
-                        else
-                        {
-                            color = GetDefaultColor(eventType);
-                        }
-                    }
-                    else
-                    {
-                        color = GetDefaultColor(eventType);
-                    }
-                }
-                _colorByEventType[eventType] = color;
             }
-            return color;
+
+            return GetDefaultColor(eventType);
         }
 
         /// <summary>
@@ -207,11 +306,16 @@ namespace Essential.Diagnostics
         /// </remarks>
         public void SetConsoleColor(TraceEventType eventType, ConsoleColor color)
         {
-            if (!Enum.IsDefined(typeof(ConsoleColor),color))
+            lock (_consoleLock)
             {
-                throw new ArgumentOutOfRangeException("color", Resource.InvalidConsoleColor);
+                if (!Enum.IsDefined(typeof (ConsoleColor), color))
+                {
+                    throw new ArgumentOutOfRangeException("color", Resource.InvalidConsoleColor);
+                }
+
+                var key = eventType.ToString() + "Color";
+                Attributes[key] = color.ToString();
             }
-            _colorByEventType[eventType] = color;
         }
 
 
@@ -239,18 +343,7 @@ namespace Essential.Diagnostics
             }
             else
             {
-                // Set color
-                if (!_useErrorStream)
-                {
-                    ConsoleColor color = GetConsoleColor(TraceEventType.Verbose);
-                    Console.ForegroundColor = color;
-                }
-                _writer.Write(message);
-                // Reset back
-                if (!_useErrorStream)
-                {
-                    Console.ResetColor();
-                }
+                WriteColored(TraceEventType.Verbose, message);
             }
         }
 
@@ -267,7 +360,7 @@ namespace Essential.Diagnostics
             }
             else
             {
-                WriteColored(null, TraceEventType.Verbose, message);
+                WriteLineColored(null, TraceEventType.Verbose, message);
             }
         }
 
@@ -299,7 +392,7 @@ namespace Essential.Diagnostics
                 data
                 );
 
-            WriteColored(eventCache, eventType, output);
+            WriteLineColored(eventCache, eventType, output);
         }
 
 
@@ -308,33 +401,55 @@ namespace Essential.Diagnostics
 
         private static ConsoleColor GetDefaultColor(TraceEventType eventType)
         {
-            ConsoleColor defaultForEvent;
             if (_defaultColorByEventType.ContainsKey(eventType))
             {
-                defaultForEvent = _defaultColorByEventType[eventType];
+                return _defaultColorByEventType[eventType];
             }
-            else
-            {
-                defaultForEvent = _defaultColorOther;
-            }
-            return defaultForEvent;
+            return _defaultColorOther;
         }
 
-        private void WriteColored(TraceEventCache eventCache, TraceEventType eventType, string message)
+        private void SetWriter()
         {
-            // Set color
-            if (!_useErrorStream)
+            _writer = _useErrorStream ? _console.Error : _console.Out;
+        }
+
+        private void WriteColored(TraceEventType eventType, string message)
+        {
+            lock (_consoleLock)
             {
-                ConsoleColor color = GetConsoleColor(eventType);
-                Console.ForegroundColor = color;
+                // Set color
+                if (!_useErrorStream)
+                {
+                    ConsoleColor color = GetConsoleColor(eventType);
+                    _console.ForegroundColor = color;
+                }
+                _writer.Write(message);
+                // Reset back
+                if (!_useErrorStream)
+                {
+                    _console.ResetColor();
+                }
             }
-            // Write log message
-            _writer.WriteLine(message);
-            WriteFooter(_writer, IndentSize, eventCache);
-            // Reset back
-            if (!_useErrorStream)
+        }
+
+        private void WriteLineColored(TraceEventCache eventCache, TraceEventType eventType, string message)
+        {
+            lock (_consoleLock)
             {
-                Console.ResetColor();
+                // Set color
+                if (!_useErrorStream)
+                {
+                    ConsoleColor color = GetConsoleColor(eventType);
+                    _console.ForegroundColor = color;
+                }
+                // Write log message
+                _writer.WriteLine(message);
+                WriteFooter(_writer, IndentSize, eventCache);
+                // Reset back
+                if (!_useErrorStream)
+                {
+                    _console.ResetColor();
+                }
             }
         }
 

@@ -63,7 +63,7 @@ namespace Essential.Diagnostics
         /// <summary>
         /// Constructor. Sets the ActivityId for the life of the object, logging events with the specified event ID's.
         /// </summary>
-        public ActivityScope(TraceSource source, int startId, int stopId, int transferInId, int transferOutId)
+        public ActivityScope(TraceSource source, int transferInId, int startId, int transferOutId, int stopId)
         {
             _source = source;
             _startId = startId;

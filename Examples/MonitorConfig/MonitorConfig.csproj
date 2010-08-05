@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{1B94311E-4CD8-405F-8B3A-ECF9527241CE}</ProjectGuid>
+    <ProjectGuid>{4BD5C76B-93F8-4A8F-A01F-F10883357C4A}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HelloLogging</RootNamespace>
-    <AssemblyName>HelloLogging</AssemblyName>
+    <RootNamespace>MonitorConfig</RootNamespace>
+    <AssemblyName>MonitorConfig</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -43,15 +43,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HelloLogging.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="EventLog\HelloLogging.exe.config" />
-    <None Include="Example.config" />
     <None Include="App.config" />
-    <None Include="ColoredConsole\HelloLogging.exe.config" />
-    <None Include="XmlWriter\HelloLogging.exe.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Essential.Diagnostics\Essential.Diagnostics.csproj">

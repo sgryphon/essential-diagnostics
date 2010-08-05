@@ -4,3 +4,6 @@ glob:*.vsmdi
 glob:*.user
 glob:*.suo
 glob:Local.testsettings
+glob:*/TestResults/*
+glob:_ReSharper.EssentialDiagnostics/*
+glob:TestResults/*
