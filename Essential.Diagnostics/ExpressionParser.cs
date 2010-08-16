@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.CodeDom.Compiler;
+using Microsoft.CSharp;
+using System.Reflection;
 
 namespace Essential
 {
     public class ExpressionParser<T>
     {
         private ParameterExpression[] parameters;
+        private Type returnType;
 
         public ExpressionParser(params string[] parameterNames)
         {
@@ -26,82 +30,83 @@ namespace Essential
                 parameterList.Add(parameter);
             }
             parameters = parameterList.ToArray();
+            returnType = argTypes[argTypes.Length - 1];
         }
 
         public Expression<T> Parse(string expression)
         {
-            var tokens = SplitTokens(expression);
-            Expression body = ParseExpression(tokens);
-            Expression<T> parsed = Expression.Lambda<T>(body, parameters);
-            return parsed;
-            //Predicate<T1> compiled = lambda.Compile();
-            //return compiled;
+            Expression parsed = ParseExpression(expression);
+            Expression<T> typed = parsed as Expression<T>;
+            return typed;
         }
 
-        private string[] SplitTokens(string expression)
+        private Expression ParseExpression(string expression)
         {
-            var tokens = expression.Split(' ');
-            return tokens;
-        }
+            var source = new StringBuilder();
+            source.AppendLine("using System;");
+            source.AppendLine("using System.Diagnostics;");
+            source.AppendLine("using System.Linq.Expressions;");
+            source.AppendLine("using System.Text.RegularExpressions;");
 
-        private Expression ParseExpression(string[] tokens)
-        {
-            if (tokens.Length == 1)
+            source.AppendLine("namespace Test {");
+            source.AppendLine("  public static class Class1 {");
+
+            source.AppendLine("    public static object CreateExpression() {");
+
+            // Expression<Func<decimal, int, bool>> exp1 = (x, y) => (x == y);
+            var parameterTypeJoined = string.Join(",", parameters.Select(p => p.Type.FullName).ToArray());
+            if (parameterTypeJoined.Length > 0)
             {
-                var token = tokens[0];
-                int value;
-                if (int.TryParse(token, out value))
-                {
-                    return CreateConstant(value);
-                }
-                else
-                {
-                    return CreateParameter(token);
-                }
+                parameterTypeJoined += ",";
             }
-            else if (tokens.Length == 3)
+            parameterTypeJoined += returnType.FullName;
+            var parameterNameJoined = string.Join(",", parameters.Select(p => p.Name).ToArray());
+            var expressionStatement = string.Format("      Expression<Func<{0}>> expression = ({1}) => {2};",
+                parameterTypeJoined, parameterNameJoined, expression);
+            source.AppendLine(expressionStatement);
+
+            source.AppendLine("      return expression;");
+            source.AppendLine("    }"); // End of method
+            source.AppendLine("  }"); // End of class
+            source.AppendLine("}"); // End of namespace
+
+            // TODO: Get rid of all this debug code (throw an exception or something if it fails).
+            Console.WriteLine(source);
+
+            var csprovider = new CSharpCodeProvider();
+            var options = new CompilerParameters()
             {
-                var left = new string[] { tokens[0] };
-                var operation = tokens[1];
-                var right = new string[] {tokens[2] };
+                GenerateInMemory = true
+            };
+            options.ReferencedAssemblies.Add("System.dll");
+            options.ReferencedAssemblies.Add("System.Core.dll");
+            var result = csprovider.CompileAssemblyFromSource(options, source.ToString());
 
-                ExpressionType binaryType;
-                switch (operation)
-                {
-                    case "==":
-                        binaryType = ExpressionType.Equal;
-                        break;
-                    default:
-                        throw new Exception("Parse failed.");
-                }
-                return CreateBinary(binaryType, left, right);
-            }
-            else
+            Console.WriteLine("Compiler return: {0}", result.NativeCompilerReturnValue);
+            foreach (string line in result.Output)
             {
-                throw new Exception("Wrong token length.");
+                Console.WriteLine(line);
             }
+
+            var assembly = result.CompiledAssembly;
+
+            Console.WriteLine("Types:");
+            foreach (var type in assembly.GetTypes())
+            {
+                Console.WriteLine(type.FullName);
+            }
+
+            var class1 = assembly.GetType("Test.Class1");
+
+            Console.WriteLine("Methods:");
+            foreach (var method in class1.GetMethods(BindingFlags.Public | BindingFlags.Static))
+            {
+                Console.WriteLine(method.Name);
+            }
+
+            var answer = class1.InvokeMember("CreateExpression", BindingFlags.Static | BindingFlags.InvokeMethod | BindingFlags.Public, null, null, null);
+            var compiled = answer as Expression;
+            return compiled;
         }
-
-        private BinaryExpression CreateBinary(ExpressionType binaryType, string[] left, string[] right)
-        {
-            Expression leftExpression = ParseExpression(left);
-
-            Expression rightExpression = ParseExpression(right);
-
-            BinaryExpression binary = Expression.MakeBinary(binaryType, leftExpression, rightExpression);
-            return binary;
-        }
-
-        private ConstantExpression CreateConstant(object value)
-        {
-            return Expression.Constant(value);
-        }
-
-        private Expression CreateParameter(string parameterName)
-        {
-            return parameters.First(p => p.Name == parameterName);
-        }
-
-
     }
 }

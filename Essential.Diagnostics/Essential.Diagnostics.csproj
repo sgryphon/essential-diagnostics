@@ -69,6 +69,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\DbProviderFactoryExtensions.cs" />
     <Compile Include="Diagnostics\ActivityScope.cs" />
     <Compile Include="Diagnostics\ColoredConsoleTraceListener.cs" />
     <Compile Include="ConsoleAdapter.cs" />
@@ -122,4 +123,10 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Import Project="..\TFSBuildNumber.targets"/>
+  <Target Name="BeforeBuild"
+	DependsOnTargets="GetMajorMinorFromCSharpAssemblyInfoFile;
+					  WriteProjectTextAssemblyVersionFile;
+					  UpdateCSharpAssemblyInfoFile">
+  </Target>
 </Project>

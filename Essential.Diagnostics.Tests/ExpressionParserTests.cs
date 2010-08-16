@@ -22,7 +22,7 @@ namespace Essential.Diagnostics.Tests
             Func<bool> compiled = parser.Parse(expression).Compile();
 
             Assert.IsTrue(compiled());
-    }
+        }
 
         [TestMethod]
         public void ValidEqualityExpressionWithParameter()
@@ -36,41 +36,27 @@ namespace Essential.Diagnostics.Tests
             Assert.IsFalse(compiled(2));
         }
 
-        public void Stuff()
+        [TestMethod]
+        public void ValidStringMethodWithParameter()
         {
-            Microsoft.CSharp.CSharpCodeProvider csprovider = new Microsoft.CSharp.CSharpCodeProvider();
-            var options = new CompilerParameters();
-            var source = @"using System;
-public static class Class1 {
-  public static int Func(int a, int b, int c, int d) {
-    return a + b * c + d;
-  }
-}";
-            var result = csprovider.CompileAssemblyFromSource(options, source);
-            Console.WriteLine("Compiler return: {0}", result.NativeCompilerReturnValue);
-            foreach (string line in result.Output)
-            {
-                Console.WriteLine(line);
-            }
+            var parser = new ExpressionParser<Func<string, string, bool>>("a", "b");
 
-            var assembly = result.CompiledAssembly;
+            string expression = "a.Length == b.Length";
+            Func<string,string,bool> compiled = parser.Parse(expression).Compile();
 
-            Console.WriteLine("Types:");
-            foreach (var type in assembly.GetTypes())
-            {
-                Console.WriteLine(type.FullName);
-            }
+            Assert.IsTrue(compiled("x", "y"));
+            Assert.IsFalse(compiled("x", "yz"));
+        }
 
-            var class1 = assembly.GetType("Test.Class1");
+        [TestMethod]
+        public void StringReturnType()
+        {
+            var parser = new ExpressionParser<Func<string, int, string>>("s", "i");
 
-            Console.WriteLine("Methods:");
-            foreach (var method in class1.GetMethods(BindingFlags.Public | BindingFlags.Static))
-            {
-                Console.WriteLine(method.Name);
-            }
+            string expression = "s.Substring(i,1)";
+            var compiled = parser.Parse(expression).Compile();
 
-            var answer = class1.InvokeMember("Func", BindingFlags.Static | BindingFlags.InvokeMethod | BindingFlags.Public, null, null, new object[] { 1, 2, 3, 4 });
-            Console.WriteLine(answer);
+            Assert.AreEqual("c", compiled("abcd", 2));
         }
 
     }

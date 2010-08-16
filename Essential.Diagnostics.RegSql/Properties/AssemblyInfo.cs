@@ -1,18 +1,16 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System;
-using System.Resources;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Essential.Diagnostics")]
-[assembly: AssemblyDescription("Extensions for the .NET Framework System.Diagnostics")]
+[assembly: AssemblyTitle("Essential.Diagnostics.RegSql")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Essential.Diagnostics")]
-[assembly: AssemblyCopyright("Copyright © Stephen Gryphon 2009")]
+[assembly: AssemblyCompany("Microsoft")]
+[assembly: AssemblyProduct("Essential.Diagnostics.RegSql")]
+[assembly: AssemblyCopyright("Copyright © Microsoft 2010")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,11 +18,9 @@ using System.Resources;
 // to COM components.  If you need to access a type in this assembly from 
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
-[assembly: CLSCompliant(true)]
-[assembly: NeutralResourcesLanguage("en")]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("521a19f2-6cc9-4887-8bfc-65941d6741f6")]
+[assembly: Guid("be006cbe-f12b-47b5-8b11-0117493b69b1")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -38,5 +34,3 @@ using System.Resources;
 // [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.30816.65535")]
-
-[assembly: InternalsVisibleTo("Essential.Diagnostics.Tests")]

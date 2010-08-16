@@ -6,68 +6,76 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Data.SqlClient;
 using System.Configuration;
+using System.Data;
+using System.Data.Common;
+using Essential.Data;
+using System.Reflection;
 
 namespace Essential.Diagnostics
 {
+    /// <summary>
+    /// Trace listener that writes to a database.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This listener writes to the database table created by
+    /// the diagnostics_regsql tool (via the stored procedure
+    /// created by the tool).
+    /// </para>
+    /// </remarks>
     public class SqlDatabaseTraceListener : TraceListenerBase
     {
-        public const string DefaultTable = "TraceLog";
+        //public const string DefaultTable = "diagnostics_Trace";
         string _connectionName;
-        string _tableName;
+        const string _defaultApplicationName = "";
+        private static string[] _supportedAttributes = new string[] 
+            { 
+                "applicationName", "ApplicationName", "applicationname", 
+            };
 
+        /// <summary>
+        /// Constructor with initializeData.
+        /// </summary>
+        /// <param name="connectionName">connection string of the database to write to</param>
         public SqlDatabaseTraceListener(string connectionName)
         {
             _connectionName = connectionName;
         }
 
-        public SqlDatabaseTraceListener(string connectionName, string tableName)
-        {
-            _connectionName = connectionName;
-            _tableName = tableName;
-        }
-
-        public string TableName
+        /// <summary>
+        /// Gets or sets the name of the application used when logging to the database.
+        /// </summary>
+        public string ApplicationName
         {
             get
             {
-                lock (this)
+                // Default format matches System.Diagnostics.TraceListener
+                if (Attributes.ContainsKey("applicationname"))
                 {
-                    if (_tableName == null)
-                    {
-                        if (base.Attributes.ContainsKey("tableName"))
-                        {
-                            _tableName = base.Attributes["tableName"];
-                        }
-                        else
-                        {
-                            _tableName = DefaultTable;
-                        }
-                    }
+                    return Attributes["applicationname"];
                 }
-                return _tableName;
+                else
+                {
+                    return _defaultApplicationName;
+                }
             }
             set
             {
-                if (value == null)
-                {
-                    throw new ArgumentNullException("TableName");
-                }
-                if (value.Length == 0)
-                {
-                    throw new ArgumentOutOfRangeException("TableName");
-                }
-                lock (this)
-                {
-                    this._tableName = value;
-                }
+                Attributes["applicationname"] = value;
             }
         }
 
+        /// <summary>
+        /// Allowed attributes for this trace listener.
+        /// </summary>
         protected override string[] GetSupportedAttributes()
         {
-            return new string[] { "tableName" };
+            return _supportedAttributes;
         }
 
+        /// <summary>
+        /// Write trace event with data.
+        /// </summary>
         protected override void WriteTrace(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message, Guid? relatedActivityId, object[] data)
         {
             string dataString = null;
@@ -92,18 +100,11 @@ namespace Essential.Diagnostics
 
         private void WriteToDatabase(TraceEventCache eventCache, string source, TraceEventType eventType, int? id, string message, Guid? relatedActivityId, string dataString)
         {
-            const string sql = "INSERT INTO [dbo].[TraceLog] " +
-               "( [Source], [EventID], [Severity], [LogTimeUtc], " +
-               "[MachineName], [AppDomainName], [ProcessID], [ThreadName], " +
-               "[Message], [ActivityId], [RelatedActivityId], [LogicalOperationStack], " +
-               "[Data] ) " +
-               "VALUES " +
-               "( @source, @eventId, @severity, @logTimeUtc, " +
-               "@machineName, @appDomainName, @processID, @threadName, " +
-               "@message, @activityId, @relatedActivityId, @logicalOperationStack, " + 
-               "@data ) ";
-
-            ConnectionStringSettings connectionSettings = ConfigurationManager.ConnectionStrings[_connectionName];
+            const string sql = "EXEC diagnostics_Trace_AddEntry " +
+               "@ApplicationName, @TraceSource, @EventId, @Severity, @LogTimeUtc, " +
+               "@MachineName, @AppDomainName, @ProcessId, @ThreadName, " +
+               "@MessageText, @ActivityId, @RelatedActivityId, @LogicalOperationStack, " + 
+               "@Data;";
 
             DateTime logTime;
             string logicalOperationStack = null;
@@ -132,23 +133,28 @@ namespace Essential.Diagnostics
                 message = message.Substring(0, 1497) + "...";
             }
 
-            using (SqlConnection connection = new SqlConnection(connectionSettings.ConnectionString))
+            ConnectionStringSettings connectionSettings = ConfigurationManager.ConnectionStrings[_connectionName];
+            DbProviderFactory dbFactory = DbProviderFactories.GetFactory(connectionSettings.ProviderName);
+            using (var connection = dbFactory.CreateConnection(connectionSettings.ConnectionString))
             {
-                SqlCommand command = new SqlCommand(sql, connection);
+                // TODO: Would it be more efficient to create command & params once, then set value & reuse?
+                // (But would need to synchronise threading)
+                var command = dbFactory.CreateCommand(sql, connection);
 
-                command.Parameters.AddWithValue("@source", source != null ? (object)source : DBNull.Value);
-                command.Parameters.AddWithValue("@eventId", id.HasValue ? (object)id.Value : DBNull.Value);
-                command.Parameters.AddWithValue("@severity", eventType.ToString());
-                command.Parameters.AddWithValue("@logTimeUtc", logTime);
-                command.Parameters.AddWithValue("@machineName", Environment.MachineName);
-                command.Parameters.AddWithValue("@appDomainName", AppDomain.CurrentDomain.FriendlyName);
-                command.Parameters.AddWithValue("@processId", eventCache != null ? (object)eventCache.ProcessId : DBNull.Value);
-                command.Parameters.AddWithValue("@threadName", eventCache != null ? (object)eventCache.ThreadId : DBNull.Value);
-                command.Parameters.AddWithValue("@message", message != null ? (object)message : DBNull.Value);
-                command.Parameters.AddWithValue("@activityId", Trace.CorrelationManager.ActivityId != Guid.Empty ? (object)Trace.CorrelationManager.ActivityId : DBNull.Value );
-                command.Parameters.AddWithValue("@relatedActivityId", relatedActivityId.HasValue ? (object)relatedActivityId.Value : DBNull.Value);
-                command.Parameters.AddWithValue("@logicalOperationStack", logicalOperationStack != null ? (object)logicalOperationStack : DBNull.Value);
-                command.Parameters.AddWithValue("@data", dataString != null ? (object)dataString : DBNull.Value);
+                command.Parameters.Add(dbFactory.CreateParameter("@ApplicationName", source != null ? (object)source : DBNull.Value));
+                command.Parameters.Add(dbFactory.CreateParameter("@TraceSource", source != null ? (object)source : DBNull.Value));
+                command.Parameters.Add(dbFactory.CreateParameter("@EventId", id ?? 0));
+                command.Parameters.Add(dbFactory.CreateParameter("@Severity", eventType.ToString()));
+                command.Parameters.Add(dbFactory.CreateParameter("@LogTimeUtc", logTime));
+                command.Parameters.Add(dbFactory.CreateParameter("@MachineName", Environment.MachineName));
+                command.Parameters.Add(dbFactory.CreateParameter("@AppDomainName", AppDomain.CurrentDomain.FriendlyName));
+                command.Parameters.Add(dbFactory.CreateParameter("@ProcessId", eventCache != null ? (object)eventCache.ProcessId : 0));
+                command.Parameters.Add(dbFactory.CreateParameter("@ThreadName", eventCache != null ? (object)eventCache.ThreadId : DBNull.Value));
+                command.Parameters.Add(dbFactory.CreateParameter("@MessageText", message != null ? (object)message : DBNull.Value));
+                command.Parameters.Add(dbFactory.CreateParameter("@ActivityId", Trace.CorrelationManager.ActivityId != Guid.Empty ? (object)Trace.CorrelationManager.ActivityId : DBNull.Value ));
+                command.Parameters.Add(dbFactory.CreateParameter("@RelatedActivityId", relatedActivityId.HasValue ? (object)relatedActivityId.Value : DBNull.Value));
+                command.Parameters.Add(dbFactory.CreateParameter("@LogicalOperationStack", logicalOperationStack != null ? (object)logicalOperationStack : DBNull.Value));
+                command.Parameters.Add(dbFactory.CreateParameter("@Data", dataString != null ? (object)dataString : DBNull.Value));
 
                 connection.Open();
                 command.ExecuteNonQuery();
