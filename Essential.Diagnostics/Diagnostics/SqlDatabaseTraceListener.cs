@@ -22,21 +22,59 @@ namespace Essential.Diagnostics
     /// the diagnostics_regsql tool (via the stored procedure
     /// created by the tool).
     /// </para>
+    /// <para>
+    /// <list type="">
+    /// <listheader>Configuration options</listheader>
+    /// <item>
+    /// <term>initializeData</term>
+    /// <value>name of the connection string of the database to write to</value>
+    /// </item>
+    /// <item>
+    /// <term>applicationName</term>
+    /// <value>Application name to use when writing to the database; set this
+    /// value when the database is shared between multiple applications. The 
+    /// default value is an empty string.</value>
+    /// </item>
+    /// <item>
+    /// <term>commandText</term>
+    /// <value>Command to use when calling the database. The default is
+    /// the diagnostics_Trace_AddEntry stored procedure created by
+    /// the diagnostics_regsql tool.</value>
+    /// </item>
+    /// <item>
+    /// <term>maxMessageLength</term>
+    /// <value>Maximum length of the message text to write to the database,
+    /// where the database column has limited size. Messages (after inserting
+    /// format parameters) are trimmed to this length, with the last three
+    /// characters replaced by "..." if the original message was longer.</value>
+    /// </item>
+    /// </list>
+    /// </para>
     /// </remarks>
+    
     public class SqlDatabaseTraceListener : TraceListenerBase
     {
         //public const string DefaultTable = "diagnostics_Trace";
         string _connectionName;
         const string _defaultApplicationName = "";
+        const string _defaultCommandText = "EXEC diagnostics_Trace_AddEntry " +
+           "@ApplicationName, @TraceSource, @EventId, @Severity, @LogTimeUtc, " +
+           "@MachineName, @AppDomainName, @ProcessId, @ThreadName, " +
+           "@MessageText, @ActivityId, @RelatedActivityId, @LogicalOperationStack, " +
+           "@Data;";
+        const int _defaultMaxMessageLength = 1500;
+
         private static string[] _supportedAttributes = new string[] 
             { 
                 "applicationName", "ApplicationName", "applicationname", 
+                "commandText", "CommandText", "commandtext", 
+                "maxMessageLength", "MaxMessageLength", "maxmessagelength", 
             };
 
         /// <summary>
         /// Constructor with initializeData.
         /// </summary>
-        /// <param name="connectionName">connection string of the database to write to</param>
+        /// <param name="connectionName">name of the connection string of the database to write to</param>
         public SqlDatabaseTraceListener(string connectionName)
         {
             _connectionName = connectionName;
@@ -63,6 +101,89 @@ namespace Essential.Diagnostics
             {
                 Attributes["applicationname"] = value;
             }
+        }
+
+        /// <summary>
+        /// Gets or sets the command, with parameters, sent to the database.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// The default command text calls the diagnostics_Trace_AddEntry stored
+        /// procedure, created by the diagnostics_regsql tool.
+        /// </para>
+        /// <para>
+        /// To bypass the stored procedure, you can directly insert by setting
+        /// the command text to something like
+        /// "INSERT INTO dbo.diagnostics_Trace ( ApplicationName, TraceSource, EventId, Severity, LogTimeUtc, MachineName, AppDomainName, ProcessID, ThreadName, MessageText, ActivityId, RelatedActivityId, LogicalOperationStack, Data ) VALUES ( @ApplicationName, @TraceSource, @EventId, @Severity, @LogTimeUtc, @MachineName, @AppDomainName, @ProcessID, @ThreadName, @MessageText, @ActivityId, @RelatedActivityId, @LogicalOperationStack, @Data )".
+        /// </para>
+        /// </remarks>
+        public string CommandText
+        {
+            get
+            {
+                // Default format matches System.Diagnostics.TraceListener
+                if (Attributes.ContainsKey("commandtext"))
+                {
+                    return Attributes["commandtext"];
+                }
+                else
+                {
+                    return _defaultCommandText;
+                }
+            }
+            set
+            {
+                Attributes["commandtext"] = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the length to trim any message text to.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This is the maximum length of the message text to write to the database,
+        /// where the database column has limited size. Messages (after inserting
+        /// format parameters) are trimmed to this length, with the last three
+        /// characters replaced by "..." if the original message was longer.
+        /// </para>
+        /// <para>
+        /// A value of zero (0) can be used to remove the message limit length,
+        /// for example where the column has no limit on length (e.g. a
+        /// column of type ntext).
+        /// </para>
+        /// </remarks>
+        public int MaxMessageLength
+        {
+            get
+            {
+                // Default format matches System.Diagnostics.TraceListener
+                if (Attributes.ContainsKey("maxmessagelength"))
+                {
+                    int value;
+                    if (!int.TryParse(Attributes["maxmessagelength"], out value))
+                    {
+                        value = _defaultMaxMessageLength;
+                    }
+                    return value;
+                }
+                else
+                {
+                    return _defaultMaxMessageLength;
+                }
+            }
+            set
+            {
+                Attributes["maxmessagelength"] = value.ToString(CultureInfo.InvariantCulture);
+            }
+        }
+
+        /// <summary>
+        /// Gets the name of the connection string that identifies the database to use.
+        /// </summary>
+        public string ConnectionName
+        {
+            get { return _connectionName; }
         }
 
         /// <summary>
@@ -100,12 +221,6 @@ namespace Essential.Diagnostics
 
         private void WriteToDatabase(TraceEventCache eventCache, string source, TraceEventType eventType, int? id, string message, Guid? relatedActivityId, string dataString)
         {
-            const string sql = "EXEC diagnostics_Trace_AddEntry " +
-               "@ApplicationName, @TraceSource, @EventId, @Severity, @LogTimeUtc, " +
-               "@MachineName, @AppDomainName, @ProcessId, @ThreadName, " +
-               "@MessageText, @ActivityId, @RelatedActivityId, @LogicalOperationStack, " + 
-               "@Data;";
-
             DateTime logTime;
             string logicalOperationStack = null;
             if (eventCache != null)
@@ -128,20 +243,22 @@ namespace Essential.Diagnostics
             }
 
             // Truncate message
-            if (message != null && message.Length > 1500)
+            int maxLength = MaxMessageLength;
+            const string trimmedMessageIndicator = "...";
+            if (message != null && message.Length > maxLength)
             {
-                message = message.Substring(0, 1497) + "...";
+                message = message.Substring(0, maxLength - trimmedMessageIndicator.Length) + trimmedMessageIndicator;
             }
-
-            ConnectionStringSettings connectionSettings = ConfigurationManager.ConnectionStrings[_connectionName];
+            
+            ConnectionStringSettings connectionSettings = ConfigurationManager.ConnectionStrings[ConnectionName];
             DbProviderFactory dbFactory = DbProviderFactories.GetFactory(connectionSettings.ProviderName);
             using (var connection = dbFactory.CreateConnection(connectionSettings.ConnectionString))
             {
                 // TODO: Would it be more efficient to create command & params once, then set value & reuse?
                 // (But would need to synchronise threading)
-                var command = dbFactory.CreateCommand(sql, connection);
+                var command = dbFactory.CreateCommand(CommandText, connection);
 
-                command.Parameters.Add(dbFactory.CreateParameter("@ApplicationName", source != null ? (object)source : DBNull.Value));
+                command.Parameters.Add(dbFactory.CreateParameter("@ApplicationName", ApplicationName != null ? (object)ApplicationName : DBNull.Value));
                 command.Parameters.Add(dbFactory.CreateParameter("@TraceSource", source != null ? (object)source : DBNull.Value));
                 command.Parameters.Add(dbFactory.CreateParameter("@EventId", id ?? 0));
                 command.Parameters.Add(dbFactory.CreateParameter("@Severity", eventType.ToString()));

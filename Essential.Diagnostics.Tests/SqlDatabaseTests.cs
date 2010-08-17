@@ -16,32 +16,64 @@ namespace Essential.Diagnostics.Tests
         public TestContext TestContext { get; set; }
 
         [TestMethod]
-        public void SendsEventsToDatabase()
+        public void HandlesEventSentDirectly()
         {
-            var table = DbProviderFactories.GetFactoryClasses();
-            var providerRow = table.Rows.Find("Essential.Diagnostics.Tests.MockDbProvider");
-            var typeName = providerRow["AssemblyQualifiedName"].ToString();
-            Type type = Type.GetType(typeName);
-            FieldInfo field = type.GetField("Instance", BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly);
-            if ((null != field) && field.FieldType.IsSubclassOf(typeof(DbProviderFactory)))
-            {
-                object instance = field.GetValue(null);
-            }
-
             // Test should pull our mock command off the queue
             var mockCommand1 = new MockCommand();
+            MockDbFactory.Instance.CommandQueue.Clear();
             MockDbFactory.Instance.CommandQueue.Enqueue(mockCommand1);
 
             var listener = new SqlDatabaseTraceListener("TestProvider");
 
-            listener.TraceEvent(null, "Source", TraceEventType.Warning, 1, "{0}-{1}", 2, "A");
+            listener.TraceEvent(null, "Source1", TraceEventType.Warning, 1, "{0}-{1}", 2, "A");
 
             Assert.AreEqual(1, mockCommand1.MockCommandsExecuted.Count);
+
             var properties = mockCommand1.MockCommandsExecuted[0];
-            Assert.AreEqual("Source", properties["@TraceSource"]);
+            Assert.AreEqual("Source1", properties["@TraceSource"]);
             Assert.AreEqual("1", properties["@EventId"]);
             Assert.AreEqual("2-A", properties["@MessageText"]);
         }
+
+        [TestMethod]
+        public void HandlesEventFromTraceSource()
+        {
+            // Test should pull our mock command off the queue
+            var mockCommand1 = new MockCommand();
+            MockDbFactory.Instance.CommandQueue.Clear();
+            MockDbFactory.Instance.CommandQueue.Enqueue(mockCommand1);
+
+            TraceSource source = new TraceSource("sql2Source");
+
+            source.TraceEvent(TraceEventType.Warning, 2, "{0}-{1}", 3, "B");
+
+            Assert.AreEqual(1, mockCommand1.MockCommandsExecuted.Count);
+
+            var properties = mockCommand1.MockCommandsExecuted[0];
+            Assert.AreEqual("sql2Source", properties["@TraceSource"]);
+            Assert.AreEqual("2", properties["@EventId"]);
+            Assert.AreEqual("Warning", properties["@Severity"]);
+            Assert.AreEqual("3-B", properties["@MessageText"]);
+            Assert.AreEqual("App2", properties["@ApplicationName"]);
+        }
+
+        [TestMethod]
+        public void ConfigParametersLoadedCorrectly()
+        {
+            TraceSource source = new TraceSource("sql2Source");
+            var listener = source.Listeners.OfType<SqlDatabaseTraceListener>().First();
+
+            Assert.AreEqual("sql2", listener.Name);
+            Assert.AreEqual("TestProvider", listener.ConnectionName);
+            Assert.AreEqual("Command2", listener.CommandText);
+            Assert.AreEqual("App2", listener.ApplicationName);
+            Assert.AreEqual(10, listener.MaxMessageLength);
+        }
+
+
+        // TODO: Test to check _all_ parameters work.
+        
+        // TODO: Test to check max message length trimming works.
 
     }
 }

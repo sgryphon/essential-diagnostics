@@ -123,6 +123,9 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <PropertyGroup>
+    <TFSBaseBuildYear>2010</TFSBaseBuildYear>
+  </PropertyGroup>
   <Import Project="..\TFSBuildNumber.targets"/>
   <Target Name="BeforeBuild"
 	DependsOnTargets="GetMajorMinorFromCSharpAssemblyInfoFile;
