@@ -1,10 +1,10 @@
 ﻿/**********************************************************************/
-/* InstallTrace.SQL                                              */
+/* InstallTrace.SQL                                                  */
 /*                                                                    */
 /* Installs the tables, triggers and stored procedures necessary for  */
 /* supporting the SqlDatabaseTraceListener of Essential.Diagnostics   */
 /*
-** Copyright Stephen Gryphon Pty Ltd
+** Copyright Stephen Gryphon
 */
 /**********************************************************************/
 
@@ -62,22 +62,22 @@ BEGIN
 
   CREATE TABLE [dbo].[diagnostics_Trace](
     ApplicationName nvarchar(256) NOT NULL,
-	LogId uniqueidentifier NOT NULL PRIMARY KEY NONCLUSTERED DEFAULT NEWID(),
-	TraceSource nvarchar(64) NULL,
-	EventId int NOT NULL default 0,
-	Severity nvarchar(32) NOT NULL,
-	LogTimeUtc datetime NOT NULL,
+	TraceId uniqueidentifier NOT NULL PRIMARY KEY NONCLUSTERED DEFAULT NEWID(),
+	[Source] nvarchar(64) NULL,
+	Id int NOT NULL default 0,
+	EventType nvarchar(32) NOT NULL,
+	[UtcDateTime] datetime NOT NULL,
 	MachineName nvarchar(32) NOT NULL,
-	AppDomainName nvarchar(512) NOT NULL,
+	AppDomainFriendlyName nvarchar(512) NOT NULL,
 	ProcessId int NOT NULL default 0,
 	ThreadName nvarchar(512) NULL,
-	MessageText nvarchar(1500) NULL,
+	[Message] nvarchar(1500) NULL,
 	ActivityId uniqueidentifier NULL,
 	RelatedActivityId uniqueidentifier NULL,
 	LogicalOperationStack nvarchar(512) NULL,
 	Data ntext NULL,
   )
-  CREATE CLUSTERED INDEX diagnostics_Trace_index ON diagnostics_Trace(ApplicationName, LogTimeUtc)
+  CREATE CLUSTERED INDEX diagnostics_Trace_index ON diagnostics_Trace(ApplicationName, [UtcDateTime])
 
 END
 GO
@@ -99,15 +99,15 @@ GO
 
 CREATE PROCEDURE dbo.diagnostics_Trace_AddEntry
     @ApplicationName nvarchar(256),
-	@TraceSource nvarchar(64),
-	@EventId int,
-	@Severity nvarchar(32),
-	@LogTimeUtc datetime,
+	@Source nvarchar(64),
+	@Id int,
+	@EventType nvarchar(32),
+	@UtcDateTime datetime,
 	@MachineName nvarchar(32),
-	@AppDomainName nvarchar(512),
-	@ProcessID int,
+	@AppDomainFriendlyName nvarchar(512),
+	@ProcessId int,
 	@ThreadName nvarchar(512),
-	@MessageText nvarchar(1500),
+	@Message nvarchar(1500),
 	@ActivityId uniqueidentifier,
 	@RelatedActivityId uniqueidentifier,
 	@LogicalOperationStack nvarchar(512),
@@ -119,29 +119,29 @@ BEGIN
 
     INSERT INTO dbo.diagnostics_Trace
                 ( ApplicationName,
-                  TraceSource,
-                  EventId,
-                  Severity,
-                  LogTimeUtc,
+                  [Source],
+                  Id,
+                  EventType,
+                  [UtcDateTime],
                   MachineName,
-                  AppDomainName,
-                  ProcessID,
+                  AppDomainFriendlyName,
+                  ProcessId,
                   ThreadName,
-                  MessageText,
+                  [Message],
                   ActivityId,
                   RelatedActivityId,
                   LogicalOperationStack,
                   Data )
          VALUES ( @ApplicationName,
-                  @TraceSource,
-                  @EventId,
-                  @Severity,
-                  @LogTimeUtc,
+                  @Source,
+                  @Id,
+                  @EventType,
+                  @UtcDateTime,
                   @MachineName,
-                  @AppDomainName,
-                  @ProcessID,
+                  @AppDomainFriendlyName,
+                  @ProcessId,
                   @ThreadName,
-                  @MessageText,
+                  @Message,
                   @ActivityId,
                   @RelatedActivityId,
                   @LogicalOperationStack,

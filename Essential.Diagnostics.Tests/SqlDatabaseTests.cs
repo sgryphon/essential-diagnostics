@@ -30,9 +30,9 @@ namespace Essential.Diagnostics.Tests
             Assert.AreEqual(1, mockCommand1.MockCommandsExecuted.Count);
 
             var properties = mockCommand1.MockCommandsExecuted[0];
-            Assert.AreEqual("Source1", properties["@TraceSource"]);
-            Assert.AreEqual("1", properties["@EventId"]);
-            Assert.AreEqual("2-A", properties["@MessageText"]);
+            Assert.AreEqual("Source1", properties["@Source"]);
+            Assert.AreEqual("1", properties["@Id"]);
+            Assert.AreEqual("2-A", properties["@Message"]);
         }
 
         [TestMethod]
@@ -50,10 +50,10 @@ namespace Essential.Diagnostics.Tests
             Assert.AreEqual(1, mockCommand1.MockCommandsExecuted.Count);
 
             var properties = mockCommand1.MockCommandsExecuted[0];
-            Assert.AreEqual("sql2Source", properties["@TraceSource"]);
-            Assert.AreEqual("2", properties["@EventId"]);
-            Assert.AreEqual("Warning", properties["@Severity"]);
-            Assert.AreEqual("3-B", properties["@MessageText"]);
+            Assert.AreEqual("sql2Source", properties["@Source"]);
+            Assert.AreEqual("2", properties["@Id"]);
+            Assert.AreEqual("Warning", properties["@EventType"]);
+            Assert.AreEqual("3-B", properties["@Message"]);
             Assert.AreEqual("App2", properties["@ApplicationName"]);
         }
 

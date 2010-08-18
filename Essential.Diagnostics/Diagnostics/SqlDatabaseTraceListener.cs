@@ -58,9 +58,9 @@ namespace Essential.Diagnostics
         string _connectionName;
         const string _defaultApplicationName = "";
         const string _defaultCommandText = "EXEC diagnostics_Trace_AddEntry " +
-           "@ApplicationName, @TraceSource, @EventId, @Severity, @LogTimeUtc, " +
-           "@MachineName, @AppDomainName, @ProcessId, @ThreadName, " +
-           "@MessageText, @ActivityId, @RelatedActivityId, @LogicalOperationStack, " +
+           "@ApplicationName, @Source, @Id, @EventType, @UtcDateTime, " +
+           "@MachineName, @AppDomainFriendlyName, @ProcessId, @ThreadName, " +
+           "@Message, @ActivityId, @RelatedActivityId, @LogicalOperationStack, " +
            "@Data;";
         const int _defaultMaxMessageLength = 1500;
 
@@ -114,7 +114,7 @@ namespace Essential.Diagnostics
         /// <para>
         /// To bypass the stored procedure, you can directly insert by setting
         /// the command text to something like
-        /// "INSERT INTO dbo.diagnostics_Trace ( ApplicationName, TraceSource, EventId, Severity, LogTimeUtc, MachineName, AppDomainName, ProcessID, ThreadName, MessageText, ActivityId, RelatedActivityId, LogicalOperationStack, Data ) VALUES ( @ApplicationName, @TraceSource, @EventId, @Severity, @LogTimeUtc, @MachineName, @AppDomainName, @ProcessID, @ThreadName, @MessageText, @ActivityId, @RelatedActivityId, @LogicalOperationStack, @Data )".
+        /// "INSERT INTO dbo.diagnostics_Trace ( ApplicationName, Source, Id, EventType, UtcDateTime, MachineName, AppDomainFriendlyName, ProcessId, ThreadName, Message, ActivityId, RelatedActivityId, LogicalOperationStack, Data ) VALUES ( @ApplicationName, @Source, @Id, @EventType, @UtcDateTime, @MachineName, @AppDomainFriendlyName, @ProcessId, @ThreadName, @Message, @ActivityId, @RelatedActivityId, @LogicalOperationStack, @Data )".
         /// </para>
         /// </remarks>
         public string CommandText
@@ -256,25 +256,26 @@ namespace Essential.Diagnostics
             {
                 // TODO: Would it be more efficient to create command & params once, then set value & reuse?
                 // (But would need to synchronise threading)
-                var command = dbFactory.CreateCommand(CommandText, connection);
+                using (var command = dbFactory.CreateCommand(CommandText, connection))
+                {
+                    command.Parameters.Add(dbFactory.CreateParameter("@ApplicationName", ApplicationName != null ? (object)ApplicationName : DBNull.Value));
+                    command.Parameters.Add(dbFactory.CreateParameter("@Source", source != null ? (object)source : DBNull.Value));
+                    command.Parameters.Add(dbFactory.CreateParameter("@Id", id ?? 0));
+                    command.Parameters.Add(dbFactory.CreateParameter("@EventType", eventType.ToString()));
+                    command.Parameters.Add(dbFactory.CreateParameter("@UtcDateTime", logTime));
+                    command.Parameters.Add(dbFactory.CreateParameter("@MachineName", Environment.MachineName));
+                    command.Parameters.Add(dbFactory.CreateParameter("@AppDomainFriendlyName", AppDomain.CurrentDomain.FriendlyName));
+                    command.Parameters.Add(dbFactory.CreateParameter("@ProcessId", eventCache != null ? (object)eventCache.ProcessId : 0));
+                    command.Parameters.Add(dbFactory.CreateParameter("@ThreadName", eventCache != null ? (object)eventCache.ThreadId : DBNull.Value));
+                    command.Parameters.Add(dbFactory.CreateParameter("@Message", message != null ? (object)message : DBNull.Value));
+                    command.Parameters.Add(dbFactory.CreateParameter("@ActivityId", Trace.CorrelationManager.ActivityId != Guid.Empty ? (object)Trace.CorrelationManager.ActivityId : DBNull.Value));
+                    command.Parameters.Add(dbFactory.CreateParameter("@RelatedActivityId", relatedActivityId.HasValue ? (object)relatedActivityId.Value : DBNull.Value));
+                    command.Parameters.Add(dbFactory.CreateParameter("@LogicalOperationStack", logicalOperationStack != null ? (object)logicalOperationStack : DBNull.Value));
+                    command.Parameters.Add(dbFactory.CreateParameter("@Data", dataString != null ? (object)dataString : DBNull.Value));
 
-                command.Parameters.Add(dbFactory.CreateParameter("@ApplicationName", ApplicationName != null ? (object)ApplicationName : DBNull.Value));
-                command.Parameters.Add(dbFactory.CreateParameter("@TraceSource", source != null ? (object)source : DBNull.Value));
-                command.Parameters.Add(dbFactory.CreateParameter("@EventId", id ?? 0));
-                command.Parameters.Add(dbFactory.CreateParameter("@Severity", eventType.ToString()));
-                command.Parameters.Add(dbFactory.CreateParameter("@LogTimeUtc", logTime));
-                command.Parameters.Add(dbFactory.CreateParameter("@MachineName", Environment.MachineName));
-                command.Parameters.Add(dbFactory.CreateParameter("@AppDomainName", AppDomain.CurrentDomain.FriendlyName));
-                command.Parameters.Add(dbFactory.CreateParameter("@ProcessId", eventCache != null ? (object)eventCache.ProcessId : 0));
-                command.Parameters.Add(dbFactory.CreateParameter("@ThreadName", eventCache != null ? (object)eventCache.ThreadId : DBNull.Value));
-                command.Parameters.Add(dbFactory.CreateParameter("@MessageText", message != null ? (object)message : DBNull.Value));
-                command.Parameters.Add(dbFactory.CreateParameter("@ActivityId", Trace.CorrelationManager.ActivityId != Guid.Empty ? (object)Trace.CorrelationManager.ActivityId : DBNull.Value ));
-                command.Parameters.Add(dbFactory.CreateParameter("@RelatedActivityId", relatedActivityId.HasValue ? (object)relatedActivityId.Value : DBNull.Value));
-                command.Parameters.Add(dbFactory.CreateParameter("@LogicalOperationStack", logicalOperationStack != null ? (object)logicalOperationStack : DBNull.Value));
-                command.Parameters.Add(dbFactory.CreateParameter("@Data", dataString != null ? (object)dataString : DBNull.Value));
-
-                connection.Open();
-                command.ExecuteNonQuery();
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                }
             }
         }
     }

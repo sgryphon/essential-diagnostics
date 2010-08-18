@@ -30,15 +30,18 @@ namespace Essential.Diagnostics.Tests
             var events = listener.GetEvents();
 
             Assert.AreEqual(1, events[0].Id);
-            Assert.AreEqual(0, events[0].LogicalOperationStack.Length);
+            var logicalOperationStack0 = events[0].GetLogicalOperationStack();
+            Assert.AreEqual(0, logicalOperationStack0.Length);
 
             Assert.AreEqual(2, events[1].Id);
-            Assert.AreEqual(2, events[1].LogicalOperationStack.Length);
-            Assert.AreEqual("Y", events[1].LogicalOperationStack[0]);
-            Assert.AreEqual("X", events[1].LogicalOperationStack[1]);
+            var logicalOperationStack1 = events[1].GetLogicalOperationStack();
+            Assert.AreEqual(2, logicalOperationStack1.Length);
+            Assert.AreEqual("Y", logicalOperationStack1[0]);
+            Assert.AreEqual("X", logicalOperationStack1[1]);
 
             Assert.AreEqual(3, events[2].Id);
-            Assert.AreEqual(0, events[2].LogicalOperationStack.Length);
+            var logicalOperationStack2 = events[2].GetLogicalOperationStack();
+            Assert.AreEqual(0, logicalOperationStack2.Length);
         }
     }
 }

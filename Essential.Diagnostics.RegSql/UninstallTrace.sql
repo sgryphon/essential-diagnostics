@@ -1,10 +1,10 @@
 ﻿/**********************************************************************/
-/* UninstallTrace.SQL                                              */
+/* UninstallTrace.SQL                                                 */
 /*                                                                    */
 /* Installs the tables, triggers and stored procedures necessary for  */
 /* supporting the SqlDatabaseTraceListener of Essential.Diagnostics   */
 /*
-** Copyright Stephen Gryphon Pty Ltd
+** Copyright Stephen Gryphon
 */
 /**********************************************************************/
 

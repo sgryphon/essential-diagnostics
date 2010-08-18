@@ -14,6 +14,7 @@ namespace Essential
         /// <summary>
         /// Gets the standard error output stream.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords", MessageId = "Error")]
         TextWriter Error { get; }
 
         /// <summary>

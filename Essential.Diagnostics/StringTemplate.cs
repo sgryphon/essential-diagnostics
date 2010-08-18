@@ -12,6 +12,9 @@ namespace Essential
     /// </summary>
     public static class StringTemplate
     {
+        // TODO: Add support for objects (in particular anonymous objects)
+        // as the source of properties
+
         // TODO: Allow instances to be created (make the class non-static),
         // that prepare the template in advance and allow fast binding.
         // Maybe something similar to Regex compiled?
@@ -170,6 +173,7 @@ namespace Essential
         /// are case-insensitive.
         /// </para>
         /// </remarks>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         public static string Format(IFormatProvider provider, string template, GetValue getValue)
         {
             if (template == null)

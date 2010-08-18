@@ -16,7 +16,7 @@ namespace Essential.Diagnostics
         private const int DefaultSize = 20;
 
         private int _current;
-        private TraceEvent[] _events;
+        private TraceDetails[] _events;
         private object _eventsLock = new object();
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace Essential.Diagnostics
         /// </summary>
         public InMemoryTraceListener(int limit)
         {
-            _events = new TraceEvent[limit];
+            _events = new TraceDetails[limit];
         }
 
         /// <summary>
@@ -50,6 +50,10 @@ namespace Essential.Diagnostics
             get { return _events.Length; }
         }
 
+        /// <summary>
+        /// Gets whether the listener internally handles thread safety
+        /// (or if the System.Diagnostics framework needs to co-ordinate threading).
+        /// </summary>
         public override bool IsThreadSafe
         {
             get { return true; }
@@ -62,7 +66,7 @@ namespace Essential.Diagnostics
         {
             lock (_eventsLock)
             {
-                _events = new TraceEvent[_events.Length];
+                _events = new TraceDetails[_events.Length];
                 _current = 0;
             }
         }
@@ -70,9 +74,9 @@ namespace Essential.Diagnostics
         /// <summary>
         /// Gets an array of the current events in the buffer.
         /// </summary>
-        public TraceEvent[] GetEvents()
+        public TraceDetails[] GetEvents()
         {
-            var events = new List<TraceEvent>();
+            var events = new List<TraceDetails>();
             lock (_eventsLock)
             {
                 for (var index = _current; index < _events.Length; index++)
@@ -90,19 +94,29 @@ namespace Essential.Diagnostics
             return events.ToArray();
         }
 
+        /// <summary>
+        /// Records the trace event in the in-memory buffer, converting mutable properties to string arrays to preserve their value at the time of the trace.
+        /// </summary>
         protected override void WriteTrace(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message, Guid? relatedActivityId, object[] data)
         {
             lock (_eventsLock)
             {
                 var activityId = Trace.CorrelationManager.ActivityId;
                 var traceTime = (eventCache == null) ? DateTimeOffset.UtcNow : eventCache.DateTime;
+
+                // Want to clone/copy all mutable objects (specifically LogicalOperationStack and data) to preserve their value at the time of the trace.
+                // This is done by converting the values to string format, similar to how output to a stream, database or the Windows Event Log would occur.
+                
                 var currentStack = (eventCache == null)
                                 ? Trace.CorrelationManager.LogicalOperationStack
                                 : eventCache.LogicalOperationStack;
                 // Want to copy the stack as the original object will change.
                 // Also, don't need stack behaviour (push, pop) for the copy -- just want a record of the contents at the time.
-                var recordedStack = currentStack.ToArray();
-                var trace = new TraceEvent(traceTime, source, activityId, eventType, id, message, relatedActivityId, recordedStack, data);
+                var recordedStack = currentStack.ToArray().Select(o => o.ToString()).ToArray();
+
+                var recordedData = (data == null) ? new string[0] : data.Select(o => o.ToString()).ToArray();
+
+                var trace = new TraceDetails(traceTime, source, activityId, eventType, id, message, relatedActivityId, recordedStack, recordedData);
 
                 _events[_current] = trace;
                 _current++;
@@ -116,9 +130,13 @@ namespace Essential.Diagnostics
         /// <summary>
         /// Details of a single trace event.
         /// </summary>
-        public class TraceEvent
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+        public class TraceDetails
         {
-            public TraceEvent(DateTimeOffset traceTime, string source, Guid activityId, TraceEventType eventType, int id, string message, Guid? relatedActivityId, object[] logicalOperationStack, object[] data)
+            string[] data;
+            string[] logicalOperationStack;
+
+            internal TraceDetails(DateTimeOffset traceTime, string source, Guid activityId, TraceEventType eventType, int id, string message, Guid? relatedActivityId, string[] logicalOperationStack, string[] data)
             {
                 DateTime = traceTime;
                 Source = source;
@@ -127,8 +145,8 @@ namespace Essential.Diagnostics
                 Id = id;
                 Message = message;
                 RelatedActivityId = relatedActivityId;
-                LogicalOperationStack = logicalOperationStack;
-                Data = data;
+                this.logicalOperationStack = logicalOperationStack;
+                this.data = data;
             }
 
             /// <summary>
@@ -175,12 +193,16 @@ namespace Essential.Diagnostics
             /// listed first.
             /// </para>
             /// </remarks>
-            public object[] LogicalOperationStack { get; private set; }
+            public string[] GetLogicalOperationStack() {
+                return (string[])logicalOperationStack.Clone();
+            }
 
             /// <summary>
             /// Gets additional data items for the event.
             /// </summary>
-            public object[] Data { get; private set; }
+            public string[] Data() {
+                return (string[])data.Clone();
+            }
         }
     }
 }

@@ -35,7 +35,7 @@ namespace Essential.Diagnostics
     /// <term>template</term>
     /// <value>Template to use to format trace messages.
     /// The default format is "{Source} {EventType}: {Id} : {Message}".
-    /// For more information on the template tokens available, <see cref="TraceTemplate"/>.</value>
+    /// For more information on the template tokens available, <see cref="TraceFormatter"/>.</value>
     /// </item>
     /// <item>
     /// <term>convertWriteToEvent</term>
@@ -217,6 +217,10 @@ namespace Essential.Diagnostics
             }
         }
 
+        /// <summary>
+        /// Gets whether the listener internally handles thread safety
+        /// (or if the System.Diagnostics framework needs to co-ordinate threading).
+        /// </summary>
         public override bool IsThreadSafe
         {
             get { return true; }
@@ -382,7 +386,7 @@ namespace Essential.Diagnostics
             string output = StringTemplate.Format(Template, templateArguments.GetArgument);
             */
 
-            var output = TraceTemplate.Format(Template,
+            var output = TraceFormatter.Format(Template,
                 eventCache,
                 source,
                 eventType,

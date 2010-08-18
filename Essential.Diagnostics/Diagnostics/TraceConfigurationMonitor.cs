@@ -41,9 +41,7 @@ namespace Essential.Diagnostics
         public TraceConfigurationMonitor(string configFilePath, bool enabled)
         {
             if (configFilePath == null) throw new ArgumentNullException("configFilePath");
-//#if DEBUG
-            Console.WriteLine("** config: {0} **", configFilePath);
-//#endif
+//            Console.WriteLine("** config: {0} **", configFilePath);
 
             var path = Path.GetDirectoryName(configFilePath);
             var fileName = Path.GetFileName(configFilePath);
@@ -100,11 +98,10 @@ namespace Essential.Diagnostics
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         private void watcher_Changed(object sender, FileSystemEventArgs e)
         {
-#if DEBUG
-            Console.WriteLine("** watcher_Changed fired **");
-#endif
+//            Console.WriteLine("** watcher_Changed fired **");
             int retryCount = 0;
             while (retryCount < 3)
             {

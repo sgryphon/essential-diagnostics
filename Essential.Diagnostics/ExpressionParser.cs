@@ -6,21 +6,31 @@ using System.Text;
 using System.CodeDom.Compiler;
 using Microsoft.CSharp;
 using System.Reflection;
+using System.Globalization;
 
 namespace Essential
 {
+    /// <summary>
+    /// Parses strings into expressions of the specified type and using the specified parameter names.
+    /// </summary>
+    /// <typeparam name="T">The Func&lt;&gt; delegate type of the expression</typeparam>
     public class ExpressionParser<T>
     {
+        // TODO: Due to the limits on Func<> delegates (max 4 parameters), would a class that takes a list of types and parameter names be better?
+
         private ParameterExpression[] parameters;
         private Type returnType;
 
+        /// <summary>
+        /// Constructor. Creates a parser for the generic delegate type, with the specified parameter names.
+        /// </summary>
         public ExpressionParser(params string[] parameterNames)
         {
             Type type = typeof(T);
             if (!type.IsSubclassOf(typeof(Delegate))) throw new ArgumentException("Expression type must be a delegate.", "T");
 
+            if (parameterNames == null) throw new ArgumentNullException("parameterNames");
             var argTypes = type.GetGenericArguments();
-
             if (parameterNames.Length != (argTypes.Length - 1)) throw new ArgumentException("Parameter names must be the same length as the delegate parameters.");
 
             var parameterList = new List<ParameterExpression>();
@@ -33,6 +43,16 @@ namespace Essential
             returnType = argTypes[argTypes.Length - 1];
         }
 
+        /// <summary>
+        /// Parses a string and returns the corresponding Expression.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This only supports expressions for the Func&lt;&gt; family of delegates.
+        /// This means a maximum of four parameters is supported; also, all 
+        /// parameters should be simple (base .NET library) types.
+        /// </para>
+        /// </remarks>
         public Expression<T> Parse(string expression)
         {
             Expression parsed = ParseExpression(expression);
@@ -61,7 +81,7 @@ namespace Essential
             }
             parameterTypeJoined += returnType.FullName;
             var parameterNameJoined = string.Join(",", parameters.Select(p => p.Name).ToArray());
-            var expressionStatement = string.Format("      Expression<Func<{0}>> expression = ({1}) => {2};",
+            var expressionStatement = string.Format(CultureInfo.InvariantCulture, "      Expression<Func<{0}>> expression = ({1}) => {2};",
                 parameterTypeJoined, parameterNameJoined, expression);
             source.AppendLine(expressionStatement);
 
@@ -73,16 +93,21 @@ namespace Essential
             // TODO: Get rid of all this debug code (throw an exception or something if it fails).
             Console.WriteLine(source);
 
-            var csprovider = new CSharpCodeProvider();
-            var options = new CompilerParameters()
+            CompilerResults result = null;
+            using (var csprovider = new CSharpCodeProvider())
             {
-                GenerateInMemory = true
-            };
-            options.ReferencedAssemblies.Add("System.dll");
-            options.ReferencedAssemblies.Add("System.Core.dll");
-            var result = csprovider.CompileAssemblyFromSource(options, source.ToString());
+                var options = new CompilerParameters()
+                {
+                    GenerateInMemory = true
+                };
+                options.ReferencedAssemblies.Add("System.dll");
+                options.ReferencedAssemblies.Add("System.Core.dll");
+                result = csprovider.CompileAssemblyFromSource(options, source.ToString());
+            }
 
-            Console.WriteLine("Compiler return: {0}", result.NativeCompilerReturnValue);
+//#if DEBUG
+//            Console.WriteLine("Compiler return: {0}", result.NativeCompilerReturnValue);
+//#endif
             foreach (string line in result.Output)
             {
                 Console.WriteLine(line);
@@ -90,7 +115,9 @@ namespace Essential
 
             var assembly = result.CompiledAssembly;
 
-            Console.WriteLine("Types:");
+//#if DEBUG
+//            Console.WriteLine("Types:");
+//#endif
             foreach (var type in assembly.GetTypes())
             {
                 Console.WriteLine(type.FullName);
@@ -98,13 +125,15 @@ namespace Essential
 
             var class1 = assembly.GetType("Test.Class1");
 
-            Console.WriteLine("Methods:");
+//#if DEBUG
+//            Console.WriteLine("Methods:");
+//#endif
             foreach (var method in class1.GetMethods(BindingFlags.Public | BindingFlags.Static))
             {
                 Console.WriteLine(method.Name);
             }
 
-            var answer = class1.InvokeMember("CreateExpression", BindingFlags.Static | BindingFlags.InvokeMethod | BindingFlags.Public, null, null, null);
+            var answer = class1.InvokeMember("CreateExpression", BindingFlags.Static | BindingFlags.InvokeMethod | BindingFlags.Public, null, null, null, CultureInfo.InvariantCulture);
             var compiled = answer as Expression;
             return compiled;
         }
