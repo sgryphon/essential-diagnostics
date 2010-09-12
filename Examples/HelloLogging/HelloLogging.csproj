@@ -51,6 +51,7 @@
     <None Include="Example.config" />
     <None Include="App.config" />
     <None Include="ColoredConsole\HelloLogging.exe.config" />
+    <None Include="FileLog\HelloLogging.exe.config" />
     <None Include="XmlWriter\HelloLogging.exe.config" />
   </ItemGroup>
   <ItemGroup>

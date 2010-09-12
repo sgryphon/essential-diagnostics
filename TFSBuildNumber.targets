@@ -166,8 +166,8 @@
       <!-- That's what it looks like DevDiv is using for their calculations. -->
       <TFSCalculatedYear>$([MSBuild]::Subtract($(TFSBuildYear),$(TFSBaseBuildYear)))</TFSCalculatedYear>
 
-      <TFSBuildNumber>$(TFSCalculatedYear)$(TFSBuildMonth)$(TFSBuildDay)</TFSBuildNumber>
-
+      <tmpBuildNumber>$(TFSCalculatedYear)$(TFSBuildMonth)$(TFSBuildDay)</tmpBuildNumber>
+      <TFSBuildNumber>$(tmpBuildNumber.TrimStart('0'))</TFSBuildNumber>
       <TFSFullBuildVersionString>$(TFSMajorBuildNumber).$(TFSMinorBuildNumber).$(TFSBuildNumber).$(TFSBuildRevision)</TFSFullBuildVersionString>
     </PropertyGroup>
 
