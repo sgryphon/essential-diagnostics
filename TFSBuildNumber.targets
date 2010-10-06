@@ -59,9 +59,8 @@
           - If the version file already exists, it will not be created. For
             TFS Builds, the file is always created.
           - The build number will be based of the current date.
-          - The revision number is hard coded to 65535 to indicate it was a 
-            developer build. (If you are doing more than 65,535 builds in a 
-            day you have bigger problems than version files! :)            
+          - The revision number is hard coded to 0 to indicate it was a 
+            developer build. (TFS build numbering starts from 1)            
        -->
 
   <PropertyGroup>
@@ -155,7 +154,7 @@
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(WintellectBuildType)'=='DEVELOPERBUILD'">
-      <TFSBuildRevision>65535</TFSBuildRevision>
+      <TFSBuildRevision>0</TFSBuildRevision>
       <TFSBuildYear>$([System.DateTime]::Now.Year.ToString("0000"))</TFSBuildYear>
       <TFSBuildMonth>$([System.DateTime]::Now.Month.ToString("00"))</TFSBuildMonth>
       <TFSBuildDay>$([System.DateTime]::Now.Day.ToString("00"))</TFSBuildDay>

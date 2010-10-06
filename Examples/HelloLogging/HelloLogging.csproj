@@ -34,6 +34,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Essential.Diagnostics, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Essential.Diagnostics.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -47,20 +51,28 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="EventLog\HelloLogging.exe.config" />
+    <None Include="EventLog\HelloLogging.exe.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Example.config" />
     <None Include="App.config" />
-    <None Include="ColoredConsole\HelloLogging.exe.config" />
-    <None Include="FileLog\HelloLogging.exe.config" />
-    <None Include="XmlWriter\HelloLogging.exe.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Essential.Diagnostics\Essential.Diagnostics.csproj">
-      <Project>{7A59AA9B-D2C3-4682-A4D7-CE37B98F5905}</Project>
-      <Name>Essential.Diagnostics</Name>
-    </ProjectReference>
+    <None Include="ColoredConsole\HelloLogging.exe.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="FileLog\HelloLogging.exe.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="XmlWriter\HelloLogging.exe.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /y $(TargetPath) $(TargetDir)ColoredConsole
+xcopy /y $(TargetPath) $(TargetDir)EventLog
+xcopy /y $(TargetPath) $(TargetDir)FileLog
+xcopy /y $(TargetPath) $(TargetDir)XmlWriter</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

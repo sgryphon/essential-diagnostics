@@ -9,18 +9,33 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		EssentialDiagnostics.vsmdi = EssentialDiagnostics.vsmdi
 		Example.csproj = Example.csproj
+		License.txt = License.txt
 		Local.testsettings = Local.testsettings
+		ReadMe.txt = ReadMe.txt
 		TFSBuildNumber.targets = TFSBuildNumber.targets
+		ToDo.txt = ToDo.txt
 		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloLogging", "Examples\HelloLogging\HelloLogging.csproj", "{1B94311E-4CD8-405F-8B3A-ECF9527241CE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7A59AA9B-D2C3-4682-A4D7-CE37B98F5905} = {7A59AA9B-D2C3-4682-A4D7-CE37B98F5905}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{DC99727D-E6A0-4619-B698-D7281D444607}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonitorConfig", "Examples\MonitorConfig\MonitorConfig.csproj", "{4BD5C76B-93F8-4A8F-A01F-F10883357C4A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7A59AA9B-D2C3-4682-A4D7-CE37B98F5905} = {7A59AA9B-D2C3-4682-A4D7-CE37B98F5905}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Diagnostics.RegSql", "Essential.Diagnostics.RegSql\Essential.Diagnostics.RegSql.csproj", "{252DDE2C-C596-4F3B-96E3-87CB9F7ED839}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Package", "Package", "{AA216E78-7C19-4349-ADAF-419480C7FD8C}"
+	ProjectSection(SolutionItems) = preProject
+		Package\Ionic.Zip.dll = Package\Ionic.Zip.dll
+		Package\Package.ps1 = Package\Package.ps1
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution

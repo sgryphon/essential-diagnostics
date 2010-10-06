@@ -7,3 +7,7 @@ glob:Local.testsettings
 glob:*/TestResults/*
 glob:_ReSharper.EssentialDiagnostics/*
 glob:TestResults/*
+glob:Documentation/Help/*
+glob:Examples/Essential.Diagnostics.dll
+glob:Essential.Diagnostics/Version.txt
+glob:Package/Output/*

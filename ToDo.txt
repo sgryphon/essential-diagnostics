@@ -1,0 +1,21 @@
+TODO: Essential.Diagnostics
+===========================
+
+- Packaging for Documentation, Examples, Source, and release binaries
+
+- Guidance article on logging levels
+
+- Comparison with NLog, Log4net, Common.Logging, EntLib logging framework
+
+- Add License.txt file with Ms-PL text.
+
+
+Examples TODO
+-------------
+
+File logging example (using VB logger), which version of VB, example settings
+
+ASPNET tracing example, including config settings to turn on tracing, security considerations, URL, screen shots
+
+Event Logging considerations, e.g. installutil required to create the log name first
+

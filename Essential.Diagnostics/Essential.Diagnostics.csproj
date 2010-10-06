@@ -136,4 +136,7 @@
   <Import Project="..\TFSBuildNumber.targets" />
   <Target Name="BeforeBuild" DependsOnTargets="GetMajorMinorFromCSharpAssemblyInfoFile;&#xD;&#xA;					  WriteProjectTextAssemblyVersionFile;&#xD;&#xA;					  UpdateCSharpAssemblyInfoFile">
   </Target>
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /y $(TargetPath) $(SolutionDir)Examples</PostBuildEvent>
+  </PropertyGroup>
 </Project>
