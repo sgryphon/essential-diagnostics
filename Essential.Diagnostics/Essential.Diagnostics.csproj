@@ -137,6 +137,6 @@
   <Target Name="BeforeBuild" DependsOnTargets="GetMajorMinorFromCSharpAssemblyInfoFile;&#xD;&#xA;					  WriteProjectTextAssemblyVersionFile;&#xD;&#xA;					  UpdateCSharpAssemblyInfoFile">
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>xcopy /y $(TargetPath) $(SolutionDir)Examples</PostBuildEvent>
+    <PostBuildEvent>xcopy /y $(TargetPath) $(SolutionDir)Examples\References</PostBuildEvent>
   </PropertyGroup>
 </Project>

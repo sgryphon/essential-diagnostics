@@ -36,7 +36,7 @@
   <ItemGroup>
     <Reference Include="Essential.Diagnostics, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Essential.Diagnostics.dll</HintPath>
+      <HintPath>..\References\Essential.Diagnostics.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -54,7 +54,6 @@
     <None Include="EventLog\HelloLogging.exe.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Example.config" />
     <None Include="App.config" />
     <None Include="ColoredConsole\HelloLogging.exe.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

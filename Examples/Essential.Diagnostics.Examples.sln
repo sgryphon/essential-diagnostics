@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C# Express 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloLogging", "HelloLogging\HelloLogging.csproj", "{1B94311E-4CD8-405F-8B3A-ECF9527241CE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonitorConfig", "MonitorConfig\MonitorConfig.csproj", "{4BD5C76B-93F8-4A8F-A01F-F10883357C4A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1B94311E-4CD8-405F-8B3A-ECF9527241CE}.Debug|x86.ActiveCfg = Debug|x86
+		{1B94311E-4CD8-405F-8B3A-ECF9527241CE}.Debug|x86.Build.0 = Debug|x86
+		{1B94311E-4CD8-405F-8B3A-ECF9527241CE}.Release|x86.ActiveCfg = Release|x86
+		{1B94311E-4CD8-405F-8B3A-ECF9527241CE}.Release|x86.Build.0 = Release|x86
+		{4BD5C76B-93F8-4A8F-A01F-F10883357C4A}.Debug|x86.ActiveCfg = Debug|x86
+		{4BD5C76B-93F8-4A8F-A01F-F10883357C4A}.Debug|x86.Build.0 = Debug|x86
+		{4BD5C76B-93F8-4A8F-A01F-F10883357C4A}.Release|x86.ActiveCfg = Release|x86
+		{4BD5C76B-93F8-4A8F-A01F-F10883357C4A}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
