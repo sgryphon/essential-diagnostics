@@ -167,7 +167,7 @@ function Package-Complete($solutionPath, $version) {
     Add-Examples $zipFile "$zipPath" $solutionPath
 
 	$path = (Join-Path $solutionPath "Documentation\Help")
-	Add-File $zipFile "$zipPath\Binaries" $path "Essential.Diagnostics.chm" 
+	Add-File $zipFile "$zipPath" $path "Essential.Diagnostics.chm" 
 
 	$zipFilePath = (Join-Path $solutionPath "Package\Output\Essential.Diagnostics_$($version).zip")
 	Write-Host "$($pre)Saving examples package to '$zipFilePath'"
