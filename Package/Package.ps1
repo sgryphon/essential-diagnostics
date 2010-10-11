@@ -9,6 +9,9 @@
 param (
     [switch]$Build = $false,
     [switch]$BuildDocs = $false,
+    [switch]$nuPack = $true,
+    [switch]$Package = $true,
+    [switch]$PackageBin = $true,
     [switch]$WhatIf = $false
 )
 if ($WhatIf) {
@@ -27,6 +30,29 @@ function Add-File($zipFile, $zipPath, $path, $file) {
 	if (-not $WhatIf) {
 		$dummy = $zipFile.AddFile($fileLocation, $zipLocation)
 	}
+}
+
+function Copy-File($outputPath, $path, $file) {
+    $fileLocation = (Join-Path $path $file)
+    $fileRelativePath = (Split-Path $file)
+    if ($fileRelativePath) {
+        $outputLocation = (Join-Path $outputPath $fileRelativePath)
+    } else {
+        $outputLocation = $outputPath
+    }
+	Write-Host "$($pre)Copy '$fileLocation' to '$outputLocation'."
+	if (-not $WhatIf) {
+        Copy-Item $fileLocation $outputLocation
+	}
+}
+
+function Ensure-Directory($path) {
+    if (!(Test-Path $path -PathType container)) {
+    	Write-Host "$($pre)Creating path '$path'"
+    	if (-not $WhatIf) {
+    		New-Item $path -Type directory
+    	}
+    }
 }
 
 function Build-Solution($solutionPath, $configuration) {
@@ -177,6 +203,48 @@ function Package-Complete($solutionPath, $version) {
 	}
 }
 
+function Package-NuPack($solutionPath, $version) {
+	Write-Host ""
+	Write-Host "# Creating NuPack package..."
+    
+    $outputPath = (Join-Path $solutionPath "Package\Output\$($version)")
+    $outputLibPath = (Join-Path $outputPath "lib")
+    $outputToolsPath = (Join-Path $outputPath "tools")
+    Ensure-Directory $outputPath
+    Ensure-Directory $outputLibPath
+    Ensure-Directory $outputToolsPath
+
+  	$nuspecPath = (Join-Path $solutionPath "Package\Essential.Diagnostics.nuspec")
+    $nuspec = [xml](Get-Content -Path $nuspecPath)
+    $now = [System.DateTimeOffset]::UtcNow
+    $nuspec.package.metadata.version = "$version"
+    $nuspec.package.metadata.created = $now.ToString("s")
+    $nuspec.package.metadata.modified = $now.ToString("s")
+        
+    $outputNuspecPath = (Join-Path $outputPath "Essential.Diagnostics.nuspec")
+	Write-Host "$($pre)Creating nuspec file '$outputNuspecPath'"
+	if (-not $WhatIf) {
+      $nuspec.Save($outputNuspecPath)
+    }
+    
+	$path = (Join-Path $solutionPath "Examples\Binaries")
+    
+	Copy-File $outputLibPath $path "Essential.Diagnostics.dll" 
+	Copy-File $outputLibPath $path "Essential.Diagnostics.XML" 
+    
+	Copy-File $outputToolsPath $path "diagnostics_regsql.exe"
+	Copy-File $outputToolsPath $path "diagnostics_regsql.exe.config"
+	Copy-File $outputToolsPath $path "InstallTrace.sql"
+	Copy-File $outputToolsPath $path "UninstallTrace.sql"
+    
+    $packagePath = (Join-Path $solutionPath "Package\Output")
+	Write-Host "$($pre)Running: nupack ""$outputNuspecPath"" ""$packagePath"""
+	if (-not $WhatIf) {
+        & .\nupack.exe "$outputNuspecPath" "$packagePath"
+    }
+}
+
+
 # Source code should be accessed from the Mercurial repository
 #function Package-SourceCode() {
 #}
@@ -208,16 +276,20 @@ $version = (Get-Content (Join-Path $solutionPath "Essential.Diagnostics\Version.
 $outputPath = (Join-Path $solutionPath "Package\Output")
 Write-Host ""
 Write-Host "# Packaging version $version to '$outputPath'"
-if (!(Test-Path $outputPath -PathType container)) {
-	Write-Host "$($pre)Creating path '$outputPath'"
-	if (-not $WhatIf) {
-		New-Item $outputPath -Type directory
-	}
+
+Ensure-Directory $outputPath
+
+if ($PackageBin) {
+    Package-ApplicationBinaries $solutionPath $version
 }
 
-Package-ApplicationBinaries $solutionPath $version
+if ($Package) {
+    Package-Complete $solutionPath $version
+}
 
-Package-Complete $solutionPath $version
+if ($nuPack) {
+    Package-NuPack $solutionPath $version
+}
 
 #Package-Documentation $solutionPath $version
 #Package-Examples $solutionPath $version
