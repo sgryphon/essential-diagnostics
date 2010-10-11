@@ -52,6 +52,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>bin\Release\Essential.Diagnostics.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
@@ -137,6 +138,6 @@
   <Target Name="BeforeBuild" DependsOnTargets="GetMajorMinorFromCSharpAssemblyInfoFile;&#xD;&#xA;					  WriteProjectTextAssemblyVersionFile;&#xD;&#xA;					  UpdateCSharpAssemblyInfoFile">
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>xcopy /y $(TargetPath) $(SolutionDir)Examples\References</PostBuildEvent>
+    <PostBuildEvent>xcopy /y $(TargetDir)*.* $(SolutionDir)Examples\Binaries</PostBuildEvent>
   </PropertyGroup>
 </Project>

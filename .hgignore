@@ -11,3 +11,4 @@ glob:Documentation/Help/*
 glob:Examples/Essential.Diagnostics.dll
 glob:Essential.Diagnostics/Version.txt
 glob:Package/Output/*
+glob:Examples/Binaries/*

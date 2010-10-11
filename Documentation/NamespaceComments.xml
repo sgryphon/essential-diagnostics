@@ -1,0 +1,31 @@
+﻿<?xml version="1.0"?>
+<doc>
+  <assembly>
+    <name>_SharedItems_</name>
+  </assembly>
+  <members>
+    <member name="R:Project">
+      <summary>
+        This project uses the inbuilt features of the System.Diagnostics
+        namespace, and shows how logging and tracing can be integrated into a
+        client application whilst taking advantage of the services exposed by
+        System.Diagnostics.
+      </summary>
+    </member>
+    <member name="N:Essential">
+      <summary>
+        General utility classes to support various logging features.
+      </summary>
+    </member>
+    <member name="N:Essential.Data">
+      <summary>
+        Database utility classes to support logging trace information to databases.
+      </summary>
+    </member>
+    <member name="N:Essential.Diagnostics">
+      <summary>
+        Extensions to the .NET Framework System.Diagnostics including trace listeners, filters and utility classes.
+      </summary>
+    </member>
+  </members>
+</doc>

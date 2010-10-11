@@ -8,6 +8,7 @@
 
 param (
     [switch]$Build = $false,
+    [switch]$BuildDocs = $false,
     [switch]$WhatIf = $false
 )
 if ($WhatIf) {
@@ -38,15 +39,48 @@ function Build-Solution($solutionPath, $configuration) {
 	}
 }
 
-function Build-Documentation($solutionPath) {
+function Build-Documentation($solutionPath, $configuration) {
 	Write-Host ""
 	Write-Host "# Building documentation..."
     $documentationProject = (Join-Path $solutionPath "Documentation\Essential.Diagnostics.shfbproj")
 	Write-Host "$($pre)Build documentation '$documentationProject' (using Sandcastle)"
 	if (-not $WhatIf) {
         # TODO: Run Sandcastle project
-		
+		& "$($env:windir)\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe" $documentationProject	/p:Configuration=$configuration
 	}
+}
+
+function Add-Binaries($zipFile, $zipPath, $solutionPath) {
+	$path = (Join-Path $solutionPath "Examples\Binaries")
+
+	Add-File $zipFile $zipPath $path "Essential.Diagnostics.dll" 
+	Add-File $zipFile $zipPath $path "Essential.Diagnostics.XML" 
+	Add-File $zipFile $zipPath $path "diagnostics_regsql.exe"
+	Add-File $zipFile $zipPath $path "diagnostics_regsql.exe.config"
+	Add-File $zipFile $zipPath $path "InstallTrace.sql"
+	Add-File $zipFile $zipPath $path "UninstallTrace.sql"
+}
+
+function Add-Examples($zipFile, $zipPath, $solutionPath) {
+	$path = (Join-Path $solutionPath "Examples")
+    
+	Add-File $zipFile $zipPath $path "Essential.Diagnostics.Examples.sln" 
+
+	Add-File $zipFile $zipPath $path "MonitorConfig\MonitorConfig.csproj" 
+	Add-File $zipFile $zipPath $path "MonitorConfig\Program.cs" 
+	Add-File $zipFile $zipPath $path "MonitorConfig\App.config"
+	Add-File $zipFile $zipPath $path "MonitorConfig\MonitorConfig_ReadMe.txt"
+	Add-File $zipFile $zipPath $path "MonitorConfig\Properties\AssemblyInfo.cs"
+    
+	Add-File $zipFile $zipPath $path "HelloLogging\HelloLogging.csproj" 
+	Add-File $zipFile $zipPath $path "HelloLogging\HelloLogging.cs" 
+	Add-File $zipFile $zipPath $path "HelloLogging\App.config"
+	Add-File $zipFile $zipPath $path "HelloLogging\HelloLogging_ReadMe.txt" 
+	Add-File $zipFile $zipPath $path "HelloLogging\Properties\AssemblyInfo.cs"
+	Add-File $zipFile $zipPath $path "HelloLogging\ColoredConsole\HelloLogging.exe.config"
+	Add-File $zipFile $zipPath $path "HelloLogging\EventLog\HelloLogging.exe.config"
+	Add-File $zipFile $zipPath $path "HelloLogging\FileLog\HelloLogging.exe.config"
+	Add-File $zipFile $zipPath $path "HelloLogging\XmlWriter\HelloLogging.exe.config"
 }
 
 function Package-ApplicationBinaries($solutionPath, $version) {
@@ -61,16 +95,9 @@ function Package-ApplicationBinaries($solutionPath, $version) {
 	Add-File $zipFile $zipPath $solutionPath "ReadMe.txt"
 	Add-File $zipFile $zipPath $solutionPath "License.txt"
 
-	$path = (Join-Path $solutionPath "Essential.Diagnostics\bin\Release")
-	Add-File $zipFile $zipPath $path "Essential.Diagnostics.dll" 
+    Add-Binaries $zipFile "" $solutionPath
 
-	$path = (Join-Path $solutionPath "Essential.Diagnostics.RegSql\bin\Release")
-	Add-File $zipFile $zipPath $path "diagnostics_regsql.exe"
-	Add-File $zipFile $zipPath $path "diagnostics_regsql.exe.config"
-	Add-File $zipFile $zipPath $path "InstallTrace.sql"
-	Add-File $zipFile $zipPath $path "UninstallTrace.sql"
-
-	$zipFilePath = (Join-Path $solutionPath "Package\Output\Essential.Diagnostics_Binaries_$($version).zip")
+	$zipFilePath = (Join-Path $solutionPath "Package\Output\Essential.Diagnostics_BinariesOnly_$($version).zip")
 	Write-Host "$($pre)Saving application binaries package to '$zipFilePath'"
 	if (-not $WhatIf) {
 		$zipFile.Save($zipFilePath)
@@ -113,27 +140,36 @@ function Package-Examples($solutionPath, $version) {
 	Add-File $zipFile $zipPath $solutionPath "ReadMe.txt"
 	Add-File $zipFile $zipPath $solutionPath "License.txt"
 
-	$path = (Join-Path $solutionPath "Examples")
-	Add-File $zipFile $zipPath $path "Essential.Diagnostics.Examples.sln" 
-	Add-File $zipFile $zipPath $path "References\Essential.Diagnostics.dll" 
-
-	Add-File $zipFile $zipPath $path "MonitorConfig\MonitorConfig.csproj" 
-	Add-File $zipFile $zipPath $path "MonitorConfig\Program.cs" 
-	Add-File $zipFile $zipPath $path "MonitorConfig\App.config"
-	Add-File $zipFile $zipPath $path "MonitorConfig\MonitorConfig_ReadMe.txt"
-	Add-File $zipFile $zipPath $path "MonitorConfig\Properties\AssemblyInfo.cs"
-    
-	Add-File $zipFile $zipPath $path "HelloLogging\HelloLogging.csproj" 
-	Add-File $zipFile $zipPath $path "HelloLogging\HelloLogging.cs" 
-	Add-File $zipFile $zipPath $path "HelloLogging\App.config"
-	Add-File $zipFile $zipPath $path "HelloLogging\HelloLogging_ReadMe.txt" 
-	Add-File $zipFile $zipPath $path "HelloLogging\Properties\AssemblyInfo.cs"
-	Add-File $zipFile $zipPath $path "HelloLogging\ColoredConsole\HelloLogging.exe.config"
-	Add-File $zipFile $zipPath $path "HelloLogging\EventLog\HelloLogging.exe.config"
-	Add-File $zipFile $zipPath $path "HelloLogging\FileLog\HelloLogging.exe.config"
-	Add-File $zipFile $zipPath $path "HelloLogging\XmlWriter\HelloLogging.exe.config"
+    Add-Examples $zipFile $zipPath $solutionPath
 
 	$zipFilePath = (Join-Path $solutionPath "Package\Output\Essential.Diagnostics_Examples_$($version).zip")
+	Write-Host "$($pre)Saving examples package to '$zipFilePath'"
+	if (-not $WhatIf) {
+		$zipFile.Save($zipFilePath)
+		$zipFile.Dispose()
+	}
+}
+
+function Package-Complete($solutionPath, $version) {
+	Write-Host ""
+	Write-Host "# Packaging complete (full) files..."
+
+	if (-not $WhatIf) {
+	    $zipFile =  new-object Ionic.Zip.ZipFile
+	}
+
+	$zipPath = "Essential.Diagnostics_$version"
+	Add-File $zipFile $zipPath $solutionPath "ReadMe.txt"
+	Add-File $zipFile $zipPath $solutionPath "License.txt"
+
+    Add-Binaries $zipFile "$zipPath\Binaries" $solutionPath
+
+    Add-Examples $zipFile "$zipPath" $solutionPath
+
+	$path = (Join-Path $solutionPath "Documentation\Help")
+	Add-File $zipFile "$zipPath\Binaries" $path "Essential.Diagnostics.chm" 
+
+	$zipFilePath = (Join-Path $solutionPath "Package\Output\Essential.Diagnostics_$($version).zip")
 	Write-Host "$($pre)Saving examples package to '$zipFilePath'"
 	if (-not $WhatIf) {
 		$zipFile.Save($zipFilePath)
@@ -161,7 +197,11 @@ $solutionPath = (Split-Path $executingScriptDirectory -Parent)
 
 if ($Build) {
 	Build-Solution $solutionPath "Release"
-    Build-Documentation $solutionPath
+    Build-Documentation $solutionPath "Release"
+}
+
+if ($BuildDocs) {
+    Build-Documentation $solutionPath "Release"
 }
 
 $version = (Get-Content (Join-Path $solutionPath "Essential.Diagnostics\Version.txt"))
@@ -177,9 +217,10 @@ if (!(Test-Path $outputPath -PathType container)) {
 
 Package-ApplicationBinaries $solutionPath $version
 
-Package-Documentation $solutionPath $version
+Package-Complete $solutionPath $version
 
-Package-Examples $solutionPath $version
+#Package-Documentation $solutionPath $version
+#Package-Examples $solutionPath $version
 
 Write-Host ""
 Write-Host "# Packaging complete"

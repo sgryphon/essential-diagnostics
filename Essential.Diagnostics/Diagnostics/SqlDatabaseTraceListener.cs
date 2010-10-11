@@ -23,11 +23,18 @@ namespace Essential.Diagnostics
     /// created by the tool).
     /// </para>
     /// <para>
-    /// <list type="">
-    /// <listheader>Configuration options</listheader>
+    /// The following attributes can be set when adding the trace listener
+    /// entry in the configuration file.
+    /// </para>
+    /// <para>
+    /// <list type="table">
+    /// <listheader>
+    ///     <term>Attribute</term>
+    ///     <value>Description</value>
+    /// </listheader>
     /// <item>
     /// <term>initializeData</term>
-    /// <value>name of the connection string of the database to write to</value>
+    /// <value>Name of the connection string of the database to write to.</value>
     /// </item>
     /// <item>
     /// <term>applicationName</term>

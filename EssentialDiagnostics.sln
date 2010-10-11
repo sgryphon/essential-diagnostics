@@ -37,6 +37,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Package", "Package", "{AA21
 		Package\Package.ps1 = Package\Package.ps1
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{083118A3-01C9-45A0-977A-8C9A038964CE}"
+	ProjectSection(SolutionItems) = preProject
+		Documentation\Essential.Diagnostics.shfbproj = Documentation\Essential.Diagnostics.shfbproj
+		Documentation\NamespaceComments.xml = Documentation\NamespaceComments.xml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = EssentialDiagnostics.vsmdi

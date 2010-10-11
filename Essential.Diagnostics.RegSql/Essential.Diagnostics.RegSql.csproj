@@ -32,6 +32,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\diagnostics_regsql.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -79,9 +80,11 @@
   <PropertyGroup>
     <TFSBaseBuildYear>2010</TFSBaseBuildYear>
   </PropertyGroup>
-  <Import Project="..\TFSBuildNumber.targets"/>
-  <Target Name="BeforeBuild"
-	DependsOnTargets="GetMajorMinorFromCSharpAssemblyInfoFile;
-					  UpdateCSharpAssemblyInfoFile">
+  <Import Project="..\TFSBuildNumber.targets" />
+  <Target Name="BeforeBuild" DependsOnTargets="GetMajorMinorFromCSharpAssemblyInfoFile;&#xD;&#xA;					  UpdateCSharpAssemblyInfoFile">
   </Target>
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /y $(TargetDir)*.* $(SolutionDir)Examples\Binaries
+</PostBuildEvent>
+  </PropertyGroup>
 </Project>

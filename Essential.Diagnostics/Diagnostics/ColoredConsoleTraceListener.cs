@@ -24,8 +24,15 @@ namespace Essential.Diagnostics
     /// in the error stream.
     /// </para>
     /// <para>
-    /// <list type="">
-    /// <listheader>Configuration options</listheader>
+    /// The following attributes can be set when adding the trace listener
+    /// entry in the configuration file.
+    /// </para>
+    /// <para>
+    /// <list type="table">
+    /// <listheader>
+    ///     <term>Attribute</term>
+    ///     <value>Description</value>
+    /// </listheader>
     /// <item>
     /// <term>initializeData</term>
     /// <value>false (default) to use the Console.Out stream; 
