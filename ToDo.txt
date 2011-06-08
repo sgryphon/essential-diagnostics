@@ -1,13 +1,33 @@
 TODO: Essential.Diagnostics
 ===========================
 
-- Packaging for Documentation, Examples, Source, and release binaries
 
-- Guidance article on logging levels
+Features TODO
+-------------
 
-- Comparison with NLog, Log4net, Common.Logging, EntLib logging framework
+- Add XmlTraceListener; using format from XmlWriterT-L (rather than TextWriterT-L) but with rotating log features from FileLogT-L.
 
-- Add License.txt file with Ms-PL text.
+- Add HttpContext items (if available) to TraceFormatter.
+
+- Add FileTraceListener; with formatted output as well as file rotation.
+
+- Add ITraceSource and TraceSourceWrapper in Diagnostics.Abstractions; for alternative DI of trace (even though TraceListener is already abstract).
+
+- Add MinimumTrustTraceSource; for use in low-trust environments.
+
+- Improve TraceConfigurationMonitor to support system.diagnostics section in separate config file.
+
+
+Documentation TODO
+------------------
+
+- Packaging for Documentation, Examples, Source, and release binaries.
+
+- Guidance article on logging levels.
+
+- Comparison with NLog, Log4net, Common.Logging, EntLib logging framework.
+
+- List of built-in Framework trace sources (or components like WIF, WCF), and examples of output.
 
 
 Examples TODO

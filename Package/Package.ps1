@@ -220,6 +220,7 @@ function Package-NuPack($solutionPath, $version) {
     $nuspec.package.metadata.version = "$version"
     $nuspec.package.metadata.created = $now.ToString("s")
     $nuspec.package.metadata.modified = $now.ToString("s")
+    $now.SelectSingleNode("/")
         
     $outputNuspecPath = (Join-Path $outputPath "Essential.Diagnostics.nuspec")
 	Write-Host "$($pre)Creating nuspec file '$outputNuspecPath'"

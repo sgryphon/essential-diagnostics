@@ -37,7 +37,7 @@ namespace Essential.Diagnostics
         // Think about activity, with logical op stack inside, and then a transfer...?
         // Activities are kind of like [logical] threads vs logical op stack like the call stack.
 
-        // WCF sets and ActivityId for you, but with other contexts it may not be set.
+        // WCF sets an ActivityId for you, but with other contexts it may not be set.
 
         Guid _previousActivityId;
         TraceSource _source;
