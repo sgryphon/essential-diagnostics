@@ -6,6 +6,8 @@ using System.Diagnostics;
 using System.Threading;
 using System.Collections;
 using System.Globalization;
+using System.IO;
+using System.Windows.Forms;
 
 namespace Essential.Diagnostics
 {
@@ -21,11 +23,12 @@ namespace Essential.Diagnostics
     /// <para>
     /// The following parameters are available in the template string:
     /// Data, Data0, EventType, Id, Message, ActivityId, RelatedActivityId, Source, 
-    /// CallStack, UtcDateTime, LogicalOperationStack, ProcessId, ThreadId, Timestamp, 
-    /// MachineName, ProcessName, ThreadName
+    /// CallStack, DateTime (or UtcDateTime), LocalDateTime, LogicalOperationStack, 
+    /// ProcessId, ThreadId, Timestamp, MachineName, ProcessName, ThreadName,
+    /// ApplicationName.
     /// </para>
     /// <para>
-    /// An example template that generates the same output as the ConsoleListner is:
+    /// An example template that generates the same output as the ConsoleListener is:
     /// "{Source} {EventType}: {Id} : {Message}".
     /// </para>
     /// </remarks>
@@ -34,6 +37,7 @@ namespace Essential.Diagnostics
 
         // TODO: AppDomainFriendlyName
 
+        static string applicationName;
         static int processId;
         static string processName;
 
@@ -50,8 +54,9 @@ namespace Essential.Diagnostics
         /// <para>
         /// The following parameters are available in the template string:
         /// Data, Data0, EventType, Id, Message, ActivityId, RelatedActivityId, Source, 
-        /// CallStack, UtcDateTime, LogicalOperationStack, ProcessId, ThreadId, Timestamp, 
-        /// MachineName, ProcessName, ThreadName
+        /// CallStack, DateTime (or UtcDateTime), LocalDateTime, LogicalOperationStack, 
+        /// ProcessId, ThreadId, Timestamp, MachineName, ProcessName, ThreadName,
+        /// ApplicationName.
         /// </para>
         /// <para>
         /// An example template that generates the same output as the ConsoleListner is:
@@ -94,8 +99,12 @@ namespace Essential.Diagnostics
                         case "CALLSTACK":
                             value = FormatCallstack(eventCache);
                             break;
+                        case "DATETIME":
                         case "UTCDATETIME":
-                            value = FormatUtcDateTime(eventCache);
+                            value = FormatUniversalTime(eventCache);
+                            break;
+                        case "LOCALDATETIME":
+                            value = FormatLocalTime(eventCache);
                             break;
                         case "LOGICALOPERATIONSTACK":
                             value = FormatLogicalOperationStack(eventCache);
@@ -118,6 +127,9 @@ namespace Essential.Diagnostics
                         case "THREADNAME":
                             value = Thread.CurrentThread.Name;
                             break;
+                        case "APPLICATIONNAME":
+                            value = FormatApplicationName();
+                            break;
                         default:
                             value = "{" + name + "}";
                             return true;
@@ -125,6 +137,36 @@ namespace Essential.Diagnostics
                     return true;
                 });
             return result;
+        }
+
+        private static void EnsureApplicationName()
+        {
+            if (applicationName == null)
+            {
+                applicationName = Path.GetFileNameWithoutExtension(Application.ExecutablePath);
+            }
+        }
+
+        private static void EnsureProcessInfo()
+        {
+            if (processName == null)
+            {
+                using (Process process = Process.GetCurrentProcess())
+                {
+                    processId = process.Id;
+                    processName = process.ProcessName;
+                }
+            }
+        }
+
+        internal static object FormatApplicationName()
+        {
+            object value;
+            EnsureApplicationName();
+            value = applicationName;
+            return value;
+            
+            throw new NotImplementedException();
         }
 
         private static object FormatCallstack(TraceEventCache eventCache)
@@ -139,18 +181,6 @@ namespace Essential.Diagnostics
                 value = eventCache.Callstack;
             }
             return value;
-        }
-
-        private static void EnsureProcessInfo()
-        {
-            if (processName == null)
-            {
-                using (Process process = Process.GetCurrentProcess())
-                {
-                    processId = process.Id;
-                    processName = process.ProcessName;
-                }
-            }
         }
 
         private static object FormatData(object[] data)
@@ -218,7 +248,7 @@ namespace Essential.Diagnostics
             return value;
         }
 
-        private static object FormatProcessId(TraceEventCache eventCache)
+        internal static object FormatProcessId(TraceEventCache eventCache)
         {
             object value;
             if (eventCache == null)
@@ -233,7 +263,7 @@ namespace Essential.Diagnostics
             return value;
         }
 
-        private static object FormatProcessName()
+        internal static object FormatProcessName()
         {
             object value;
             EnsureProcessInfo();
@@ -269,16 +299,34 @@ namespace Essential.Diagnostics
             return value;
         }
 
-        private static object FormatUtcDateTime(TraceEventCache eventCache)
+        internal static object FormatUniversalTime(TraceEventCache eventCache)
         {
             object value;
             if (eventCache == null)
             {
-                value = DateTimeOffset.UtcNow.UtcDateTime;
+                value = DateTimeOffset.UtcNow;
             }
             else
             {
-                value = (DateTimeOffset)eventCache.DateTime;
+                // Cast to DateTimeOffset first, to get consistent behaviour of ToUniversal/ToLocal
+                // (i.e. Unspecified Kind is treated as Local)
+                value = ((DateTimeOffset)eventCache.DateTime).ToUniversalTime();
+            }
+            return value;
+        }
+
+        internal static object FormatLocalTime(TraceEventCache eventCache)
+        {
+            object value;
+            if (eventCache == null)
+            {
+                value = DateTimeOffset.Now;
+            }
+            else
+            {
+                // Cast to DateTimeOffset first, to get consistent behaviour of ToUniversal/ToLocal
+                // (i.e. Unspecified Kind is treated as Local)
+                value = ((DateTimeOffset)eventCache.DateTime).ToLocalTime();
             }
             return value;
         }

@@ -67,6 +67,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -83,12 +84,16 @@
     <Compile Include="ConsoleAdapter.cs" />
     <Compile Include="Diagnostics\ExpressionFilter.cs" />
     <Compile Include="Diagnostics\PropertyFilter.cs" />
+    <Compile Include="Diagnostics\RollingFileTraceListener.cs" />
+    <Compile Include="Diagnostics\RollingXmlTraceListener.cs" />
     <Compile Include="Diagnostics\TraceConfigurationMonitor.cs" />
     <Compile Include="IConsole.cs" />
     <Compile Include="Diagnostics\InMemoryTraceListener.cs" />
     <Compile Include="Diagnostics\LogicalOperationScope.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="ExpressionParser.cs" />
+    <Compile Include="IO\FileSystem.cs" />
+    <Compile Include="IO\IFileSystem.cs" />
     <Compile Include="Resource.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

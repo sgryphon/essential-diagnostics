@@ -33,6 +33,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -53,6 +54,7 @@
     <Compile Include="ActivityScopeTests.cs" />
     <Compile Include="ColoredConsoleTests.cs" />
     <Compile Include="ConfigurationMonitorTests.cs" />
+    <Compile Include="RollingFileTests.cs" />
     <Compile Include="ExpressionFilterTests.cs" />
     <Compile Include="ExpressionParserTests.cs" />
     <Compile Include="PropertyFilterTests.cs" />
@@ -71,6 +73,7 @@
     <Compile Include="SqlDatabaseTests.cs" />
     <Compile Include="StringTemplateTest.cs" />
     <Compile Include="Utility\MockDbFactory.cs" />
+    <Compile Include="Utility\MockFileSystem.cs" />
     <Compile Include="Utility\MockParameter.cs" />
   </ItemGroup>
   <ItemGroup>

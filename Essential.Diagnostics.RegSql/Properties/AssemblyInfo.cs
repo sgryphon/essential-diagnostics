@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Essential.Diagnostics.RegSql")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Registration tool for SqlDatabaseTraceListener")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("Essential.Diagnostics.RegSql")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2010")]
+[assembly: AssemblyCompany("Gryphon Technology Pty Ltd")]
+[assembly: AssemblyProduct("Essential.Diagnostics")]
+[assembly: AssemblyCopyright("Copyright © Gryphon Technology Pty Ltd 2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -31,6 +31,6 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
-// [assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.1011.0")]
+// [assembly: AssemblyVersion("1.1.0.0")]
+[assembly: AssemblyVersion("1.1.0.0")]
+[assembly: AssemblyFileVersion("1.1.10610.0")]

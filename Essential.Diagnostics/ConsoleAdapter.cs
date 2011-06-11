@@ -7,7 +7,7 @@ using System.Text;
 namespace Essential
 {
     /// <summary>
-    /// Adapter that wraps System.Console in an interface, allowing it to be replaced.
+    /// Adapter that wraps System.Console in an interface, allowing it to be substituted.
     /// </summary>
     public class ConsoleAdapter : IConsole
     {

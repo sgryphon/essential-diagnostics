@@ -17,6 +17,8 @@ Features TODO
 
 - Improve TraceConfigurationMonitor to support system.diagnostics section in separate config file.
 
+Bug fixes TODO
+--------------
 
 Documentation TODO
 ------------------

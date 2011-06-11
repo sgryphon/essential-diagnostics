@@ -15,3 +15,26 @@ System.Diagnostics.
 
 The Essential.Diagnostics.dll contains extensions to the .NET Framework 
 System.Diagnostics trace listeners, filters, and other utilities.
+
+Version History
+---------------
+
+v1.1.x 
+
+* RollingFileTraceListener
+* Added LocalDateTime parameter to TraceFormatter
+* Added DateTime as the preferred parameter name for UtcDateTime
+
+v1.0.1011 (October 2010)
+
+* Release as nuget package
+
+v1.0.1008 (October 2010)
+
+* Initial release
+* ColoredConsoleTraceListener, with trace format templates
+* SqlDatabaseTraceListener and diagnostics_regsql tool
+* InMemoryTraceListener
+* PropertyFilter and ExpressionFilter
+* ActivityScope and LogicalOperationScope
+* TraceConfigurationMonitor

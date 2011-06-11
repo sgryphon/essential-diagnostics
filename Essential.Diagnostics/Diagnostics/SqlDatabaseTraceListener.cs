@@ -263,6 +263,7 @@ namespace Essential.Diagnostics
             {
                 // TODO: Would it be more efficient to create command & params once, then set value & reuse?
                 // (But would need to synchronise threading)
+                // TODO: Alternatively, implement buffering (and Flush()), maybe with a bulk copy operation?
                 using (var command = dbFactory.CreateCommand(CommandText, connection))
                 {
                     command.Parameters.Add(dbFactory.CreateParameter("@ApplicationName", ApplicationName != null ? (object)ApplicationName : DBNull.Value));
