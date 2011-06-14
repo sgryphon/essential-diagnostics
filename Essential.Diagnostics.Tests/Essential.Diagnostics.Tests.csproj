@@ -54,6 +54,7 @@
     <Compile Include="ActivityScopeTests.cs" />
     <Compile Include="ColoredConsoleTests.cs" />
     <Compile Include="ConfigurationMonitorTests.cs" />
+    <Compile Include="RollingXmlTests.cs" />
     <Compile Include="RollingFileTests.cs" />
     <Compile Include="ExpressionFilterTests.cs" />
     <Compile Include="ExpressionParserTests.cs" />

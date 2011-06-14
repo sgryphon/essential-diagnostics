@@ -271,7 +271,7 @@ namespace Essential.Diagnostics
             return value;
         }
 
-        private static object FormatThreadId(TraceEventCache eventCache)
+        internal static object FormatThreadId(TraceEventCache eventCache)
         {
             object value;
             if (eventCache == null)
