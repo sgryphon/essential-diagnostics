@@ -42,12 +42,7 @@ namespace Essential.Diagnostics
                 "convertWriteToEvent", "ConvertWriteToEvent",
             };
 
-        private string _currentPath;
-        private TextWriter _currentWriter;
-        private object _fileLock = new object();
-        private string _filePathTemplate;
-        private IFileSystem _fileSystem = new FileSystem();
-
+        private RollingTextWriter rollingTextWriter;
 
         /// <summary>
         /// Constructor. Writes to a rolling text file using the default name.
@@ -86,11 +81,11 @@ namespace Essential.Diagnostics
         {
             if (string.IsNullOrEmpty(filePathTemplate))
             {
-                _filePathTemplate = _defaultFilePathTemplate;
+                rollingTextWriter = new RollingTextWriter(_defaultFilePathTemplate);
             }
             else
             {
-                _filePathTemplate = filePathTemplate;
+                rollingTextWriter = new RollingTextWriter(filePathTemplate);
             }
         }
 
@@ -123,14 +118,8 @@ namespace Essential.Diagnostics
         /// </summary>
         public IFileSystem FileSystem
         {
-            get { return _fileSystem; }
-            set
-            {
-                lock (_fileLock)
-                {
-                    _fileSystem = value;
-                }
-            }
+            get { return rollingTextWriter.FileSystem; }
+            set { rollingTextWriter.FileSystem = value; }
         }
 
         /// <summary>
@@ -194,7 +183,7 @@ namespace Essential.Diagnostics
         /// </remarks>
         public string FilePathTemplate
         {
-            get { return _filePathTemplate; }
+            get { return rollingTextWriter.FilePathTemplate; }
         }
 
         /// <summary>
@@ -202,10 +191,7 @@ namespace Essential.Diagnostics
         /// </summary>
         public override void Flush()
         {
-            lock (_fileLock)
-            {
-                _currentWriter.Flush();
-            }
+            rollingTextWriter.Flush();
         }
 
         /// <summary>
@@ -229,8 +215,7 @@ namespace Essential.Diagnostics
             }
             else
             {
-                var filePath = GetCurrentFilePath(null, null, TraceEventType.Verbose, 0, message, null, new object[] { data });
-                WriteToFile(filePath, message);
+                rollingTextWriter.Write(null, message);
             }
         }
 
@@ -247,8 +232,7 @@ namespace Essential.Diagnostics
             }
             else
             {
-                var filePath = GetCurrentFilePath(null, null, TraceEventType.Verbose, 0, message, null, new object[] { data });
-                WriteLineToFile(filePath, null, message);
+                rollingTextWriter.WriteLine(null, message);
             }
         }
 
@@ -269,7 +253,6 @@ namespace Essential.Diagnostics
             // but could support for backwards compatibility. 
             // i.e. if any T-O-O are set, then append them anyway??
 
-            var filePath = GetCurrentFilePath(eventCache, source, eventType, id, message, relatedActivityId, data);
             var output = TraceFormatter.Format(Template,
                 eventCache,
                 source,
@@ -279,80 +262,7 @@ namespace Essential.Diagnostics
                 relatedActivityId,
                 data
                 );
-            WriteLineToFile(filePath, eventCache, output);
-        }
-
-        private string GetCurrentFilePath(TraceEventCache eventCache, string source, 
-            TraceEventType eventType, int id, string message, 
-            Guid? relatedActivityId, object[] data)
-        {
-            //var result = TraceFormatter.Format(FilePathTemplate, eventCache, source,
-            //    eventType, id, message, relatedActivityId, data);
-
-            var result = StringTemplate.Format(CultureInfo.CurrentCulture, FilePathTemplate,
-                delegate(string name, out object value)
-                {
-                    switch (name.ToUpperInvariant())
-                    {
-                        case "APPLICATIONNAME":
-                            value = TraceFormatter.FormatApplicationName();
-                            break;
-                        case "DATETIME":
-                        case "UTCDATETIME":
-                            value = TraceFormatter.FormatUniversalTime(eventCache);
-                            break;
-                        case "LOCALDATETIME":
-                            value = TraceFormatter.FormatLocalTime(eventCache);
-                            break;
-                        case "MACHINENAME":
-                            value = Environment.MachineName;
-                            break;
-                        case "PROCESSID":
-                            value = TraceFormatter.FormatProcessId(eventCache);
-                            break;
-                        case "PROCESSNAME":
-                            value = TraceFormatter.FormatProcessName();
-                            break;
-                        default:
-                            value = "{" + name + "}";
-                            return true;
-                    }
-                    return true;
-                });
-            return result;
-        }
-
-        private void WriteToFile(string filePath, string message)
-        {
-            lock (_fileLock)
-            {
-                EnsureCurrentWriter(filePath);
-                _currentWriter.Write(message);
-            }
-        }
-
-        private void WriteLineToFile(string filePath, TraceEventCache eventCache, string message)
-        {
-            lock (_fileLock)
-            {
-                EnsureCurrentWriter(filePath);
-                _currentWriter.WriteLine(message);
-            }
-        }
-
-        private void EnsureCurrentWriter(string path)
-        {
-            // NOTE: This should be called inside lock(_fileLock)
-            if (_currentPath != path)
-            {
-                if (_currentWriter != null)
-                {
-                    _currentWriter.Close();
-                }
-                var stream = FileSystem.Open(path, FileMode.Append, FileAccess.Write, FileShare.None);
-                _currentWriter = new StreamWriter(stream);
-                _currentPath = path;
-            }
+            rollingTextWriter.WriteLine(eventCache, output);
         }
 
         /*

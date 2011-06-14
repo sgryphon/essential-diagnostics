@@ -85,6 +85,7 @@
     <Compile Include="Diagnostics\ExpressionFilter.cs" />
     <Compile Include="Diagnostics\PropertyFilter.cs" />
     <Compile Include="Diagnostics\RollingFileTraceListener.cs" />
+    <Compile Include="Diagnostics\RollingTextWriter.cs" />
     <Compile Include="Diagnostics\RollingXmlTraceListener.cs" />
     <Compile Include="Diagnostics\TraceConfigurationMonitor.cs" />
     <Compile Include="IConsole.cs" />
