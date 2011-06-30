@@ -30,7 +30,7 @@ Documentation TODO
 - Comparison with NLog, Log4net, Common.Logging, EntLib logging framework.
 
 - List of built-in Framework trace sources (or components like WIF, WCF), and examples of output.
-
+  1. Description, 2. Parameters, 3. Template config, 4. Example config, 5. Example output
 
 Examples TODO
 -------------

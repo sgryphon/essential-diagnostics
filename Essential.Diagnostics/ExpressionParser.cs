@@ -24,6 +24,7 @@ namespace Essential
         /// <summary>
         /// Constructor. Creates a parser for the generic delegate type, with the specified parameter names.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly")]
         public ExpressionParser(params string[] parameterNames)
         {
             Type type = typeof(T);
@@ -60,6 +61,7 @@ namespace Essential
             return typed;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         private Expression ParseExpression(string expression)
         {
             var source = new StringBuilder();

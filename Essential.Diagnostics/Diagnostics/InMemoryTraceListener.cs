@@ -97,6 +97,7 @@ namespace Essential.Diagnostics
         /// <summary>
         /// Records the trace event in the in-memory buffer, converting mutable properties to string arrays to preserve their value at the time of the trace.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         protected override void WriteTrace(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message, Guid? relatedActivityId, object[] data)
         {
             lock (_eventsLock)

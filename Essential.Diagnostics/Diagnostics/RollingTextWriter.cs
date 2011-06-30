@@ -9,7 +9,7 @@ using System.Globalization;
 
 namespace Essential.Diagnostics
 {
-    class RollingTextWriter
+    class RollingTextWriter : IDisposable
     {
         private string _currentPath;
         private TextWriter _currentWriter;
@@ -117,5 +117,18 @@ namespace Essential.Diagnostics
             return result;
         }
 
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _currentWriter.Dispose();
+            }
+        }
     }
 }

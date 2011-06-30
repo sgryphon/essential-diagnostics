@@ -63,6 +63,7 @@ namespace Essential.Diagnostics
         /// <summary>
         /// Constructor. Sets the ActivityId for the life of the object, logging events with the specified event ID's.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         public ActivityScope(TraceSource source, int transferInId, int startId, int transferOutId, int stopId)
         {
             _source = source;
@@ -100,6 +101,7 @@ namespace Essential.Diagnostics
         /// <summary>
         /// Dispose of the object, resetting the ActivityId.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)

@@ -1,0 +1,43 @@
+Pages of the CodePlex website and current status
+================================================
+
+http://essentialdiagnostics.codeplex.com/
+
+Home [Done]
+Home > FAQ
+Home > Guidance (P)
+Home > Guidance > Logging Levels
+Home > Guidance > Event IDs [Done]
+Home > Guidance > Correlation
+Home > Guidance > Integration (P)
+Home > Guidance > Comparison
+Home > Guidance > TraceListener Design Guidelines [Done]
+Documentation (P) -- links to exampes, listeners, filters, extensions; should have link to guidance as well
+Documentation > Examples (P) -- links to Getting Started and Logging Primer
+Documentation > Getting Started [Done]
+Documentation > Logging Primer [Done]
+Documentation > Logging Primer > Hello Logging [Done]
+Documentation > Logging Primer > Service Trace Viewer [Done]
+Documentation > Logging Primer > Windows Event Log [Done]
+Documentation > Logging Primer > Hello Color [Done]
+Documentation > Listeners (P)
+Documentation > Listeners > ColoredConsoleTraceListener
+Documentation > Listeners > InMemoryTraceListener
+Documentation > Listeners > SqlDatabaseTraceListener (wrong name)
+Documentation > Filters (P)
+Documentation > Filters > ExpressionFilter
+Documentation > Filters > PropertyFilter
+Documentation > Extensions (P)
+Documentation > Extensions > ActivityScope
+Documentation > Extensions > LogicalOperationScope
+Documentation > Extensions > TraceFormatter
+Documentation > Extensions > TraceConfigurationMonitor
+
+
+Documentation pages should have:
+ - Description
+ - Config Parameters
+ - Config Template
+ - Config Example
+ - Example Output
+ 

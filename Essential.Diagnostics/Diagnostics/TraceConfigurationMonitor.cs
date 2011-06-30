@@ -38,6 +38,7 @@ namespace Essential.Diagnostics
         /// Constructor. Configured to monitors the specified file,
         /// enabled or not as specified.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         public TraceConfigurationMonitor(string configFilePath, bool enabled)
         {
             if (configFilePath == null) throw new ArgumentNullException("configFilePath");
@@ -53,6 +54,7 @@ namespace Essential.Diagnostics
         /// <summary>
         /// Gets or sets whether changes should be monitored.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         public bool Enabled
         {
             get { return watcher.EnableRaisingEvents; }

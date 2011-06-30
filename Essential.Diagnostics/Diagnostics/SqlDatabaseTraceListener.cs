@@ -10,6 +10,7 @@ using System.Data;
 using System.Data.Common;
 using Essential.Data;
 using System.Reflection;
+using System.Threading;
 
 namespace Essential.Diagnostics
 {
@@ -164,7 +165,6 @@ namespace Essential.Diagnostics
         {
             get
             {
-                // Default format matches System.Diagnostics.TraceListener
                 if (Attributes.ContainsKey("maxmessagelength"))
                 {
                     int value;
@@ -226,6 +226,7 @@ namespace Essential.Diagnostics
             WriteToDatabase(eventCache, source, eventType, id, message, relatedActivityId, dataString);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         private void WriteToDatabase(TraceEventCache eventCache, string source, TraceEventType eventType, int? id, string message, Guid? relatedActivityId, string dataString)
         {
             DateTime logTime;
@@ -249,6 +250,9 @@ namespace Essential.Diagnostics
                 logTime = DateTimeOffset.UtcNow.UtcDateTime;
             }
 
+            object threadId = eventCache != null ? (object)eventCache.ThreadId : DBNull.Value;
+            object thread = Thread.CurrentThread.Name ?? threadId;
+
             // Truncate message
             int maxLength = MaxMessageLength;
             const string trimmedMessageIndicator = "...";
@@ -271,10 +275,12 @@ namespace Essential.Diagnostics
                     command.Parameters.Add(dbFactory.CreateParameter("@Id", id ?? 0));
                     command.Parameters.Add(dbFactory.CreateParameter("@EventType", eventType.ToString()));
                     command.Parameters.Add(dbFactory.CreateParameter("@UtcDateTime", logTime));
+                    command.Parameters.Add(dbFactory.CreateParameter("@DateTime", logTime));
                     command.Parameters.Add(dbFactory.CreateParameter("@MachineName", Environment.MachineName));
                     command.Parameters.Add(dbFactory.CreateParameter("@AppDomainFriendlyName", AppDomain.CurrentDomain.FriendlyName));
                     command.Parameters.Add(dbFactory.CreateParameter("@ProcessId", eventCache != null ? (object)eventCache.ProcessId : 0));
-                    command.Parameters.Add(dbFactory.CreateParameter("@ThreadName", eventCache != null ? (object)eventCache.ThreadId : DBNull.Value));
+                    command.Parameters.Add(dbFactory.CreateParameter("@ThreadName", thread));
+                    command.Parameters.Add(dbFactory.CreateParameter("@ThreadId", threadId));
                     command.Parameters.Add(dbFactory.CreateParameter("@Message", message != null ? (object)message : DBNull.Value));
                     command.Parameters.Add(dbFactory.CreateParameter("@ActivityId", Trace.CorrelationManager.ActivityId != Guid.Empty ? (object)Trace.CorrelationManager.ActivityId : DBNull.Value));
                     command.Parameters.Add(dbFactory.CreateParameter("@RelatedActivityId", relatedActivityId.HasValue ? (object)relatedActivityId.Value : DBNull.Value));

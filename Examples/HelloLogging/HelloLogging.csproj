@@ -51,6 +51,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Console\HelloLogging.exe.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="EventLog\HelloLogging.exe.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -61,6 +64,18 @@
     <None Include="FileLog\HelloLogging.exe.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="InMemory\HelloLogging.exe.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="RollingFile\HelloLogging.exe.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="RollingXml\HelloLogging.exe.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="SqlDatabase\HelloLogging.exe.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="XmlWriter\HelloLogging.exe.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -68,12 +83,12 @@
   <ItemGroup>
     <Content Include="HelloLogging_ReadMe.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /y $(TargetPath) $(TargetDir)ColoredConsole
-xcopy /y $(TargetPath) $(TargetDir)EventLog
-xcopy /y $(TargetPath) $(TargetDir)FileLog
-xcopy /y $(TargetPath) $(TargetDir)XmlWriter</PostBuildEvent>
+    <PostBuildEvent>for /d %25%25a in ($(TargetDir)*) do xcopy /y $(TargetDir)*.exe %25%25a
+for /d %25%25a in ($(TargetDir)*) do xcopy /y $(TargetDir)*.dll %25%25a
+</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

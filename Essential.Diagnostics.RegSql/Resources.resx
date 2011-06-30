@@ -139,7 +139,9 @@ Options:
 -Q                         Quiet mode; do not display confirmation to remove a feature.
 
 Example:
-  Add diagnostics support to the Northwind database on the local SQLEXPRESS instance, using Windows credentials:
-  diagnostics_regsql.exe -S .\SQLEXPRESS -E -AD -d Northwind</value>
+  Add diagnostics support using the default database on the local SQL instance, using Windows credentials:
+    diagnostics_regsql.exe -E -AD
+  Add diagnostics support to the Northwind database on the local SQL instance, using Windows credentials:
+    diagnostics_regsql.exe -S .\SQLEXPRESS -E -AD -d Northwind</value>
   </data>
 </root>

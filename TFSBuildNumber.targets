@@ -2,13 +2,14 @@
 <Project ToolsVersion="4.0"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <!-- TFSBuildNumber.targets, Version 1.0 - August, 2010 -->
+  <!-- TFSBuildNumber.targets, Version 1.1 - June, 2011 -->
 
   <!-- Updates build numbers in projects based on the TFS build number.
   
        Supports:
-         - Extracting the major/minor versions from an existing AssemblyInfo file.
-         - C# AssemblyInfo.cs file build number
+         - Extracting the major/minor versions from C# version attributes in an 
+           existing file (defaults to Properties\AssemblyInfo.cs).
+         - Updating C# version attributes in the info file.
          - Writing build number into a plain Version.txt file in the project root
            (e.g. for copying to output as content along with web site files)
            
@@ -27,7 +28,10 @@
           You can also add a dependency on WriteProjectTextAssemblyVersionFile 
           to generate a text file.
           
-       4. Set the TFSBaseBuild property in the .csproj file.
+          If you want to use a file other than the default (Properties/AssemblyInfo.cs),
+          then set the <VersionInfoFile> property.
+          
+       4. Set the TFSBaseBuild property in the .csproj file (defaults to 2010).
           By setting the base year you will have nicely increasing version
           numbers.
           
@@ -37,9 +41,28 @@
        NOTE: If you don't want to use GetMajorMinorFromCSharpAssemblyInfoFile,
        an alternative is to set the TFSMajorBuildNumber and TFSMinorBuildNumber
        properties in your .csproj file.
-  -->
+       
+       Example to insert in your .csproj file:
+       
+       <PropertyGroup>
+         <TFSBaseBuildYear>2010</TFSBaseBuildYear>
+       </PropertyGroup>
+       <Import Project="TFSBuildNumber.targets"/>
+       <Target Name="BeforeBuild"
+          DependsOnTargets="GetMajorMinorFromCSharpAssemblyInfoFile;WriteProjectTextAssemblyVersionFile;UpdateCSharpAssemblyInfoFile">
+       </Target>
 
-  <!-- Based on original work in Wintellect.TFSBuildNumber.Targets 
+       Optional properties that can be added:
+
+       <PropertyGroup>
+         <VersionInfoFile>$(MSBuildProjectDirectory)\VersionInfo.cs</VersionInfoFile>
+         <TFSMajorBuildNumber>1</TFSMajorBuildNumber>
+         <TFSMinorBuildNumber>0</TFSMinorBuildNumber>
+       </PropertyGroup>
+
+       -->
+
+       <!-- Based on original work in Wintellect.TFSBuildNumber.Targets 
        by John Robbins (john@wintellect.com) -->
 
   <!-- A set of pure MSBuild 4.0 tasks that generate build version information 
@@ -79,8 +102,12 @@
     <DependOnGetBuildProperties>GetBuildProperties</DependOnGetBuildProperties>
   </PropertyGroup>
 
-  <!-- Use the GetBuildProperties task -->
+  <PropertyGroup>
+    <VersionInfoFile Condition="'$(VersionInfoFile)'==''">$(MSBuildProjectDirectory)\Properties\AssemblyInfo.cs</VersionInfoFile>
+    <TFSBaseBuildYear Condition="'$(TFSBaseBuildYear)'==''">2010</TFSBaseBuildYear>
+  </PropertyGroup>
   
+  <!-- Use the GetBuildProperties task -->  
   <UsingTask TaskName="Microsoft.TeamFoundation.Build.Tasks.GetBuildProperties"
          AssemblyFile="$(TeamBuildRefPath)\Microsoft.TeamFoundation.Build.ProcessComponents.dll" />
 
@@ -198,7 +225,7 @@
    -->
 
   <Target Name="GetMajorMinorFromCSharpAssemblyInfoFile">
-    <CreateProperty Value='$(MSBuildProjectDirectory)\Properties\AssemblyInfo.cs'>
+    <CreateProperty Value='$(VersionInfoFile)'>
       <Output TaskParameter="Value" PropertyName="SourceAssemblyInfoFile" />
     </CreateProperty>
     <Message Text="Reading version number from file $(SourceAssemblyInfoFile)." />
@@ -238,7 +265,7 @@
 
   <Target Name="UpdateCSharpAssemblyInfoFile"
           DependsOnTargets="TFSBuildFileVersion" >
-    <CreateProperty Value='$(MSBuildProjectDirectory)\Properties\AssemblyInfo.cs'>
+    <CreateProperty Value='$(VersionInfoFile)'>
       <Output TaskParameter="Value" PropertyName="SourceAssemblyInfoFile" />
     </CreateProperty>
     <CreateProperty Value='$(SourceAssemblyInfoFile)'>

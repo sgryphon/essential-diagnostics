@@ -23,7 +23,7 @@ namespace Essential.Diagnostics
     /// <para>
     /// The following parameters are available in the template string:
     /// Data, Data0, EventType, Id, Message, ActivityId, RelatedActivityId, Source, 
-    /// CallStack, DateTime (or UtcDateTime), LocalDateTime, LogicalOperationStack, 
+    /// Callstack, DateTime (or UtcDateTime), LocalDateTime, LogicalOperationStack, 
     /// ProcessId, ThreadId, Timestamp, MachineName, ProcessName, ThreadName,
     /// ApplicationName.
     /// </para>
@@ -54,7 +54,7 @@ namespace Essential.Diagnostics
         /// <para>
         /// The following parameters are available in the template string:
         /// Data, Data0, EventType, Id, Message, ActivityId, RelatedActivityId, Source, 
-        /// CallStack, DateTime (or UtcDateTime), LocalDateTime, LogicalOperationStack, 
+        /// Callstack, DateTime (or UtcDateTime), LocalDateTime, LogicalOperationStack, 
         /// ProcessId, ThreadId, Timestamp, MachineName, ProcessName, ThreadName,
         /// ApplicationName.
         /// </para>
@@ -115,6 +115,9 @@ namespace Essential.Diagnostics
                         case "THREADID":
                             value = FormatThreadId(eventCache);
                             break;
+                        case "THREAD":
+                            value = Thread.CurrentThread.Name ?? FormatThreadId(eventCache);
+                            break;
                         case "TIMESTAMP":
                             value = FormatTimeStamp(eventCache);
                             break;
@@ -147,6 +150,7 @@ namespace Essential.Diagnostics
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         private static void EnsureProcessInfo()
         {
             if (processName == null)

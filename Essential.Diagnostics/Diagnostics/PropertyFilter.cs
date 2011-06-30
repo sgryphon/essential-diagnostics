@@ -19,7 +19,7 @@ namespace Essential.Diagnostics
     /// equals signs). The property must come first and must be
     /// one of the values: 
     /// Data, Data0, EventType, Id, Message, ActivityId, RelatedActivityId, 
-    /// Source, CallStack, DateTime, LogicalOperationStack, 
+    /// Source, Callstack, DateTime, LogicalOperationStack, 
     /// ProcessId, ThreadId, Timestamp, MachineName, ProcessName, ThreadName.
     /// </para>
     /// </remarks>

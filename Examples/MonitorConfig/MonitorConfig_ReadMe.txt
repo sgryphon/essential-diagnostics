@@ -11,5 +11,6 @@ Instructions
 Notes
 -----
 
-If you try to add a filter to an existing listener you will cause a NullReferenceException.
+If you try to add a filter to an existing listener (that doesn't already have a filter)
+you will cause a NullReferenceException.
 A work around is to also change the name of the listener (effectively creating a new one).

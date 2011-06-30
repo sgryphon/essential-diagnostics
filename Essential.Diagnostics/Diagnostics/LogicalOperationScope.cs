@@ -54,6 +54,7 @@ namespace Essential.Diagnostics
         /// and writing start and stop events to the specified source,
         /// with the specified event IDs.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         public LogicalOperationScope(TraceSource source, object operationId, int startId, int stopId)
         {
             _source = source;
@@ -91,6 +92,7 @@ namespace Essential.Diagnostics
         /// Dispose.
         /// Ends the logical operation.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
