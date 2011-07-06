@@ -35,9 +35,18 @@ Documentation > Extensions > TraceConfigurationMonitor
 
 
 Documentation pages should have:
- - Description
- - Config Parameters
- - Config Template
- - Config Example
- - Example Output
- 
+! name Class 
+!! Remarks
+!! Config Attributes
+|| Attribute || Description ||
+| initializeData |  |
+| traceOutputOptions |  |
+!! Example Config
+{code:xml}
+{code:xml}
+!! Example Output
+[image:ColoredConsoleTraceListener Example Output|ColoredConsole800.png]
+!! Config Template
+{code:xml}
+{code:xml}
+
