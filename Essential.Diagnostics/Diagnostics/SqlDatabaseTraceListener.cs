@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Configuration;
+using System.Data.Common;
 using System.Diagnostics;
 using System.Globalization;
-using System.Data.SqlClient;
-using System.Configuration;
-using System.Data;
-using System.Data.Common;
-using Essential.Data;
-using System.Reflection;
+using System.Text;
 using System.Threading;
+using Essential.Data;
 
 namespace Essential.Diagnostics
 {
@@ -263,29 +258,29 @@ namespace Essential.Diagnostics
             
             ConnectionStringSettings connectionSettings = ConfigurationManager.ConnectionStrings[ConnectionName];
             DbProviderFactory dbFactory = DbProviderFactories.GetFactory(connectionSettings.ProviderName);
-            using (var connection = dbFactory.CreateConnection(connectionSettings.ConnectionString))
+            using (var connection = DbProviderFactoryExtensions.CreateConnection(dbFactory, connectionSettings.ConnectionString))
             {
                 // TODO: Would it be more efficient to create command & params once, then set value & reuse?
                 // (But would need to synchronise threading)
                 // TODO: Alternatively, implement buffering (and Flush()), maybe with a bulk copy operation?
-                using (var command = dbFactory.CreateCommand(CommandText, connection))
+                using (var command = DbProviderFactoryExtensions.CreateCommand(dbFactory, CommandText, connection))
                 {
-                    command.Parameters.Add(dbFactory.CreateParameter("@ApplicationName", ApplicationName != null ? (object)ApplicationName : DBNull.Value));
-                    command.Parameters.Add(dbFactory.CreateParameter("@Source", source != null ? (object)source : DBNull.Value));
-                    command.Parameters.Add(dbFactory.CreateParameter("@Id", id ?? 0));
-                    command.Parameters.Add(dbFactory.CreateParameter("@EventType", eventType.ToString()));
-                    command.Parameters.Add(dbFactory.CreateParameter("@UtcDateTime", logTime));
-                    command.Parameters.Add(dbFactory.CreateParameter("@DateTime", logTime));
-                    command.Parameters.Add(dbFactory.CreateParameter("@MachineName", Environment.MachineName));
-                    command.Parameters.Add(dbFactory.CreateParameter("@AppDomainFriendlyName", AppDomain.CurrentDomain.FriendlyName));
-                    command.Parameters.Add(dbFactory.CreateParameter("@ProcessId", eventCache != null ? (object)eventCache.ProcessId : 0));
-                    command.Parameters.Add(dbFactory.CreateParameter("@ThreadName", thread));
-                    command.Parameters.Add(dbFactory.CreateParameter("@ThreadId", threadId));
-                    command.Parameters.Add(dbFactory.CreateParameter("@Message", message != null ? (object)message : DBNull.Value));
-                    command.Parameters.Add(dbFactory.CreateParameter("@ActivityId", Trace.CorrelationManager.ActivityId != Guid.Empty ? (object)Trace.CorrelationManager.ActivityId : DBNull.Value));
-                    command.Parameters.Add(dbFactory.CreateParameter("@RelatedActivityId", relatedActivityId.HasValue ? (object)relatedActivityId.Value : DBNull.Value));
-                    command.Parameters.Add(dbFactory.CreateParameter("@LogicalOperationStack", logicalOperationStack != null ? (object)logicalOperationStack : DBNull.Value));
-                    command.Parameters.Add(dbFactory.CreateParameter("@Data", dataString != null ? (object)dataString : DBNull.Value));
+                    command.Parameters.Add(DbProviderFactoryExtensions.CreateParameter(dbFactory, "@ApplicationName", ApplicationName != null ? (object)ApplicationName : DBNull.Value));
+                    command.Parameters.Add(DbProviderFactoryExtensions.CreateParameter(dbFactory, "@Source", source != null ? (object)source : DBNull.Value));
+                    command.Parameters.Add(DbProviderFactoryExtensions.CreateParameter(dbFactory, "@Id", id ?? 0));
+                    command.Parameters.Add(DbProviderFactoryExtensions.CreateParameter(dbFactory, "@EventType", eventType.ToString()));
+                    command.Parameters.Add(DbProviderFactoryExtensions.CreateParameter(dbFactory, "@UtcDateTime", logTime));
+                    command.Parameters.Add(DbProviderFactoryExtensions.CreateParameter(dbFactory, "@DateTime", logTime));
+                    command.Parameters.Add(DbProviderFactoryExtensions.CreateParameter(dbFactory, "@MachineName", Environment.MachineName));
+                    command.Parameters.Add(DbProviderFactoryExtensions.CreateParameter(dbFactory, "@AppDomainFriendlyName", AppDomain.CurrentDomain.FriendlyName));
+                    command.Parameters.Add(DbProviderFactoryExtensions.CreateParameter(dbFactory, "@ProcessId", eventCache != null ? (object)eventCache.ProcessId : 0));
+                    command.Parameters.Add(DbProviderFactoryExtensions.CreateParameter(dbFactory, "@ThreadName", thread));
+                    command.Parameters.Add(DbProviderFactoryExtensions.CreateParameter(dbFactory, "@ThreadId", threadId));
+                    command.Parameters.Add(DbProviderFactoryExtensions.CreateParameter(dbFactory, "@Message", message != null ? (object)message : DBNull.Value));
+                    command.Parameters.Add(DbProviderFactoryExtensions.CreateParameter(dbFactory, "@ActivityId", Trace.CorrelationManager.ActivityId != Guid.Empty ? (object)Trace.CorrelationManager.ActivityId : DBNull.Value));
+                    command.Parameters.Add(DbProviderFactoryExtensions.CreateParameter(dbFactory, "@RelatedActivityId", relatedActivityId.HasValue ? (object)relatedActivityId.Value : DBNull.Value));
+                    command.Parameters.Add(DbProviderFactoryExtensions.CreateParameter(dbFactory, "@LogicalOperationStack", logicalOperationStack != null ? (object)logicalOperationStack : DBNull.Value));
+                    command.Parameters.Add(DbProviderFactoryExtensions.CreateParameter(dbFactory, "@Data", dataString != null ? (object)dataString : DBNull.Value));
 
                     connection.Open();
                     command.ExecuteNonQuery();

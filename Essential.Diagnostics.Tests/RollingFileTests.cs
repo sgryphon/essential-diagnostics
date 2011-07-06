@@ -32,7 +32,7 @@ namespace Essential.Diagnostics.Tests
             StringAssert.StartsWith(tuple0.Item1, "QTAgent32-" + DateTimeOffset.Now.Year.ToString());
             var data = tuple0.Item2.GetBuffer();
             var output = Encoding.UTF8.GetString(data, 0, (int)tuple0.Item2.Length);
-            Assert.AreEqual("source\tInformation\t1\t2-A\r\n", output);
+            StringAssert.Contains(output, "Information source 1: 2-A");
         }
 
         [TestMethod]
@@ -51,7 +51,7 @@ namespace Essential.Diagnostics.Tests
             // Process name for test runner is 'QTAgent32'
             StringAssert.StartsWith(tuple0.Item1, "QTAgent32-" + DateTimeOffset.Now.Year.ToString());
             var output = Encoding.UTF8.GetString(tuple0.Item2.GetBuffer(), 0, (int)tuple0.Item2.Length);
-            Assert.AreEqual("rollingFile1Source\tWarning\t2\t3-B\r\n", output);
+            StringAssert.Contains(output, "Warning rollingFile1Source 2: 3-B");
         }
 
         [TestMethod]

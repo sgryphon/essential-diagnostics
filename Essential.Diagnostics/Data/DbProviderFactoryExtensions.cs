@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Data;
 using System.Data.Common;
 
 namespace Essential.Data
@@ -18,7 +14,8 @@ namespace Essential.Data
         /// Create a DbCommand for the specified command text, with the specified connection set.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2100:Review SQL queries for security vulnerabilities")]
-        public static DbCommand CreateCommand(this DbProviderFactory dbFactory, string commandText, DbConnection connection)
+        public static DbCommand CreateCommand(DbProviderFactory dbFactory, string commandText, DbConnection connection)
+        //public static DbCommand CreateCommand(this DbProviderFactory dbFactory, string commandText, DbConnection connection)
         {
             if (dbFactory == null) throw new ArgumentNullException("dbFactory");
 
@@ -31,7 +28,8 @@ namespace Essential.Data
         /// <summary>
         /// Create a DbConnection with the specified connection string set.
         /// </summary>
-        public static DbConnection CreateConnection(this DbProviderFactory dbFactory, string connectionString)
+        public static DbConnection CreateConnection(DbProviderFactory dbFactory, string connectionString)
+        //public static DbConnection CreateConnection(this DbProviderFactory dbFactory, string connectionString)
         {
             if (dbFactory == null) throw new ArgumentNullException("dbFactory");
 
@@ -43,7 +41,8 @@ namespace Essential.Data
         /// <summary>
         /// Create a DbParameter with the specified name and value.
         /// </summary>
-        public static DbParameter CreateParameter(this DbProviderFactory dbFactory, string parameterName, object value)
+        public static DbParameter CreateParameter(DbProviderFactory dbFactory, string parameterName, object value)
+        //public static DbParameter CreateParameter(this DbProviderFactory dbFactory, string parameterName, object value)
         {
             if (dbFactory == null) throw new ArgumentNullException("dbFactory");
 

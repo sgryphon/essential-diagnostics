@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Diagnostics;
-using System.Collections;
 
 namespace Essential.Diagnostics
 {
@@ -113,11 +110,28 @@ namespace Essential.Diagnostics
                                 : eventCache.LogicalOperationStack;
                 // Want to copy the stack as the original object will change.
                 // Also, don't need stack behaviour (push, pop) for the copy -- just want a record of the contents at the time.
-                var recordedStack = currentStack.ToArray().Select(o => o.ToString()).ToArray();
+                var recordedStack = new List<string>(currentStack.Count);
+                lock (currentStack.SyncRoot)
+                {
+                    foreach (var stackItem in currentStack)
+                    {
+                        recordedStack.Add(stackItem.ToString());
+                    }
+                }
 
-                var recordedData = (data == null) ? new string[0] : data.Select(o => o.ToString()).ToArray();
+                List<string> recordedData = new List<string>();
+                if (data != null)
+                {
+                    lock (data.SyncRoot)
+                    {
+                        foreach (var dataItem in data)
+                        {
+                            recordedData.Add(dataItem.ToString());
+                        }
+                    }
+                }
 
-                var trace = new TraceDetails(traceTime, source, activityId, eventType, id, message, relatedActivityId, recordedStack, recordedData);
+                var trace = new TraceDetails(traceTime, source, activityId, eventType, id, message, relatedActivityId, recordedStack.ToArray(), recordedData.ToArray());
 
                 _events[_current] = trace;
                 _current++;
