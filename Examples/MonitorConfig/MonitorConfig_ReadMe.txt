@@ -1,6 +1,9 @@
 ﻿Essential.Diagnostics - Monitor Config Example
 ==============================================
 
+An example using TraceConfigurationMonitor to monitor your application config file
+for changes and refresh the diagnostics configuration as needed.
+
 Instructions
 ------------
 

@@ -13,7 +13,7 @@ namespace MonitorConfig
         private static TraceConfigurationMonitor configMonitor;
         private static int count;
         private const double intervalMilliseconds = 2000;
-        static TraceSource timerTrace = new TraceSource("Timer");
+        static TraceSource timerTrace = new TraceSource("MonitorConfig");
 
         static void Main(string[] args)
         {

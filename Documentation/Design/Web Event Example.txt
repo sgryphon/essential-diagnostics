@@ -1,0 +1,126 @@
+Log Name:      Application
+Source:        ASP.NET 4.0.30319.0
+Date:          6/8/2011 4:22:48 PM
+Event ID:      1309
+Task Category: Web Event
+Level:         Warning
+Keywords:      Classic
+User:          N/A
+Computer:      EAGLELAB1WEB01.eagleboys.lab
+Description:
+Event code: 3005 
+Event message: An unhandled exception has occurred. 
+Event time: 6/8/2011 4:22:48 PM 
+Event time (UTC): 6/8/2011 6:22:48 AM 
+Event ID: c4ddbdc55b8f4c0da1412537f3bb9567 
+Event sequence: 7 
+Event occurrence: 3 
+Event detail code: 0 
+ 
+Application information: 
+    Application domain: /LM/W3SVC/2/ROOT-1-129519876208938363 
+    Trust level: Full 
+    Application Virtual Path: / 
+    Application Path: C:\Websites\EagleBoys.Web\ 
+    Machine name: EAGLELAB1WEB01 
+ 
+Process information: 
+    Process ID: 1044 
+    Process name: w3wp.exe 
+    Account name: EAGLEBOYS\RunTimeUser 
+ 
+Exception information: 
+    Exception type: NullReferenceException 
+    Exception message: Object reference not set to an instance of an object.
+   at EagleBoys.Web.Logic.Presenters.CheckoutPresenter.DoesBasketContainItems() in c:\Builds\1\EagleBoys\Trunk_EagleBoys\Sources\Trunk\Www\EagleBoys.Web.Logic\Presenters\CheckoutPresenter.cs:line 128
+   at EagleBoys.Web.Logic.Presenters.CheckoutPresenter.OnViewLoad() in c:\Builds\1\EagleBoys\Trunk_EagleBoys\Sources\Trunk\Www\EagleBoys.Web.Logic\Presenters\CheckoutPresenter.cs:line 77
+   at EagleBoys_Checkout.OnLoad(EventArgs e) in c:\Builds\1\EagleBoys\Trunk_EagleBoys\Sources\Trunk\Www\EagleBoys.Web\EagleBoys\Checkout.aspx.cs:line 125
+   at System.Web.UI.Control.LoadRecursive()
+   at System.Web.UI.Page.ProcessRequestMain(Boolean includeStagesBeforeAsyncPoint, Boolean includeStagesAfterAsyncPoint)
+
+ 
+ 
+Request information: 
+    Request URL: http://uat.eagleboys.com.au/EagleBoys/Checkout.aspx?delivery&storeid=4d7ff470-aaf2-df11-bc68-00142218cc1b&aliaspath=/Menus-Specials/Checkout 
+    Request path: /EagleBoys/Checkout.aspx 
+    User host address: 10.9.181.28 
+    User:  
+    Is authenticated: False 
+    Authentication Type:  
+    Thread account name: EAGLEBOYS\RunTimeUser 
+ 
+Thread information: 
+    Thread ID: 10 
+    Thread account name: EAGLEBOYS\RunTimeUser 
+    Is impersonating: False 
+    Stack trace:    at EagleBoys.Web.Logic.Presenters.CheckoutPresenter.DoesBasketContainItems() in c:\Builds\1\EagleBoys\Trunk_EagleBoys\Sources\Trunk\Www\EagleBoys.Web.Logic\Presenters\CheckoutPresenter.cs:line 128
+   at EagleBoys.Web.Logic.Presenters.CheckoutPresenter.OnViewLoad() in c:\Builds\1\EagleBoys\Trunk_EagleBoys\Sources\Trunk\Www\EagleBoys.Web.Logic\Presenters\CheckoutPresenter.cs:line 77
+   at EagleBoys_Checkout.OnLoad(EventArgs e) in c:\Builds\1\EagleBoys\Trunk_EagleBoys\Sources\Trunk\Www\EagleBoys.Web\EagleBoys\Checkout.aspx.cs:line 125
+   at System.Web.UI.Control.LoadRecursive()
+   at System.Web.UI.Page.ProcessRequestMain(Boolean includeStagesBeforeAsyncPoint, Boolean includeStagesAfterAsyncPoint)
+ 
+ 
+Custom event details: 
+
+Event Xml:
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="ASP.NET 4.0.30319.0" />
+    <EventID Qualifiers="32768">1309</EventID>
+    <Level>3</Level>
+    <Task>3</Task>
+    <Keywords>0x80000000000000</Keywords>
+    <TimeCreated SystemTime="2011-06-08T06:22:48.000000000Z" />
+    <EventRecordID>1689</EventRecordID>
+    <Channel>Application</Channel>
+    <Computer>EAGLELAB1WEB01.eagleboys.lab</Computer>
+    <Security />
+  </System>
+  <EventData>
+    <Data>3005</Data>
+    <Data>An unhandled exception has occurred.</Data>
+    <Data>6/8/2011 4:22:48 PM</Data>
+    <Data>6/8/2011 6:22:48 AM</Data>
+    <Data>c4ddbdc55b8f4c0da1412537f3bb9567</Data>
+    <Data>7</Data>
+    <Data>3</Data>
+    <Data>0</Data>
+    <Data>/LM/W3SVC/2/ROOT-1-129519876208938363</Data>
+    <Data>Full</Data>
+    <Data>/</Data>
+    <Data>C:\Websites\EagleBoys.Web\</Data>
+    <Data>EAGLELAB1WEB01</Data>
+    <Data>
+    </Data>
+    <Data>1044</Data>
+    <Data>w3wp.exe</Data>
+    <Data>EAGLEBOYS\RunTimeUser</Data>
+    <Data>NullReferenceException</Data>
+    <Data>Object reference not set to an instance of an object.
+   at EagleBoys.Web.Logic.Presenters.CheckoutPresenter.DoesBasketContainItems() in c:\Builds\1\EagleBoys\Trunk_EagleBoys\Sources\Trunk\Www\EagleBoys.Web.Logic\Presenters\CheckoutPresenter.cs:line 128
+   at EagleBoys.Web.Logic.Presenters.CheckoutPresenter.OnViewLoad() in c:\Builds\1\EagleBoys\Trunk_EagleBoys\Sources\Trunk\Www\EagleBoys.Web.Logic\Presenters\CheckoutPresenter.cs:line 77
+   at EagleBoys_Checkout.OnLoad(EventArgs e) in c:\Builds\1\EagleBoys\Trunk_EagleBoys\Sources\Trunk\Www\EagleBoys.Web\EagleBoys\Checkout.aspx.cs:line 125
+   at System.Web.UI.Control.LoadRecursive()
+   at System.Web.UI.Page.ProcessRequestMain(Boolean includeStagesBeforeAsyncPoint, Boolean includeStagesAfterAsyncPoint)
+
+</Data>
+    <Data>http://uat.eagleboys.com.au/EagleBoys/Checkout.aspx?delivery&amp;storeid=4d7ff470-aaf2-df11-bc68-00142218cc1b&amp;aliaspath=/Menus-Specials/Checkout</Data>
+    <Data>/EagleBoys/Checkout.aspx</Data>
+    <Data>10.9.181.28</Data>
+    <Data>
+    </Data>
+    <Data>False</Data>
+    <Data>
+    </Data>
+    <Data>EAGLEBOYS\RunTimeUser</Data>
+    <Data>10</Data>
+    <Data>EAGLEBOYS\RunTimeUser</Data>
+    <Data>False</Data>
+    <Data>   at EagleBoys.Web.Logic.Presenters.CheckoutPresenter.DoesBasketContainItems() in c:\Builds\1\EagleBoys\Trunk_EagleBoys\Sources\Trunk\Www\EagleBoys.Web.Logic\Presenters\CheckoutPresenter.cs:line 128
+   at EagleBoys.Web.Logic.Presenters.CheckoutPresenter.OnViewLoad() in c:\Builds\1\EagleBoys\Trunk_EagleBoys\Sources\Trunk\Www\EagleBoys.Web.Logic\Presenters\CheckoutPresenter.cs:line 77
+   at EagleBoys_Checkout.OnLoad(EventArgs e) in c:\Builds\1\EagleBoys\Trunk_EagleBoys\Sources\Trunk\Www\EagleBoys.Web\EagleBoys\Checkout.aspx.cs:line 125
+   at System.Web.UI.Control.LoadRecursive()
+   at System.Web.UI.Page.ProcessRequestMain(Boolean includeStagesBeforeAsyncPoint, Boolean includeStagesAfterAsyncPoint)
+</Data>
+  </EventData>
+</Event>
