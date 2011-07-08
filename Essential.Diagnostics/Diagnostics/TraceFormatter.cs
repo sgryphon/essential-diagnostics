@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using System.Security.Principal;
 
 namespace Essential.Diagnostics
 {
@@ -54,10 +55,10 @@ namespace Essential.Diagnostics
         /// Data, Data0, EventType, Id, Message, ActivityId, RelatedActivityId, Source, 
         /// Callstack, DateTime (or UtcDateTime), LocalDateTime, LogicalOperationStack, 
         /// ProcessId, ThreadId, Timestamp, MachineName, ProcessName, ThreadName,
-        /// ApplicationName.
+        /// ApplicationName, PrincipalName, WindowsIdentityName.
         /// </para>
         /// <para>
-        /// An example template that generates the same output as the ConsoleListner is:
+        /// An example template that generates the same output as the ConsoleListener is:
         /// "{Source} {EventType}: {Id} : {Message}".
         /// </para>
         /// </remarks>
@@ -70,12 +71,6 @@ namespace Essential.Diagnostics
                 {
                     switch (name.ToUpperInvariant())
                     {
-                        case "DATA":
-                            value = FormatData(data);
-                            break;
-                        case "DATA0":
-                            value = FormatData(data, 0);
-                            break;
                         case "EVENTTYPE":
                             value = eventType;
                             break;
@@ -85,17 +80,8 @@ namespace Essential.Diagnostics
                         case "MESSAGE":
                             value = message;
                             break;
-                        case "ACTIVITYID":
-                            value = Trace.CorrelationManager.ActivityId;
-                            break;
-                        case "RELATEDACTIVITYID":
-                            value = relatedActivityId;
-                            break;
                         case "SOURCE":
                             value = source;
-                            break;
-                        case "CALLSTACK":
-                            value = FormatCallstack(eventCache);
                             break;
                         case "DATETIME":
                         case "UTCDATETIME":
@@ -104,17 +90,35 @@ namespace Essential.Diagnostics
                         case "LOCALDATETIME":
                             value = FormatLocalTime(eventCache);
                             break;
-                        case "LOGICALOPERATIONSTACK":
-                            value = FormatLogicalOperationStack(eventCache);
-                            break;
-                        case "PROCESSID":
-                            value = FormatProcessId(eventCache);
-                            break;
                         case "THREADID":
                             value = FormatThreadId(eventCache);
                             break;
                         case "THREAD":
                             value = Thread.CurrentThread.Name ?? FormatThreadId(eventCache);
+                            break;
+                        case "THREADNAME":
+                            value = Thread.CurrentThread.Name;
+                            break;
+                        case "ACTIVITYID":
+                            value = Trace.CorrelationManager.ActivityId;
+                            break;
+                        case "RELATEDACTIVITYID":
+                            value = relatedActivityId;
+                            break;
+                        case "DATA":
+                            value = FormatData(data);
+                            break;
+                        case "DATA0":
+                            value = FormatData(data, 0);
+                            break;
+                        case "CALLSTACK":
+                            value = FormatCallstack(eventCache);
+                            break;
+                        case "LOGICALOPERATIONSTACK":
+                            value = FormatLogicalOperationStack(eventCache);
+                            break;
+                        case "PROCESSID":
+                            value = FormatProcessId(eventCache);
                             break;
                         case "TIMESTAMP":
                             value = FormatTimeStamp(eventCache);
@@ -125,11 +129,14 @@ namespace Essential.Diagnostics
                         case "PROCESSNAME":
                             value = FormatProcessName();
                             break;
-                        case "THREADNAME":
-                            value = Thread.CurrentThread.Name;
-                            break;
                         case "APPLICATIONNAME":
                             value = FormatApplicationName();
+                            break;
+                        case "PRINCIPALNAME":
+                            value = FormatPrincipalName();
+                            break;
+                        case "WINDOWSIDENTITYNAME":
+                            value = FormatWindowsIdentityName();
                             break;
                         default:
                             value = "{" + name + "}";
@@ -246,6 +253,28 @@ namespace Essential.Diagnostics
             else
             {
                 value = null;
+            }
+            return value;
+        }
+
+        internal static object FormatPrincipalName()
+        {
+            var principal = Thread.CurrentPrincipal;
+            object value = "";
+            if (principal != null && principal.Identity != null)
+            {
+                value = principal.Identity.Name;
+            }
+            return value;
+        }
+
+        internal static object FormatWindowsIdentityName()
+        {
+            var identity = WindowsIdentity.GetCurrent();
+            object value = "";
+            if (identity != null)
+            {
+                value = identity.Name;
             }
             return value;
         }
