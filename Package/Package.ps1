@@ -4,14 +4,23 @@
 # WhatIf: If WhatIf is specified, then messages are printed to indicate which files will be
 #           included, but no action is taken.
 #
+# ./Package.ps1 -Build       : to do a build release and then package BinariesOnly, nuget and examples
+# ./Package.ps1 -Package     : to package (only) BinariesOnly, nuget and examples
+# ./Package.ps1 -PackageFull : to package the examples (including a copy of the binaries)
+#
+# Note: For PackageFull the examples should first be manually updated to use the latest nuget package.
+#
 ######################################################################################################
+
+# ./Package.ps1 -PackageBin:$false -nuPack:$false
 
 param (
     [switch]$Build = $false,
-    [switch]$BuildDocs = $false,
-    [switch]$nuPack = $true,
-    [switch]$Package = $true,
+	[switch]$Package = $false,
     [switch]$PackageBin = $true,
+    [switch]$nuPack = $true,
+    [switch]$UpdateExamples = $true,
+    [switch]$PackageFull = $false,
     [switch]$WhatIf = $false
 )
 if ($WhatIf) {
@@ -22,7 +31,11 @@ function Add-File($zipFile, $zipPath, $path, $file) {
     $fileLocation = (Join-Path $path $file)
     $fileRelativePath = (Split-Path $file)
     if ($fileRelativePath) {
-        $zipLocation = (Join-Path $zipPath $fileRelativePath)
+		if ($zipPath) {
+			$zipLocation = (Join-Path $zipPath $fileRelativePath)
+		} else {
+			$zipLocation = $fileRelativePath
+		}
     } else {
         $zipLocation = $zipPath
     }
@@ -76,40 +89,57 @@ function Build-Documentation($solutionPath, $configuration) {
 	}
 }
 
-function Add-Binaries($zipFile, $zipPath, $solutionPath) {
-	$path = (Join-Path $solutionPath "Examples\Binaries")
-
-	Add-File $zipFile $zipPath $path "Essential.Diagnostics.dll" 
-	Add-File $zipFile $zipPath $path "Essential.Diagnostics.XML" 
-	Add-File $zipFile $zipPath $path "diagnostics_regsql.exe"
-	Add-File $zipFile $zipPath $path "diagnostics_regsql.exe.config"
-	Add-File $zipFile $zipPath $path "InstallTrace.sql"
-	Add-File $zipFile $zipPath $path "UninstallTrace.sql"
+function Add-Binaries($zipFile, $zipPath, $path) {
+	Add-File $zipFile $zipPath $path "ReadMe.txt"
+	Add-File $zipFile $zipPath $path "License.txt"
+	Add-File $zipFile $zipPath $path "lib\Essential.Diagnostics.dll" 
+	Add-File $zipFile $zipPath $path "lib\Essential.Diagnostics.xml" 
+	Add-File $zipFile $zipPath $path "lib\Essential.Diagnostics.Abstractions.dll" 
+	Add-File $zipFile $zipPath $path "lib\Essential.Diagnostics.Abstractions.xml" 
+	Add-File $zipFile $zipPath $path "tools\diagnostics_regsql.exe"
+	Add-File $zipFile $zipPath $path "tools\diagnostics_regsql.exe.config"
+	Add-File $zipFile $zipPath $path "tools\InstallTrace.sql"
+	Add-File $zipFile $zipPath $path "tools\UninstallTrace.sql"
 }
 
 function Add-Examples($zipFile, $zipPath, $solutionPath) {
 	$path = (Join-Path $solutionPath "Examples")
     
 	Add-File $zipFile $zipPath $path "Essential.Diagnostics.Examples.sln" 
+	Add-File $zipFile $zipPath $path "Diagnostics.Sample.config" 
 
-	Add-File $zipFile $zipPath $path "MonitorConfig\MonitorConfig.csproj" 
-	Add-File $zipFile $zipPath $path "MonitorConfig\Program.cs" 
-	Add-File $zipFile $zipPath $path "MonitorConfig\App.config"
-	Add-File $zipFile $zipPath $path "MonitorConfig\MonitorConfig_ReadMe.txt"
-	Add-File $zipFile $zipPath $path "MonitorConfig\Properties\AssemblyInfo.cs"
+	Add-File $zipFile $zipPath $path "FilteringExample\FilteringExample.csproj" 
+	Add-File $zipFile $zipPath $path "FilteringExample\packages.config" 
+	Add-File $zipFile $zipPath $path "FilteringExample\Program.cs" 
+	Add-File $zipFile $zipPath $path "FilteringExample\App.config"
+	Add-File $zipFile $zipPath $path "FilteringExample\FilteringExample_ReadMe.txt"
+	Add-File $zipFile $zipPath $path "FilteringExample\Properties\AssemblyInfo.cs"
     
 	Add-File $zipFile $zipPath $path "HelloLogging\HelloLogging.csproj" 
+	Add-File $zipFile $zipPath $path "HelloLogging\packages.config" 
 	Add-File $zipFile $zipPath $path "HelloLogging\HelloLogging.cs" 
 	Add-File $zipFile $zipPath $path "HelloLogging\App.config"
 	Add-File $zipFile $zipPath $path "HelloLogging\HelloLogging_ReadMe.txt" 
 	Add-File $zipFile $zipPath $path "HelloLogging\Properties\AssemblyInfo.cs"
 	Add-File $zipFile $zipPath $path "HelloLogging\ColoredConsole\HelloLogging.exe.config"
+	Add-File $zipFile $zipPath $path "HelloLogging\Console\HelloLogging.exe.config"
 	Add-File $zipFile $zipPath $path "HelloLogging\EventLog\HelloLogging.exe.config"
 	Add-File $zipFile $zipPath $path "HelloLogging\FileLog\HelloLogging.exe.config"
+	Add-File $zipFile $zipPath $path "HelloLogging\InMemory\HelloLogging.exe.config"
+	Add-File $zipFile $zipPath $path "HelloLogging\RollingFile\HelloLogging.exe.config"
+	Add-File $zipFile $zipPath $path "HelloLogging\RollingXml\HelloLogging.exe.config"
+	Add-File $zipFile $zipPath $path "HelloLogging\SqlDatabase\HelloLogging.exe.config"
 	Add-File $zipFile $zipPath $path "HelloLogging\XmlWriter\HelloLogging.exe.config"
+
+	Add-File $zipFile $zipPath $path "MonitorConfig\MonitorConfig.csproj" 
+	Add-File $zipFile $zipPath $path "MonitorConfig\packages.config" 
+	Add-File $zipFile $zipPath $path "MonitorConfig\Program.cs" 
+	Add-File $zipFile $zipPath $path "MonitorConfig\App.config"
+	Add-File $zipFile $zipPath $path "MonitorConfig\MonitorConfig_ReadMe.txt"
+	Add-File $zipFile $zipPath $path "MonitorConfig\Properties\AssemblyInfo.cs"	
 }
 
-function Package-ApplicationBinaries($solutionPath, $version) {
+function Package-ApplicationBinaries($solutionPath, $configuration, $version) {
 	Write-Host ""
 	Write-Host "# Packaging application binaries..."
 
@@ -118,58 +148,11 @@ function Package-ApplicationBinaries($solutionPath, $version) {
 	}
 
 	$zipPath = ""
-	Add-File $zipFile $zipPath $solutionPath "ReadMe.txt"
-	Add-File $zipFile $zipPath $solutionPath "License.txt"
-
-    Add-Binaries $zipFile "" $solutionPath
+	$binariesPath = (Join-Path $solutionPath "Package\$configuration")
+    Add-Binaries $zipFile $zipPath $binariesPath
 
 	$zipFilePath = (Join-Path $solutionPath "Package\Output\Essential.Diagnostics_BinariesOnly_$($version).zip")
 	Write-Host "$($pre)Saving application binaries package to '$zipFilePath'"
-	if (-not $WhatIf) {
-		$zipFile.Save($zipFilePath)
-		$zipFile.Dispose()
-	}
-}
-
-function Package-Documentation($solutionPath, $version) {
-	Write-Host ""
-	Write-Host "# Packaging documentation..."
-
-	if (-not $WhatIf) {
-	    $zipFile =  new-object Ionic.Zip.ZipFile
-	}
-
-	$zipPath = "Help"
-	Add-File $zipFile $zipPath $solutionPath "ReadMe.txt"
-	Add-File $zipFile $zipPath $solutionPath "License.txt"
-
-	$path = (Join-Path $solutionPath "Documentation\Help")
-	Add-File $zipFile $zipPath $path "Essential.Diagnostics.chm" 
-
-	$zipFilePath = (Join-Path $solutionPath "Package\Output\Essential.Diagnostics_Documentation_$($version).zip")
-	Write-Host "$($pre)Saving documentation package to '$zipFilePath'"
-	if (-not $WhatIf) {
-		$zipFile.Save($zipFilePath)
-		$zipFile.Dispose()
-	}
-}
-
-function Package-Examples($solutionPath, $version) {
-	Write-Host ""
-	Write-Host "# Packaging examples..."
-
-	if (-not $WhatIf) {
-	    $zipFile =  new-object Ionic.Zip.ZipFile
-	}
-
-	$zipPath = "Examples"
-	Add-File $zipFile $zipPath $solutionPath "ReadMe.txt"
-	Add-File $zipFile $zipPath $solutionPath "License.txt"
-
-    Add-Examples $zipFile $zipPath $solutionPath
-
-	$zipFilePath = (Join-Path $solutionPath "Package\Output\Essential.Diagnostics_Examples_$($version).zip")
-	Write-Host "$($pre)Saving examples package to '$zipFilePath'"
 	if (-not $WhatIf) {
 		$zipFile.Save($zipFilePath)
 		$zipFile.Dispose()
@@ -184,16 +167,15 @@ function Package-Complete($solutionPath, $version) {
 	    $zipFile =  new-object Ionic.Zip.ZipFile
 	}
 
-	$zipPath = "Essential.Diagnostics_$version"
+	$zipPath = ""
 	Add-File $zipFile $zipPath $solutionPath "ReadMe.txt"
 	Add-File $zipFile $zipPath $solutionPath "License.txt"
 
-    Add-Binaries $zipFile "$zipPath\Binaries" $solutionPath
-
-    Add-Examples $zipFile "$zipPath" $solutionPath
-
-	$path = (Join-Path $solutionPath "Documentation\Help")
-	Add-File $zipFile "$zipPath" $path "Essential.Diagnostics.chm" 
+    Add-Examples $zipFile $zipPath $solutionPath
+	
+	$binariesPath = (Join-Path $solutionPath "Examples\packages\Essential.Diagnostics.$version")
+	$zipPath = "packages\Essential.Diagnostics.$version"
+    Add-Binaries $zipFile $zipPath $binariesPath
 
 	$zipFilePath = (Join-Path $solutionPath "Package\Output\Essential.Diagnostics_$($version).zip")
 	Write-Host "$($pre)Saving examples package to '$zipFilePath'"
@@ -203,48 +185,86 @@ function Package-Complete($solutionPath, $version) {
 	}
 }
 
-function Package-NuPack($solutionPath, $version) {
+function Package-NuPack($solutionPath, $configuration, $version) {
 	Write-Host ""
-	Write-Host "# Creating NuPack package..."
+	Write-Host "# Creating NuGet package..."
     
-    $outputPath = (Join-Path $solutionPath "Package\Output\$($version)")
-    $outputLibPath = (Join-Path $outputPath "lib")
-    $outputToolsPath = (Join-Path $outputPath "tools")
-    Ensure-Directory $outputPath
-    Ensure-Directory $outputLibPath
-    Ensure-Directory $outputToolsPath
+	$path = (Join-Path $solutionPath "Package\$configuration")
 
-  	$nuspecPath = (Join-Path $solutionPath "Package\Essential.Diagnostics.nuspec")
-    $nuspec = [xml](Get-Content -Path $nuspecPath)
-    $now = [System.DateTimeOffset]::UtcNow
+  	$nuspecTemplatePath = (Join-Path $solutionPath "Package\Essential.Diagnostics.nuspec")
+    $nuspec = [xml](Get-Content -Path $nuspecTemplatePath)
     $nuspec.package.metadata.version = "$version"
-    $nuspec.package.metadata.created = $now.ToString("s")
-    $nuspec.package.metadata.modified = $now.ToString("s")
-    $now.SelectSingleNode("/")
+    #$now = [System.DateTimeOffset]::UtcNow
+    #$nuspec.package.metadata.created = $now.ToString("s")
+    #$nuspec.package.metadata.modified = $now.ToString("s")
+    #$now.SelectSingleNode("/")
         
-    $outputNuspecPath = (Join-Path $outputPath "Essential.Diagnostics.nuspec")
+    $outputNuspecPath = (Join-Path $path "Essential.Diagnostics.nuspec")
 	Write-Host "$($pre)Creating nuspec file '$outputNuspecPath'"
 	if (-not $WhatIf) {
       $nuspec.Save($outputNuspecPath)
     }
     
-	$path = (Join-Path $solutionPath "Examples\Binaries")
-    
-	Copy-File $outputLibPath $path "Essential.Diagnostics.dll" 
-	Copy-File $outputLibPath $path "Essential.Diagnostics.XML" 
-    
-	Copy-File $outputToolsPath $path "diagnostics_regsql.exe"
-	Copy-File $outputToolsPath $path "diagnostics_regsql.exe.config"
-	Copy-File $outputToolsPath $path "InstallTrace.sql"
-	Copy-File $outputToolsPath $path "UninstallTrace.sql"
-    
     $packagePath = (Join-Path $solutionPath "Package\Output")
 	Write-Host "$($pre)Running: nupack ""$outputNuspecPath"" ""$packagePath"""
 	if (-not $WhatIf) {
-        & .\nupack.exe "$outputNuspecPath" "$packagePath"
+        & .\NuGet.exe pack "$outputNuspecPath" -OutputDirectory "$packagePath"
     }
 }
 
+function Update-Examples($solutionPath, $configuration, $version) {
+	Write-Host ""
+	Write-Host "# Updating references in examples..."
+    
+	$path = (Join-Path $solutionPath "Package\$configuration")
+	$target = (Join-Path $solutionPath "Examples\packages\Essential.Diagnostics.$version")
+	
+	foreach($existingPackage in (Get-ChildItem "$solutionPath\Examples\packages\Essential.Diagnostics*")) {
+		Write-Host "$($pre)Removing package folder '$($existingPackage.FullName)'"
+		if (-not $WhatIf) {
+			Remove-Item $existingPackage.FullName -Recurse
+		}	
+	}
+	
+	Write-Host "$($pre)Copying package binaries to '$target'"
+	if (-not $WhatIf) {
+	  Ensure-Directory $target
+      Copy-Item "$path\*.txt" "$target"
+      Copy-Item "$path\lib" "$target\lib" -Container -Recurse
+      Copy-Item "$path\tools" "$target\tools" -Container -Recurse
+    }
+    
+	$majorMinor = $version -replace "(\d+\.\d+)\.\d+\.\d+", "`$1.0.0"
+	$referenceRegex = "Essential\.Diagnostics, Version=\d+\.\d+\.\d+\.\d+"
+	$referenceReplace = "Essential.Diagnostics, Version=$majorMinor"
+	$referenceAbstractionsRegex = "Essential\.Diagnostics\.Abstractions, Version=\d+\.\d+\.\d+\.\d+"
+	$referenceAbstractionsReplace = "Essential.Diagnostics.Abstractions, Version=$majorMinor"
+	$pathRegex = "packages\\Essential\.Diagnostics\.\d+\.\d+\.\d+\.\d+\\lib"
+	$pathReplace = "packages\Essential.Diagnostics.$version\lib"
+	$packageRegex = "id=`"Essential\.Diagnostics`" version=`"\d+\.\d+\.\d+\.\d+`""
+	$packageReplace = "id=`"Essential.Diagnostics`" version=`"$version`""
+	
+	Write-Host "Update reference to '$referenceReplace' and path to '$pathReplace'"
+
+	$exampleProjects = @( "HelloLogging", "MonitorConfig", "FilteringExample"  )
+	
+	foreach ($project in $exampleProjects) {
+		$projectPath = Join-Path $solutionPath "Examples\$project\$project.csproj"
+		$projectContent = Get-Content $projectPath
+		$projectContent = $projectContent -replace $referenceRegex, $referenceReplace
+		$projectContent = $projectContent -replace $referenceAbstractionsRegex, $referenceAbstractionsReplace
+		$projectContent = $projectContent -replace $pathRegex, $pathReplace
+		$packagesPath = Join-Path $solutionPath "Examples\$project\packages.config"
+		$packagesContent = Get-Content $packagesPath
+		$packagesContent = $packagesContent -replace $packageRegex, $packageReplace
+		
+		Write-Host "$($pre)Updating references in '$projectPath' and '$packagesPath'"
+		if (-not $WhatIf) {
+			Set-Content -Path $projectPath -Value $projectContent
+			Set-Content -Path $packagesPath -Value $packagesContent
+		}
+	}	
+}
 
 # Source code should be accessed from the Mercurial repository
 #function Package-SourceCode() {
@@ -263,37 +283,45 @@ $executingScriptDirectory = Split-Path -Path $MyInvocation.MyCommand.Definition 
 Add-Type -Path $executingScriptDirectory\Ionic.Zip.dll
 
 $solutionPath = (Split-Path $executingScriptDirectory -Parent)
-
-if ($Build) {
-	Build-Solution $solutionPath "Release"
-    Build-Documentation $solutionPath "Release"
-}
-
-if ($BuildDocs) {
-    Build-Documentation $solutionPath "Release"
-}
-
-$version = (Get-Content (Join-Path $solutionPath "Essential.Diagnostics\Version.txt"))
 $outputPath = (Join-Path $solutionPath "Package\Output")
-Write-Host ""
-Write-Host "# Packaging version $version to '$outputPath'"
-
 Ensure-Directory $outputPath
 
-if ($PackageBin) {
-    Package-ApplicationBinaries $solutionPath $version
-}
+if ($PackageFull) {
+	$version = (Get-Content (Join-Path $solutionPath "Essential.Diagnostics\Version.txt"))
+	
+	Write-Host ""
+	Write-Host "# Packaging examples for version $version to '$outputPath'"
+	
+	Package-Complete $solutionPath $version
+} else {
+	if ($Package -or $Build) {
+		if ($Build) {
+			Build-Solution $solutionPath "Release"
+		}
 
-if ($Package) {
-    Package-Complete $solutionPath $version
-}
+		$version = (Get-Content (Join-Path $solutionPath "Essential.Diagnostics\Version.txt"))
+		Write-Host ""
+		Write-Host "# Packaging version $version to '$outputPath'"
 
-if ($nuPack) {
-    Package-NuPack $solutionPath $version
-}
+		if ($PackageBin) {
+			Package-ApplicationBinaries $solutionPath "Release" $version
+		}
 
-#Package-Documentation $solutionPath $version
-#Package-Examples $solutionPath $version
+		if ($nuPack) {
+			Package-NuPack $solutionPath "Release" $version
+		}
+			
+		if ($UpdateExamples) {
+			Update-Examples $solutionPath "Release" $version
+		}
+	}
+	else
+	{
+		Write-Host "./Package.ps1 -Build       : to do a build release and then package BinariesOnly, nuget and examples"
+		Write-Host "./Package.ps1 -Package     : to package (only) BinariesOnly, nuget and examples"
+		Write-Host "./Package.ps1 -PackageFull : to package the examples (including a copy of the binaries)"
+	}
+}
 
 Write-Host ""
 Write-Host "# Packaging complete"

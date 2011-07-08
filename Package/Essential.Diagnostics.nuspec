@@ -1,19 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<package>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Essential.Diagnostics</id>
-    <version>1.0.1011</version>
-    <category>Diagnostics</category>
-    <authors>
-      <author>Sly Gryphon (sgryphon@computer.org)</author>
-    </authors>
+    <version>1.1.1011</version>
+    <title>Essential.Diagnostics</title>
+    <authors>Sly Gryphon</authors>
+    <description>Essential.Diagnostics contains additional trace listeners, filters and utility classes for the .NET Framework System.Diagnostics trace logging. Included are colored console (that allows custom formats), SQL database (including a tool to create tables), rolling file (with custom formats), rolling XML and in-memory trace listeners, simple property and expression filters, activity and logical operation scopes, and configuration file monitoring.</description>
+	<summary>Additional trace listeners, filters and utility classes for System.Diagnostics logging.</summary>
+    <projectUrl>http://essentialdiagnostics.codeplex.com/</projectUrl>
     <licenseUrl>http://essentialdiagnostics.codeplex.com/license</licenseUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <description>Essential.Diagnostics contains additional trace listeners, filters and utility classes for the .NET Framework System.Diagnostics trace logging. Included are colored console (that allows custom formats), SQL database (including a tool to create tables) and in-memory trace listeners, simple property and expression filters, activity and logical operation scopes, and configuration file monitoring.</description>
-    <language>en-US</language>
-    <keywords>logging,tracing,diagnostics,log,trace,trace listener,tracelistener</keywords>
-    <homepage>http://essentialdiagnostics.codeplex.com/</homepage>
-    <created>2010-10-11T00:00:00</created>
-    <modified>2010-10-11T00:00:00</modified>
+    <tags>Logging Tracing Diagnostics Log Trace TraceListener</tags>
   </metadata>
 </package>
