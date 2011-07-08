@@ -98,9 +98,8 @@ namespace Essential.Diagnostics
         {
             get
             {
-                // Default behaviour is to output Trace.Write methods directly to the stream
-                // (with Verbose color); setting this value to true will format as event first.
-                var convertWriteToEvent = false;
+                // Default behaviour is to convert Write to event.
+                var convertWriteToEvent = true;
                 if (Attributes.ContainsKey("convertWriteToEvent"))
                 {
                     bool.TryParse(Attributes["convertWriteToEvent"], out convertWriteToEvent);
