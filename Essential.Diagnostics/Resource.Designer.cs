@@ -113,5 +113,14 @@ namespace Essential {
                 return ResourceManager.GetString("StringTemplate_InvalidString", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}, relatedActivityId={1}.
+        /// </summary>
+        internal static string TraceListenerBase_TraceMessageFormat {
+            get {
+                return ResourceManager.GetString("TraceListenerBase_TraceMessageFormat", resourceCulture);
+            }
+        }
     }
 }

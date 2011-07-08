@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{2E339CE8-4C59-498A-BE7C-7E9DD628BCAA}</ProjectGuid>
+    <ProjectGuid>{803A7F06-9216-48DC-B9C1-9EB71F45A4D5}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FilteringExample</RootNamespace>
-    <AssemblyName>FilteringExample</AssemblyName>
+    <RootNamespace>ScopeExample</RootNamespace>
+    <AssemblyName>ScopeExample</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -35,7 +35,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Essential.Diagnostics">
-      <HintPath>..\packages\Essential.Diagnostics.1.1.10709.0\lib\Essential.Diagnostics.dll</HintPath>
+      <HintPath>..\packages\Essential.Diagnostics.1.1.10708.0\lib\Essential.Diagnostics.dll</HintPath>
+    </Reference>
+    <Reference Include="Essential.Diagnostics.Abstractions">
+      <HintPath>..\packages\Essential.Diagnostics.1.1.10708.0\lib\Essential.Diagnostics.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -50,13 +53,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="FilteringExample_ReadMe.txt" />
+    <Content Include="ScopeExample_ReadMe.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

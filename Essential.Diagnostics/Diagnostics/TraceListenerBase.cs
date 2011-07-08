@@ -125,7 +125,8 @@ namespace Essential.Diagnostics
         {
             if ((base.Filter == null) || base.Filter.ShouldTrace(eventCache, source, TraceEventType.Transfer, id, message, null, null, null))
             {
-                WriteTrace(eventCache, source, TraceEventType.Transfer, id, message, relatedActivityId, null);
+                var traceMessage = string.Format(Resource.TraceListenerBase_TraceMessageFormat, message, relatedActivityId);
+                WriteTrace(eventCache, source, TraceEventType.Transfer, id, traceMessage, relatedActivityId, null);
             }
         }
 

@@ -8,22 +8,19 @@ Instructions
 
 1. Build the application.
 2. Run the application from the command line.
-3. Examine the different output in the Log1, Log2, Log3 and Log4 directories.
+3. Examine the different output in the File1-...File4- log files.
 
 Filter Details
 --------------
 
-The trace source is set to log all events of Information level or higher, plus all 
-Activity Tracing events. No Verbose events, from that source, will be logged.
+File1 - Uses .NET Framework EventTypeFilter to only log the Information and higher
+events. It does not log Verbose events.
 
-Log1 - Uses .NET Framework EventTypeFilter to only log the Information and higher
-events. It does not log the Activity Tracing events (Start, Stop)
+File2 - Uses Essential.Diagnostics.PropertyFilter to log events that have a property
+with a specific value (Id = 0).
 
-Log2 - Uses Essential.Diagnostics.PropertyFilter to log events that have a property
-with a specific value.
+File3 - Uses Essential.Diagnostics.ExpressionFilter to log using an C# expression,
+calculated from the event properties (Id >= 4000). 
 
-Log3 - Uses Essential.Diagnostics.ExpressionFilter to log using an C# expression,
-calculated from the event properties. 
-
-Log4 - Uses Essential.Diagnostics.ExpressionFilter to log using an C# expression,
+File4 - Uses Essential.Diagnostics.ExpressionFilter to log using an C# expression,
 based on some enviromental information (the current user name).

@@ -19,7 +19,7 @@ System.Diagnostics trace listeners, filters, and other utilities.
 Version History
 ---------------
 
-v1.1
+v1.1.x 
 
 * RollingFileTraceListener, with trace format templates
 * RollingXmlTraceListener, rolling files compatible with Service Trace Viewer

@@ -135,4 +135,7 @@
   <data name="StringTemplate_InvalidString" xml:space="preserve">
     <value>Input string was not a correct template.</value>
   </data>
+  <data name="TraceListenerBase_TraceMessageFormat" xml:space="preserve">
+    <value>{0}, relatedActivityId={1}</value>
+  </data>
 </root>

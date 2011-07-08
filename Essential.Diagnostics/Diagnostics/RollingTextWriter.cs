@@ -40,7 +40,10 @@ namespace Essential.Diagnostics
         {
             lock (_fileLock)
             {
-                _currentWriter.Flush();
+                if (_currentWriter != null)
+                {
+                    _currentWriter.Flush();
+                }
             }
         }
 
@@ -124,7 +127,10 @@ namespace Essential.Diagnostics
         {
             if (disposing)
             {
-                _currentWriter.Dispose();
+                if (_currentWriter != null)
+                {
+                    _currentWriter.Dispose();
+                }
             }
         }
     }
