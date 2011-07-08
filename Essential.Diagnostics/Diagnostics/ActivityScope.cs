@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using Essential.Diagnostics.Abstractions;
 
 namespace Essential.Diagnostics
 {
@@ -37,7 +38,7 @@ namespace Essential.Diagnostics
         // WCF sets an ActivityId for you, but with other contexts it may not be set.
 
         Guid _previousActivityId;
-        TraceSource _source;
+        ITraceSource _source;
         int _startId;
         int _stopId;
         int _transferInId;
@@ -46,14 +47,14 @@ namespace Essential.Diagnostics
         /// <summary>
         /// Constructor. Sets the ActivityId for the life of the object without logging any events.
         /// </summary>
-        public ActivityScope() : this(null, 0, 0, 0, 0)
+        public ActivityScope() : this((ITraceSource)null, 0, 0, 0, 0)
         {
         }
 
         /// <summary>
         /// Constructor. Sets the ActivityId for the life of the object, logging events but without specific event ID's.
         /// </summary>
-        public ActivityScope(TraceSource source) : this(source, 0, 0, 0, 0)
+        public ActivityScope(TraceSource source) : this(new TraceSourceWrapper(source), 0, 0, 0, 0)
         {
         }
 
@@ -62,6 +63,22 @@ namespace Essential.Diagnostics
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         public ActivityScope(TraceSource source, int transferInId, int startId, int transferOutId, int stopId)
+            : this(new TraceSourceWrapper(source), transferInId, startId, transferOutId, stopId)
+        {
+        }
+
+        /// <summary>
+        /// Constructor. Sets the ActivityId for the life of the object, logging events but without specific event ID's.
+        /// </summary>
+        public ActivityScope(ITraceSource source) : this(source, 0, 0, 0, 0)
+        {
+        }
+
+        /// <summary>
+        /// Constructor. Sets the ActivityId for the life of the object, logging events with the specified event ID's.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
+        public ActivityScope(ITraceSource source, int transferInId, int startId, int transferOutId, int stopId)
         {
             _source = source;
             _startId = startId;

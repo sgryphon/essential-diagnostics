@@ -77,6 +77,10 @@
     <Compile Include="Utility\MockParameter.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Essential.Diagnostics.Abstractions\Essential.Diagnostics.Abstractions.csproj">
+      <Project>{E1676A7D-D09B-4748-B0C8-F38513C29D99}</Project>
+      <Name>Essential.Diagnostics.Abstractions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Essential.Diagnostics\Essential.Diagnostics.csproj">
       <Project>{7A59AA9B-D2C3-4682-A4D7-CE37B98F5905}</Project>
       <Name>Essential.Diagnostics</Name>

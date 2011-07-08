@@ -21,9 +21,17 @@ Version History
 
 v1.1.x 
 
-* RollingFileTraceListener
-* Added LocalDateTime parameter to TraceFormatter
-* Added DateTime as the preferred parameter name for UtcDateTime
+* RollingFileTraceListener, with trace format templates
+* RollingXmlTraceListener, rolling files compatible with Service Trace Viewer
+* Added TraceFormatter parameters: LocalDateTime, DateTime (preferred name 
+  for UtcDateTime), PrincipalName, WindowsIdentityName, Thread (name, if
+  available, otherwise id)
+* Added new parameters to ExpressionFilter
+* Added new SQL parameters to SqlDatabaseTraceListener
+* Added Diagnostics.Abstractions library, for better dependency injection support
+* Make backwards compatible with .NET 2.0 SP1
+* Updated hello loggign example for new trace listeners
+* Added filter examples
 
 v1.0.1011 (October 2010)
 

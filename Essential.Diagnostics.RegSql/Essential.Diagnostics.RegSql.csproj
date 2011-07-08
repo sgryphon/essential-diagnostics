@@ -81,10 +81,10 @@
     <TFSBaseBuildYear>2010</TFSBaseBuildYear>
   </PropertyGroup>
   <Import Project="..\TFSBuildNumber.targets" />
-  <Target Name="BeforeBuild" DependsOnTargets="GetMajorMinorFromCSharpAssemblyInfoFile;&#xD;&#xA;					  UpdateCSharpAssemblyInfoFile">
+  <Target Name="BeforeBuild" DependsOnTargets="GetMajorMinorFromCSharpAssemblyInfoFile;UpdateCSharpAssemblyInfoFile">
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>xcopy /y $(TargetDir)*.* $(SolutionDir)Examples\Binaries
-</PostBuildEvent>
+    <PostBuildEvent>robocopy $(TargetDir) $(SolutionDir)Package\$(ConfigurationName)\tools *.exe *.exe.config *.sql
+exit 0</PostBuildEvent>
   </PropertyGroup>
 </Project>

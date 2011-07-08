@@ -120,6 +120,12 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Essential.Diagnostics.Abstractions\Essential.Diagnostics.Abstractions.csproj">
+      <Project>{E1676A7D-D09B-4748-B0C8-F38513C29D99}</Project>
+      <Name>Essential.Diagnostics.Abstractions</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -132,9 +138,11 @@
     <TFSBaseBuildYear>2010</TFSBaseBuildYear>
   </PropertyGroup>
   <Import Project="..\TFSBuildNumber.targets" />
-  <Target Name="BeforeBuild" DependsOnTargets="GetMajorMinorFromCSharpAssemblyInfoFile;&#xD;&#xA;					  WriteProjectTextAssemblyVersionFile;&#xD;&#xA;					  UpdateCSharpAssemblyInfoFile">
+  <Target Name="BeforeBuild" DependsOnTargets="GetMajorMinorFromCSharpAssemblyInfoFile;&#xD;&#xA;					  WriteProjectTextAssemblyVersionFile;UpdateCSharpAssemblyInfoFile">
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>xcopy /y $(TargetDir)*.* $(SolutionDir)Examples\Binaries</PostBuildEvent>
+    <PostBuildEvent>robocopy $(TargetDir) $(SolutionDir)Package\$(ConfigurationName)\lib *.dll *.xml
+robocopy $(SolutionDir) $(SolutionDir)Package\$(ConfigurationName) ReadMe.txt License.txt
+exit 0</PostBuildEvent>
   </PropertyGroup>
 </Project>

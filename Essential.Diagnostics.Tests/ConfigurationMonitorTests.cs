@@ -22,6 +22,7 @@ namespace Essential.Diagnostics.Tests
             //var configPath = Assembly.GetExecutingAssembly().Location + ".config";
             //var configPath = @"D:\Code\Diagnostics\EssentialDiagnostics\Essential.Diagnostics.Tests\bin\Debug\Essential.Diagnostics.Tests.dll.config";
             var configPath = ConfigUtility.GetConfigDirFromTestRunDirectory(TestContext.TestRunDirectory);
+            Console.WriteLine("Config path: '{0}'", configPath);
 
             TraceSource source = new TraceSource("inmemory2Source");
             var listener1 = source.Listeners.OfType<InMemoryTraceListener>().First();
