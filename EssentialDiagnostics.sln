@@ -20,7 +20,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Diagnostics.RegSq
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Package", "Package", "{AA216E78-7C19-4349-ADAF-419480C7FD8C}"
 	ProjectSection(SolutionItems) = preProject
+		Package\Essential.Diagnostics.nuspec = Package\Essential.Diagnostics.nuspec
 		Package\Ionic.Zip.dll = Package\Ionic.Zip.dll
+		Package\NuGet.exe = Package\NuGet.exe
+		Package\Package.cmd = Package\Package.cmd
 		Package\Package.ps1 = Package\Package.ps1
 	EndProjectSection
 EndProject
@@ -29,8 +32,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 		Documentation\Essential.Diagnostics.shfbproj = Documentation\Essential.Diagnostics.shfbproj
 		Documentation\NamespaceComments.xml = Documentation\NamespaceComments.xml
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Diagnostics.Abstractions", "Essential.Diagnostics.Abstractions\Essential.Diagnostics.Abstractions.csproj", "{E1676A7D-D09B-4748-B0C8-F38513C29D99}"
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
@@ -75,16 +76,6 @@ Global
 		{252DDE2C-C596-4F3B-96E3-87CB9F7ED839}.Release|Mixed Platforms.Build.0 = Release|x86
 		{252DDE2C-C596-4F3B-96E3-87CB9F7ED839}.Release|x86.ActiveCfg = Release|x86
 		{252DDE2C-C596-4F3B-96E3-87CB9F7ED839}.Release|x86.Build.0 = Release|x86
-		{E1676A7D-D09B-4748-B0C8-F38513C29D99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E1676A7D-D09B-4748-B0C8-F38513C29D99}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E1676A7D-D09B-4748-B0C8-F38513C29D99}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{E1676A7D-D09B-4748-B0C8-F38513C29D99}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{E1676A7D-D09B-4748-B0C8-F38513C29D99}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{E1676A7D-D09B-4748-B0C8-F38513C29D99}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E1676A7D-D09B-4748-B0C8-F38513C29D99}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E1676A7D-D09B-4748-B0C8-F38513C29D99}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{E1676A7D-D09B-4748-B0C8-F38513C29D99}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{E1676A7D-D09B-4748-B0C8-F38513C29D99}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

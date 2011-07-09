@@ -94,8 +94,6 @@ function Add-Binaries($zipFile, $zipPath, $path) {
 	Add-File $zipFile $zipPath $path "License.txt"
 	Add-File $zipFile $zipPath $path "lib\Essential.Diagnostics.dll" 
 	Add-File $zipFile $zipPath $path "lib\Essential.Diagnostics.xml" 
-	Add-File $zipFile $zipPath $path "lib\Essential.Diagnostics.Abstractions.dll" 
-	Add-File $zipFile $zipPath $path "lib\Essential.Diagnostics.Abstractions.xml" 
 	Add-File $zipFile $zipPath $path "tools\diagnostics_regsql.exe"
 	Add-File $zipFile $zipPath $path "tools\diagnostics_regsql.exe.config"
 	Add-File $zipFile $zipPath $path "tools\InstallTrace.sql"
@@ -237,8 +235,6 @@ function Update-Examples($solutionPath, $configuration, $version) {
 	$majorMinor = $version -replace "(\d+\.\d+)\.\d+\.\d+", "`$1.0.0"
 	$referenceRegex = "Essential\.Diagnostics, Version=\d+\.\d+\.\d+\.\d+"
 	$referenceReplace = "Essential.Diagnostics, Version=$majorMinor"
-	$referenceAbstractionsRegex = "Essential\.Diagnostics\.Abstractions, Version=\d+\.\d+\.\d+\.\d+"
-	$referenceAbstractionsReplace = "Essential.Diagnostics.Abstractions, Version=$majorMinor"
 	$pathRegex = "packages\\Essential\.Diagnostics\.\d+\.\d+\.\d+\.\d+\\lib"
 	$pathReplace = "packages\Essential.Diagnostics.$version\lib"
 	$packageRegex = "id=`"Essential\.Diagnostics`" version=`"\d+\.\d+\.\d+\.\d+`""
@@ -246,13 +242,12 @@ function Update-Examples($solutionPath, $configuration, $version) {
 	
 	Write-Host "Update reference to '$referenceReplace' and path to '$pathReplace'"
 
-	$exampleProjects = @( "HelloLogging", "MonitorConfig", "FilteringExample"  )
+	$exampleProjects = @( "HelloLogging", "MonitorConfig", "FilteringExample", "ScopeExample" )
 	
 	foreach ($project in $exampleProjects) {
 		$projectPath = Join-Path $solutionPath "Examples\$project\$project.csproj"
 		$projectContent = Get-Content $projectPath
 		$projectContent = $projectContent -replace $referenceRegex, $referenceReplace
-		$projectContent = $projectContent -replace $referenceAbstractionsRegex, $referenceAbstractionsReplace
 		$projectContent = $projectContent -replace $pathRegex, $pathReplace
 		$packagesPath = Join-Path $solutionPath "Examples\$project\packages.config"
 		$packagesContent = Get-Content $packagesPath

@@ -71,6 +71,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\DbProviderFactoryExtensions.cs" />
+    <Compile Include="Diagnostics\Abstractions\AssemblyTraceSourceT.cs" />
+    <Compile Include="Diagnostics\Abstractions\ITraceSource.cs" />
+    <Compile Include="Diagnostics\Abstractions\ITraceSourceT.cs" />
+    <Compile Include="Diagnostics\Abstractions\TraceSourceWrapper.cs" />
     <Compile Include="Diagnostics\ActivityScope.cs" />
     <Compile Include="Diagnostics\ColoredConsoleTraceListener.cs" />
     <Compile Include="ConsoleAdapter.cs" />
@@ -119,12 +123,6 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Essential.Diagnostics.Abstractions\Essential.Diagnostics.Abstractions.csproj">
-      <Project>{E1676A7D-D09B-4748-B0C8-F38513C29D99}</Project>
-      <Name>Essential.Diagnostics.Abstractions</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

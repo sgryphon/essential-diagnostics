@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Threading;
 using System.Diagnostics;
 
 namespace Essential.Diagnostics.Abstractions
