@@ -19,8 +19,7 @@ namespace FilteringExample
             try
             {
                 Thread.CurrentPrincipal = new GenericPrincipal(new GenericIdentity("User1"), new string[0]);
-                trace.TraceEvent(TraceEventType.Verbose, 0, "Verbose message.");
-                trace.TraceEvent(TraceEventType.Error, 5001, "Some error.");
+                trace.TraceEvent(TraceEventType.Warning, 4001, "Some warning.");
             }
             finally
             {
