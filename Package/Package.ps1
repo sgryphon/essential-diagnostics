@@ -193,6 +193,8 @@ function Package-Complete($solutionPath, $version) {
 	Add-File $zipFile $zipPath $solutionPath "ReadMe.txt"
 	Add-File $zipFile $zipPath $solutionPath "License.txt"
 
+	Add-File $zipFile $zipPath "$solutionPath\Examples" "packages\Essential.Diagnostics.$version\Essential.Diagnostics.$version.nupkg" 
+
     Add-Examples $zipFile $zipPath $solutionPath
 	
 	$binariesPath = (Join-Path $solutionPath "Examples\packages\Essential.Diagnostics.$version")
