@@ -30,7 +30,7 @@ v1.1.x
 * Added new SQL parameters to SqlDatabaseTraceListener
 * Added Diagnostics.Abstractions library, for better dependency injection support
 * Make backwards compatible with .NET 2.0 SP1
-* Updated hello loggign example for new trace listeners
+* Updated hello logging example for new trace listeners
 * Added filter examples
 
 v1.0.1011 (October 2010)
