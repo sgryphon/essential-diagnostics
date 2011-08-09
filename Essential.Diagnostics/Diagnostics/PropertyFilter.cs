@@ -20,6 +20,7 @@ namespace Essential.Diagnostics
     /// ProcessId, ThreadId, Timestamp, MachineName, ProcessName, ThreadName.
     /// </para>
     /// </remarks>
+	[Obsolete("Use ExpressionFilter instead.")]
     public class PropertyFilter : TraceFilter
     {
         private string propertyTemplate;

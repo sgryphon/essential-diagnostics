@@ -174,8 +174,6 @@ namespace Essential.Diagnostics
             EnsureApplicationName();
             value = applicationName;
             return value;
-            
-            throw new NotImplementedException();
         }
 
         private static object FormatCallstack(TraceEventCache eventCache)
