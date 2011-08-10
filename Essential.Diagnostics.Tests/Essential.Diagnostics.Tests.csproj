@@ -58,6 +58,7 @@
     <Compile Include="RollingFileTests.cs" />
     <Compile Include="ExpressionFilterTests.cs" />
     <Compile Include="PropertyFilterTests.cs" />
+    <Compile Include="TraceListenerBaseTests.cs" />
     <Compile Include="Utility\ConfigUtility.cs" />
     <Compile Include="Utility\FileResetScope.cs" />
     <Compile Include="LogicalOperationScopeTests.cs" />
@@ -75,6 +76,7 @@
     <Compile Include="Utility\MockDbFactory.cs" />
     <Compile Include="Utility\MockFileSystem.cs" />
     <Compile Include="Utility\MockParameter.cs" />
+    <Compile Include="Utility\TestTraceListener.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Essential.Diagnostics\Essential.Diagnostics.csproj">

@@ -112,8 +112,21 @@ namespace Essential.Diagnostics
         {
             if ((base.Filter == null) || base.Filter.ShouldTrace(eventCache, source, eventType, id, format, args, null, null))
             {
-                string message = string.Format(CultureInfo.CurrentCulture, format, args);
-                WriteTrace(eventCache, source, eventType, id, message, null, null);
+                // Note: traceSource.TraceInformation(message) calls TraceEvent(..., format, null) 
+                // not TraceEvent(..., message), so we don't call string.Format if args is null.
+                // This means that calling traceSource.TraceEvent(..., format, [object[]]null) works,
+                // instead of throwning ArgumentNullException (as it should).
+                // Design decision to have TraceInformation(message) work than to be 100% correct in 
+                // throwing exceptions when args is null.
+                if (args == null)
+                {
+                    WriteTrace(eventCache, source, eventType, id, format, null, null);
+                }
+                else
+                {
+                    var message = string.Format(CultureInfo.CurrentCulture, format, args);
+                    WriteTrace(eventCache, source, eventType, id, message, null, null);
+                }
             }
         }
 

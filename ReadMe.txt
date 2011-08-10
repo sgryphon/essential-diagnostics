@@ -19,7 +19,12 @@ System.Diagnostics trace listeners, filters, and other utilities.
 Version History
 ---------------
 
-v1.1.x 
+v1.1.patch1
+
+* ISSUE #2: traceSource.TraceInformation("Information message") throws exception with SqlDatabaseTraceListener.
+  (Issue was in TraceListenerBase and affected all listeners.)
+
+v1.1.10711 (July 2011)
 
 * RollingFileTraceListener, with trace format templates
 * RollingXmlTraceListener, rolling files compatible with Service Trace Viewer

@@ -20,6 +20,11 @@ Features TODO
 Bug fixes TODO
 --------------
 
+- ISSUE #1: TraceFormatter.cs dependent on System.Windows.Forms.
+  Change TraceFormatter to use Assembly directly instead of Application.ExecutablePath,
+  to remove usage of System.Windows.Forms
+
+
 Documentation TODO
 ------------------
 
@@ -35,7 +40,7 @@ Documentation TODO
 Examples TODO
 -------------
 
-Scope examples
+Update examples to <clear /> listeners (for performance)
 
 Full file logging example (using VB logger), which version of VB, example settings
 
