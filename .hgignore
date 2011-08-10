@@ -15,3 +15,4 @@ glob:Examples/Binaries/*
 syntax: glob
 Package/Release
 Package/Debug
+glob:solution.disposechecksettings
