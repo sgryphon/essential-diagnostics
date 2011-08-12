@@ -5,8 +5,9 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading;
-using System.Windows.Forms;
 using System.Security.Principal;
+using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace Essential.Diagnostics
 {
@@ -151,7 +152,18 @@ namespace Essential.Diagnostics
         {
             if (applicationName == null)
             {
-                applicationName = Path.GetFileNameWithoutExtension(Application.ExecutablePath);
+                //applicationName = Path.GetFileNameWithoutExtension(Application.ExecutablePath);
+                var entryAssembly = Assembly.GetEntryAssembly();
+                if (entryAssembly == null)
+                {
+                    var moduleFileName = new StringBuilder(260);
+                    NativeMethods.GetModuleFileName(NativeMethods.NullHandleRef, moduleFileName, moduleFileName.Capacity);
+                    applicationName = Path.GetFileNameWithoutExtension(moduleFileName.ToString());
+                }
+                else
+                {
+                    applicationName = Path.GetFileNameWithoutExtension(entryAssembly.EscapedCodeBase);
+                }
             }
         }
 

@@ -21,6 +21,10 @@ Version History
 
 v1.1.patch1
 
+* ISSUE #1: TraceFormatter.cs dependent on System.Windows.Forms.
+  We only want the application name part, so use either Assembly.GetEntryAssembly() directly, or 
+  for native code use kernel32 GetModuleFileName(), without checking security.
+
 * ISSUE #2: traceSource.TraceInformation("Information message") throws exception with SqlDatabaseTraceListener.
   (Issue was in TraceListenerBase and affected all listeners.)
 
