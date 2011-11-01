@@ -52,6 +52,13 @@ namespace Essential.Diagnostics.Tests
         public void RecordsEventFromTraceSource()
         {
             TraceSource source = new TraceSource("inmemory1Source");
+
+            // Note: If you don't <clear />, then DefaultTraceListener is automatically included
+            foreach (TraceListener l in source.Listeners)
+            {
+                Console.WriteLine("{0} ({1})", l.Name, l.GetType().Name);
+            }
+
             var listener = source.Listeners.OfType<InMemoryTraceListener>().First();
             listener.Clear();
 
