@@ -4,15 +4,29 @@
 # WhatIf: If WhatIf is specified, then messages are printed to indicate which files will be
 #           included, but no action is taken.
 #
-# ./Package.ps1 -Build       : to do a build release and then package BinariesOnly, nuget and examples
-# ./Package.ps1 -Package     : to package (only) BinariesOnly, nuget and examples
-# ./Package.ps1 -PackageFull : to package the examples (including a copy of the binaries)
+# ./Package.ps1 -Build       : To do a build release and then package BinariesOnly (ZIP), nuget 
+#                              package and update (copy to) the examples.
+#
+# ./Package.ps1 -Package     : To package (only) BinariesOnly, nuget and update examples.
+#                              (Uses most recent build.)
+#
+# ./Package.ps1 -PackageFull : Create ZIP file with examples (and binaries).
+#                              Need to -Build or -Package first to copy the latest version to 
+#                              the Examples package folder.
+#  
+# To skip the binaries ZIP, nuget package or example update, you can turn off the following flags:
+#   -PackageBin:$false
+#   -nuPack:$false
+#   -UpdateExamples:$false
+#
+# To show output only (i.e. don't actually do anthing), use:             
+#   -WhatIf
 #
 # Note: For PackageFull the examples should first be manually updated to use the latest nuget package.
 #
 ######################################################################################################
 
-# ./Package.ps1 -PackageBin:$false -nuPack:$false
+# ./Package.ps1 -Build -PackageBin:$false -nuPack:$false
 
 param (
     [switch]$Build = $false,

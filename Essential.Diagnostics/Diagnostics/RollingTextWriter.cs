@@ -76,7 +76,7 @@ namespace Essential.Diagnostics
                 {
                     _currentWriter.Close();
                 }
-                var stream = FileSystem.Open(path, FileMode.Append, FileAccess.Write, FileShare.None);
+                var stream = FileSystem.Open(path, FileMode.Append, FileAccess.Write, FileShare.Read);
                 _currentWriter = new StreamWriter(stream);
                 _currentPath = path;
             }
