@@ -1,0 +1,77 @@
+! Microsoft Diagnostics Logging
+
+!! _Using and extending System.Diagnostics trace logging_
+
+System.Diagnostics provides powerful, flexible, high performance 
+logging for applications -- and it's already built into the .NET Framework!
+
+This project uses the inbuilt features of the System.Diagnostics 
+namespace, and shows how logging and tracing can be integrated 
+into a client application whilst taking advantage of the services
+exposed by System.Diagnostics.
+
+This project also provides a library that enhances System.Diagnostics 
+through it's numerous built-in extension points, but shouldn't require 
+any changes to existing code (that uses System.Diagnostics) to use 
+some or all of the features.
+
+Extension features provided by this project are 
+marked [image:EX|ex.png] -- other features are already provided
+by the .NET Framework you are using right now.
+ 
+This project was created by [url:Josh Twist|http://www.thejoyofcode.com/] 
+and [url:Morgan Skinner|http://www.morganskinner.com/] who both 
+work for Microsoft's [url:Application Development Consulting|http://www.microsoft.com/uk/adc] 
+(ADC) team in the UK. 
+
+  *[Download Now|Download]*
+
+
+!! Latest Updates ([more|Updates])
+
+*19 June 2008 - Josh Twist*
+
+Decide what Listeners come next - Josh has created a survey on his blog 
+to discuss the next wave of listeners to be 
+added: [url:http://www.thejoyofcode.com/Whats_next_for_Ukadc_Diagnostics.aspx]
+
+
+!! Features
+
+System.Diagnostics provides the following key features:
+
+ * Multiple logging sources.
+ * Output to multiple trace [listeners|Listeners] with different [filtering|Filters].
+ * Logical operation context and activity correlation.
+ * Multiple levels of event types including activity tracing.
+ * Integrates with existing .NET Framework tracing (such as WCF).
+ * Proven architecture.
+ * Flexible and extensible design.
+ * High performance.
+ * No change required to existing .NET Framework trace statements.
+
+System.Diagnostics logging can be used to write information to any of the following [Listeners|listeners]:
+
+ * A [text file|FileLogTraceListener]
+ * The command [console|ConsoleTraceListener]
+ * The [event log|EventLogTraceListener]
+ * [ASP.NET|WebPageTraceListener] tracing
+ * The [debug output|OutputDebugStringTraceListener] stream
+ * An [XML|XmlWriterTraceListener] file
+ * Event Tracing for Windows (Vista [ETW|EventProviderTraceListener])
+ * A [database|SqlTraceListener] [image:EX|ex.png]
+ * An [e-mail message|SmtpTraceListener] [image:EX|ex.png]
+
+Log information can be [custom formatted|Tokens] and include context information such as:
+
+ * Event id, type, and message
+ * Source - allows you to partition your logs
+ * Event time and date
+ * Thread id, process id and call stack
+ * Logical operation stack, activity id, and correlation
+ * Machine name, user name and Windows Identity [image:EX|ex.png]
+ * Custom [properties|DynamicPropertyReader] [image:EX|ex.png]
+
+[Download] | [FAQ] | [Examples] | [Guidance]
+
+[Listeners] | [Filters] | [Extensions]

@@ -6,7 +6,7 @@ An example the different format arguments that can be used in trace template pro
 Instructions
 ------------
 
-1. Examing the template aguments used in the App.config file
+1. Examine the template aguments used in the App.config file
 2. Build the application.
 3. Run the application from the command line.
 4. Examine the trace output for each event.

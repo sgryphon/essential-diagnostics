@@ -1,0 +1,100 @@
+public class IDiagnostics<T>
+{
+}
+
+public class AssemblyDiagnostics<T>
+{
+
+ITraceSource source = new AssemblyTraceSource<T>();
+
+public ITraceSource TraceSource { get { return source; } }
+
+public void LogCritical(EventId eventId, string format, params object[] args) {
+  EventLog.WriteEntry(EventLogEntryType.Error)
+  source.TraceEvent((int)eventId, TraceType.Critical, format, args);
+}
+
+public void LogError(EventId eventId, string format, params object[] args) {
+  EventLog.WriteEntry(EventLogEntryType.Error)
+  source.TraceEvent((int)eventId, TraceType.Critical, format, args);
+}
+
+public void LogError(EventId eventId, string message, Exception ex) {
+  string messageWithException = message + "\n" + ex.ToString();
+  EventLog.WriteEntry(EventLogEntryType.Error, messageWithException)
+  source.TraceEvent((int)eventId, TraceType.Error, messageWithException);
+}
+
+public void LogWarning(EventId eventId, string format, params object[] args) {
+  EventLog.WriteEntry(EventLogEntryType.Error)
+  source.TraceEvent((int)eventId, TraceType.Warning, format, args);
+}
+
+public void LogInformation(EventId eventId, string format, params object[] args) {
+  EventLog.WriteEntry(EventLogEntryType.Error)
+  source.TraceEvent((int)eventId, TraceType.Information, format, args);
+}
+
+public IActivity NewActivity(EventId eventId) {
+  return new HttpRequestActivity(this);
+}
+
+public void TraceVerbose(string format, params object[] args) {
+  source.TraceEvent(0, TraceType.Verbose, format, args);
+}
+
+}
+
+public enum EventId
+{
+  None = 0,
+}
+
+public class ActivityBase : IDisposable
+{
+  IDiagnostics diagnostics;
+  public HttpRequestActivity(IDiagnostics diagnostics) {
+    this.diagnostics = diagnostics;
+    Start();
+  }
+
+  public void Dispose() {
+    Dispose(true);
+    GC.Suppress(this);
+  }
+
+  protected virtual void Dispose(bool disposing) {
+    if (disposing) {
+      Stop();
+    } 
+  }
+
+  protected virtual void WriteApplicationLog()
+  {
+  }
+  
+  private virtual void Start()
+  {
+    this.diagnostics.TraceSource.TraceEvent(eventId, TraceEventType.Transfer, message);
+    this.diagnostics.TraceSource.TraceEvent(eventId, TraceEventType.Start, message);
+  }
+
+  private virtual void Stop()
+  {
+    WriteApplicationLog();
+    this.diagnostics.TraceSource.TraceEvent(eventId, TraceEventType.Transfer, message);
+    this.diagnostics.TraceSource.TraceEvent(eventId, TraceEventType.Stop, message);
+  }  
+}
+
+public class HttpRequestActivity : ActivityBase
+{
+  public string HttpMethod { get; set; }
+  public string RequestUri { get; set; }
+  public string Result { get; set; }
+
+  protected overwrite void WriteApplicationLog()
+  {
+     logFile.WriteLine("{0}\t{1}\t{2}", HttpMethod, RequestUri, Result);
+  }
+}

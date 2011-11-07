@@ -1,0 +1,68 @@
+Home
+
+  About
+    Project Description -- from existing home page
+    Updates -- from existing home page
+    FAQ -- from existing home page
+    Download -- summary of what needs to be downloaded
+
+    Performance (TODO)
+    Feature Comparison (TODO) -- (with log4net, NLog, EntLib, etc)
+
+  Guidance
+
+    Logging Levels -- i.e. similar to your blog post
+    Event Ids (TODO)
+    Correlation (TODO) -- Activities and Logical Operations
+    Service Trace Viewer (TODO)
+
+  Examples
+
+    Getting Started (TODO)
+    Logging Primer -- From existing home page
+    QuickReferenceExample
+
+  Listeners
+
+    TraceListener
+    TraceListenerBase [EX]
+
+    ColoredConsoleTraceListener [EX] *
+    ConsoleTraceListener *
+    DefaultTraceListener
+    DelimitedListTraceListener
+    EventLogTraceListener *
+    EventProviderTraceListener
+    EventSchemaTraceListener
+    FileLogTraceListener *
+    InMemoryTraceListener [EX] *
+    SqlTraceListener [EX] *
+      SqlTraceListener Sample
+    TextWriterTraceListener
+    WebPageTraceListener *
+    XmlWriterTraceListener *
+
+    
+    OutputDebugStringTraceListener [EX]
+    RotatingFileTraceListener [EX]
+    SmtpTraceListener [EX]
+
+  Filters
+
+    Trace Filter
+
+    EventTypeFilter
+    ExpressionFiler [EX]
+    PropertyFilter [EX]
+    SourceFilter
+
+    MultiFilter [EX] 
+
+  Extensions
+
+    ActivityScope [EX]
+    LogicalOperationScope [EX]
+    TraceConfigurationMonitor [EX]
+    TraceFormatter [EX]
+
+      

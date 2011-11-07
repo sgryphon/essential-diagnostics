@@ -35,7 +35,7 @@ Documentation TODO
 Examples TODO
 -------------
 
-Update examples to <clear /> listeners (for performance)
+** Update examples to <clear /> listeners (for performance)
 
 Full file logging example (using VB logger), which version of VB, example settings
 
