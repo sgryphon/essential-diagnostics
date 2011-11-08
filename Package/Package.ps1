@@ -41,6 +41,8 @@ if ($WhatIf) {
     $pre = "What if: "
 }
 
+$NuGet = Join-Path (Split-Path $MyInvocation.MyCommand.Path) "NuGet.exe"
+
 function Add-File($zipFile, $zipPath, $path, $file) {
     $fileLocation = (Join-Path $path $file)
     $fileRelativePath = (Split-Path $file)
@@ -246,7 +248,7 @@ function Package-NuPack($solutionPath, $configuration, $version) {
     $packagePath = (Join-Path $solutionPath "Package\Output")
 	Write-Host "$($pre)Running: nupack ""$outputNuspecPath"" ""$packagePath"""
 	if (-not $WhatIf) {
-        & .\NuGet.exe pack "$outputNuspecPath" -OutputDirectory "$packagePath"
+        & $NuGet pack "$outputNuspecPath" -OutputDirectory "$packagePath"
     }
 }
 
