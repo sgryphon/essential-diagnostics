@@ -13,6 +13,7 @@ namespace Essential.Diagnostics
         private object _fileLock = new object();
         private string _filePathTemplate;
         private IFileSystem _fileSystem = new FileSystem();
+        TraceFormatter traceFormatter = new TraceFormatter();
 
         public RollingTextWriter(string filePathTemplate)
         {
@@ -90,23 +91,26 @@ namespace Essential.Diagnostics
                     switch (name.ToUpperInvariant())
                     {
                         case "APPLICATIONNAME":
-                            value = TraceFormatter.FormatApplicationName();
+                            value = traceFormatter.FormatApplicationName();
                             break;
                         case "DATETIME":
                         case "UTCDATETIME":
-                            value = TraceFormatter.FormatUniversalTime(eventCache);
+                            value = traceFormatter.FormatUniversalTime(eventCache);
                             break;
                         case "LOCALDATETIME":
-                            value = TraceFormatter.FormatLocalTime(eventCache);
+                            value = traceFormatter.FormatLocalTime(eventCache);
                             break;
                         case "MACHINENAME":
                             value = Environment.MachineName;
                             break;
                         case "PROCESSID":
-                            value = TraceFormatter.FormatProcessId(eventCache);
+                            value = traceFormatter.FormatProcessId(eventCache);
                             break;
                         case "PROCESSNAME":
-                            value = TraceFormatter.FormatProcessName();
+                            value = traceFormatter.FormatProcessName();
+                            break;
+                        case "APPDATA":
+                            value = traceFormatter.HttpTraceContext.AppDataPath;
                             break;
                         default:
                             value = "{" + name + "}";

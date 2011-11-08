@@ -41,7 +41,7 @@ namespace Essential.Diagnostics
                 "template", "Template", 
                 "convertWriteToEvent", "ConvertWriteToEvent",
             };
-
+        TraceFormatter traceFormatter = new TraceFormatter();
         private RollingTextWriter rollingTextWriter;
 
         /// <summary>
@@ -257,7 +257,7 @@ namespace Essential.Diagnostics
             // but could support for backwards compatibility. 
             // i.e. if any T-O-O are set, then append them anyway??
 
-            var output = TraceFormatter.Format(Template,
+            var output = traceFormatter.Format(Template,
                 eventCache,
                 source,
                 eventType,

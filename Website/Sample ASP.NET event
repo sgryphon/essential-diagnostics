@@ -1,0 +1,186 @@
+{AppData}  Physical path to App_Data directory; a useful location for log file paths.
+{RequestUrl}
+{RequestPath}
+{UserHostAddress}
+
+-------------------
+
+Application information: 
+    Application domain: /LM/W3SVC/2/ROOT/HelloWeb-1-129651246075036785 
+    Trust level: Full 
+    Application Virtual Path: /HelloWeb 
+    Application Path: C:\Code\Diagnostics\EssentialDiagnostics\Examples\HelloWeb\ 
+    Machine name: TAURON2 
+ 
+Process information: 
+    Process ID: {ProcessId}
+    Process name: {ProcessName}
+    Account name: {WindowsIdentityName}
+ 
+Exception information: 
+    Exception type: Exception 
+    Exception message: {Exception}
+ 
+Request information: 
+    Request URL: {RequestUrl}
+    Request path: {RequestPath}
+    User host address: {UserHostAddress}
+    User: {PrincipalName} 
+    Is authenticated: False 
+    Authentication Type:  
+    Thread account name: {WindowsIdentityName} 
+ 
+Thread information: 
+    Thread ID: {ThreadId}
+    Thread account name: {WindowsIdentityName}
+    Is impersonating: False 
+    Stack trace:    {CallStack}
+
+--------------------
+
+Log file flooding protection? e.g. more than 5 within 5 minutes, then it writes a flooding warning and stops; write a summary after 1 hour?
+
+ApplicationDomain, ApplicationVirtualPath, ApplicationPath, TrustLevel
+Process Account/Thread Account, IsAuthenticated, IsImpersonating
+
+
+Already:
+
+Log Name, Source, Date, Event ID, Category, Level, Computer, Message, Correlation ID
+
+Process ID, Process Name,
+Thread ID
+
+
+Example ASP.NET EventLog entry
+
+Log Name:      Application
+Source:        ASP.NET 4.0.30319.0
+Date:          2011-11-07 17:32:49
+Event ID:      1309
+Task Category: Web Event
+Level:         Warning
+Keywords:      Classic
+User:          N/A
+Computer:      Tauron2
+Description:
+Event code: 3005 
+Event message: An unhandled exception has occurred. 
+Event time: 2011-11-07 17:32:49 
+Event time (UTC): 2011-11-07 07:32:49 
+Event ID: 376cabdfdac44916804e019e8f819117 
+Event sequence: 33 
+Event occurrence: 2 
+Event detail code: 0 
+ 
+Application information: 
+    Application domain: /LM/W3SVC/2/ROOT/HelloWeb-1-129651246075036785 
+    Trust level: Full 
+    Application Virtual Path: /HelloWeb 
+    Application Path: C:\Code\Diagnostics\EssentialDiagnostics\Examples\HelloWeb\ 
+    Machine name: TAURON2 
+ 
+Process information: 
+    Process ID: 2484 
+    Process name: iisexpress.exe 
+    Account name: Tauron2\Sly 
+ 
+Exception information: 
+    Exception type: Exception 
+    Exception message: Test
+   at ASP.test_aspx.Page_Load() in c:\Code\Diagnostics\EssentialDiagnostics\Examples\HelloWeb\Test.aspx:line 5
+   at System.Web.Util.CalliHelper.ArglessFunctionCaller(IntPtr fp, Object o)
+   at System.Web.Util.CalliEventHandlerDelegateProxy.Callback(Object sender, EventArgs e)
+   at System.Web.UI.Control.OnLoad(EventArgs e)
+   at System.Web.UI.Control.LoadRecursive()
+   at System.Web.UI.Page.ProcessRequestMain(Boolean includeStagesBeforeAsyncPoint, Boolean includeStagesAfterAsyncPoint)
+
+ 
+ 
+Request information: 
+    Request URL: http://localhost:8342/HelloWeb/Test.aspx 
+    Request path: /HelloWeb/Test.aspx 
+    User host address: ::1 
+    User:  
+    Is authenticated: False 
+    Authentication Type:  
+    Thread account name: Tauron2\Sly 
+ 
+Thread information: 
+    Thread ID: 10 
+    Thread account name: Tauron2\Sly 
+    Is impersonating: False 
+    Stack trace:    at ASP.test_aspx.Page_Load() in c:\Code\Diagnostics\EssentialDiagnostics\Examples\HelloWeb\Test.aspx:line 5
+   at System.Web.Util.CalliHelper.ArglessFunctionCaller(IntPtr fp, Object o)
+   at System.Web.Util.CalliEventHandlerDelegateProxy.Callback(Object sender, EventArgs e)
+   at System.Web.UI.Control.OnLoad(EventArgs e)
+   at System.Web.UI.Control.LoadRecursive()
+   at System.Web.UI.Page.ProcessRequestMain(Boolean includeStagesBeforeAsyncPoint, Boolean includeStagesAfterAsyncPoint)
+ 
+ 
+Custom event details: 
+
+Event Xml:
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="ASP.NET 4.0.30319.0" />
+    <EventID Qualifiers="32768">1309</EventID>
+    <Level>3</Level>
+    <Task>3</Task>
+    <Keywords>0x80000000000000</Keywords>
+    <TimeCreated SystemTime="2011-11-07T07:32:49.000000000Z" />
+    <EventRecordID>11659</EventRecordID>
+    <Channel>Application</Channel>
+    <Computer>Tauron2</Computer>
+    <Security />
+  </System>
+  <EventData>
+    <Data>3005</Data>
+    <Data>An unhandled exception has occurred.</Data>
+    <Data>2011-11-07 17:32:49</Data>
+    <Data>2011-11-07 07:32:49</Data>
+    <Data>376cabdfdac44916804e019e8f819117</Data>
+    <Data>33</Data>
+    <Data>2</Data>
+    <Data>0</Data>
+    <Data>/LM/W3SVC/2/ROOT/HelloWeb-1-129651246075036785</Data>
+    <Data>Full</Data>
+    <Data>/HelloWeb</Data>
+    <Data>C:\Code\Diagnostics\EssentialDiagnostics\Examples\HelloWeb\</Data>
+    <Data>TAURON2</Data>
+    <Data>
+    </Data>
+    <Data>2484</Data>
+    <Data>iisexpress.exe</Data>
+    <Data>Tauron2\Sly</Data>
+    <Data>Exception</Data>
+    <Data>Test
+   at ASP.test_aspx.Page_Load() in c:\Code\Diagnostics\EssentialDiagnostics\Examples\HelloWeb\Test.aspx:line 5
+   at System.Web.Util.CalliHelper.ArglessFunctionCaller(IntPtr fp, Object o)
+   at System.Web.Util.CalliEventHandlerDelegateProxy.Callback(Object sender, EventArgs e)
+   at System.Web.UI.Control.OnLoad(EventArgs e)
+   at System.Web.UI.Control.LoadRecursive()
+   at System.Web.UI.Page.ProcessRequestMain(Boolean includeStagesBeforeAsyncPoint, Boolean includeStagesAfterAsyncPoint)
+
+</Data>
+    <Data>http://localhost:8342/HelloWeb/Test.aspx</Data>
+    <Data>/HelloWeb/Test.aspx</Data>
+    <Data>::1</Data>
+    <Data>
+    </Data>
+    <Data>False</Data>
+    <Data>
+    </Data>
+    <Data>Tauron2\Sly</Data>
+    <Data>10</Data>
+    <Data>Tauron2\Sly</Data>
+    <Data>False</Data>
+    <Data>   at ASP.test_aspx.Page_Load() in c:\Code\Diagnostics\EssentialDiagnostics\Examples\HelloWeb\Test.aspx:line 5
+   at System.Web.Util.CalliHelper.ArglessFunctionCaller(IntPtr fp, Object o)
+   at System.Web.Util.CalliEventHandlerDelegateProxy.Callback(Object sender, EventArgs e)
+   at System.Web.UI.Control.OnLoad(EventArgs e)
+   at System.Web.UI.Control.LoadRecursive()
+   at System.Web.UI.Page.ProcessRequestMain(Boolean includeStagesBeforeAsyncPoint, Boolean includeStagesAfterAsyncPoint)
+</Data>
+  </EventData>
+</Event>

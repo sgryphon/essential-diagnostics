@@ -58,8 +58,11 @@
     <Compile Include="RollingFileTests.cs" />
     <Compile Include="ExpressionFilterTests.cs" />
     <Compile Include="PropertyFilterTests.cs" />
+    <Compile Include="TraceFormatterTest.cs" />
     <Compile Include="TraceListenerBaseTests.cs" />
     <Compile Include="Utility\ConfigUtility.cs" />
+    <Compile Include="Utility\MockHttpTraceContext.cs" />
+    <Compile Include="Utility\UserResetScope.cs" />
     <Compile Include="Utility\FileResetScope.cs" />
     <Compile Include="LogicalOperationScopeTests.cs" />
     <Compile Include="Utility\MockCommand.cs">

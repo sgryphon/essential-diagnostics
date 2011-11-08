@@ -42,6 +42,7 @@ namespace Essential.Diagnostics
         private static string[] _supportedAttributes = new string[] 
             { 
             };
+        TraceFormatter traceFormatter = new TraceFormatter();
 
         private RollingTextWriter rollingTextWriter;
 
@@ -262,9 +263,9 @@ namespace Essential.Diagnostics
         {
             output.Append("\" />");
             output.Append("<Execution ProcessName=\"");
-            output.Append(TraceFormatter.FormatProcessName());
+            output.Append(traceFormatter.FormatProcessName());
             output.Append("\" ProcessID=\"");
-            uint processId = (uint)(int)TraceFormatter.FormatProcessId(eventCache);
+            uint processId = (uint)(int)traceFormatter.FormatProcessId(eventCache);
             output.Append(processId.ToString(CultureInfo.InvariantCulture));
             output.Append("\" ThreadID=\"");
             if (eventCache != null)

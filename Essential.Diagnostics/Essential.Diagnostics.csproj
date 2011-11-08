@@ -66,6 +66,7 @@
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -100,6 +101,8 @@
     <Compile Include="Diagnostics\TraceFormatter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringTemplate.cs" />
+    <Compile Include="Web\HttpContextAdapter.cs" />
+    <Compile Include="Web\IHttpTraceContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resource.resx">

@@ -148,6 +148,7 @@ namespace Essential.Diagnostics
                 "transferColor", "TransferColor", "transfercolor",
                 "activityTracingColor", "ActivityTracingColor", "activitytracingcolor",
             };
+        TraceFormatter traceFormatter = new TraceFormatter();
         private bool _useErrorStream;
         private TextWriter _writer;
 
@@ -393,7 +394,7 @@ namespace Essential.Diagnostics
             string output = StringTemplate.Format(Template, templateArguments.GetArgument);
             */
 
-            var output = TraceFormatter.Format(Template,
+            var output = traceFormatter.Format(Template,
                 eventCache,
                 source,
                 eventType,

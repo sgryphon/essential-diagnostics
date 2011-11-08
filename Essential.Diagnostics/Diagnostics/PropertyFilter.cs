@@ -23,8 +23,9 @@ namespace Essential.Diagnostics
 	[Obsolete("Use ExpressionFilter instead.")]
     public class PropertyFilter : TraceFilter
     {
-        private string propertyTemplate;
         private string comparisonValue;
+        private string propertyTemplate;
+        TraceFormatter traceFormatter = new TraceFormatter();
 
         /// <summary>
         /// Constructor.
@@ -61,7 +62,7 @@ namespace Essential.Diagnostics
             {
                 data = new object[] { data1 };
             }
-            string propertyValue = TraceFormatter.Format(propertyTemplate, cache, source, eventType, id, null,
+            string propertyValue = traceFormatter.Format(propertyTemplate, cache, source, eventType, id, null,
                                                         null, data);
             return propertyValue.Equals(comparisonValue);
         }

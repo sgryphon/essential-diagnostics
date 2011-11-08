@@ -19,6 +19,7 @@ namespace Essential.Diagnostics.Abstractions
     /// assembly the class is from see AssemblyTraceSource.
     /// </para>
     /// </remarks>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1040:AvoidEmptyInterfaces")]
     public interface ITraceSource<T> : ITraceSource
     {
     }

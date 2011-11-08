@@ -8,6 +8,8 @@ using System.Threading;
 using System.Security.Principal;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using Essential.Web;
+using System.Web;
 
 namespace Essential.Diagnostics
 {
@@ -32,14 +34,24 @@ namespace Essential.Diagnostics
     /// "{Source} {EventType}: {Id} : {Message}".
     /// </para>
     /// </remarks>
-    public static class TraceFormatter
+    public class TraceFormatter
     {
 
         // TODO: AppDomainFriendlyName
 
-        static string applicationName;
-        static int processId;
-        static string processName;
+        string applicationName;
+        private IHttpTraceContext httpTraceContext = new HttpContextAdapter(HttpContext.Current);
+        int processId;
+        string processName;
+
+        /// <summary>
+        /// Gets or sets the context for ASP.NET web trace information.
+        /// </summary>
+        public IHttpTraceContext HttpTraceContext
+        {
+            get { return httpTraceContext; }
+            set { httpTraceContext = value; }
+        }
 
         /// <summary>
         /// Formats a trace event, inserted the provided values into the provided template.
@@ -63,7 +75,7 @@ namespace Essential.Diagnostics
         /// "{Source} {EventType}: {Id} : {Message}".
         /// </para>
         /// </remarks>
-        public static string Format(string template, TraceEventCache eventCache, string source, 
+        public string Format(string template, TraceEventCache eventCache, string source, 
             TraceEventType eventType, int id, string message, 
             Guid? relatedActivityId, object[] data)
         {
@@ -139,6 +151,18 @@ namespace Essential.Diagnostics
                         case "WINDOWSIDENTITYNAME":
                             value = FormatWindowsIdentityName();
                             break;
+                        case "REQUESTURL":
+                            value = HttpTraceContext.RequestUrl;
+                            break;
+                        case "REQUESTPATH":
+                            value = HttpTraceContext.RequestPath;
+                            break;
+                        case "USERHOSTADDRESS":
+                            value = HttpTraceContext.UserHostAddress;
+                            break;
+                        case "APPDATA":
+                            value = HttpTraceContext.AppDataPath;
+                            break;
                         default:
                             value = "{" + name + "}";
                             return true;
@@ -148,7 +172,7 @@ namespace Essential.Diagnostics
             return result;
         }
 
-        private static void EnsureApplicationName()
+        private void EnsureApplicationName()
         {
             if (applicationName == null)
             {
@@ -168,7 +192,7 @@ namespace Essential.Diagnostics
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
-        private static void EnsureProcessInfo()
+        private void EnsureProcessInfo()
         {
             if (processName == null)
             {
@@ -180,7 +204,7 @@ namespace Essential.Diagnostics
             }
         }
 
-        internal static object FormatApplicationName()
+        internal object FormatApplicationName()
         {
             object value;
             EnsureApplicationName();
@@ -289,7 +313,7 @@ namespace Essential.Diagnostics
             return value;
         }
 
-        internal static object FormatProcessId(TraceEventCache eventCache)
+        internal object FormatProcessId(TraceEventCache eventCache)
         {
             object value;
             if (eventCache == null)
@@ -304,7 +328,7 @@ namespace Essential.Diagnostics
             return value;
         }
 
-        internal static object FormatProcessName()
+        internal object FormatProcessName()
         {
             object value;
             EnsureProcessInfo();
@@ -340,7 +364,7 @@ namespace Essential.Diagnostics
             return value;
         }
 
-        internal static object FormatUniversalTime(TraceEventCache eventCache)
+        internal object FormatUniversalTime(TraceEventCache eventCache)
         {
             object value;
             if (eventCache == null)
@@ -356,7 +380,7 @@ namespace Essential.Diagnostics
             return value;
         }
 
-        internal static object FormatLocalTime(TraceEventCache eventCache)
+        internal object FormatLocalTime(TraceEventCache eventCache)
         {
             object value;
             if (eventCache == null)
