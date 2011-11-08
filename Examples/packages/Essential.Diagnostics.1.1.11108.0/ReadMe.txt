@@ -19,7 +19,16 @@ System.Diagnostics trace listeners, filters, and other utilities.
 Version History
 ---------------
 
-v1.1.x 
+v1.1.patch1
+
+* ISSUE #1: TraceFormatter.cs dependent on System.Windows.Forms.
+  We only want the application name part, so use either Assembly.GetEntryAssembly() directly, or 
+  for native code use kernel32 GetModuleFileName(), without checking security.
+
+* ISSUE #2: traceSource.TraceInformation("Information message") throws exception with SqlDatabaseTraceListener.
+  (Issue was in TraceListenerBase and affected all listeners.)
+
+v1.1.10711 (July 2011)
 
 * RollingFileTraceListener, with trace format templates
 * RollingXmlTraceListener, rolling files compatible with Service Trace Viewer
@@ -30,7 +39,7 @@ v1.1.x
 * Added new SQL parameters to SqlDatabaseTraceListener
 * Added Diagnostics.Abstractions library, for better dependency injection support
 * Make backwards compatible with .NET 2.0 SP1
-* Updated hello loggign example for new trace listeners
+* Updated hello logging example for new trace listeners
 * Added filter examples
 
 v1.0.1011 (October 2010)
