@@ -19,6 +19,7 @@ namespace PerformanceTest
             var runners = new RunnerBase[] {
                 new CountingRunner(),
                 new SystemDiagnosticsRunner("None", "NoSource1", "NoSource2"),
+                new SystemDiagnosticsRunner("None (switch)", "SwitchOffSource1", "SwitchOffSource2"),
                 new SystemDiagnosticsRunner("None (clear)", "ClearSource1", "ClearSource2"),
                 new SystemDiagnosticsRunner("One Filtered", "WarningSource1", "NoSource2"),
                 new SystemDiagnosticsRunner("Two Filtered", "WarningSource1", "WarningSource2"),
@@ -26,6 +27,9 @@ namespace PerformanceTest
                 new SystemDiagnosticsRunner("No Clear - One Filtered", "NoClearWarningSource1", "NoSource2"),
                 new SystemDiagnosticsRunner("No Clear - Two Filtered", "NoClearWarningSource1", "NoClearWarningSource2"),
                 new SystemDiagnosticsRunner("No Clear - One Full", "NoClearFullSource1", "NoClearWarningSource2"),
+                new SystemDiagnosticsRunner("Essential - One Filtered", "EssentialWarningSource1", "NoSource2"),
+                new SystemDiagnosticsRunner("Essential - Two Filtered", "EssentialWarningSource1", "EssentialWarningSource2"),
+                new SystemDiagnosticsRunner("Essential - One Full", "EssentialFullSource1", "EssentialWarningSource2"),
                 new NLogRunner("None", "None.NoSource1", "None.NoSource2"),
                 new NLogRunner("One Filtered", "Warn.WarningSource1", "None.NoSource2"),
                 new NLogRunner("Two Filtered", "Warn.WarningSource1", "Warn.WarningSource2"),
