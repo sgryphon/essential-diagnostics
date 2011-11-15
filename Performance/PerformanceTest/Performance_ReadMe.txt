@@ -38,6 +38,7 @@ The different frameworks compared:
 * System.Diagnostics, using Essential.Diagnostics RollingFileTraceListener.
 * log4net
 * NLog
+* Enterprise Library Logging Application Block
 
 Note
 ----
@@ -51,6 +52,5 @@ the performance of your application. i.e. the worst thing you can do is:
 
       <!-- Bad example: will severely impact performance -->
       <source name="MySource" switchValue="All">
-        <listeners>
-        </listeners>
       </source>
+

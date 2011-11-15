@@ -31,10 +31,12 @@ namespace PerformanceTest
 
         public void Run()
         {
+            var spacer30 = new string(' ', 30);
             if (Output)
             {
-                Console.WriteLine("");
+                //Console.WriteLine("");
                 //Console.WriteLine("{2:s} start (x{1}) {0}.", Name, Iterations, DateTimeOffset.Now);
+                Console.Write("{0,-30} (x{1,8}) : ", Name, Iterations);
             }
             Start();
             Stopwatch sw = Stopwatch.StartNew();
@@ -91,7 +93,7 @@ namespace PerformanceTest
             {
                 //Console.WriteLine("{1:s} stop {0}.", Name, DateTimeOffset.Now);
                 var difference = Elapsed - BaseTime;
-                Console.WriteLine("{1,10:f4} difference (x{2}) for {0}", Name, difference.TotalMilliseconds, Iterations);
+                Console.WriteLine("{0,12:f4}", difference.TotalMilliseconds);
             }
             Finish();
         }

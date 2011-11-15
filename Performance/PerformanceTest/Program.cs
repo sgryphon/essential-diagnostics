@@ -15,6 +15,7 @@ namespace PerformanceTest
             XmlConfigurator.Configure(new System.IO.FileInfo(log4netConfig));
 
             var iterations = 1000000;
+            //var iterations = 1000;
             var nullRunner = new NullRunner();
             var runners = new RunnerBase[] {
                 new CountingRunner(),
@@ -24,21 +25,27 @@ namespace PerformanceTest
                 new SystemDiagnosticsRunner("One Filtered", "WarningSource1", "NoSource2"),
                 new SystemDiagnosticsRunner("Two Filtered", "WarningSource1", "WarningSource2"),
                 new SystemDiagnosticsRunner("One Full", "FullSource1", "WarningSource2"),
-                new SystemDiagnosticsRunner("No Clear - One Filtered", "NoClearWarningSource1", "NoSource2"),
-                new SystemDiagnosticsRunner("No Clear - Two Filtered", "NoClearWarningSource1", "NoClearWarningSource2"),
+                new SystemDiagnosticsRunner("No Clear - One Filt.", "NoClearWarningSource1", "NoSource2"),
+                new SystemDiagnosticsRunner("No Clear - Two Filt.", "NoClearWarningSource1", "NoClearWarningSource2"),
                 new SystemDiagnosticsRunner("No Clear - One Full", "NoClearFullSource1", "NoClearWarningSource2"),
-                new SystemDiagnosticsRunner("Essential - One Filtered", "EssentialWarningSource1", "NoSource2"),
-                new SystemDiagnosticsRunner("Essential - Two Filtered", "EssentialWarningSource1", "EssentialWarningSource2"),
+                new SystemDiagnosticsRunner("Essential - One Filt.", "EssentialWarningSource1", "NoSource2"),
+                new SystemDiagnosticsRunner("Essential - Two Filt.", "EssentialWarningSource1", "EssentialWarningSource2"),
                 new SystemDiagnosticsRunner("Essential - One Full", "EssentialFullSource1", "EssentialWarningSource2"),
-                new NLogRunner("None", "None.NoSource1", "None.NoSource2"),
-                new NLogRunner("One Filtered", "Warn.WarningSource1", "None.NoSource2"),
-                new NLogRunner("Two Filtered", "Warn.WarningSource1", "Warn.WarningSource2"),
-                new NLogRunner("One Full", "Full.FullSource1", "Warn.WarningSource2"),
                 new log4netCheckRunner(),
                 new log4netRunner("None", "None.NoSource1", "None.NoSource2"),
                 new log4netRunner("One Filtered", "Warn.WarningSource1", "None.NoSource2"),
                 new log4netRunner("Two Filtered", "Warn.WarningSource1", "Warn.WarningSource2"),
                 new log4netRunner("One Full", "Full.FullSource1", "Warn.WarningSource2"),
+                new NLogRunner("None", "None.NoSource1", "None.NoSource2"),
+                new NLogRunner("One Filtered", "Warn.WarningSource1", "None.NoSource2"),
+                new NLogRunner("Two Filtered", "Warn.WarningSource1", "Warn.WarningSource2"),
+                new NLogRunner("One Full", "Full.FullSource1", "Warn.WarningSource2"),
+                new EntLibRunner("None", "NoneCategory1", "NoneCategory2"),
+                new EntLibRunner("One Filtered", "WarningCategory1", "NoneCategory2"),
+                new EntLibRunner("Two Filtered", "WarningCategory1", "WarningCategory2"),
+                new EntLibRunner("One Full", "FullCategory1", "WarningCategory2"),
+                new EntLibNoFormatRunner("One Full", "FullCategory1", "WarningCategory2"),
+                //new SystemDiagnosticsRunner("(bad source)", "BadSource", "BadSource"),
             };
 
             Console.WriteLine("Logging performance tester.");
