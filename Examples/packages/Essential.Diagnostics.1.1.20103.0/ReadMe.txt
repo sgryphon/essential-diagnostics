@@ -19,14 +19,19 @@ System.Diagnostics trace listeners, filters, and other utilities.
 Version History
 ---------------
 
-v1.1.patch1
+v1.1.20103 (January 2012)
 
-* ISSUE #1: TraceFormatter.cs dependent on System.Windows.Forms.
-  We only want the application name part, so use either Assembly.GetEntryAssembly() directly, or 
-  for native code use kernel32 GetModuleFileName(), without checking security.
-
-* ISSUE #2: traceSource.TraceInformation("Information message") throws exception with SqlDatabaseTraceListener.
-  (Issue was in TraceListenerBase and affected all listeners.)
+* Feature #4: Add HttpContext items -- RequestUrl, RequestPath, UserHostAddress, 
+  AppData.
+* Issue #1: TraceFormatter.cs dependent on System.Windows.Forms.
+  We only want the application name part, so use either Assembly.GetEntryAssembly() 
+  directly, or for native code use kernel32 GetModuleFileName(), without checking 
+  security.
+* Issue #2: traceSource.TraceInformation("Information message") throws exception 
+  with SqlDatabaseTraceListener. (Issue was in TraceListenerBase and affected all 
+  listeners.)
+* Issue #12: Allow currently open log file to be shared with another program (for 
+  read access only). 
 
 v1.1.10711 (July 2011)
 
