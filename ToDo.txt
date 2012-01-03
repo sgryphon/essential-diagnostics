@@ -1,14 +1,11 @@
 TODO: Essential.Diagnostics
 ===========================
 
-
 Features TODO
 -------------
 
 - Allow multiple listeners (within one process) writing to the same rolling file.
   This would allow different templates to be used with different filters.
-
-- Add HttpContext items (if available) to TraceFormatter.
 
 - Add MinimumTrustTraceSource; for use in low-trust environments.
 
@@ -20,6 +17,9 @@ Features TODO
 Bug fixes TODO
 --------------
 
+
+Packaging TODO
+--------------
 
 
 Documentation TODO
@@ -35,16 +35,10 @@ Documentation TODO
 Examples TODO
 -------------
 
-** Update examples to <clear /> listeners (for performance)
-
 Full file logging example (using VB logger), which version of VB, example settings
 
 ASPNET tracing example, including config settings to turn on tracing, security considerations, URL, screen shots
 
 Event Logging considerations, e.g. installutil required to create the log name first
 
-Packaging TODO
---------------
 
-Update package script in 'update examples' step to also copy in the .nupkg file
-(it is referenced by -PackageFull).

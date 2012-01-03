@@ -273,7 +273,15 @@ function Update-Examples($solutionPath, $configuration, $version) {
       Copy-Item "$path\lib" "$target\lib" -Container -Recurse
       Copy-Item "$path\tools" "$target\tools" -Container -Recurse
     }
-    
+
+    $packageFolder = (Join-Path $solutionPath "Package\Output")
+	$packageFile = (Join-Path $packageFolder "Essential.Diagnostics.$version.nupkg")
+	Write-Host "$($pre)Copying package to '$target'"
+	if (-not $WhatIf) {
+	  Ensure-Directory $target
+      Copy-Item "$packageFile" "$target"
+    }
+	    
 	$majorMinor = $version -replace "(\d+\.\d+)\.\d+\.\d+", "`$1.0.0"
 	$referenceRegex = "Essential\.Diagnostics, Version=\d+\.\d+\.\d+\.\d+"
 	$referenceReplace = "Essential.Diagnostics, Version=$majorMinor"
@@ -284,8 +292,8 @@ function Update-Examples($solutionPath, $configuration, $version) {
 	
 	Write-Host "Update reference to '$referenceReplace' and path to '$pathReplace'"
 
-	$exampleProjects = @( "HelloLogging", "MonitorConfig", "FilteringExample", 
-		"ScopeExample", "AbstractionDependency", "TemplateArguments" )
+	$exampleProjects = @( "AbstractionDependency", "FilteringExample", "HelloLogging",
+        "HelloWeb", "MonitorConfig", "ScopeExample", "TemplateArguments" )
 	
 	foreach ($project in $exampleProjects) {
 		$projectPath = Join-Path $solutionPath "Examples\$project\$project.csproj"
