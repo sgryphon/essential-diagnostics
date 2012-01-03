@@ -43,3 +43,8 @@ ASPNET tracing example, including config settings to turn on tracing, security c
 
 Event Logging considerations, e.g. installutil required to create the log name first
 
+Packaging TODO
+--------------
+
+Update package script in 'update examples' step to also copy in the .nupkg file
+(it is referenced by -PackageFull).

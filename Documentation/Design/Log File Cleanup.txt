@@ -1,0 +1,98 @@
+
+
+
+1. FileLogTraceListener
+
+A new file is used when the maxFileSize is reached, as well as a daily or weekly
+basis as specified by logFileCreationSchedule. 
+        
+Each file has a name in the format "<directory>\<baseFileName>(-<yyyy-MM-dd>)(-<seq>).log",
+with the local date included for daily and weekly rotation, and a sequence number
+appended if the file already exists.
+
+logFileCreationSchedule="None|Daily|Weekly"
+maxFileSize="5000000"
+
+2. Rolling file:
+
+Previous --
+
+initializeData="{ApplicationName}-{DateTime:yyyy-MM-dd}.log"
+initializeData="{ApplicationName}-{DateTime:yyyyMMdd}.svclog"
+
+Add --
+
+logFileCreationSchedule="None|Hourly|Daily|Weekly|LocalHourly|LocalDaily|LocalWeekly|Custom"
+maxFileSize="0" // allow 3M, 5K, etc, also '3MB', '5 KB'
+retainedLogFiles="0"
+
+maxFileSize '0' = unlimited
+retainedLogFiles '0' = unlimited
+
+To get the previous behaviour you need to add logFileCreationSchedule="Custom"
+
+initializeData="{ApplicationName}-{DateTime:yyyy-MM-dd}.log"
+initializeData="{ApplicationName}-{DateTime:yyyyMMdd}.svclog"
+
+If logFileCreationSchedule 'None'
+
+Add (-<yyyy-MM-dd>)
+If max size reached, add (-<seq>)
+
+Break file into <customLocation aka directory>,<baseFileName> and <extension>
+
+To cleanup ...
+ * Find files "<customLocation>\<baseFileName>*.<extension>"
+ * Parse the (*) bit
+ * Check format: "-#0", "-yyyy-MM-dd", "-yyyy-MM-dd_HH", "-yyyy-MM-dd-#0", "-yyyy-MM-dd_HH-#0"
+ * If match, work out if > retained & if so, delete
+ * If match, but <= retained, then keep
+ * If not match, then keep
+
+For sequence by time, on startup
+ * Find and parse format; find highest number
+ * Increase and start new file
+
+For sequence by size, on startup
+ * Find and parse format; find highest number
+ * Use highest number to fill up to size
+ 
+Formats:
+ * Date with separator, e.g. "Log-2011-11-16.log", "Log-2011-11-17.log"
+ * Date without, e.g. "Log-20111116.log", "Log-20111117.log"
+ * Weekly date, e.g. "Log-2011-11-10.log", "Log-2011-11-17.log"
+ * Week (e.g. Monday based), e.g. "Log-2011-11-07.log", "Log-2011-11-14.log"
+ * Daily basis, but with counter "Log-1.log", "Log-2.log"
+ * Size base, with counter "Log-1.log", "Log-2.log"
+ * Zero-based counter "Log.log", "Log-1.log" / "Log.log", "Log-2.log" 
+ * Rolling "Log.log"; when finished rename to "Log-1.log" and start new "Log.log", 
+   then rename to "Log-2.log", "Log-1.log", "Log.log".
+ 
+initializeData="<directory>\<baseFileName>.<extension>"
+logFileCreationSchedule="None|Daily|Weekly|UtcDaily|UtcWeekly|Custom"
+suffixType="Default|DateTime|SequenceNumber(|Rolling)"
+maxFileSize="0" // allow 3M, 5K, etc, also '3MB', '5 KB'
+retainedLogFiles="0"
+
+with None/DateTime then inserts <baseFileName>-yyyy-MM-dd_HHmmss.log
+
+with schedule 'Custom' then allow {DateTime} in filename.
+
+Logging sequence:
+
+ * Render to buffer
+ * (If size > 0) Calculate size
+ * Generate log token
+ * Check if log token == current token
+   AND Check if size + calculated size < limit
+ * If not:
+	 * Save token
+	 * Reset size to 0
+     * Generate new file name
+	 * Open new file
+	 * (If retained > 0) Check directory for files to remove
+ * Write buffer to log	 
+ * Size = size + calculated size
+ 
+
+
