@@ -88,7 +88,7 @@ namespace Essential.Diagnostics
                     var fullPath = num == 0 ? path : getFullPath(path, num);
                     try
                     {
-                        stream = File.Open(fullPath, FileMode.Append, FileAccess.Write, FileShare.Read);
+                        stream = FileSystem.Open(fullPath, FileMode.Append, FileAccess.Write, FileShare.Read);
 
                         this._currentWriter = new StreamWriter(stream);
                         this._currentPath = path;
