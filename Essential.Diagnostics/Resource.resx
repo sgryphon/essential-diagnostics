@@ -129,6 +129,9 @@
   <data name="InvalidConsoleColor" xml:space="preserve">
     <value>Console color specified is invalid.</value>
   </data>
+  <data name="RollingTextWriter_ExhaustedLogfileNames" xml:space="preserve">
+    <value>"Exhausted possible logfile names"</value>
+  </data>
   <data name="StringTemplate_ArgumentNotFound" xml:space="preserve">
     <value>Invalid argument name used.</value>
   </data>

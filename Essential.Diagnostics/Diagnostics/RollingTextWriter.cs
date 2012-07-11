@@ -8,6 +8,8 @@ namespace Essential.Diagnostics
 {
     class RollingTextWriter : IDisposable
     {
+        const int _maxStreamRetries = 5;
+
         private string _currentPath;
         private TextWriter _currentWriter;
         private object _fileLock = new object();
@@ -77,10 +79,41 @@ namespace Essential.Diagnostics
                 {
                     _currentWriter.Close();
                 }
-                var stream = FileSystem.Open(path, FileMode.Append, FileAccess.Write, FileShare.Read);
-                _currentWriter = new StreamWriter(stream);
-                _currentPath = path;
+
+                var num = 0;
+                var stream = default(Stream);
+
+                while (stream == null && num < _maxStreamRetries)
+                {
+                    var fullPath = num == 0 ? path : getFullPath(path, num);
+                    try
+                    {
+                        stream = File.Open(fullPath, FileMode.Append, FileAccess.Write, FileShare.Read);
+
+                        this._currentWriter = new StreamWriter(stream);
+                        this._currentPath = path;
+
+                        return;
+                    }
+                    catch (DirectoryNotFoundException)
+                    {
+                        throw;
+                    }
+                    catch (IOException)
+                    {
+
+                    }
+                    num++;
+                }
+
+                throw new InvalidOperationException(Resource.RollingTextWriter_ExhaustedLogfileNames);
             }
+        }
+
+        static string getFullPath(string path, int num)
+        {
+            var extension = Path.GetExtension(path);
+            return path.Insert(path.Length - extension.Length, "-" + num.ToString(CultureInfo.InvariantCulture));
         }
 
         private string GetCurrentFilePath(TraceEventCache eventCache)
