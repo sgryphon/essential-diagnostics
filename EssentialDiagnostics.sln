@@ -10,6 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		EssentialDiagnostics.vsmdi = EssentialDiagnostics.vsmdi
 		License.txt = License.txt
 		Local.testsettings = Local.testsettings
+		LocalTestRun.TestRunConfig = LocalTestRun.TestRunConfig
 		ReadMe.txt = ReadMe.txt
 		TFSBuildNumber.targets = TFSBuildNumber.targets
 		ToDo.txt = ToDo.txt
@@ -32,6 +33,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 		Documentation\Essential.Diagnostics.shfbproj = Documentation\Essential.Diagnostics.shfbproj
 		Documentation\NamespaceComments.xml = Documentation\NamespaceComments.xml
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.DiagnosticsExtra", "Essential.DiagnosticsExtra\Essential.DiagnosticsExtra.csproj", "{E1BF36D5-151B-4A83-B68B-7F76D0BAAF0B}"
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
@@ -76,6 +79,16 @@ Global
 		{252DDE2C-C596-4F3B-96E3-87CB9F7ED839}.Release|Mixed Platforms.Build.0 = Release|x86
 		{252DDE2C-C596-4F3B-96E3-87CB9F7ED839}.Release|x86.ActiveCfg = Release|x86
 		{252DDE2C-C596-4F3B-96E3-87CB9F7ED839}.Release|x86.Build.0 = Release|x86
+		{E1BF36D5-151B-4A83-B68B-7F76D0BAAF0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1BF36D5-151B-4A83-B68B-7F76D0BAAF0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1BF36D5-151B-4A83-B68B-7F76D0BAAF0B}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{E1BF36D5-151B-4A83-B68B-7F76D0BAAF0B}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{E1BF36D5-151B-4A83-B68B-7F76D0BAAF0B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E1BF36D5-151B-4A83-B68B-7F76D0BAAF0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1BF36D5-151B-4A83-B68B-7F76D0BAAF0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1BF36D5-151B-4A83-B68B-7F76D0BAAF0B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{E1BF36D5-151B-4A83-B68B-7F76D0BAAF0B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{E1BF36D5-151B-4A83-B68B-7F76D0BAAF0B}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

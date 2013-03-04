@@ -1,16 +1,16 @@
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Essential.Diagnostics.RegSql")]
-[assembly: AssemblyDescription("Registration tool for SqlDatabaseTraceListener")]
+[assembly: AssemblyTitle("Essential.DiagnosticsExtra")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Gryphon Technology Pty Ltd")]
-[assembly: AssemblyProduct("Essential.Diagnostics")]
-[assembly: AssemblyCopyright("Copyright © Gryphon Technology Pty Ltd 2011")]
+[assembly: AssemblyCompany("Microsoft")]
+[assembly: AssemblyProduct("Essential.DiagnosticsExtra")]
+[assembly: AssemblyCopyright("Copyright © Microsoft 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("be006cbe-f12b-47b5-8b11-0117493b69b1")]
+[assembly: Guid("f99dcf78-7bb4-4dff-9ecc-eaf8179a459d")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -31,6 +31,7 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
-// [assembly: AssemblyVersion("1.1.0.0")]
-[assembly: AssemblyVersion("1.1.0.0")]
-[assembly: AssemblyFileVersion("1.1.30211.0")]
+// [assembly: AssemblyVersion("1.0.*")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: System.CLSCompliant(true)]
