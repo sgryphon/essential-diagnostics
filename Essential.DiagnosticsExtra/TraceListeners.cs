@@ -4,33 +4,38 @@ using System.Text;
 using System.Diagnostics;
 using System.IO;
 using System.Security.Permissions;
-using System.Net.Mail;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 using System.Xml.Xsl;
 using System.Xml;
 using System.ComponentModel;
-using System.Runtime.Remoting.Messaging;
+using System.Net.Mail;
 
 namespace Essential.Diagnostics
 {
     /// <summary>
-    /// Common info to be logged during the startup of a process. And the date format prefers ISO8601.
+    /// Common info to be logged during the startup of a process or AppDomain. And the date format prefers ISO8601.
     /// </summary>
     public static class StartupInfo
     {
         /// <summary>
-        /// To be used to write the first trace when a process start. So the message will appear in both the log file and the event viewer.
+        /// To be used to write the first trace when a process starts, with info of the process signature.
         /// </summary>
         /// <param name="basicMessage"></param>
         public static void WriteLine(string basicMessage)
         {
-            Trace.TraceInformation(GetLine(basicMessage));
+            Trace.TraceInformation(GetMessageWithProcessSignature(basicMessage));
         }
 
-        public static string GetLine(string basicMessage)
+        /// <summary>
+        /// Message suffixed with process info: machine name, user name, process name along with arguments, app domain name and local time.
+        /// </summary>
+        /// <param name="basicMessage"></param>
+        /// <returns></returns>
+        /// <remarks>Though a trace option or format might give a time stamp prefix to a message, StartupInfo enforces the info about local time in ISO8601 format.</remarks>
+        public static string GetMessageWithProcessSignature(string basicMessage)
         {
-            return String.Format("{0} -- Machine: {1}; User: {2}/{3}; Process: {4}; AppDomain: {5} Time: {6}.",
+            return String.Format("{0} -- Machine: {1}; User: {2}/{3}; Process: {4}; AppDomain: {5} Local Time: {6}.",
                 basicMessage,
                 Environment.MachineName,
                 Environment.UserDomainName,
@@ -47,35 +52,28 @@ namespace Essential.Diagnostics
         /// <returns></returns>
         public static string GetParagraph(string basicMessage)
         {
-            return String.Format("Time        : {4}\n" +
-                                 "Machine     : {0}\n" +
-                                 "User        : {1}\\{2}\n" +
-                                 "Process     : {3}\n" +
-                                 "Notification: {5}\n\n",
-                Environment.MachineName,//0
-                Environment.UserDomainName,//1
-                Environment.UserName,//2
-                Environment.CommandLine,//3
-                GetISO8601Text(DateTime.Now),//4
-               basicMessage);//5
+            return String.Format("{0}+Message:\n{1}", Paragraph, basicMessage);
         }
 
         /// <summary>
-        /// Text lines presenting time, machine name, user name and process name.
+        /// Text lines presenting time, machine name, user name, process name and app domain.
         /// </summary>
         public static string Paragraph
         {
             get
             {
-                return String.Format("Time        : {4}\n" +
-                                     "Machine     : {0}\n" +
-                                     "User        : {1}\\{2}\n" +
-                                     "Process     : {3}\n",
-                    Environment.MachineName,//0
-                    Environment.UserDomainName,//1
-                    Environment.UserName,//2
-                    Environment.CommandLine,//3
-                    GetISO8601Text(DateTime.Now));
+                return String.Format("Time        : {0}\n" +
+                                     "Machine     : {1}\n" +
+                                     "User        : {2}\\{3}\n" +
+                                     "Process     : {4}\n"+
+                                     "AppDomain   : {5}\n",
+                    NowText,
+                    Environment.MachineName,
+                    Environment.UserDomainName,
+                    Environment.UserName,
+                    Environment.CommandLine,
+                    AppDomain.CurrentDomain.ToString()
+                    );
             }
         }
 
@@ -92,6 +90,9 @@ namespace Essential.Diagnostics
             }
         }
 
+        /// <summary>
+        /// Now in ISO8601 
+        /// </summary>
         public static string NowText
         {
             get
@@ -102,175 +103,6 @@ namespace Essential.Diagnostics
 
     }
 
-    internal class MailInfo
-    {
-        internal string From { get; set; }
-        internal string Recipient { get; set; }
-        internal DateTime TimeSent { get; set; }
-
-        internal Exception Exception { get; set; }
-    }
-
-    /// <summary>
-    /// A wrapper of Smtpclient. Though Smtpclient provides SendAsync, this function apparently only do the transmitting in a new thread, while the initial hand shaking is still in the caller thread.
-    /// So this class will do the whole thing in a new thread.
-    /// </summary>
-    internal class SmtpClientAsync
-    {
-        SmtpClient client;
-
-        internal SmtpClientAsync(string smtpServerName)
-        {
-            client = new SmtpClient(smtpServerName);
-        }
-
-        internal event SendCompletedEventHandler SendCompleted;
-
-        /// <summary>
-        /// Send mail via a spin off thread. And mailMessage will be disposed in the thread.
-        /// </summary>
-        /// <param name="smtpServer"></param>
-        /// <param name="mailMessage"></param>
-        /// <returns></returns>
-        /// <remarks>If the host process is terminated, the thread running the sending will be terminated as well, therefore the last few error message traced might be lost.</remarks>
-        internal IAsyncResult SendAsync(MailMessage mailMessage)
-        {
-            MailInfo state = new MailInfo()
-            {
-                From = mailMessage.From.Address,
-                Recipient = mailMessage.To[0].Address,
-                TimeSent = DateTime.Now,
-            };
-
-            SendEmailHandler d = (mm) =>
-            {
-                if (!Send(mm, state))
-                {
-                    Debug.WriteLine("Hey, send fails, please check trace following.");
-                }
-            };
-
-            return d.BeginInvoke(mailMessage, EmailSentCallback, state);
-        }
-
-        void EmailSentCallback(IAsyncResult asyncResult)
-        {
-            AsyncResult resultObj = (AsyncResult)asyncResult;
-            SendEmailHandler d = (SendEmailHandler)resultObj.AsyncDelegate;
-            MailInfo state = null;
-            try
-            {
-                d.EndInvoke(asyncResult);
-                Debug.WriteLine("IsCompleted: " + asyncResult.IsCompleted);
-                state = (MailInfo)asyncResult.AsyncState;
-                if (SendCompleted != null)
-                {
-                    SendCompleted(this, new AsyncCompletedEventArgs(state.Exception, false, state));
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine("The thread is terminated, and general exception is caught. " + e.ToString());
-                SendCompleted(this, new AsyncCompletedEventArgs(e, false, null));
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Send and dispose mailMessage.
-        /// </summary>
-        /// <param name="mailMessage"></param>
-        /// <param name="state"></param>
-        /// <returns></returns>
-        bool Send(MailMessage mailMessage, MailInfo state)
-        {
-            try
-            {
-#if DEBUG
-                DateTime dt = DateTime.Now;
-#endif
-                client.Send(mailMessage);
-                Debug.WriteLine("Email sent in " + (DateTime.Now - dt).TotalSeconds.ToString());
-                return true;
-            }
-            catch (SmtpException e)
-            {
-                Debug.WriteLine("Caught in Send. " + e.ToString());
-                state.Exception = e;
-            }
-            catch (IOException e)
-            {
-                Debug.WriteLine("Caught in Send. " + e.ToString());
-                state.Exception = e;
-            }
-            finally
-            {
-                mailMessage.Dispose();
-            }
-
-            return false;
-
-        }
-    }
-
-    internal static class MailUtil
-    {
-        internal static void AssignEmailSubject(MailMessage mailMessage, string subject)
-        {
-            if (String.IsNullOrEmpty(subject))
-                return;
-
-            if (mailMessage == null)
-                throw new ArgumentNullException("mailMessage");
-
-            const int subjectMaxLength = 254; //though .NET lib does not place any restriction, and the recent standard of Email seems to be 254, which sounds safe.
-            if (subject.Length > 254)
-                subject = subject.Substring(0, subjectMaxLength);
-
-            try
-            {
-                for (int i = 0; i < subject.Length; i++)
-                {
-                    if (Char.IsControl(subject[i]))
-                    {
-                        mailMessage.Subject = subject.Substring(0, i);
-                        return;
-                    }
-                }
-                mailMessage.Subject = subject;
-
-            }
-            catch (ArgumentException)
-            {
-                mailMessage.Subject = "Invalid subject removed by TraceListener";
-            }
-        }
-
-        /// <summary>
-        /// Send mail via a spin off thread.
-        /// </summary>
-        /// <param name="smtpServer"></param>
-        /// <param name="mailMessage"></param>
-        /// <returns></returns>
-        /// <remarks>If the host process is terminated, the thread running the sending will be terminated as well, therefore the last few error message traced might be lost.</remarks>
-        internal static void SendEmailAsync(string smtpServer, MailMessage mailMessage)
-        {
-            SmtpClientAsync client = new SmtpClientAsync(smtpServer);
-            client.SendCompleted += new SendCompletedEventHandler(client_SendCompleted);
-            client.SendAsync(mailMessage);
-        }
-
-        static void client_SendCompleted(object sender, AsyncCompletedEventArgs e)
-        {
-#if DEBUG
-            MailInfo info = (MailInfo)e.UserState;
-            Debug.WriteLine(String.Format("Email sent to {0} at {1}", info.Recipient, info.TimeSent));
-#endif
-        }
-
-    }
-
-    internal delegate void SendEmailHandler(MailMessage mailMessage);
 
     /// <summary>
     /// Email trace listeners output trace messages (warning and error only) to SMTP Email system as Email messages. Every message sent will go through a new connection in a new thread.
@@ -387,7 +219,7 @@ namespace Essential.Diagnostics
             }
 
             string[] ss = message.Split(new string[] { ";", ", ", ". " }, 2, StringSplitOptions.None);
-            return StartupInfo.GetLine(ss[0]);
+            return StartupInfo.GetMessageWithProcessSignature(ss[0]);
         }
 
     }

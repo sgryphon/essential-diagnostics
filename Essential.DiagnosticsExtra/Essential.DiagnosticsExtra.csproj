@@ -39,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="MailFunctions.cs" />
     <Compile Include="TraceListeners.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

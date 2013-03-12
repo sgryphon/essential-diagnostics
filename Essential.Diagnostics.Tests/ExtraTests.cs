@@ -107,85 +107,68 @@ namespace Essential.Diagnostics.Tests
 
 
         }
- // Integration tests for Email functions should not be executed often.
-        //[TestMethod]
-        //[TestCategory("MailIntegration")]
-        //public void TestSendEmail()
-        //{
-        //    Assert.IsTrue(MailUtil_Accessor.SendEmail("mail.fonlow.com", new System.Net.Mail.MailMessage("andy@fonlow.com", "arnold@fonlow.com", "Hello", "are you there?")));
-        //}
+ //////////////////////// Integration tests for Email functions should not be executed often.
+///*During integration tests, it is good to have a local SMTP server installed. Windows 7 does not have one, so you may use hMailServer. External SMTP server might be subject to spam control and network issue.
 
-        [TestMethod]
-        [TestCategory("MailIntegration")]
-        public void TestEmailTraceListener()
-        {
-            Trace.TraceWarning("Anything. More detail go here.");
-            Trace.TraceError("something wrong; can you tell? more here.");
-            Trace.WriteLine("This is writeline.", "Category");
-            Trace.WriteLine("This is another writeline.", "caTegory");
-            Trace.WriteLine("Writeline without right category", "CCCC");
-            System.Threading.Thread.Sleep(15000);//need to wait, otherwise the test host is terminated resulting in thread abort.
-        }
+                [TestMethod]
+                [TestCategory("MailIntegration")]
+                public void TestEmailTraceListener()
+                {
+                    Trace.TraceWarning("Anything. More detail go here.");
+                    Trace.TraceError("something wrong; can you tell? more here.");
+                    Trace.WriteLine("This is writeline.", "Category");
+                    Trace.WriteLine("This is another writeline.", "caTegory");
+                    Trace.WriteLine("Writeline without right category", "CCCC");
+                    System.Threading.Thread.Sleep(15000);//need to wait, otherwise the test host is terminated resulting in thread abort.
+                }
 
-        [TestMethod]
-        [TestCategory("MailIntegration")]
-        public void TestErrorBufferTraceListener()
-        {
-            Trace.TraceWarning("Anythingbbbb. More detail go here.");
-            Trace.TraceError("something wrongbbbb; can you tell? more here.");
-            ErrorBufferTraceListener.SendMailOfEventMessages();
-        }
+                [TestMethod]
+                [TestCategory("MailIntegration")]
+                public void TestErrorBufferTraceListener()
+                {
+                    Trace.TraceWarning("Anythingbbbb. More detail go here.");
+                    Trace.TraceError("something wrongbbbb; can you tell? more here.");
+                    ErrorBufferTraceListener.SendMailOfEventMessages();
+                }
 
-        [TestMethod]
-        [TestCategory("MailIntegration")]
-        public void TestSmtpClientAsync()
-        {
-            //        MailUtil_Accessor.SendEmailAsync("mail.fonlow.com", new System.Net.Mail.MailMessage("andy@fonlow.com", "arnold@fonlow.com", "HelloAsync", "are you there? async"));
-            SmtpClientAsync_Accessor client = new SmtpClientAsync_Accessor("mail.fonlow.com");
-            client.SendCompleted = client_SendCompleted;
-            client.SendAsync(new System.Net.Mail.MailMessage("andy@fonlow.com", "arnold@fonlow.com", "HelloAsync", "are you there? async"));
-            System.Threading.Thread.Sleep(15000);//need to wait, otherwise the test host is terminated resulting in thread abort.
-        }
+                [TestMethod]
+                [TestCategory("MailIntegration")]
+                public void TestSmtpClientAsync()
+                {
+                    SmtpClientAsync_Accessor client = new SmtpClientAsync_Accessor("localhost",true);
+                    client.SendCompleted = client_SendCompleted;
+                    client.SendAsync(new System.Net.Mail.MailMessage("andy@fonlowmail.com", "arnold@fonlowmail.com", "HelloAsync", "are you there? async"));
+                    System.Threading.Thread.Sleep(15000);//need to wait, otherwise the test host is terminated resulting in thread abort.
+                }
 
-        [TestMethod]
-        [TestCategory("MailIntegration")]
-        public void TestSendEmailAsync()
-        {
-            MailUtil_Accessor.SendEmailAsync("mail.fonlow.com", new System.Net.Mail.MailMessage("andy@fonlow.com", "arnold@fonlow.com", "HelloAsync2", "are you there? async"));
-            System.Threading.Thread.Sleep(15000);//need to wait, otherwise the test host is terminated resulting in thread abort.
-        }
+                [TestMethod]
+                [TestCategory("MailIntegration")]
+                public void TestSendEmailAsync()
+                {
+                    MailUtil_Accessor.SendEmailAsync("localhost", new System.Net.Mail.MailMessage("andy@fonlowmail.com", "arnold@fonlowmail.com", "HelloAsync2", "are you there? async"));
+                    System.Threading.Thread.Sleep(15000);//need to wait, otherwise the test host is terminated resulting in thread abort.
+                }
 
-        static void client_SendCompleted(object sender, AsyncCompletedEventArgs e)
-        {
-            Debug.WriteLine("done.");
-        }
+                static void client_SendCompleted(object sender, AsyncCompletedEventArgs e)
+                {
+                    Debug.WriteLine("done.");
+                }
 
-///*
-        [TestMethod]
-        [TestCategory("MailIntegration")]
-        public void TestSendEmailAsync64()
-        {
-            for (int i = 0; i < 60; i++)
-            {
-                MailUtil_Accessor.SendEmailAsync("mail.fonlow.com", new System.Net.Mail.MailMessage("andy@fonlow.com", "arnold@fonlow.com", "HelloAsyncMany"+i, "are you there? async"));
-            } 
+
+                [TestMethod]
+                [TestCategory("MailIntegration")]
+                public void TestSendEmailAsync64()
+                {
+                    for (int i = 0; i < 60; i++)
+                    {
+                        MailUtil_Accessor.SendEmailAsync("localhost", new System.Net.Mail.MailMessage("andy@fonlowmail.com", "arnold@fonlowmail.com", "HelloAsyncMany"+i, "are you there? async"));
+                    } 
             
-            System.Threading.Thread.Sleep(40000);//need to wait, otherwise the thread will be terminated too early.
-        }
-
-        [TestMethod]
-        [TestCategory("MailIntegration")]
-        public void TestSendEmailAsync64WithInvalidServer()
-        {
-            for (int i = 0; i < 60; i++)
-            {
-                MailUtil_Accessor.SendEmailAsync("funky.fonlow.com", new System.Net.Mail.MailMessage("andy@fonlow.com", "arnold@fonlow.com", "HelloAsync" + i, "are you there? async"));
-            }
-
-            System.Threading.Thread.Sleep(200000);//need to wait, otherwise the thread will be terminated too early.
-        }
+                    System.Threading.Thread.Sleep(40000);//need to wait, otherwise the thread will be terminated too early.
+                }
 
 
-//        */
+
+//   Integration tests end                */
     }
 }
