@@ -14,6 +14,220 @@ using System.Runtime.Remoting.Messaging;
 
 namespace Essential.Diagnostics
 {
+    internal class SmtpClientPool : IDisposable
+    {
+        Queue<SmtpClient> pool;
+
+        static object poolLock = new object();
+
+        Queue<SmtpClient> Pool
+        {
+            get
+            {
+                lock (poolLock)
+                {
+                    return pool;
+                }
+            }
+        }
+
+        const int maxConnections = 4;
+
+        public SmtpClientPool(string hostName)
+        {
+            pool = new Queue<SmtpClient>(maxConnections);
+            for (int i = 0; i < maxConnections; i++)
+            {
+                SmtpClient client = new SmtpClient(hostName);
+                client.SendCompleted += new SendCompletedEventHandler(client_SendCompleted);
+                Pool.Enqueue(client);
+            }
+        }
+
+        void client_SendCompleted(object sender, AsyncCompletedEventArgs e)
+        {
+            SmtpClient client = sender as SmtpClient;
+            Trace.Assert(client != null, "Why is this ender not SmtpClient?");
+            Pool.Enqueue(client);
+            Trace.Assert(Pool.Count <= maxConnections, "Hey, pool size should be fixed.");
+
+            MailMessage messageSent = e.UserState as MailMessage;
+            messageSent.Dispose();
+
+            if (SendCompleted != null)
+            {
+                SendCompleted(sender, new EventArgs());
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns>False if no client is available.</returns>
+        public bool SendAsync(MailMessage message)
+        {
+            try
+            {
+                SmtpClient client = Pool.Dequeue();
+                client.SendAsync(message, message);// the client will be enqueued when the thread finish. If the sending fails, the message will not be resent. This is intended.
+                return true;
+            }
+            catch (InvalidOperationException) // the pool is empty.
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// The subscriber which is a MailMessage queue should then dequeue a message and send it.
+        /// </summary>
+        public event EventHandler SendCompleted;
+
+        bool disposed;
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                if (disposing)
+                {
+                    if (typeof(SmtpClient).GetInterface("IDisposable") != null)
+                    {
+                        SmtpClient client;
+                        try
+                        {
+                            while ((client = Pool.Dequeue()) != null)
+                            {
+                                (client as IDisposable).Dispose();
+                            }
+
+                        }
+                        catch (InvalidOperationException)
+                        {
+                            //do nothing
+                        }
+                    }
+                }
+
+                disposed = true;
+            }
+        }
+
+
+    }
+
+    /// <summary>
+    /// http://stackoverflow.com/questions/2510975/c-sharp-object-pooling-pattern-implementation
+    /// 
+    /// </summary>
+    internal class MessageQueue : IDisposable
+    {
+        Queue<MailMessage> queue;
+
+        static object queueLock = new object();
+
+        Queue<MailMessage> Queue
+        {
+            get
+            {
+                lock (queueLock)
+                {
+                    return queue;
+                }
+            }
+        }
+
+        SmtpClientPool clientPool;
+
+        public MessageQueue(SmtpClientPool clientPool)
+        {
+            this.clientPool = clientPool;
+            clientPool.SendCompleted += new EventHandler(clientPool_SendCompleted);
+            queue = new Queue<MailMessage>();
+        }
+
+        /// <summary>
+        /// So after a message is sent, the first message in the queue will be dequeued and sent.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void clientPool_SendCompleted(object sender, EventArgs e)
+        {
+            SendOne();
+        }
+
+        /// <summary>
+        /// When a message is enqueued, the first in the queue will be dequeued and sent.
+        /// </summary>
+        /// <param name="message"></param>
+        public void AddAndSendAsync(MailMessage message)
+        {
+            Queue.Enqueue(message);
+            SendOne();
+        }
+
+        void SendOne()
+        {
+            MailMessage messageToSend;
+            try
+            {
+                messageToSend = Queue.Dequeue();
+            }
+            catch (InvalidOperationException)// nothing in message queue
+            {
+                return;
+            }
+
+            clientPool.SendAsync(messageToSend);
+        }
+
+        bool disposed;
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                if (disposing)
+                {
+                        MailMessage item;
+                        try
+                        {
+                            while ((item = Queue.Dequeue()) != null)
+                            {
+                                item.Dispose();
+                            }
+
+                        }
+                        catch (InvalidOperationException)
+                        {
+                            //do nothing;
+                        }
+                   
+                }
+
+                disposed = true;
+            }
+        }
+
+
+    }
+
+
+
+
     internal class MailInfo
     {
         internal string From { get; set; }
@@ -75,10 +289,7 @@ namespace Essential.Diagnostics
             }
         }
 
-        ~SmtpClientAsync()
-        {
-           Dispose();
-        }
+
 
         /// <summary>
         /// Send mail via a spin off thread. And mailMessage will be disposed in the thread.
