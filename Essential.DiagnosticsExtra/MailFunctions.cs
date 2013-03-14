@@ -33,12 +33,12 @@ namespace Essential.Diagnostics
 
         const int maxConnections = 4;
 
-        public SmtpClientPool(string hostName)
+        internal SmtpClientPool(string hostName, int port)
         {
             pool = new Queue<SmtpClient>(maxConnections);
             for (int i = 0; i < maxConnections; i++)
             {
-                SmtpClient client = new SmtpClient(hostName);
+                SmtpClient client = new SmtpClient(hostName, port);
                 client.SendCompleted += new SendCompletedEventHandler(client_SendCompleted);
                 Pool.Enqueue(client);
             }
@@ -54,10 +54,69 @@ namespace Essential.Diagnostics
             MailMessage messageSent = e.UserState as MailMessage;
             messageSent.Dispose();
 
+            Debug.WriteLine("Mail send completed.");
+            Debug.WriteLine("Connections in pool: " + Pool.Count);
+
+            MailSystemStatus status = MailSystemStatus.Ok;
+            if (e.Error != null)
+            {
+                SmtpException smtpException = e.Error as SmtpException;
+                if (smtpException == null)
+                {
+                    Trace.TraceError("It is strange that the exception caught is not SmtpException: " + e.ToString());
+                    status = MailSystemStatus.Critical;
+                }
+                else
+                {
+                    Trace.TraceError("When sending message: " + e.Error.Message);
+                    status = GetMailSystemStatus(smtpException.StatusCode);
+                }
+            }
+
             if (SendCompleted != null)
             {
-                SendCompleted(sender, new EventArgs());
+                SendCompleted(sender, new MailStatusEventArgs(status));
             }
+
+        }
+
+        static MailSystemStatus GetMailSystemStatus(SmtpStatusCode code)
+        {
+            switch (code)
+            {
+                case SmtpStatusCode.BadCommandSequence:
+                case SmtpStatusCode.CannotVerifyUserWillAttemptDelivery:
+                case SmtpStatusCode.ClientNotPermitted:
+                case SmtpStatusCode.CommandNotImplemented:
+                case SmtpStatusCode.CommandParameterNotImplemented:
+                case SmtpStatusCode.CommandUnrecognized:
+                case SmtpStatusCode.ExceededStorageAllocation:
+                case SmtpStatusCode.GeneralFailure:
+                case SmtpStatusCode.InsufficientStorage:
+                case SmtpStatusCode.LocalErrorInProcessing:
+                case SmtpStatusCode.MailboxBusy:
+                case SmtpStatusCode.MailboxNameNotAllowed:
+                case SmtpStatusCode.MailboxUnavailable:
+                case SmtpStatusCode.MustIssueStartTlsFirst:
+                case SmtpStatusCode.ServiceClosingTransmissionChannel:
+                case SmtpStatusCode.ServiceNotAvailable:
+                case SmtpStatusCode.UserNotLocalTryAlternatePath:
+                case SmtpStatusCode.UserNotLocalWillForward:
+                case SmtpStatusCode.SyntaxError:
+                    return MailSystemStatus.Critical;
+
+
+                case SmtpStatusCode.HelpMessage:
+                case SmtpStatusCode.Ok:
+                case SmtpStatusCode.ServiceReady:
+                case SmtpStatusCode.StartMailInput:
+                case SmtpStatusCode.SystemStatus:
+                case SmtpStatusCode.TransactionFailed:
+                    return MailSystemStatus.TemporaryProblem;
+                default:
+                    return MailSystemStatus.TemporaryProblem;
+            }
+
         }
 
         /// <summary>
@@ -65,24 +124,34 @@ namespace Essential.Diagnostics
         /// </summary>
         /// <param name="message"></param>
         /// <returns>False if no client is available.</returns>
-        public bool SendAsync(MailMessage message)
+        internal MailSystemStatus SendAsync(MailMessage message)
         {
+            SmtpClient client = null;
             try
             {
-                SmtpClient client = Pool.Dequeue();
+                client = Pool.Dequeue();
                 client.SendAsync(message, message);// the client will be enqueued when the thread finish. If the sending fails, the message will not be resent. This is intended.
-                return true;
+                Debug.WriteLine("Mail sent async.");
+                return MailSystemStatus.Ok;
             }
             catch (InvalidOperationException) // the pool is empty.
             {
-                return false;
+                Debug.WriteLine("Connection pool empty.");
+                return MailSystemStatus.EmptyConnectionPool;
+            }
+            catch (SmtpException e)
+            {
+                Trace.TraceError("Could not send mail: " + e.ToString());
+                Debug.WriteLine("Status: " + e.StatusCode);
+                Pool.Enqueue(client);
+                return GetMailSystemStatus(e.StatusCode);
             }
         }
 
         /// <summary>
         /// The subscriber which is a MailMessage queue should then dequeue a message and send it.
         /// </summary>
-        public event EventHandler SendCompleted;
+        internal event EventHandler<MailStatusEventArgs> SendCompleted;
 
         bool disposed;
 
@@ -123,15 +192,29 @@ namespace Essential.Diagnostics
 
     }
 
+    internal class MailStatusEventArgs : EventArgs
+    {
+        public MailSystemStatus Status { get; private set; }
+        public MailStatusEventArgs(MailSystemStatus status)
+        {
+            Status = status;
+        }
+    }
+
+
+    internal enum MailSystemStatus { Ok, EmptyConnectionPool, TemporaryProblem, Critical };
+
     /// <summary>
     /// http://stackoverflow.com/questions/2510975/c-sharp-object-pooling-pattern-implementation
-    /// 
+    /// MailMessage queue in which items will be sent out by a pool of SmtpClient objects.
     /// </summary>
-    internal class MessageQueue : IDisposable
+    public class MailMessageQueue : IDisposable
     {
         Queue<MailMessage> queue;
 
         static object queueLock = new object();
+
+        static System.Threading.ReaderWriterLock rwLock = new System.Threading.ReaderWriterLock();
 
         Queue<MailMessage> Queue
         {
@@ -144,13 +227,50 @@ namespace Essential.Diagnostics
             }
         }
 
+        bool acceptItem = true;
+
+        public bool AcceptItem
+        {
+            get
+            {
+                rwLock.AcquireReaderLock(10);
+                try
+                {
+                    return acceptItem;
+                }
+                finally
+                {
+                    rwLock.ReleaseReaderLock();
+                }
+            }
+
+            set
+            {
+                rwLock.AcquireWriterLock(100);
+                try
+                {
+                    acceptItem = value;
+                }
+                finally
+                {
+                    rwLock.ReleaseWriterLock();
+                }
+            }
+        }
+
         SmtpClientPool clientPool;
 
-        public MessageQueue(SmtpClientPool clientPool)
+        public MailMessageQueue(string hostName, int port)
         {
-            this.clientPool = clientPool;
-            clientPool.SendCompleted += new EventHandler(clientPool_SendCompleted);
+            clientPool = new SmtpClientPool(hostName, port);
+            clientPool.SendCompleted += new EventHandler<MailStatusEventArgs>(clientPool_SendCompleted);
             queue = new Queue<MailMessage>();
+        }
+
+        public MailMessageQueue(string hostName)
+            : this(hostName, 25)
+        {
+
         }
 
         /// <summary>
@@ -158,8 +278,15 @@ namespace Essential.Diagnostics
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void clientPool_SendCompleted(object sender, EventArgs e)
+        void clientPool_SendCompleted(object sender, MailStatusEventArgs e)
         {
+            if (e.Status == MailSystemStatus.Critical)
+            {
+                AcceptItem = false;
+                Trace.TraceInformation("Mail system has critical problem. Not to accept more messages.");
+                return;
+            }
+
             SendOne();
         }
 
@@ -169,7 +296,14 @@ namespace Essential.Diagnostics
         /// <param name="message"></param>
         public void AddAndSendAsync(MailMessage message)
         {
+            if (!AcceptItem)
+            {
+                Debug.WriteLine("Hey, not accept item probably because of smtp problem.");
+                return;
+            }
+
             Queue.Enqueue(message);
+            Debug.WriteLine("Messages in queue after adding: " + Queue.Count);
             SendOne();
         }
 
@@ -182,10 +316,28 @@ namespace Essential.Diagnostics
             }
             catch (InvalidOperationException)// nothing in message queue
             {
+                Debug.WriteLine("No message in queue.");
                 return;
             }
 
-            clientPool.SendAsync(messageToSend);
+            MailSystemStatus status = clientPool.SendAsync(messageToSend);
+            switch (status)
+            {
+                case MailSystemStatus.Ok:
+                    break;
+                case MailSystemStatus.EmptyConnectionPool:
+                case MailSystemStatus.TemporaryProblem:
+                    Queue.Enqueue(messageToSend);
+                    break;
+                case MailSystemStatus.Critical:
+                    Queue.Enqueue(messageToSend);
+                    AcceptItem = false;
+                    Trace.TraceInformation("Mail system has critical problem. Message queue will not receive further items.");
+                    break;
+                default:
+                    Trace.TraceWarning("Hey, what's up with new staus?");
+                    break;
+            }
         }
 
         bool disposed;
@@ -202,27 +354,27 @@ namespace Essential.Diagnostics
             {
                 if (disposing)
                 {
-                        MailMessage item;
-                        try
+                    MailMessage item;
+                    try
+                    {
+                        while ((item = Queue.Dequeue()) != null)
                         {
-                            while ((item = Queue.Dequeue()) != null)
-                            {
-                                item.Dispose();
-                            }
+                            item.Dispose();
+                        }
 
-                        }
-                        catch (InvalidOperationException)
-                        {
-                            //do nothing;
-                        }
-                   
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        //do nothing;
+                    }
+
+                    clientPool.Dispose();
+
                 }
 
                 disposed = true;
             }
         }
-
-
     }
 
 
