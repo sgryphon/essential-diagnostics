@@ -14,6 +14,10 @@ using System.Runtime.Remoting.Messaging;
 
 namespace Essential.Diagnostics
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <![CDATA[The design of the pool is inspired by this post http://stackoverflow.com/questions/2510975/c-sharp-object-pooling-pattern-implementation]]>
     internal class SmtpClientPool : IDisposable
     {
         Queue<SmtpClient> pool;
@@ -31,9 +35,24 @@ namespace Essential.Diagnostics
             }
         }
 
-        const int maxConnections = 4;
+        internal SmtpClientPool():this(2)
+        {
 
-        internal SmtpClientPool(string hostName, int port)
+
+        }
+
+        internal SmtpClientPool(int maxConnections)
+        {
+            pool = new Queue<SmtpClient>(maxConnections);
+            for (int i = 0; i < maxConnections; i++)
+            {
+                SmtpClient client = new SmtpClient();
+                client.SendCompleted += new SendCompletedEventHandler(client_SendCompleted);
+                Pool.Enqueue(client);
+            }
+        }
+
+        internal SmtpClientPool(string hostName, int port, int maxConnections)
         {
             pool = new Queue<SmtpClient>(maxConnections);
             for (int i = 0; i < maxConnections; i++)
@@ -47,14 +66,13 @@ namespace Essential.Diagnostics
         void client_SendCompleted(object sender, AsyncCompletedEventArgs e)
         {
             SmtpClient client = sender as SmtpClient;
-            Trace.Assert(client != null, "Why is this ender not SmtpClient?");
+            Debug.Assert(client != null, "Why is this ender not SmtpClient?");
             Pool.Enqueue(client);
-            Trace.Assert(Pool.Count <= maxConnections, "Hey, pool size should be fixed.");
 
             MailMessage messageSent = e.UserState as MailMessage;
-            messageSent.Dispose();
+            Debug.Assert(messageSent != null);
 
-            Debug.WriteLine("Mail send completed.");
+            Debug.WriteLine("Mail send completed at " + DateTime.Now.ToString());
             Debug.WriteLine("Connections in pool: " + Pool.Count);
 
             MailSystemStatus status = MailSystemStatus.Ok;
@@ -75,7 +93,11 @@ namespace Essential.Diagnostics
 
             if (SendCompleted != null)
             {
-                SendCompleted(sender, new MailStatusEventArgs(status));
+                SendCompleted(sender, new MailStatusEventArgs(status, messageSent));//the handler should dispose messageSent
+            }
+            else
+            {
+                messageSent.Dispose();
             }
 
         }
@@ -195,9 +217,21 @@ namespace Essential.Diagnostics
     internal class MailStatusEventArgs : EventArgs
     {
         public MailSystemStatus Status { get; private set; }
+
+        /// <summary>
+        /// Assigned when Status is negative.
+        /// </summary>
+        public MailMessage MailMessage { get; private set; }
+
         public MailStatusEventArgs(MailSystemStatus status)
         {
             Status = status;
+        }
+
+        public MailStatusEventArgs(MailSystemStatus status, MailMessage mailMessage)
+        {
+            Status = status;
+            MailMessage = mailMessage;
         }
     }
 
@@ -205,9 +239,14 @@ namespace Essential.Diagnostics
     internal enum MailSystemStatus { Ok, EmptyConnectionPool, TemporaryProblem, Critical };
 
     /// <summary>
-    /// http://stackoverflow.com/questions/2510975/c-sharp-object-pooling-pattern-implementation
-    /// MailMessage queue in which items will be sent out by a pool of SmtpClient objects.
+    /// MailMessage queue in which items will be sent out by a pool of SmtpClient objects. Client codes just neeed to call AddAndSendAsync().
     /// </summary>
+    /// <remarks>
+    /// Upon critical conditions with a Smtp server, the MailMessageQueue will refuse to accept further message quitely, with AcceptItem is set to false.
+    /// 
+    /// Because the Email messages will be sent in multiple threads, the send time of Email messages may not be in the exact order and the exact time of the creation of the message, tehrefore,
+    /// it is recommended that the Email subject or body should log the datetime of the trace message.
+    /// </remarks>
     public class MailMessageQueue : IDisposable
     {
         Queue<MailMessage> queue;
@@ -216,7 +255,7 @@ namespace Essential.Diagnostics
 
         static System.Threading.ReaderWriterLock rwLock = new System.Threading.ReaderWriterLock();
 
-        Queue<MailMessage> Queue
+        Queue<MailMessage> MessageQueue
         {
             get
             {
@@ -260,17 +299,24 @@ namespace Essential.Diagnostics
 
         SmtpClientPool clientPool;
 
-        public MailMessageQueue(string hostName, int port)
+        public MailMessageQueue(string hostName, int port, int maxConnections)
         {
-            clientPool = new SmtpClientPool(hostName, port);
+            clientPool = new SmtpClientPool(hostName, port, maxConnections);
             clientPool.SendCompleted += new EventHandler<MailStatusEventArgs>(clientPool_SendCompleted);
             queue = new Queue<MailMessage>();
         }
 
         public MailMessageQueue(string hostName)
-            : this(hostName, 25)
+            : this(hostName, 25, 2)
         {
 
+        }
+
+        public MailMessageQueue(int maxConnections)
+        {
+            clientPool = new SmtpClientPool(maxConnections);
+            clientPool.SendCompleted += new EventHandler<MailStatusEventArgs>(clientPool_SendCompleted);
+            queue = new Queue<MailMessage>();
         }
 
         /// <summary>
@@ -280,11 +326,17 @@ namespace Essential.Diagnostics
         /// <param name="e"></param>
         void clientPool_SendCompleted(object sender, MailStatusEventArgs e)
         {
-            if (e.Status == MailSystemStatus.Critical)
+            switch (e.Status)
             {
-                AcceptItem = false;
-                Trace.TraceInformation("Mail system has critical problem. Not to accept more messages.");
-                return;
+                case MailSystemStatus.TemporaryProblem:
+                case MailSystemStatus.Critical:
+                    MessageQueue.Enqueue(e.MailMessage);
+                    AcceptItem = false;
+                    Trace.TraceInformation("Mail system has critical problem. Not to accept more messages.");//and the message 
+                    return;
+                default:
+                    e.MailMessage.Dispose();
+                    break;
             }
 
             SendOne();
@@ -302,8 +354,8 @@ namespace Essential.Diagnostics
                 return;
             }
 
-            Queue.Enqueue(message);
-            Debug.WriteLine("Messages in queue after adding: " + Queue.Count);
+            MessageQueue.Enqueue(message);
+            Debug.WriteLine("Messages in queue after adding: " + MessageQueue.Count);
             SendOne();
         }
 
@@ -312,7 +364,7 @@ namespace Essential.Diagnostics
             MailMessage messageToSend;
             try
             {
-                messageToSend = Queue.Dequeue();
+                messageToSend = MessageQueue.Dequeue();
             }
             catch (InvalidOperationException)// nothing in message queue
             {
@@ -327,10 +379,11 @@ namespace Essential.Diagnostics
                     break;
                 case MailSystemStatus.EmptyConnectionPool:
                 case MailSystemStatus.TemporaryProblem:
-                    Queue.Enqueue(messageToSend);
+                    Debug.WriteLine("Message enqueued back.");
+                    MessageQueue.Enqueue(messageToSend);
                     break;
                 case MailSystemStatus.Critical:
-                    Queue.Enqueue(messageToSend);
+                    MessageQueue.Enqueue(messageToSend);
                     AcceptItem = false;
                     Trace.TraceInformation("Mail system has critical problem. Message queue will not receive further items.");
                     break;
@@ -339,6 +392,11 @@ namespace Essential.Diagnostics
                     break;
             }
         }
+
+        /// <summary>
+        /// Number of messages in queue. This properly is generally accessed for diagnostics purpose when AcceptItem becomes false.
+        /// </summary>
+        public int Count { get { return MessageQueue.Count; } }
 
         bool disposed;
 
@@ -357,7 +415,7 @@ namespace Essential.Diagnostics
                     MailMessage item;
                     try
                     {
-                        while ((item = Queue.Dequeue()) != null)
+                        while ((item = MessageQueue.Dequeue()) != null)
                         {
                             item.Dispose();
                         }
@@ -376,228 +434,6 @@ namespace Essential.Diagnostics
             }
         }
     }
-
-
-
-
-    internal class MailInfo
-    {
-        internal string From { get; set; }
-        internal string Recipient { get; set; }
-        internal DateTime TimeSent { get; set; }
-
-        internal Exception Exception { get; set; }
-    }
-
-    /// <summary>
-    /// A wrapper of Smtpclient. Though Smtpclient in .NET Framework has method SendAsync, the method apparently only do the transmitting in a new thread, while the initial hand shaking is still in the caller thread.
-    /// So this class will do the whole thing in a new thread.
-    /// </summary>
-    internal class SmtpClientAsync : IDisposable
-    {
-        SmtpClient smtpClient;
-
-        bool sendOnce;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="smtpServerName"></param>
-        /// <param name="sendOnce">True to dispose the connection after sending message once.</param>
-        internal SmtpClientAsync(string smtpServerName, bool sendOnce)
-        {
-            smtpClient = new SmtpClient(smtpServerName);
-            this.sendOnce = sendOnce;
-        }
-
-        /// <summary>
-        /// Client codes may optionally handle something when the tread is completed.
-        /// </summary>
-        internal event SendCompletedEventHandler SendCompleted;
-
-        bool disposed;
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        void Dispose(bool disposing)
-        {
-            if (!disposed)
-            {
-                if (disposing)
-                {
-                    IDisposable obj = smtpClient as IDisposable;//In .net 2, SmtpClient has no IDisposable define while .net 4 it has. This will make the dispose() function be called in .NET 4.
-                    if (obj != null)
-                    {
-                        obj.Dispose();
-                        Debug.WriteLine("Mail client disposed.");
-                    }
-                }
-
-                disposed = true;
-            }
-        }
-
-
-
-        /// <summary>
-        /// Send mail via a spin off thread. And mailMessage will be disposed in the thread.
-        /// </summary>
-        /// <param name="smtpServer"></param>
-        /// <param name="mailMessage"></param>
-        /// <returns></returns>
-        /// <remarks>If the host process is terminated, the thread running the sending will be terminated as well, therefore the last few error message traced might be lost.</remarks>
-        internal IAsyncResult SendAsync(MailMessage mailMessage)
-        {
-            MailInfo state = new MailInfo()
-            {
-                From = mailMessage.From.Address,
-                Recipient = mailMessage.To[0].Address,
-                TimeSent = DateTime.Now,
-            };
-
-            SendEmailHandler d = (mm) =>
-            {
-                if (!Send(mm, state))
-                {
-                    Debug.WriteLine("Hey, send fails, please check trace following.");
-                }
-            };
-
-            return d.BeginInvoke(mailMessage, EmailSentCallback, state);
-        }
-
-        void EmailSentCallback(IAsyncResult asyncResult)
-        {
-            AsyncResult resultObj = (AsyncResult)asyncResult;
-            SendEmailHandler d = (SendEmailHandler)resultObj.AsyncDelegate;
-            MailInfo state = null;
-            try
-            {
-                d.EndInvoke(asyncResult);
-                Debug.WriteLine("IsCompleted: " + asyncResult.IsCompleted);
-                state = (MailInfo)asyncResult.AsyncState;
-                if (SendCompleted != null)
-                {
-                    SendCompleted(this, new AsyncCompletedEventArgs(state.Exception, false, state));
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine("The thread is terminated, and general exception is caught. " + e.ToString());
-                SendCompleted(this, new AsyncCompletedEventArgs(e, false, null));
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Send and dispose mailMessage.
-        /// </summary>
-        /// <param name="mailMessage"></param>
-        /// <param name="state"></param>
-        /// <returns></returns>
-        internal bool Send(MailMessage mailMessage, MailInfo state)
-        {
-            Debug.WriteLine("SmtpClient: " + smtpClient.GetType().AssemblyQualifiedName);
-            try
-            {
-                smtpClient.Send(mailMessage);
-                return true;
-            }
-            catch (SmtpException e)
-            {
-                Debug.WriteLine("Caught in Send. " + e.ToString());
-                state.Exception = e;
-            }
-            catch (IOException e)
-            {
-                Debug.WriteLine("Caught in Send. " + e.ToString());
-                state.Exception = e;
-            }
-            finally
-            {
-                mailMessage.Dispose();
-                if (sendOnce)
-                {
-                    Dispose();
-                }
-            }
-
-            return false;
-
-        }
-    }
-
-    public static class MailUtil
-    {
-        internal static void AssignEmailSubject(MailMessage mailMessage, string subject)
-        {
-            if (String.IsNullOrEmpty(subject))
-                return;
-
-            if (mailMessage == null)
-                throw new ArgumentNullException("mailMessage");
-
-            const int subjectMaxLength = 254; //though .NET lib does not place any restriction, and the recent standard of Email seems to be 254, which sounds safe.
-            if (subject.Length > 254)
-                subject = subject.Substring(0, subjectMaxLength);
-
-            try
-            {
-                for (int i = 0; i < subject.Length; i++)
-                {
-                    if (Char.IsControl(subject[i]))
-                    {
-                        mailMessage.Subject = subject.Substring(0, i);
-                        return;
-                    }
-                }
-                mailMessage.Subject = subject;
-
-            }
-            catch (ArgumentException)
-            {
-                mailMessage.Subject = "Invalid subject removed by TraceListener";
-            }
-        }
-
-        /// <summary>
-        /// Send mail via a spin off thread.
-        /// </summary>
-        /// <param name="smtpServer"></param>
-        /// <param name="mailMessage"></param>
-        /// <returns></returns>
-        /// <remarks>If the host process is terminated, the thread running the sending will be terminated as well, therefore the last few error message traced might be lost.</remarks>
-        public static void SendEmailAsync(string smtpServer, MailMessage mailMessage)
-        {
-            SmtpClientAsync client = new SmtpClientAsync(smtpServer, true);//SmtpClient will be disposed after Send().
-            client.SendCompleted += new SendCompletedEventHandler(client_SendCompleted);
-            client.SendAsync(mailMessage);
-        }
-
-        static void client_SendCompleted(object sender, AsyncCompletedEventArgs e)
-        {
-#if DEBUG
-            MailInfo info = (MailInfo)e.UserState;
-            Debug.WriteLine(String.Format("Email sent to {0} at {1}", info.Recipient, info.TimeSent));
-#endif
-        }
-
-        public static void SendEmail(string smtpServer, MailMessage mailMessage)
-        {
-            using (SmtpClientAsync client = new SmtpClientAsync(smtpServer, true))
-            {
-                client.Send(mailMessage, new MailInfo());
-            }
-        }
-
-
-    }
-
-    internal delegate void SendEmailHandler(MailMessage mailMessage);
 
 
 }
