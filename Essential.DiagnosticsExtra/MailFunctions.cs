@@ -86,7 +86,7 @@ namespace Essential.Diagnostics
                 }
                 else
                 {
-                    Trace.TraceError("When sending message: " + e.Error.Message);
+                    Trace.TraceError("When sending message: " + e.Error.ToString());
                     status = GetMailSystemStatus(smtpException.StatusCode);
                 }
             }
@@ -361,6 +361,8 @@ namespace Essential.Diagnostics
             SendOne();
         }
 
+        public event EventHandler QueueEmpty;
+
         void SendOne()
         {
             MailMessage messageToSend;
@@ -371,6 +373,14 @@ namespace Essential.Diagnostics
             catch (InvalidOperationException)// nothing in message queue
             {
                 Debug.WriteLine("No message in queue.");
+                if (QueueEmpty != null)
+                {
+                    Action<int> d = (dummy) =>
+                    {
+                        QueueEmpty(this, new EventArgs());
+                    };
+                    d.BeginInvoke(0, null, null);
+                }
                 return;
             }
 

@@ -379,26 +379,31 @@ namespace Essential.Diagnostics
     {
         public ErrorBufferTraceListener()
         {
-            EventMessagesBuffer = new List<string>();
+            EventMessagesBuffer = new StringBuilder();
         }
 
         public ErrorBufferTraceListener(string name)
             : base(name)
         {
-            EventMessagesBuffer = new List<string>();
+            EventMessagesBuffer = new StringBuilder();
+        }
+
+        void EventMessagesBufferAdd(string s)
+        {
+            EventMessagesBuffer.AppendLine(s);
         }
 
         public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message)
         {
             if (eventType <= TraceEventType.Error)//Error or Critical
             {
-                EventMessagesBuffer.Add(StartupInfo.GetISO8601Text(eventCache.DateTime) + " "
+                EventMessagesBufferAdd(StartupInfo.GetISO8601Text(eventCache.DateTime) + " "
                     + "Error: " + message);
-                EventMessagesBuffer.Add("  Call Stack: " + eventCache.Callstack);
+                EventMessagesBufferAdd("  Call Stack: " + eventCache.Callstack);
             }
             else if (eventType == TraceEventType.Warning)
             {
-                EventMessagesBuffer.Add(StartupInfo.GetISO8601Text(eventCache.DateTime) + " "
+                EventMessagesBufferAdd(StartupInfo.GetISO8601Text(eventCache.DateTime) + " "
                     + "Warning: " + message);
             }
             //Ignore other event type
@@ -427,27 +432,23 @@ namespace Essential.Diagnostics
         /// <summary>
         /// Message buffer
         /// </summary>
-        public IList<string> EventMessagesBuffer { get; private set; }
+        public StringBuilder EventMessagesBuffer { get; private set; }
 
         public void ClearEventMessagesBuffer()
         {
-            EventMessagesBuffer.Clear();
+            EventMessagesBuffer = new StringBuilder();
         }
 
-        public bool HasEventErrors { get { return EventMessagesBuffer.Count > 0; } }
+        public bool HasEventErrors { get { return EventMessagesBuffer.Length > 0; } }
 
         protected void SendEventMessages()
         {
             if (!HasEventErrors)
                 return;
 
-            StringBuilder builder = new StringBuilder();
-            foreach (string s in EventMessagesBuffer)
-            {
-                builder.AppendLine(s);
-            }
-            string body = builder.ToString();
-            string firstMessage = EventMessagesBuffer.Count == 0 ? String.Empty : EventMessagesBuffer[0];
+            string body = EventMessagesBuffer.ToString(); 
+            string firstMessage = body.Substring(0, body.IndexOf("\n"));// EventMessagesBuffer.Count == 0 ? String.Empty : EventMessagesBuffer[0];
+            Debug.WriteLine("firstMessage: " + firstMessage);
             string subject = ExtractSubject(firstMessage);
             SendEmail(subject, body);
         }
