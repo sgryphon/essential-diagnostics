@@ -105,23 +105,37 @@ namespace Essential.Diagnostics
 
 
     /// <summary>
-    /// Email trace listeners output trace messages (warning and error only) to SMTP Email system as Email messages. Every message sent will go through a new connection in a new thread.
-    /// 
-    /// This base class defines basic functions of trace listeners with Email features. The applications need no knowledge of the 
-    /// Email system, and it is up to the app.config to wire such output.
+    /// Output trace messages of warning and error only as Email messages via SMTP. Every messages sent will go through a MailMessage queue which will send 
+    /// messages through multiple SmtpClient connections in a connection pool.
     /// 
     /// The subject line of the Email message will be the text before ':', ';', ',', '.', '-' in the trace message, along with the identity of the application.
     /// The body of the Email will be the trace message.
+    /// 
+    /// The SMTP host settings are defined in MailSettings of app.config, as documented at http://msdn.microsoft.com/en-us/library/w355a94k.aspx. However, the from address in MailSettings is not used in this trace listener,
+    /// since it might be used by the application. The trace listener should have its own from address in order to be filtered.
+    /// 
     /// It supports the following custom attributes used in config:
-    /// * smtpServer
-    /// * senderAddress
-    /// * senderName
-    /// * eventRecipient
+    /// * fromAddress
+    /// * fromName
+    /// * toAddress
+    /// * maxConnections: Maximum SmtpClient connections in pool. The default is 2.
+    /// 
+    /// Because the Email messages will be sent in multiple threads, the send time of Email messages may not be in the exact order and the exact time of the creation of the message, tehrefore,
+    /// it is recommended that the Email subject or body should log the datetime of the trace message.
     /// </summary>
-    /// <remarks>The log message is sent in an asynchnous call. If the host process is terminated, the thread running the sending will be terminated as well, 
+    /// <remarks>
+    /// Each message is sent in an asynchnous call. If the host process is terminated, the thread running the sending will be terminated as well, 
     /// therefore the last few error message traced might be lost. Because of the latency of Email, performance and the limitation of Email relay, this listener is not so appropriate in
-    /// a service app that expect tens of thousands of concurrent requests. 
-    /// In addition, firewall, anti-virus software and the mail server spam policy may also have impact on this listener, so system administrators have to be involved to ensure the operation of this listener.</remarks>
+    /// a service app that expect tens of thousands of concurrent requests per minutes. Ohterwise, a critical error in the service app with trigger tens of thousands of warnings piled in the MailMessage queue.
+    /// Alternatively, to avoid memory blow because of a larrge message queue, you may consider to make SmtpClient deliver messages to a directory through defining SmtpDeliveryMethod=SpecifiedPickupDirectory or PickupDirectoryFromIis,
+    /// so the otehr application may pickup and send.
+    /// 
+    /// In addition, firewall, anti-virus software and the mail server spam policy may also have impact on this listener, so system administrators have to be involved to ensure the operation of this listener.
+    /// 
+    /// If you define SmtpDeliveryMethod to make SmtpClient write messages to a pickup directory, please make sure the total number of client connections is no more than 2, since 
+    /// concurrent access to a file system is almost certain to slow down the overall performance unless you are RAID. For the best performance, you really need to run some integration test
+    /// to get the optimized number for a RAID system.
+    /// </remarks>
     public abstract class EmailTraceListenerBase : TraceListener
     {
         protected EmailTraceListenerBase()
@@ -188,9 +202,6 @@ namespace Essential.Diagnostics
         {
             MessageQueue.AddAndSendAsync(CreateMailMessage(subject, body, ToAddress));
         }
-
-        SmtpClient client;
-
 
         MailMessageQueue messageQueue;
 
@@ -346,6 +357,8 @@ namespace Essential.Diagnostics
     }
 
     /// <summary>
+    /// Intended to be used in console apps which will send all warning/error traces via Email at the end of the process.
+    /// 
     /// Put error and warning trace messages into a buffer, taking care of Trace.Trace*() while ignoring Trace.Write*(). The client codes may want to get
     /// all messages at the end of a business operation in order to send out the messages in one batch.
     /// For error message, call stack and local datetime will be accompanied.

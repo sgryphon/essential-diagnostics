@@ -15,7 +15,7 @@ using System.Runtime.Remoting.Messaging;
 namespace Essential.Diagnostics
 {
     /// <summary>
-    /// 
+    /// SmtpClient connection pool.
     /// </summary>
     /// <![CDATA[The design of the pool is inspired by this post http://stackoverflow.com/questions/2510975/c-sharp-object-pooling-pattern-implementation]]>
     internal class SmtpClientPool : IDisposable
@@ -129,12 +129,14 @@ namespace Essential.Diagnostics
 
 
                 case SmtpStatusCode.HelpMessage:
-                case SmtpStatusCode.Ok:
-                case SmtpStatusCode.ServiceReady:
                 case SmtpStatusCode.StartMailInput:
                 case SmtpStatusCode.SystemStatus:
                 case SmtpStatusCode.TransactionFailed:
                     return MailSystemStatus.TemporaryProblem;
+                case SmtpStatusCode.Ok:
+                case SmtpStatusCode.ServiceReady:
+                    return MailSystemStatus.Ok;
+
                 default:
                     return MailSystemStatus.TemporaryProblem;
             }
@@ -156,12 +158,12 @@ namespace Essential.Diagnostics
                 Debug.WriteLine("Mail sent async.");
                 return MailSystemStatus.Ok;
             }
-            catch (InvalidOperationException) // the pool is empty.
+            catch (InvalidOperationException) // the pool is empty because the connections are all in use.
             {
                 Debug.WriteLine("Connection pool empty.");
                 return MailSystemStatus.EmptyConnectionPool;
             }
-            catch (SmtpException e)
+            catch (SmtpException e)//Generally it is the problem during the handshaking to the host.
             {
                 Trace.TraceError("Could not send mail: " + e.ToString());
                 Debug.WriteLine("Status: " + e.StatusCode);
@@ -189,7 +191,7 @@ namespace Essential.Diagnostics
             {
                 if (disposing)
                 {
-                    if (typeof(SmtpClient).GetInterface("IDisposable") != null)
+                    if (typeof(SmtpClient).GetInterface("IDisposable") != null)//In .NET 4, SmtpClient has IDisposable.
                     {
                         SmtpClient client;
                         try
@@ -219,7 +221,7 @@ namespace Essential.Diagnostics
         public MailSystemStatus Status { get; private set; }
 
         /// <summary>
-        /// Assigned when Status is negative.
+        /// Assigned when Status is negative, so a callback function may dispose the mail message.
         /// </summary>
         public MailMessage MailMessage { get; private set; }
 
@@ -239,7 +241,7 @@ namespace Essential.Diagnostics
     internal enum MailSystemStatus { Ok, EmptyConnectionPool, TemporaryProblem, Critical };
 
     /// <summary>
-    /// MailMessage queue in which items will be sent out by a pool of SmtpClient objects. Client codes just neeed to call AddAndSendAsync().
+    /// MailMessage queue in which items will be sent by a pool of SmtpClient objects. Client codes just neeed to call AddAndSendAsync().
     /// </summary>
     /// <remarks>
     /// Upon critical conditions with a Smtp server, the MailMessageQueue will refuse to accept further message quitely, with AcceptItem is set to false.

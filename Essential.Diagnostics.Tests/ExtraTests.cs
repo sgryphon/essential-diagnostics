@@ -14,6 +14,7 @@ using System.Net;
 using Essential.Diagnostics;
 using System.ComponentModel;
 using Rnwood.SmtpServer;
+using System.IO;
 
 namespace Essential.Diagnostics.Tests
 {
@@ -25,9 +26,8 @@ namespace Essential.Diagnostics.Tests
     {
         public TestSystem()
         {
-            //
-            // TODO: Add constructor logic here
-            //
+            smtpConfig = System.Configuration.ConfigurationManager.GetSection("system.net/mailSettings/smtp") as System.Net.Configuration.SmtpSection;
+            pickupDirectory = (smtpConfig != null) ? smtpConfig.SpecifiedPickupDirectory.PickupDirectoryLocation : null;
         }
 
         private TestContext testContextInstance;
@@ -56,16 +56,13 @@ namespace Essential.Diagnostics.Tests
         [ClassInitialize()]
         public static void MyClassInitialize(TestContext testContext)
         {
-            //  EmailTraceDestination dic = new EmailTraceDestination();
-            //  dic.Add("Category", new string[] { "zijian.huang@dealersolutions.com.au" });
-            //  EmailExTraceListener.AssignAddressbook(dic);
-            //ErrorBufferExTraceListener.AssignAddressbook(dic);
-            //ErrorXmlBufferTraceListener.AssignAddressbook(dic);
-            //ErrorXmlBufferTraceListener.DefineCurrentPath("Campaign 1/AdGroup 2", "Good to hear");
 
         }
 
         #endregion
+
+        string pickupDirectory;
+        System.Net.Configuration.SmtpSection smtpConfig;
 
 
         [TestMethod]
@@ -95,15 +92,26 @@ namespace Essential.Diagnostics.Tests
         //////////////////////// Integration tests for Email functions should not be executed often.
         ///*During integration tests, it is good to have a local SMTP server installed. Windows 7 does not have one, so you may use hMailServer. External SMTP server might be subject to spam control and network issue.
 
+
+
+        void AssertMessagesSent(int expected)
+        {
+            Assert.AreEqual(expected, Directory.GetFiles(pickupDirectory).Count());
+        }
+
+        void ClearPickupDirectory()
+        {
+            string[] filePaths = Directory.GetFiles(pickupDirectory);
+            foreach (string filePath in filePaths)
+                File.Delete(filePath);
+        }
+
         [TestMethod]
         [TestCategory("MailIntegration")]
         public void TestEmailTraceListener()
         {
-            List<Message> messages = new List<Message>();
-            DefaultServer server = new DefaultServer(mockSmtpPort);
-            server.MessageReceived += (s, ea) => messages.Add(ea.Message);
-            server.Start();
-            Debug.WriteLine("Port: " + server.PortNumber);
+            ClearPickupDirectory();
+
 
             Trace.TraceWarning("Anything. More detail go here.");
             Trace.TraceError("something wrong; can you tell? more here.");
@@ -112,19 +120,14 @@ namespace Essential.Diagnostics.Tests
             Trace.WriteLine("Writeline without right category", "CCCC");
             System.Threading.Thread.Sleep(5000);//need to wait, otherwise the test host is terminated resulting in thread abort.
 
-            server.Stop();
-            Assert.AreEqual(2, messages.Count);
+            AssertMessagesSent(2);
         }
 
         [TestMethod]
         [TestCategory("MailIntegration")]
         public void TestEmailTraceListenerWithManyTraces()
         {
-            List<Message> messages = new List<Message>();
-            DefaultServer server = new DefaultServer(mockSmtpPort);
-            server.MessageReceived += (s, ea) => messages.Add(ea.Message);
-            server.Start();
-            Debug.WriteLine("Port: " + server.PortNumber);
+            ClearPickupDirectory();
 
             for (int i = 0; i < 1000; i++)
             {
@@ -137,35 +140,37 @@ namespace Essential.Diagnostics.Tests
 
             System.Threading.Thread.Sleep(10000);//need to wait, otherwise the test host is terminated resulting in thread abort.
 
-            server.Stop();
-            Assert.AreEqual(2000, messages.Count);
+            AssertMessagesSent(2000);
         }
 
         [TestMethod]
         [TestCategory("MailIntegration")]
         public void TestErrorBufferTraceListener()
         {
+            ClearPickupDirectory();
+
             Trace.TraceWarning("Anythingbbbb. More detail go here.");
             Trace.TraceError("something wrongbbbb; can you tell? more here.");
             ErrorBufferTraceListener.SendMailOfEventMessages();
+            AssertMessagesSent(2);
         }
 
         [TestMethod]
         [TestCategory("MailIntegration")]
         public void TestSmtpClientAsync()
         {
-            List<Message> messages = new List<Message>();
-            DefaultServer server = new DefaultServer(Ports.AssignAutomatically);
-            server.MessageReceived += (s, ea) => messages.Add(ea.Message);
-            server.Start();
-            Debug.WriteLine("Port: " + server.PortNumber);
+            //List<Message> messages = new List<Message>();
+            //DefaultServer server = new DefaultServer(Ports.AssignAutomatically);
+            //server.MessageReceived += (s, ea) => messages.Add(ea.Message);
+            //server.Start();
+            //Debug.WriteLine("Port: " + server.PortNumber);
 
-            MailMessageQueue queue = new MailMessageQueue("localhost", server.PortNumber, 3);
-            // queue.AddAndSendAsync(new System.Net.Mail.MailMessage("testfrom@fonlowmail.com", "testto@fonlowmail.com", "HelloAsync", "are you there? async"));
+            ClearPickupDirectory();
+            MailMessageQueue queue = new MailMessageQueue(3);
             queue.AddAndSendAsync(new System.Net.Mail.MailMessage("andy@fonlow.com", "arnold@fonlow.com", "HelloAsync", "are you there? async"));
-            System.Threading.Thread.Sleep(2000);//need to wait, otherwise the test host is terminated resulting in thread abort.
-            server.Stop();
-            Assert.AreEqual(1, messages.Count);
+            System.Threading.Thread.Sleep(500);//need to wait, otherwise the test host is terminated resulting in thread abort.
+            //   server.Stop();
+            AssertMessagesSent(1);
             Assert.IsTrue(queue.AcceptItem);
             Assert.AreEqual(0, queue.Count);
         }
@@ -177,43 +182,15 @@ namespace Essential.Diagnostics.Tests
         [TestCategory("MailIntegration")]
         public void TestSmtpClientAsync2()
         {
-            List<Message> messages = new List<Message>();
-            DefaultServer server = new DefaultServer(Ports.AssignAutomatically);
-            server.MessageReceived += (s, ea) => messages.Add(ea.Message);
-            server.Start();
-            Debug.WriteLine("Port: " + server.PortNumber);     
-
-            MailMessageQueue queue = new MailMessageQueue("localhost", server.PortNumber, 4);
+            ClearPickupDirectory();
+            MailMessageQueue queue = new MailMessageQueue(4);
             queue.AddAndSendAsync(new System.Net.Mail.MailMessage("andy@fonlow.com", "arnold@fonlow.com", "HelloAsync", "are you there? async"));
             queue.AddAndSendAsync(new System.Net.Mail.MailMessage("andy@fonlow.com", "arnold@fonlowMail.com", "HelloAsync", "are you there? async"));
             System.Threading.Thread.Sleep(2000);//need to wait, otherwise the test host is terminated resulting in thread abort.
-            server.Stop();
-            Assert.AreEqual(2, messages.Count);
+            AssertMessagesSent(2);
             Assert.IsTrue(queue.AcceptItem);
             Assert.AreEqual(0, queue.Count);
         }
-
-
-        [TestMethod]
-        [TestCategory("MailIntegration")]
-        public void TestSmtpClientAsyncWithConfig()
-        {
-            List<Message> messages = new List<Message>();
-            DefaultServer server = new DefaultServer(mockSmtpPort);
-            server.MessageReceived += (s, ea) => messages.Add(ea.Message);
-            server.Start();
-            Debug.WriteLine("Port: " + server.PortNumber);
-
-            MailMessageQueue queue = new MailMessageQueue(3);
-            // queue.AddAndSendAsync(new System.Net.Mail.MailMessage("testfrom@fonlowmail.com", "testto@fonlowmail.com", "HelloAsync", "are you there? async"));
-            queue.AddAndSendAsync(new System.Net.Mail.MailMessage("andy@fonlow.com", "arnold@fonlow.com", "HelloAsync", "are you there? async"));
-            System.Threading.Thread.Sleep(2000);//need to wait, otherwise the test host is terminated resulting in thread abort.
-            server.Stop();
-            Assert.AreEqual(1, messages.Count);
-            Assert.IsTrue(queue.AcceptItem);
-            Assert.AreEqual(0, queue.Count);
-        }
-
 
 
         [TestMethod]
@@ -221,50 +198,45 @@ namespace Essential.Diagnostics.Tests
         public void TestSmtpClientAsyncWithManyMessages()
         {
             const int messageCount = 1000;
-            List<Message> messages = new List<Message>();
-            DefaultServer server = new DefaultServer(Ports.AssignAutomatically);
-            server.MessageReceived += (s, ea) => messages.Add(ea.Message);
-            server.Start();
-            Debug.WriteLine("Port: " + server.PortNumber);
+            ClearPickupDirectory();
 
-            MailMessageQueue queue = new MailMessageQueue("localhost", server.PortNumber, 2);//smtp4dev apparently accept only 2 concurrent connections, according to http://smtp4dev.codeplex.com/discussions/273848
+            MailMessageQueue queue = new MailMessageQueue(4);//smtp4dev apparently accept only 2 concurrent connections, according to http://smtp4dev.codeplex.com/discussions/273848
             Debug.WriteLine("Start sending messages at " + DateTime.Now.ToString());
             for (int i = 0; i < messageCount; i++)
             {
                 queue.AddAndSendAsync(new System.Net.Mail.MailMessage("andy@fonlow.com", "arnold@fonlow.com", "HelloAsync", "are you there? async"));
             }
-            System.Threading.Thread.Sleep(5000);//need to wait for around 1-3 seconds for 1000 messages., otherwise the test host is terminated resulting in thread abort.
-            server.Stop();
-            Assert.AreEqual(messageCount, messages.Count);
+            System.Threading.Thread.Sleep(2000);//need to wait for around 1-3 seconds for 1000 messages., otherwise the test host is terminated resulting in thread abort.
+            AssertMessagesSent(messageCount);
             Assert.IsTrue(queue.AcceptItem);
             Assert.AreEqual(0, queue.Count);
         }
 
-        [TestMethod]
-        [TestCategory("MailIntegration")]
-        public void TestSmtpClientAsyncWithInvalidSmtpHost()
-        {
-            MailMessageQueue queue = new MailMessageQueue("funky.fonlow.com");
-            Assert.IsTrue(queue.AcceptItem);
-            queue.AddAndSendAsync(new System.Net.Mail.MailMessage("andy@fonlow.com", "arnold@fonlow.com", "HelloAsync", "are you there? async"));
-            queue.AddAndSendAsync(new System.Net.Mail.MailMessage("andy@fonlow.com", "arnold@fonlow.com", "HelloAsync", "are you there? async"));
-            System.Threading.Thread.Sleep(10000);//need to wait longer for resolving the host, otherwise the test host is terminated resulting in thread abort.
-            Assert.IsFalse(queue.AcceptItem);
-            Assert.AreEqual(1, queue.Count);
-        }
+        //[TestMethod]
+        //[TestCategory("MailIntegration")]
+        //public void TestSmtpClientAsyncWithInvalidSmtpHost()
+        //{
+        //    MailMessageQueue queue = new MailMessageQueue("funky.fonlow.com");
+        //    Assert.IsTrue(queue.AcceptItem);
+        //    queue.AddAndSendAsync(new System.Net.Mail.MailMessage("andy@fonlow.com", "arnold@fonlow.com", "HelloAsync", "are you there? async"));
+        //    queue.AddAndSendAsync(new System.Net.Mail.MailMessage("andy@fonlow.com", "arnold@fonlow.com", "HelloAsync", "are you there? async"));
+        //    System.Threading.Thread.Sleep(10000);//need to wait longer for resolving the host, otherwise the test host is terminated resulting in thread abort.
+        //    Assert.IsFalse(queue.AcceptItem);
+        //    Assert.AreEqual(1, queue.Count);
+        //}
 
-        [TestMethod]
-        [TestCategory("MailIntegration")]
-        public void TestSmtpClientAsyncWithInvalidRecipient()
-        {
-            MailMessageQueue queue = new MailMessageQueue("mail.fonlow.com");
-            queue.AddAndSendAsync(new System.Net.Mail.MailMessage("HeyAndy@fonlow.com", "NotExist@fonlow.com", "HelloAsync", "are you there? async"));
-            System.Threading.Thread.Sleep(3000);
-            Assert.IsFalse(queue.AcceptItem);
-            queue.AddAndSendAsync(new System.Net.Mail.MailMessage("HeyAndy@fonlow.com", "NotExist@fonlow.com", "HelloAsync", "are you there? async"));
-            System.Threading.Thread.Sleep(2000);//need to wait, otherwise the test host is terminated resulting in thread abort.
-            Assert.AreEqual(1, queue.Count);
-        }
+        //[TestMethod]
+        //[TestCategory("MailIntegration")]
+        //public void TestSmtpClientAsyncWithInvalidRecipient()
+        //{
+        //    MailMessageQueue queue = new MailMessageQueue("mail.fonlow.com");
+        //    queue.AddAndSendAsync(new System.Net.Mail.MailMessage("HeyAndy@fonlow.com", "NotExist@fonlow.com", "HelloAsync", "are you there? async"));
+        //    System.Threading.Thread.Sleep(3000);
+        //    Assert.IsFalse(queue.AcceptItem);
+        //    queue.AddAndSendAsync(new System.Net.Mail.MailMessage("HeyAndy@fonlow.com", "NotExist@fonlow.com", "HelloAsync", "are you there? async"));
+        //    System.Threading.Thread.Sleep(2000);//need to wait, otherwise the test host is terminated resulting in thread abort.
+        //    Assert.AreEqual(1, queue.Count);
+        //}
 
 
         //   Integration tests end                */
