@@ -10,6 +10,7 @@ using System.Diagnostics;
 namespace EssentialDiagnosticsIntegrationTests
 {
     [TestFixture]
+    [Description("Test with a local SMTP server that may handle domain fonlowmail.com.")]
     public class EmailTraceListenersTests
     {
         public EmailTraceListenersTests()
@@ -24,7 +25,7 @@ namespace EssentialDiagnosticsIntegrationTests
         int mockSmtpPort = 9999;
 
         [Test]
-        public void TestSmtpClientAsyncWithInvalidSmtpHost()
+        public void TestMailMessageQueueWithInvalidSmtpHost()
         {
             MailMessageQueue queue = new MailMessageQueue("funky.fonlow.com", 25, 3);
             Assert.IsTrue(queue.AcceptItem);
@@ -36,11 +37,11 @@ namespace EssentialDiagnosticsIntegrationTests
         }
 
         [Test]
-        public void TestSmtpClientAsyncWithInvalidRecipient()
+        public void TestMailMessageQueueWithInvalidRecipient()
         {
             MailMessageQueue queue = new MailMessageQueue("mail.fonlow.com", 25, 3);
             queue.AddAndSendAsync(new System.Net.Mail.MailMessage("HeyAndy@fonlow.com", "NotExist@fonlow.com", "HelloAsync", "are you there? async"));
-            System.Threading.Thread.Sleep(3000);
+            System.Threading.Thread.Sleep(5000);
             Assert.IsFalse(queue.AcceptItem);
             queue.AddAndSendAsync(new System.Net.Mail.MailMessage("HeyAndy@fonlow.com", "NotExist@fonlow.com", "HelloAsync", "are you there? async"));
             System.Threading.Thread.Sleep(2000);//need to wait, otherwise the test host is terminated resulting in thread abort.
@@ -48,7 +49,7 @@ namespace EssentialDiagnosticsIntegrationTests
         }
 
         [Test]
-        public void TestSmtpClientAsync()
+        public void TestMailMessageQueue()
         {
             //List<Message> messages = new List<Message>();
             //DefaultServer server = new DefaultServer(mockSmtpPort);
@@ -66,7 +67,7 @@ namespace EssentialDiagnosticsIntegrationTests
         }
 
         [Test]
-        public void TestSmtpClientAsync2()
+        public void TestMailMessageQueue2()
         {
 
             MailMessageQueue queue = new MailMessageQueue(4);
@@ -81,13 +82,14 @@ namespace EssentialDiagnosticsIntegrationTests
 
 
         [Test]
-        public void TestSmtpClientAsyncWithManyMessages()
+        [Description("Stress testing the Smtp]
+        public void TestMailMessageQueueWithManyMessages()
         {
             const int messageCount = 100;
             bool done = false;
-            MailMessageQueue queue = new MailMessageQueue(8);//smtp4dev apparently accept only 2 concurrent connections, according to http://smtp4dev.codeplex.com/discussions/273848
+            MailMessageQueue queue = new MailMessageQueue(8);
             DateTime dt = DateTime.Now;
-            queue.QueueEmpty += (obj, e) => { done = true; };// new EventHandler(queue_MessageQueueEmpty);
+            queue.QueueEmpty += (obj, e) => { done = true; };
             Debug.WriteLine("Start sending messages at " + DateTime.Now.ToString());
             for (int i = 0; i < messageCount; i++)
             {
@@ -105,6 +107,31 @@ namespace EssentialDiagnosticsIntegrationTests
             Debug.WriteLine("total time (seconds): " + (DateTime.Now - dt).TotalSeconds);
         }
 
+
+        [Test]
+        [Description("EmailTraceListener defined in config should be working and sending Email messages out.")]
+        public void TestEmailTraceListener()
+        {
+            Trace.TraceWarning("Anything. More detail go here.");
+            Trace.TraceError("something wrong; can you tell? more here.");
+            Trace.WriteLine("This is writeline.", "Category");
+            Trace.WriteLine("This is another writeline.", "caTegory");
+            Trace.WriteLine("Writeline without right category", "CCCC");
+            System.Threading.Thread.Sleep(5000);//need to wait, otherwise the test host is terminated resulting in thread abort.
+        }
+
+        [Test]
+        [Description("Expect an error trace.")]
+        public void TestAnErrorBufferTraceListenerWithoutDefinedIn()
+        {
+            Trace.TraceWarning("Anything. More detail go here.");
+            Trace.TraceError("something wrong; can you tell? more here.");
+            Trace.WriteLine("This is writeline.", "Category");
+            Trace.WriteLine("This is another writeline.", "caTegory");
+            Trace.WriteLine("Writeline without right category", "CCCC");
+            ErrorBufferTraceListener.SendMailOfEventMessages();
+            System.Threading.Thread.Sleep(5000);
+        }
 
 
 

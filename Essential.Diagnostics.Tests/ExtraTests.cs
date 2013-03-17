@@ -29,6 +29,13 @@ namespace Essential.Diagnostics.Tests
             smtpConfig = System.Configuration.ConfigurationManager.GetSection("system.net/mailSettings/smtp") as System.Net.Configuration.SmtpSection;
             pickupDirectory = (smtpConfig != null) ? smtpConfig.SpecifiedPickupDirectory.PickupDirectoryLocation : null;
             mockSmtpPort = smtpConfig.Network.Port;
+            if (!String.IsNullOrEmpty(pickupDirectory))
+            {
+                if (!Directory.Exists(pickupDirectory))
+                {
+                    Directory.CreateDirectory(pickupDirectory);
+                }
+            }
         }
 
         string pickupDirectory;
@@ -162,7 +169,7 @@ namespace Essential.Diagnostics.Tests
         {
             ClearPickupDirectory();
             MailMessageQueue queue = new MailMessageQueue(3);
-            queue.AddAndSendAsync(new System.Net.Mail.MailMessage("andy@fonlow.com", "arnold@fonlow.com", "HelloAsync", "are you there? async"));
+            queue.AddAndSendAsync(new System.Net.Mail.MailMessage("andy@fonlowmail.com", "arnold@fonlowmail.com", "HelloAsync", "are you there? async"));
             System.Threading.Thread.Sleep(500);//need to wait, otherwise the test host is terminated resulting in thread abort.
             AssertMessagesSent(1);
             Assert.IsTrue(queue.AcceptItem);
@@ -176,8 +183,8 @@ namespace Essential.Diagnostics.Tests
         {
             ClearPickupDirectory();
             MailMessageQueue queue = new MailMessageQueue(4);
-            queue.AddAndSendAsync(new System.Net.Mail.MailMessage("andy@fonlow.com", "arnold@fonlow.com", "HelloAsync", "are you there? async"));
-            queue.AddAndSendAsync(new System.Net.Mail.MailMessage("andy@fonlow.com", "arnold@fonlowMail.com", "HelloAsync", "are you there? async"));
+            queue.AddAndSendAsync(new System.Net.Mail.MailMessage("andy@fonlowmail.com", "arnold@fonlowmail.com", "HelloAsync", "are you there? async"));
+            queue.AddAndSendAsync(new System.Net.Mail.MailMessage("andy@fonlowmail.com", "arnold@fonlowMail.com", "HelloAsync", "are you there? async"));
             System.Threading.Thread.Sleep(2000);//need to wait, otherwise the test host is terminated resulting in thread abort.
             AssertMessagesSent(2);
             Assert.IsTrue(queue.AcceptItem);
@@ -196,7 +203,7 @@ namespace Essential.Diagnostics.Tests
             Debug.WriteLine("Start sending messages at " + DateTime.Now.ToString());
             for (int i = 0; i < messageCount; i++)
             {
-                queue.AddAndSendAsync(new System.Net.Mail.MailMessage("andy@fonlow.com", "arnold@fonlow.com", "HelloAsync", "are you there? async"));
+                queue.AddAndSendAsync(new System.Net.Mail.MailMessage("andy@fonlowmail.com", "arnold@fonlowmail.com", "HelloAsync", "are you there? async"));
             }
             System.Threading.Thread.Sleep(2000);//need to wait for around 1-3 seconds for 1000 messages., otherwise the test host is terminated resulting in thread abort.
             AssertMessagesSent(messageCount);

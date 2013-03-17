@@ -116,7 +116,6 @@ namespace Essential.Diagnostics
     /// 
     /// It supports the following custom attributes used in config:
     /// * fromAddress
-    /// * fromName
     /// * toAddress
     /// * maxConnections: Maximum SmtpClient connections in pool. The default is 2.
     /// 
@@ -135,6 +134,11 @@ namespace Essential.Diagnostics
     /// If you define SmtpDeliveryMethod to make SmtpClient write messages to a pickup directory, please make sure the total number of client connections is no more than 2, since 
     /// concurrent access to a file system is almost certain to slow down the overall performance unless you are RAID. For the best performance, you really need to run some integration test
     /// to get the optimized number for a RAID system.
+    /// 
+    /// Please note, defining a large number of SMTP connections in pool may not necessarily give you the best performance. The overall performance with the optimized number of concurrent connections depends on the following factors:
+    /// 1. The number of processors
+    /// 2. The implementation/config of the SMTP server
+    /// 3. The average size of Email messages
     /// </remarks>
     public abstract class EmailTraceListenerBase : TraceListener
     {
@@ -149,10 +153,11 @@ namespace Essential.Diagnostics
 
         protected string FromAddress { get { return Attributes["fromAddress"]; } }
 
-        protected string FromName { get { return Attributes["fromName"]; } }
-
         protected string ToAddress { get { return Attributes["toAddress"]; } }
 
+        /// <summary>
+        /// Maximum concurrent connections in the SmtpClient pool, defined in custom attribute maxConnections. The default value is 2.
+        /// </summary>
         protected int MaxConnections
         {
             get
@@ -163,7 +168,7 @@ namespace Essential.Diagnostics
             }
         }
 
-        static string[] supportedAttributes = new string[] { "fromAddress", "fromName", "toAddress", "maxConnections" };
+        static string[] supportedAttributes = new string[] { "fromAddress",  "toAddress", "maxConnections" };
 
         protected override string[] GetSupportedAttributes()
         {
@@ -172,36 +177,61 @@ namespace Essential.Diagnostics
 
         // object clientLock = new object();
 
-        protected void SendEmailAsync(string subject, string body, string recipient)
-        {
-            MessageQueue.AddAndSendAsync(CreateMailMessage(subject, body, recipient));
-        }
-
         MailMessage CreateMailMessage(string subject, string body, string recipient)
         {
             MailMessage mailMessage = new MailMessage();
 
             mailMessage.IsBodyHtml = false;
             mailMessage.BodyEncoding = Encoding.UTF8;
-            mailMessage.From = new MailAddress(FromAddress, FromName);
+            mailMessage.From = new MailAddress(FromAddress);
             mailMessage.To.Add(recipient);
             if (String.IsNullOrEmpty(subject))
                 subject = "Subject empty";
 
-            SanitiseEmailSubject(mailMessage, subject);
+            EmailUtil.SanitiseEmailSubject(mailMessage, subject);
             mailMessage.Body = StartupInfo.GetParagraph(body);
             return mailMessage;
         }
 
-        public void SendEmailAsync(string subject, string body)
+        protected void SendEmailAsync(string subject, string body, string recipient)
+        {
+            MessageQueue.AddAndSendAsync(CreateMailMessage(subject, body, recipient));
+        }
+
+        /// <summary>
+        /// Send Email via a SmtpClient in pool.
+        /// </summary>
+        /// <param name="subject"></param>
+        /// <param name="body"></param>
+        protected void SendEmailAsync(string subject, string body)
         {
             SendEmailAsync(subject, body, ToAddress);
         }
 
-        public void SendEmail(string subject, string body)
-        {
-            MessageQueue.AddAndSendAsync(CreateMailMessage(subject, body, ToAddress));
+        /// <summary>
+        /// Send Email via a new SmtpClient.
+        /// </summary>
+        /// <param name="subject"></param>
+        /// <param name="body"></param>
+        protected void SendEmail(string subject, string body)
+        { 
+            SmtpClient client=null;
+            try
+            {
+                client = new SmtpClient();
+                client.Send(FromAddress, ToAddress, subject, body);
+
+            }
+            finally
+            {
+                if  ((client!=null)&&(typeof(SmtpClient).GetInterface("IDisposable") != null))
+                {
+                    (client as IDisposable).Dispose();
+                }
+            }
         }
+
+        
 
         MailMessageQueue messageQueue;
 
@@ -224,6 +254,11 @@ namespace Essential.Diagnostics
             }
         }
 
+
+    }
+
+    internal static class EmailUtil
+    {
         internal static string ExtractSubject(string message)
         {
             Regex regex = new Regex(@"((\d{1,4}[\:\-\s/]){2,3}){1,2}");//timestamp in trace
@@ -300,7 +335,7 @@ namespace Essential.Diagnostics
             if (eventCache == null)
                 throw new ArgumentNullException("eventCache");
 
-            string subject = ExtractSubject(message);
+            string subject = EmailUtil.ExtractSubject(message);
 
             string messageformated;
 
@@ -449,7 +484,7 @@ namespace Essential.Diagnostics
             string body = EventMessagesBuffer.ToString(); 
             string firstMessage = body.Substring(0, body.IndexOf("\n"));// EventMessagesBuffer.Count == 0 ? String.Empty : EventMessagesBuffer[0];
             Debug.WriteLine("firstMessage: " + firstMessage);
-            string subject = ExtractSubject(firstMessage);
+            string subject = EmailUtil.ExtractSubject(firstMessage);
             SendEmail(subject, body);
         }
 
@@ -463,7 +498,8 @@ namespace Essential.Diagnostics
                     return myListener;
             }
 
-            throw new InvalidOperationException("You want to use ErrorBufferTraceListener, but there's none in Trace.Listeners, probably not defined in the config file.");
+            Trace.TraceError("You want to use ErrorBufferTraceListener, but there's none in Trace.Listeners, probably not defined in the config file.");
+            return null;
         }
 
         /// <summary>
@@ -471,7 +507,11 @@ namespace Essential.Diagnostics
         /// </summary>
         public static void SendMailOfEventMessages()
         {
-            FindListener().SendEventMessages();
+            var listener = FindListener();
+            if (listener != null)
+            {
+                listener.SendEventMessages();
+            }
         }
     }
 
