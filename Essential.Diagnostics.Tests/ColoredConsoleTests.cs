@@ -139,6 +139,7 @@ namespace Essential.Diagnostics.Tests
             Assert.IsFalse(listener1.ConvertWriteToEvent);
 
             var configPath = ConfigUtility.GetConfigDirFromTestRunDirectory(TestContext.TestRunDirectory);
+            Debug.WriteLine("configPath=" + configPath);
 
             using (var file = new FileResetScope(configPath))
             {
@@ -148,6 +149,8 @@ namespace Essential.Diagnostics.Tests
                 var sharedListeners = systemDiagnostics.Element("sharedListeners");
                 var listenerConfig = sharedListeners.Elements().First(x => x.Attribute("name").Value == "colored1");
 
+                Assert.AreEqual("{DateTime} {EventType}: {Message}", listenerConfig.Attribute("template").Value, "config not loaded correctly.");
+
                 listenerConfig.SetAttributeValue("template", "TEST {Message}");
                 listenerConfig.SetAttributeValue("criticalColor", ConsoleColor.Cyan);
                 listenerConfig.SetAttributeValue("convertWriteToEvent", true);
@@ -155,6 +158,7 @@ namespace Essential.Diagnostics.Tests
                 doc.Save(configPath);
                 Trace.Refresh();
 
+                source = new TraceSource("colored1Source");
                 var listener2 = source.Listeners.OfType<ColoredConsoleTraceListener>().First();
                 Assert.AreEqual("TEST {Message}", listener2.Template);
                 Assert.AreEqual(ConsoleColor.Cyan, listener2.GetConsoleColor(TraceEventType.Critical));

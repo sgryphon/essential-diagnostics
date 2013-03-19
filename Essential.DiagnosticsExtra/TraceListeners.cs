@@ -16,7 +16,7 @@ namespace Essential.Diagnostics
     /// <summary>
     /// Common info to be logged during the startup of a process or AppDomain. And the date format prefers ISO8601.
     /// </summary>
-    public static class StartupInfo
+    internal static class StartupInfo
     {
         /// <summary>
         /// To be used to write the first trace when a process starts, with info of the process signature.
@@ -188,7 +188,7 @@ namespace Essential.Diagnostics
             if (String.IsNullOrEmpty(subject))
                 subject = "Subject empty";
 
-            EmailUtil.SanitiseEmailSubject(mailMessage, subject);
+            EmailUtility.SanitiseEmailSubject(mailMessage, subject);
             mailMessage.Body = StartupInfo.GetParagraph(body);
             return mailMessage;
         }
@@ -219,7 +219,9 @@ namespace Essential.Diagnostics
             try
             {
                 client = new SmtpClient();
-                client.Send(FromAddress, ToAddress, subject, body);
+                Debug.WriteLine("subject = " + subject);
+                var mailMessage = new MailMessage(FromAddress, ToAddress, EmailUtility.SanitiseSubject(subject), body);
+                client.Send(mailMessage);
 
             }
             finally
@@ -257,7 +259,7 @@ namespace Essential.Diagnostics
 
     }
 
-    internal static class EmailUtil
+    internal static class EmailUtility
     {
         internal static string ExtractSubject(string message)
         {
@@ -270,6 +272,31 @@ namespace Essential.Diagnostics
 
             string[] ss = message.Split(new string[] { ";", ", ", ". " }, 2, StringSplitOptions.None);
             return StartupInfo.GetMessageWithProcessSignature(ss[0]);
+        }
+
+        internal static string SanitiseSubject(string subject)
+        {
+            const int subjectMaxLength = 254; //though .NET lib does not place any restriction, and the recent standard of Email seems to be 254, which sounds safe.
+            if (subject.Length > 254)
+                subject = subject.Substring(0, subjectMaxLength);
+
+            try
+            {
+                for (int i = 0; i < subject.Length; i++)
+                {
+                    if (Char.IsControl(subject[i]))
+                    {
+                        return subject.Substring(0, i);
+                    }
+                }
+                return subject;
+
+            }
+            catch (ArgumentException)
+            {
+               return "Invalid subject removed by TraceListener";
+            }
+
         }
 
         /// <summary>
@@ -286,29 +313,8 @@ namespace Essential.Diagnostics
             if (mailMessage == null)
                 throw new ArgumentNullException("mailMessage");
 
-            const int subjectMaxLength = 254; //though .NET lib does not place any restriction, and the recent standard of Email seems to be 254, which sounds safe.
-            if (subject.Length > 254)
-                subject = subject.Substring(0, subjectMaxLength);
-
-            try
-            {
-                for (int i = 0; i < subject.Length; i++)
-                {
-                    if (Char.IsControl(subject[i]))
-                    {
-                        mailMessage.Subject = subject.Substring(0, i);
-                        return;
-                    }
-                }
-                mailMessage.Subject = subject;
-
-            }
-            catch (ArgumentException)
-            {
-                mailMessage.Subject = "Invalid subject removed by TraceListener";
-            }
+            mailMessage.Subject = SanitiseSubject(subject);
         }
-
 
     }
 
@@ -335,7 +341,7 @@ namespace Essential.Diagnostics
             if (eventCache == null)
                 throw new ArgumentNullException("eventCache");
 
-            string subject = EmailUtil.ExtractSubject(message);
+            string subject = EmailUtility.ExtractSubject(message);
 
             string messageformated;
 
@@ -400,24 +406,14 @@ namespace Essential.Diagnostics
     /// 
     /// 
     /// </summary>
-    /// <example>            
-    ///     ErrorBufferTraceListener bufferListener = new ErrorBufferTraceListener("ErrorBufferOfAdWordsAgent");
-    ///     Trace.Listeners.Add(bufferListener);
-    ///     ...
-    ///        if (bufferListener.HasErrors)
-    ///        {
-    ///            SendEmail("When uploading to AdWords, there are errors", bufferListener.Messages);
-    ///        }
-    ///
-    ///</example>
-    public class ErrorBufferTraceListener : EmailTraceListenerBase
+    public class ErrorBufferEmailTraceListener : EmailTraceListenerBase
     {
-        public ErrorBufferTraceListener()
+        public ErrorBufferEmailTraceListener()
         {
             EventMessagesBuffer = new StringBuilder();
         }
 
-        public ErrorBufferTraceListener(string name)
+        public ErrorBufferEmailTraceListener(string name)
             : base(name)
         {
             EventMessagesBuffer = new StringBuilder();
@@ -484,16 +480,16 @@ namespace Essential.Diagnostics
             string body = EventMessagesBuffer.ToString(); 
             string firstMessage = body.Substring(0, body.IndexOf("\n"));// EventMessagesBuffer.Count == 0 ? String.Empty : EventMessagesBuffer[0];
             Debug.WriteLine("firstMessage: " + firstMessage);
-            string subject = EmailUtil.ExtractSubject(firstMessage);
+            string subject = EmailUtility.ExtractSubject(firstMessage);
             SendEmail(subject, body);
         }
 
-        static ErrorBufferTraceListener FindListener()
+        static ErrorBufferEmailTraceListener FindListener()
         {
-            ErrorBufferTraceListener myListener = null;
+            ErrorBufferEmailTraceListener myListener = null;
             foreach (TraceListener t in Trace.Listeners)
             {
-                myListener = t as ErrorBufferTraceListener;
+                myListener = t as ErrorBufferEmailTraceListener;
                 if (myListener != null)
                     return myListener;
             }
@@ -511,6 +507,15 @@ namespace Essential.Diagnostics
             if (listener != null)
             {
                 listener.SendEventMessages();
+            }
+        }
+
+        public static void Clear()
+        {
+            var listener = FindListener();
+            if (listener != null)
+            {
+                listener.ClearEventMessagesBuffer();
             }
         }
     }

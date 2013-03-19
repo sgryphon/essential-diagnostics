@@ -225,11 +225,6 @@ namespace Essential.Diagnostics
         /// </summary>
         public MailMessage MailMessage { get; private set; }
 
-        public MailStatusEventArgs(MailSystemStatus status)
-        {
-            Status = status;
-        }
-
         public MailStatusEventArgs(MailSystemStatus status, MailMessage mailMessage)
         {
             Status = status;
@@ -237,8 +232,12 @@ namespace Essential.Diagnostics
         }
     }
 
-
-    internal enum MailSystemStatus { Ok, EmptyConnectionPool, TemporaryProblem, Critical };
+    internal enum MailSystemStatus { 
+        Ok, 
+        EmptyConnectionPool, 
+        TemporaryProblem, //then worth of retry
+        Critical //then the Email message queue should stop accepting new messages.
+    };
 
     /// <summary>
     /// MailMessage queue in which items will be sent by a pool of SmtpClient objects. Client codes just neeed to call AddAndSendAsync().

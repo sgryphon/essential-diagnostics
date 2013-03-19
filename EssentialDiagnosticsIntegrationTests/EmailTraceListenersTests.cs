@@ -129,7 +129,7 @@ namespace EssentialDiagnosticsIntegrationTests
             Trace.WriteLine("This is writeline.", "Category");
             Trace.WriteLine("This is another writeline.", "caTegory");
             Trace.WriteLine("Writeline without right category", "CCCC");
-            ErrorBufferTraceListener.SendMailOfEventMessages();
+            ErrorBufferEmailTraceListener.SendMailOfEventMessages();
             System.Threading.Thread.Sleep(5000);
         }
 

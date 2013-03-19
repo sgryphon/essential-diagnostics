@@ -27,8 +27,9 @@ namespace Essential.Diagnostics.Tests
         public TestSystem()
         {
             smtpConfig = System.Configuration.ConfigurationManager.GetSection("system.net/mailSettings/smtp") as System.Net.Configuration.SmtpSection;
-            pickupDirectory = (smtpConfig != null) ? smtpConfig.SpecifiedPickupDirectory.PickupDirectoryLocation : null;
             mockSmtpPort = smtpConfig.Network.Port;
+
+            pickupDirectory = (smtpConfig != null) ? smtpConfig.SpecifiedPickupDirectory.PickupDirectoryLocation : null;
             if (!String.IsNullOrEmpty(pickupDirectory))
             {
                 if (!Directory.Exists(pickupDirectory))
@@ -38,8 +39,9 @@ namespace Essential.Diagnostics.Tests
             }
         }
 
-        string pickupDirectory;
-        System.Net.Configuration.SmtpSection smtpConfig;
+       string pickupDirectory;
+
+       System.Net.Configuration.SmtpSection smtpConfig;
         int mockSmtpPort = 9999;
 
         private TestContext testContextInstance;
@@ -78,19 +80,19 @@ namespace Essential.Diagnostics.Tests
         {
             const string content = "Something to say";
             const string theRest = ". the rest of the trace.";
-            string s = EmailTraceListenerBase_Accessor.ExtractSubject(content);
+            string s = EmailUtility_Accessor.ExtractSubject(content);
             Assert.IsTrue(s.StartsWith(content));
 
-            s = EmailTraceListenerBase_Accessor.ExtractSubject("2012-03-02 12:48 " + content);
+            s = EmailUtility_Accessor.ExtractSubject("2012-03-02 12:48 " + content);
             Assert.IsTrue(s.StartsWith(content));
 
-            s = EmailTraceListenerBase_Accessor.ExtractSubject("2012-03-02 12:48 " + content + theRest);
+            s = EmailUtility_Accessor.ExtractSubject("2012-03-02 12:48 " + content + theRest);
             Assert.IsTrue(s.StartsWith(content));
 
-            s = EmailTraceListenerBase_Accessor.ExtractSubject("2012-03-02 12:48:22 abcde.fg:" + content);
+            s = EmailUtility_Accessor.ExtractSubject("2012-03-02 12:48:22 abcde.fg:" + content);
             Assert.IsTrue(s.StartsWith("abcde.fg:" + content));
 
-            s = EmailTraceListenerBase_Accessor.ExtractSubject("abcde.fg:" + content);
+            s = EmailUtility_Accessor.ExtractSubject("abcde.fg:" + content);
             Assert.IsTrue(s.StartsWith("abcde.fg:" + content));
 
 
@@ -133,6 +135,23 @@ namespace Essential.Diagnostics.Tests
 
         [TestMethod]
         [TestCategory("MailIntegration")]
+        public void TestErrorBufferTraceListener()
+        {
+            ClearPickupDirectory();
+
+            Trace.Listeners.Remove("emailTraceListener");//otherwise this listener will send mail as well
+
+            ErrorBufferEmailTraceListener.Clear();
+            Trace.TraceWarning("Anythingbbbb. More detail go here.");
+            Trace.TraceError("something wrongbbbb; can you tell? more here.");
+            ErrorBufferEmailTraceListener.SendMailOfEventMessages();
+            AssertMessagesSent(1);
+
+            Trace.Refresh();//so reload all listeners
+        }
+
+        [TestMethod]
+        [TestCategory("MailIntegration")]
         public void TestEmailTraceListenerWithManyTraces()
         {
             ClearPickupDirectory();
@@ -149,18 +168,6 @@ namespace Essential.Diagnostics.Tests
             System.Threading.Thread.Sleep(10000);//need to wait, otherwise the test host is terminated resulting in thread abort.
 
             AssertMessagesSent(2000);
-        }
-
-        [TestMethod]
-        [TestCategory("MailIntegration")]
-        public void TestErrorBufferTraceListener()
-        {
-            ClearPickupDirectory();
-
-            Trace.TraceWarning("Anythingbbbb. More detail go here.");
-            Trace.TraceError("something wrongbbbb; can you tell? more here.");
-            ErrorBufferTraceListener.SendMailOfEventMessages();
-            AssertMessagesSent(1);
         }
 
         [TestMethod]
