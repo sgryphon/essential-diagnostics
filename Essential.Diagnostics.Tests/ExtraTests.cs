@@ -80,19 +80,19 @@ namespace Essential.Diagnostics.Tests
         {
             const string content = "Something to say";
             const string theRest = ". the rest of the trace.";
-            string s = EmailUtility_Accessor.ExtractSubject(content);
+            string s = MailMessageHelper_Accessor.ExtractSubject(content);
             Assert.IsTrue(s.StartsWith(content));
 
-            s = EmailUtility_Accessor.ExtractSubject("2012-03-02 12:48 " + content);
+            s = MailMessageHelper_Accessor.ExtractSubject("2012-03-02 12:48 " + content);
             Assert.IsTrue(s.StartsWith(content));
 
-            s = EmailUtility_Accessor.ExtractSubject("2012-03-02 12:48 " + content + theRest);
+            s = MailMessageHelper_Accessor.ExtractSubject("2012-03-02 12:48 " + content + theRest);
             Assert.IsTrue(s.StartsWith(content));
 
-            s = EmailUtility_Accessor.ExtractSubject("2012-03-02 12:48:22 abcde.fg:" + content);
+            s = MailMessageHelper_Accessor.ExtractSubject("2012-03-02 12:48:22 abcde.fg:" + content);
             Assert.IsTrue(s.StartsWith("abcde.fg:" + content));
 
-            s = EmailUtility_Accessor.ExtractSubject("abcde.fg:" + content);
+            s = MailMessageHelper_Accessor.ExtractSubject("abcde.fg:" + content);
             Assert.IsTrue(s.StartsWith("abcde.fg:" + content));
 
 

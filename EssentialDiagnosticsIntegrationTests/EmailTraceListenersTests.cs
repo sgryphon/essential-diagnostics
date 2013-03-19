@@ -82,7 +82,7 @@ namespace EssentialDiagnosticsIntegrationTests
 
 
         [Test]
-        [Description("Stress testing the Smtp]
+        [Description("Stress testing the Smtp")]
         public void TestMailMessageQueueWithManyMessages()
         {
             const int messageCount = 100;

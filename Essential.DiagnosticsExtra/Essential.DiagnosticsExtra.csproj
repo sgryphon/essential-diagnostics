@@ -33,10 +33,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>EssentialDiagnostics.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -44,13 +45,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EmailTraceListener.cs" />
+    <Compile Include="EmailTraceListenerBase.cs" />
+    <Compile Include="ErrorBufferEmailTraceListener.cs" />
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="MailFunctions.cs" />
-    <Compile Include="TraceListeners.cs" />
+    <Compile Include="MailMessageHelper.cs" />
+    <Compile Include="MailMessageQueue.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="EssentialDiagnostics.snk" />
+    <ProjectReference Include="..\Essential.Diagnostics\Essential.Diagnostics.csproj">
+      <Project>{7A59AA9B-D2C3-4682-A4D7-CE37B98F5905}</Project>
+      <Name>Essential.Diagnostics</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
