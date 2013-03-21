@@ -19,16 +19,16 @@ namespace Essential.Diagnostics
 
         static object poolLock = new object();
 
-        Queue<SmtpClient> Pool
-        {
-            get
-            {
-                lock (poolLock)
-                {
-                    return pool;
-                }
-            }
-        }
+        //Queue<SmtpClient> Pool
+        //{
+        //    get
+        //    {
+        //        lock (poolLock)
+        //        {
+        //            return pool;
+        //        }
+        //    }
+        //}
 
         const int defaultMaxConnections = 2;
 
@@ -45,7 +45,7 @@ namespace Essential.Diagnostics
             {
                 SmtpClient client = new SmtpClient();
                 client.SendCompleted += new SendCompletedEventHandler(client_SendCompleted);
-                Pool.Enqueue(client);
+                PoolEnqueue(client);
             }
         }
 
@@ -56,7 +56,23 @@ namespace Essential.Diagnostics
             {
                 SmtpClient client = new SmtpClient(hostName, port);
                 client.SendCompleted += new SendCompletedEventHandler(client_SendCompleted);
-                Pool.Enqueue(client);
+                PoolEnqueue(client);
+            }
+        }
+
+        SmtpClient PoolDequeue()
+        {
+            lock (poolLock)
+            {
+                return pool.Dequeue();
+            }
+        }
+
+        void PoolEnqueue(SmtpClient client)
+        {
+            lock (poolLock)
+            {
+                pool.Enqueue(client);
             }
         }
 
@@ -64,13 +80,12 @@ namespace Essential.Diagnostics
         {
             SmtpClient client = sender as SmtpClient;
             Debug.Assert(client != null, "Why is this ender not SmtpClient?");
-            Pool.Enqueue(client);
+            PoolEnqueue(client);
 
             MailMessage messageSent = e.UserState as MailMessage;
             Debug.Assert(messageSent != null);
 
             Debug.WriteLine("Mail send completed at " + DateTime.Now.ToString());
-            Debug.WriteLine("Connections in pool: " + Pool.Count);
 
             MailSystemStatus status = MailSystemStatus.Ok;
             if (e.Error != null)
@@ -150,7 +165,7 @@ namespace Essential.Diagnostics
             SmtpClient client = null;
             try
             {
-                client = Pool.Dequeue();
+                client = PoolDequeue();
                 client.SendAsync(message, message);// the client will be enqueued when the thread finish. If the sending fails, the message will not be resent. This is intended.
                 Debug.WriteLine("Mail sent async.");
                 return MailSystemStatus.Ok;
@@ -164,7 +179,7 @@ namespace Essential.Diagnostics
             {
                 Trace.TraceError("Could not send mail: " + e.ToString());
                 Debug.WriteLine("Status: " + e.StatusCode);
-                Pool.Enqueue(client);
+                PoolEnqueue(client);
                 return GetMailSystemStatus(e.StatusCode);
             }
         }
@@ -193,7 +208,7 @@ namespace Essential.Diagnostics
                         SmtpClient client;
                         try
                         {
-                            while ((client = Pool.Dequeue()) != null)
+                            while ((client = PoolDequeue()) != null)
                             {
                                 (client as IDisposable).Dispose();
                             }
@@ -253,16 +268,16 @@ namespace Essential.Diagnostics
 
         static System.Threading.ReaderWriterLock rwLock = new System.Threading.ReaderWriterLock();
 
-        Queue<MailMessage> MessageQueue
-        {
-            get
-            {
-                lock (queueLock)
-                {
-                    return queue;
-                }
-            }
-        }
+        //Queue<MailMessage> MessageQueue
+        //{
+        //    get
+        //    {
+        //        lock (queueLock)
+        //        {
+        //            return queue;
+        //        }
+        //    }
+        //}
 
         bool acceptItem = true;
 
@@ -317,20 +332,41 @@ namespace Essential.Diagnostics
             queue = new Queue<MailMessage>();
         }
 
+        MailMessage Dequeue()
+        {
+            lock (queueLock)
+            {
+                return queue.Dequeue();
+            }
+        }
+
+        void Enqueue(MailMessage message)
+        {
+            lock (queueLock)
+            {
+                queue.Enqueue(message);
+            }
+        }
+
         /// <summary>
         /// So after a message is sent, the first message in the queue will be dequeued and sent.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
+        /// <remarks>
+        /// It seems that SmtpClient will dispose MailMessage before sending another message. Therefore, it is not nice to enqueue
+        /// </remarks>
         void clientPool_SendCompleted(object sender, MailStatusEventArgs e)
         {
             switch (e.Status)
             {
                 case MailSystemStatus.TemporaryProblem:
                 case MailSystemStatus.Critical:
-                    MessageQueue.Enqueue(e.MailMessage);
                     AcceptItem = false;
                     Trace.TraceInformation("Mail system has critical problem. Not to accept more messages.");//and the message 
+                    return;
+                case MailSystemStatus.EmptyConnectionPool:
+                    Trace.Fail("Is it possible to have EmptyConnectionPool here?");
                     return;
                 default:
                     e.MailMessage.Dispose();
@@ -352,8 +388,8 @@ namespace Essential.Diagnostics
                 return;
             }
 
-            MessageQueue.Enqueue(message);
-            Debug.WriteLine("Messages in queue after adding: " + MessageQueue.Count);
+            Enqueue(message);
+            Debug.WriteLine("Messages in queue after adding: " + Count);
             SendOne();
         }
 
@@ -364,7 +400,7 @@ namespace Essential.Diagnostics
             MailMessage messageToSend;
             try
             {
-                messageToSend = MessageQueue.Dequeue();
+                messageToSend = Dequeue();
             }
             catch (InvalidOperationException)// nothing in message queue
             {
@@ -388,10 +424,10 @@ namespace Essential.Diagnostics
                 case MailSystemStatus.EmptyConnectionPool:
                 case MailSystemStatus.TemporaryProblem:
                     Debug.WriteLine("Message enqueued back.");
-                    MessageQueue.Enqueue(messageToSend);
+                    Enqueue(messageToSend);
                     break;
                 case MailSystemStatus.Critical:
-                    MessageQueue.Enqueue(messageToSend);
+                    Enqueue(messageToSend);
                     AcceptItem = false;
                     Trace.TraceInformation("Mail system has critical problem. Message queue will not receive further items.");
                     break;
@@ -401,10 +437,11 @@ namespace Essential.Diagnostics
             }
         }
 
+
         /// <summary>
         /// Number of messages in queue. This properly is generally accessed for diagnostics purpose when AcceptItem becomes false.
         /// </summary>
-        public int Count { get { return MessageQueue.Count; } }
+        public int Count { get { lock (queueLock) { return queue.Count; } } }
 
         bool disposed;
 
@@ -423,7 +460,7 @@ namespace Essential.Diagnostics
                     MailMessage item;
                     try
                     {
-                        while ((item = MessageQueue.Dequeue()) != null)
+                        while ((item = Dequeue()) != null)
                         {
                             item.Dispose();
                         }

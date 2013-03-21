@@ -52,16 +52,41 @@ namespace Essential.Diagnostics
     {
         protected EmailTraceListenerBase()
         {
+            smtpConfig = System.Configuration.ConfigurationManager.GetSection("system.net/mailSettings/smtp") as System.Net.Configuration.SmtpSection;
         }
 
-        protected EmailTraceListenerBase(string name)
-            : base(name)
+        protected EmailTraceListenerBase(string toAddress)
+            : this()
         {
+            this.toAddress = toAddress;
         }
 
-        protected string FromAddress { get { return Attributes["fromAddress"]; } }
+        string toAddress;
 
-        protected string ToAddress { get { return Attributes["toAddress"]; } }
+        System.Net.Configuration.SmtpSection smtpConfig;
+
+        /// <summary>
+        /// Defined in attribute fromAddress or property From of system.net/mailSettings/smtp. 
+        /// </summary>
+        protected string FromAddress
+        {
+            get 
+            {
+               return smtpConfig.From;
+            }
+        }
+
+        /// <summary>
+        /// Normally taken from initializeData of config.
+        /// 
+        /// </summary>
+        protected string ToAddress
+        {
+            get
+            {
+                return toAddress;
+            }
+        }
 
         /// <summary>
         /// Maximum concurrent connections in the SmtpClient pool, defined in custom attribute maxConnections. The default value is 2.
@@ -69,14 +94,14 @@ namespace Essential.Diagnostics
         protected int MaxConnections
         {
             get
-            {
+            {//todo: test with config change.
                 string s = Attributes["maxConnections"];
                 int m;
                 return Int32.TryParse(s, out m) ? m : 2;
             }
         }
 
-        static string[] supportedAttributes = new string[] { "fromAddress", "toAddress", "maxConnections" };
+        static string[] supportedAttributes = new string[] {"maxConnections" };
 
         protected override string[] GetSupportedAttributes()
         {
