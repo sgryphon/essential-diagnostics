@@ -13,14 +13,6 @@ namespace Essential.Diagnostics
     /// </summary>
     internal static class StartupInfo
     {
-        /// <summary>
-        /// To be used to write the first trace when a process starts, with info of the process signature.
-        /// </summary>
-        /// <param name="basicMessage"></param>
-        public static void WriteLine(string basicMessage)
-        {
-            Trace.TraceInformation(GetMessageWithProcessSignature(basicMessage));
-        }
 
         /// <summary>
         /// Message suffixed with process info: machine name, user name, process name along with arguments, app domain name and local time.
@@ -77,13 +69,6 @@ namespace Essential.Diagnostics
             return dateTime.ToString("yyyy-MM-dd HH:mm:ss");
         }
 
-        public static string NowShotText
-        {
-            get
-            {
-                return DateTime.Now.ToString("yyyyMMdd HHmmss");
-            }
-        }
 
         /// <summary>
         /// Now in ISO8601 

@@ -19,17 +19,6 @@ namespace Essential.Diagnostics
 
         static object poolLock = new object();
 
-        //Queue<SmtpClient> Pool
-        //{
-        //    get
-        //    {
-        //        lock (poolLock)
-        //        {
-        //            return pool;
-        //        }
-        //    }
-        //}
-
         const int defaultMaxConnections = 2;
 
         internal SmtpClientPool():this(defaultMaxConnections)
@@ -267,17 +256,6 @@ namespace Essential.Diagnostics
         static object queueLock = new object();
 
         static System.Threading.ReaderWriterLock rwLock = new System.Threading.ReaderWriterLock();
-
-        //Queue<MailMessage> MessageQueue
-        //{
-        //    get
-        //    {
-        //        lock (queueLock)
-        //        {
-        //            return queue;
-        //        }
-        //    }
-        //}
 
         bool acceptItem = true;
 

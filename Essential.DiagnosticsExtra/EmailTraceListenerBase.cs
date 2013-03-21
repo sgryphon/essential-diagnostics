@@ -153,8 +153,10 @@ namespace Essential.Diagnostics
             {
                 client = new SmtpClient();
                 Debug.WriteLine("subject = " + subject);
-                var mailMessage = new MailMessage(FromAddress, ToAddress, MailMessageHelper.SanitiseSubject(subject), body);
-                client.Send(mailMessage);
+                using (var mailMessage = new MailMessage(FromAddress, ToAddress, MailMessageHelper.SanitiseSubject(subject), body))
+                {
+                    client.Send(mailMessage);
+                }
 
             }
             finally

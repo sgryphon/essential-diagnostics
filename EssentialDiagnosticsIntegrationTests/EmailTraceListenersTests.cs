@@ -45,7 +45,7 @@ namespace EssentialDiagnosticsIntegrationTests
             Assert.IsFalse(queue.AcceptItem);
             queue.AddAndSendAsync(new System.Net.Mail.MailMessage("HeyAndy@fonlow.com", "NotExist@fonlow.com", "HelloAsync", "are you there? async"));
             System.Threading.Thread.Sleep(2000);//need to wait, otherwise the test host is terminated resulting in thread abort.
-            Assert.AreEqual(1, queue.Count);
+            Assert.AreEqual(0, queue.Count);
         }
 
         [Test]
