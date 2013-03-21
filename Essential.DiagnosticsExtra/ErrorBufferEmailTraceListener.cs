@@ -12,7 +12,7 @@ namespace Essential.Diagnostics
     /// <summary>
     /// Intended to be used in console apps which will send all warning/error traces via Email at the end of the process.
     /// 
-    /// Put error and warning trace messages into a buffer, taking care of Trace.Trace*() while ignoring Trace.Write*(). The client codes may want to get
+    /// The listener will put error and warning trace messages into a buffer, taking care of Trace.Trace*() while ignoring Trace.Write*(). The client codes may want to get
     /// all messages at the end of a business operation in order to send out the messages in one batch.
     /// For error message, call stack and local datetime will be accompanied.
     /// 
@@ -22,7 +22,7 @@ namespace Essential.Diagnostics
     {
         public ErrorBufferEmailTraceListener()
         {
-            EventMessagesBuffer = new StringBuilder();
+            EventMessagesBuffer = new StringBuilder();            
         }
 
         public ErrorBufferEmailTraceListener(string name)
@@ -84,7 +84,11 @@ namespace Essential.Diagnostics
 
         public bool HasEventErrors { get { return EventMessagesBuffer.Length > 0; } }
 
-        protected void SendEventMessages()
+        /// <summary>
+        /// Send all trace messages in buffer by 1 Email message. If the buffer is empty, this function does nothing.
+        /// </summary>
+        /// <remarks>The buffer is then clear.</remarks>
+        public void SendAndClear()
         {
             if (!HasEventErrors)
                 return;
@@ -93,7 +97,14 @@ namespace Essential.Diagnostics
             string firstMessage = body.Substring(0, body.IndexOf("\n"));// EventMessagesBuffer.Count == 0 ? String.Empty : EventMessagesBuffer[0];
             Debug.WriteLine("firstMessage: " + firstMessage);
             string subject = MailMessageHelper.ExtractSubject(firstMessage);
-            SendEmail(subject, body);
+            MessageQueue.AddAndSendAsync(new MailMessage(FromAddress, ToAddress, MailMessageHelper.SanitiseSubject(subject), body));
+            ClearEventMessagesBuffer();
+        }
+
+        protected override void SendAllBeforeExit()
+        {
+            SendAndClear();
+            base.SendAllBeforeExit();
         }
 
         static ErrorBufferEmailTraceListener FindListener()
@@ -118,7 +129,7 @@ namespace Essential.Diagnostics
             var listener = FindListener();
             if (listener != null)
             {
-                listener.SendEventMessages();
+                listener.SendAndClear();
             }
         }
 

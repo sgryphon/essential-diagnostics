@@ -85,7 +85,7 @@ namespace EssentialDiagnosticsIntegrationTests
         [Description("Stress testing the Smtp")]
         public void TestMailMessageQueueWithManyMessages()
         {
-            const int messageCount = 100;
+            const int messageCount = 1000;
             bool done = false;
             MailMessageQueue queue = new MailMessageQueue(8);
             DateTime dt = DateTime.Now;
@@ -95,6 +95,7 @@ namespace EssentialDiagnosticsIntegrationTests
             {
                 queue.AddAndSendAsync(new System.Net.Mail.MailMessage("andy@fonlowmail.com", "arnold@fonlowmail.com", "HelloAsync", "are you there? async"));
             }
+            Debug.WriteLine(String.Format("total time (Milliseconds) to queue {0} messages: {1}", messageCount, (DateTime.Now - dt).TotalMilliseconds));
 
             while (!done)
             {

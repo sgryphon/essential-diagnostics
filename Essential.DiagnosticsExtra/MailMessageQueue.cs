@@ -29,6 +29,7 @@ namespace Essential.Diagnostics
 
         internal SmtpClientPool(int maxConnections)
         {
+            MaxConnections = maxConnections;
             pool = new Queue<SmtpClient>(maxConnections);
             for (int i = 0; i < maxConnections; i++)
             {
@@ -37,6 +38,8 @@ namespace Essential.Diagnostics
                 PoolEnqueue(client);
             }
         }
+
+        int maxConnections;
 
         internal SmtpClientPool(string hostName, int port, int maxConnections)
         {
@@ -63,6 +66,26 @@ namespace Essential.Diagnostics
             {
                 pool.Enqueue(client);
             }
+        }
+
+        /// <summary>
+        /// number of connections left in pool.
+        /// </summary>
+        internal int Count
+        {
+            get
+            {
+                lock (poolLock)
+                {
+                    return pool.Count;
+                }
+            }
+        }
+
+        internal int MaxConnections
+        {
+            get;
+            private set;
         }
 
         void client_SendCompleted(object sender, AsyncCompletedEventArgs e)
@@ -259,6 +282,9 @@ namespace Essential.Diagnostics
 
         bool acceptItem = true;
 
+        /// <summary>
+        /// Whether to accept more mail message. Thread safe.
+        /// </summary>
         public bool AcceptItem
         {
             get
@@ -355,7 +381,7 @@ namespace Essential.Diagnostics
         }
 
         /// <summary>
-        /// When a message is enqueued, the first in the queue will be dequeued and sent.
+        /// When a message is enqueued, the first in the queue will be dequeued and sent. This function is thread safe.
         /// </summary>
         /// <param name="message"></param>
         public void AddAndSendAsync(MailMessage message)
@@ -371,8 +397,14 @@ namespace Essential.Diagnostics
             SendOne();
         }
 
+        /// <summary>
+        /// Fired when the queue becomes empty after the last message in queue is sent.
+        /// </summary>
         public event EventHandler QueueEmpty;
 
+        /// <summary>
+        /// Send a message in the queue out. If the queue is empty, this function will fire event QueueEmpty.
+        /// </summary>
         void SendOne()
         {
             MailMessage messageToSend;
@@ -415,7 +447,14 @@ namespace Essential.Diagnostics
             }
         }
 
-
+        public bool Idle
+        {
+            get
+            {
+                return (Count == 0) && //No message in queue
+                    (clientPool.Count == clientPool.MaxConnections);//No mail client is sending message.
+            }
+        }
         /// <summary>
         /// Number of messages in queue. This properly is generally accessed for diagnostics purpose when AcceptItem becomes false.
         /// </summary>

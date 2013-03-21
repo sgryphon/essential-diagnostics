@@ -19,8 +19,8 @@ namespace Essential.Diagnostics
         {
         }
 
-        public EmailTraceListener(string name)
-            : base(name)
+        public EmailTraceListener(string toAddress)
+            : base(toAddress)
         {
         }
 

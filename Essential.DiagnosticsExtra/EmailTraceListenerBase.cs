@@ -16,19 +16,16 @@ namespace Essential.Diagnostics
     /// The subject line of the Email message will be the text before ':', ';', ',', '.', '-' in the trace message, along with the identity of the application.
     /// The body of the Email will be the trace message.
     /// 
-    /// The SMTP host settings are defined in MailSettings of app.config, as documented at http://msdn.microsoft.com/en-us/library/w355a94k.aspx. However, the from address in MailSettings is not used in this trace listener,
-    /// since it might be used by the application. The trace listener should have its own from address in order to be filtered.
+    /// The SMTP host settings are defined in MailSettings of app.config, as documented at http://msdn.microsoft.com/en-us/library/w355a94k.aspx. 
     /// 
     /// It supports the following custom attributes used in config:
-    /// * fromAddress
-    /// * toAddress
     /// * maxConnections: Maximum SmtpClient connections in pool. The default is 2.
     /// 
     /// Because the Email messages will be sent in multiple threads, the send time of Email messages may not be in the exact order and the exact time of the creation of the message, tehrefore,
     /// it is recommended that the Email subject or body should log the datetime of the trace message.
     /// </summary>
     /// <remarks>
-    /// Each message is sent in an asynchnous call. If the host process is terminated, the thread running the sending will be terminated as well, 
+    /// Each message is sent in an asynchnous call. If the host process exits gracefully, all mail messages in queue will be sent out. 
     /// therefore the last few error message traced might be lost. Because of the latency of Email, performance and the limitation of Email relay, this listener is not so appropriate in
     /// a service app that expect tens of thousands of concurrent requests per minutes. Ohterwise, a critical error in the service app with trigger tens of thousands of warnings piled in the MailMessage queue.
     /// Alternatively, to avoid memory blow because of a larrge message queue, you may consider to make SmtpClient deliver messages to a directory through defining SmtpDeliveryMethod=SpecifiedPickupDirectory or PickupDirectoryFromIis,
@@ -45,8 +42,8 @@ namespace Essential.Diagnostics
     /// 2. The implementation/config of the SMTP server
     /// 3. The average size of Email messages
     /// 
-    /// Because the Email messages are sent asynchronously, so if the application process crashes, it is possible that the last few messages before the crash might not be sent out, unless your application has
-    /// implemented a handler catching all uncaught exception, and the handler will flush all trace listeners. Anyway, your log file should have all trace messages.
+    /// Because the Email messages are sent asynchronously, so if the hosting process exits disgracefully, it is possible that the last few messages before the crash might not be sent out. 
+    /// Anyway, the log file should have all trace messages.
     /// </remarks>
     public abstract class EmailTraceListenerBase : TraceListener
     {
@@ -59,6 +56,23 @@ namespace Essential.Diagnostics
             : this()
         {
             this.toAddress = toAddress;
+            AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
+        }
+
+        void CurrentDomain_ProcessExit(object sender, EventArgs e)
+        {
+            SendAllBeforeExit();
+        }
+
+        protected virtual void SendAllBeforeExit()
+        {
+            const int interval = 200;
+            int totalWaitTime = 0;
+            while ((!MessageQueue.Idle) && (totalWaitTime < SendAllTimeoutInSeconds * 1000))
+            {
+                System.Threading.Thread.Sleep(interval);
+                totalWaitTime += interval;
+            }
         }
 
         string toAddress;
@@ -101,7 +115,17 @@ namespace Essential.Diagnostics
             }
         }
 
-        static string[] supportedAttributes = new string[] {"maxConnections" };
+        protected int SendAllTimeoutInSeconds
+        {
+            get
+            {//todo: test with config change.
+                string s = Attributes["sendAllTimeoutInSeconds"];
+                int m;
+                return Int32.TryParse(s, out m) ? m : 10;
+            }
+        }
+
+        static string[] supportedAttributes = new string[] {"maxConnections", "sendAllTimeoutInSeconds" };
 
         protected override string[] GetSupportedAttributes()
         {
@@ -141,40 +165,14 @@ namespace Essential.Diagnostics
             SendEmailAsync(subject, body, ToAddress);
         }
 
-        /// <summary>
-        /// Send Email via a new SmtpClient.
-        /// </summary>
-        /// <param name="subject"></param>
-        /// <param name="body"></param>
-        protected void SendEmail(string subject, string body)
-        {
-            SmtpClient client = null;
-            try
-            {
-                client = new SmtpClient();
-                Debug.WriteLine("subject = " + subject);
-                using (var mailMessage = new MailMessage(FromAddress, ToAddress, MailMessageHelper.SanitiseSubject(subject), body))
-                {
-                    client.Send(mailMessage);
-                }
-
-            }
-            finally
-            {
-                if ((client != null) && (typeof(SmtpClient).GetInterface("IDisposable") != null))
-                {
-                    (client as IDisposable).Dispose();
-                }
-            }
-        }
-
-
-
         MailMessageQueue messageQueue;
 
         static object objectLock = new object();
 
-        MailMessageQueue MessageQueue
+        /// <summary>
+        /// Mail message queue created upon the first warning trace.
+        /// </summary>
+        protected MailMessageQueue MessageQueue
         {
             get
             {
