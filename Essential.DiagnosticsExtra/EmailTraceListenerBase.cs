@@ -24,28 +24,7 @@ namespace Essential.Diagnostics
     /// Because the Email messages will be sent in multiple threads, the send time of Email messages may not be in the exact order and the exact time of the creation of the message, tehrefore,
     /// it is recommended that the Email subject or body should log the datetime of the trace message.
     /// </summary>
-    /// <remarks>
-    /// Each message is sent in an asynchnous call. If the host process exits gracefully, all mail messages in queue will be sent out. 
-    /// therefore the last few error message traced might be lost. Because of the latency of Email, performance and the limitation of Email relay, this listener is not so appropriate in
-    /// a service app that expect tens of thousands of concurrent requests per minutes. Ohterwise, a critical error in the service app with trigger tens of thousands of warnings piled in the MailMessage queue.
-    /// Alternatively, to avoid memory blow because of a larrge message queue, you may consider to make SmtpClient deliver messages to a directory through defining SmtpDeliveryMethod=SpecifiedPickupDirectory or PickupDirectoryFromIis,
-    /// so the otehr application may pickup and send.
-    /// 
-    /// In addition, firewall, anti-virus software and the mail server spam policy may also have impact on this listener, so system administrators have to be involved to ensure the operation of this listener.
-    /// 
-    /// If you define SmtpDeliveryMethod to make SmtpClient write messages to a pickup directory, please make sure the total number of client connections is no more than 2, since 
-    /// concurrent access to a file system is almost certain to slow down the overall performance unless you are RAID. For the best performance, you really need to run some integration test
-    /// to get the optimized number for a RAID system.
-    /// 
-    /// Please note, defining a large number of SMTP connections in pool may not necessarily give you the best performance. The overall performance with the optimized number of concurrent connections depends on the following factors:
-    /// 1. The number of processors
-    /// 2. The implementation/config of the SMTP server
-    /// 3. The average size of Email messages
-    /// 
-    /// Because the Email messages are sent asynchronously, so if the hosting process exits disgracefully, it is possible that the last few messages before the crash might not be sent out. 
-    /// Anyway, the log file should have all trace messages.
-    /// </remarks>
-    public abstract class EmailTraceListenerBase : TraceListener
+    public abstract class EmailTraceListenerBase : TraceListenerBase
     {
         protected EmailTraceListenerBase()
         {

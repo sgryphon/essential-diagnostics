@@ -125,6 +125,7 @@ namespace Essential.Diagnostics.Tests
 
             Trace.TraceWarning("Anything. More detail go here.");
             Trace.TraceError("something wrong; can you tell? more here.");
+            Trace.TraceInformation("Just some information");
             Trace.WriteLine("This is writeline.", "Category");
             Trace.WriteLine("This is another writeline.", "caTegory");
             Trace.WriteLine("Writeline without right category", "CCCC");

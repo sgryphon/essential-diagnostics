@@ -14,23 +14,19 @@ namespace Essential.Diagnostics
     /// </summary>
     public class EmailTraceListener : EmailTraceListenerBase
     {
-        public EmailTraceListener()
-            : base()
-        {
-        }
-
         public EmailTraceListener(string toAddress)
             : base(toAddress)
         {
+            Filter = new EventTypeFilter(SourceLevels.Warning);
         }
 
-        public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message)
+
+        protected override void WriteTrace(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message, Guid? relatedActivityId, object[] data)
         {
             if (String.IsNullOrEmpty(message))
                 return;
 
-            if (eventCache == null)
-                throw new ArgumentNullException("eventCache");
+            Debug.Assert(eventCache != null);
 
             string subject = MailMessageHelper.ExtractSubject(message);
 
@@ -48,43 +44,13 @@ namespace Essential.Diagnostics
                 messageformated = "Warning: " + message;
                 SendEmailAsync(subject, messageformated);
             }
-            //ignore the other types
+            else
+            {
+                Debug.Fail("Hey, not Warning but " + eventType);
+            }
+
         }
 
-        public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string format, params object[] args)
-        {
-            TraceEvent(eventCache, source, eventType, id, String.Format(format, args));
-        }
-
-        /// <summary>
-        /// Do nothing
-        /// </summary>
-        /// <param name="eventCache"></param>
-        /// <param name="source"></param>
-        /// <param name="eventType"></param>
-        /// <param name="id"></param>
-        public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id)
-        {
-            // do nothing  base.TraceEvent(eventCache, source, eventType, id);
-        }
-
-        /// <summary>
-        /// Do nothing
-        /// </summary>
-        /// <param name="message"></param>
-        public override void Write(string message)
-        {
-            //do nothing
-        }
-
-        /// <summary>
-        /// Do nothing
-        /// </summary>
-        /// <param name="message"></param>
-        public override void WriteLine(string message)
-        {
-            //do nothing
-        }
 
     }
 

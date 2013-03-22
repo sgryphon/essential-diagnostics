@@ -12,22 +12,17 @@ namespace Essential.Diagnostics
     /// <summary>
     /// Intended to be used in console apps which will send all warning/error traces via Email at the end of the process.
     /// 
-    /// The listener will put error and warning trace messages into a buffer, taking care of Trace.Trace*() while ignoring Trace.Write*(). The client codes may want to get
-    /// all messages at the end of a business operation in order to send out the messages in one batch.
-    /// For error message, call stack and local datetime will be accompanied.
+    /// The listener will put error and warning trace messages into a buffer. 
     /// 
     /// 
     /// </summary>
     public class ErrorBufferEmailTraceListener : EmailTraceListenerBase
     {
-        public ErrorBufferEmailTraceListener()
+        public ErrorBufferEmailTraceListener(string toAddress)
+            : base(toAddress)
         {
-            EventMessagesBuffer = new StringBuilder();            
-        }
+            Filter = new EventTypeFilter(SourceLevels.Warning);
 
-        public ErrorBufferEmailTraceListener(string name)
-            : base(name)
-        {
             EventMessagesBuffer = new StringBuilder();
         }
 
@@ -36,7 +31,7 @@ namespace Essential.Diagnostics
             EventMessagesBuffer.AppendLine(s);
         }
 
-        public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message)
+        protected override void WriteTrace(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message, Guid? relatedActivityId, object[] data)
         {
             if (eventType <= TraceEventType.Error)//Error or Critical
             {
@@ -49,27 +44,10 @@ namespace Essential.Diagnostics
                 EventMessagesBufferAdd(StartupInfo.GetISO8601Text(eventCache.DateTime) + " "
                     + "Warning: " + message);
             }
-            //Ignore other event type
-        }
-
-        public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string format, params object[] args)
-        {
-            TraceEvent(eventCache, source, eventType, id, String.Format(format, args));
-        }
-
-        public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id)
-        {
-            // do nothing  base.TraceEvent(eventCache, source, eventType, id);
-        }
-
-        public override void Write(string message)
-        {
-            //do nothing
-        }
-
-        public override void WriteLine(string message)
-        {
-            //do nothing
+            else
+            {
+                Debug.Fail("Hey, not Warning but " + eventType);
+            }
         }
 
         /// <summary>
@@ -82,6 +60,9 @@ namespace Essential.Diagnostics
             EventMessagesBuffer = new StringBuilder();
         }
 
+        /// <summary>
+        /// The buffer is not empty.
+        /// </summary>
         public bool HasEventErrors { get { return EventMessagesBuffer.Length > 0; } }
 
         /// <summary>
@@ -122,7 +103,8 @@ namespace Essential.Diagnostics
         }
 
         /// <summary>
-        /// This is commonly called at the end of a process.
+        /// While the listener will send an Email message at the end of the hosting process. This function allow your app codes to send the Email message earlier. For example, you might want to
+        /// send one message at the end of each loop. 
         /// </summary>
         public static void SendMailOfEventMessages()
         {
@@ -133,6 +115,9 @@ namespace Essential.Diagnostics
             }
         }
 
+        /// <summary>
+        /// Clear the buffer.
+        /// </summary>
         public static void Clear()
         {
             var listener = FindListener();
