@@ -367,7 +367,7 @@ namespace Essential.Diagnostics
             return value;
         }
 
-        internal object FormatUniversalTime(TraceEventCache eventCache)
+        internal static object FormatUniversalTime(TraceEventCache eventCache)
         {
             object value;
             if (eventCache == null)
@@ -383,7 +383,7 @@ namespace Essential.Diagnostics
             return value;
         }
 
-        internal object FormatLocalTime(TraceEventCache eventCache)
+        internal static object FormatLocalTime(TraceEventCache eventCache)
         {
             object value;
             if (eventCache == null)

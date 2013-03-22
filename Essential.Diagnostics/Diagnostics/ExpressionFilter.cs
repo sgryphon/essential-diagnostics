@@ -55,7 +55,7 @@ namespace Essential.Diagnostics
             return compiledExpression.ShouldTrace(eventCache, source, eventType, id, formatOrMessage, eventCache.Callstack, dateTimeOffset, eventCache.LogicalOperationStack, eventCache.ProcessId, eventCache.ThreadId, eventCache.Timestamp);
         }
 
-        private ExpressionBase CompileExpression(string expression)
+        static ExpressionBase CompileExpression(string expression)
         {
             string className = "Class_" + Guid.NewGuid().ToString("N");
 
@@ -106,7 +106,7 @@ namespace Essential.Diagnostics
         /// </summary>
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        internal abstract class ExpressionBase
+        public abstract class ExpressionBase
         {
             /// <summary>
             /// Evaluates the filter expression to determine if an event should be traced.
