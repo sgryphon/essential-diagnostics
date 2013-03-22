@@ -11,7 +11,8 @@
     <RootNamespace>TestEmailTraceListener</RootNamespace>
     <AssemblyName>TestEmailTraceListener</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -51,9 +52,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Essential.DiagnosticsExtra\Essential.DiagnosticsExtra.csproj">
-      <Project>{E1BF36D5-151B-4A83-B68B-7F76D0BAAF0B}</Project>
-      <Name>Essential.DiagnosticsExtra</Name>
+    <ProjectReference Include="..\Essential.Diagnostics\Essential.Diagnostics.csproj">
+      <Project>{7A59AA9B-D2C3-4682-A4D7-CE37B98F5905}</Project>
+      <Name>Essential.Diagnostics</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

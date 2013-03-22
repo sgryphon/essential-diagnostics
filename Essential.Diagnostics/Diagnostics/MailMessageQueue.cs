@@ -39,8 +39,6 @@ namespace Essential.Diagnostics
             }
         }
 
-        int maxConnections;
-
         internal SmtpClientPool(string hostName, int port, int maxConnections)
         {
             pool = new Queue<SmtpClient>(maxConnections);

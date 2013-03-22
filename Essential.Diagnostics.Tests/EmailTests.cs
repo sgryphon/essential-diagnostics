@@ -13,7 +13,6 @@ using System.Web;
 using System.Net;
 using Essential.Diagnostics;
 using System.ComponentModel;
-using Rnwood.SmtpServer;
 using System.IO;
 
 namespace Essential.Diagnostics.Tests

@@ -42,9 +42,6 @@
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Rnwood.SmtpServer">
-      <HintPath>..\3rdParty\Rnwood.SmtpServer.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">
@@ -64,7 +61,7 @@
     <Compile Include="ActivityScopeTests.cs" />
     <Compile Include="ColoredConsoleTests.cs" />
     <Compile Include="ConfigurationMonitorTests.cs" />
-    <Compile Include="ExtraTests.cs" />
+    <Compile Include="EmailTests.cs" />
     <Compile Include="RollingXmlTests.cs" />
     <Compile Include="RollingFileTests.cs" />
     <Compile Include="ExpressionFilterTests.cs" />
@@ -93,10 +90,6 @@
     <Compile Include="Utility\TestTraceListener.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Essential.DiagnosticsExtra\Essential.DiagnosticsExtra.csproj">
-      <Project>{E1BF36D5-151B-4A83-B68B-7F76D0BAAF0B}</Project>
-      <Name>Essential.DiagnosticsExtra</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Essential.Diagnostics\Essential.Diagnostics.csproj">
       <Project>{7A59AA9B-D2C3-4682-A4D7-CE37B98F5905}</Project>
       <Name>Essential.Diagnostics</Name>
@@ -106,8 +99,9 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <Shadow Include="Test References\Essential.DiagnosticsExtra.accessor" />
+    <Shadow Include="Test References\Essential.Diagnostics.accessor" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

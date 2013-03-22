@@ -40,7 +40,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <WarningLevel>3</WarningLevel>
     <CodeAnalysisRuleSet>..\EssentialDiagnostics.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <DocumentationFile>bin\Debug\Essential.Diagnostics.XML</DocumentationFile>
@@ -80,7 +80,13 @@
     <Compile Include="Diagnostics\ActivityScope.cs" />
     <Compile Include="Diagnostics\ColoredConsoleTraceListener.cs" />
     <Compile Include="ConsoleAdapter.cs" />
+    <Compile Include="Diagnostics\EmailTraceListener.cs" />
+    <Compile Include="Diagnostics\EmailTraceListenerBase.cs" />
+    <Compile Include="Diagnostics\ErrorBufferEmailTraceListener.cs" />
     <Compile Include="Diagnostics\ExpressionFilter.cs" />
+    <Compile Include="Diagnostics\GlobalSuppressions.cs" />
+    <Compile Include="Diagnostics\MailMessageHelper.cs" />
+    <Compile Include="Diagnostics\MailMessageQueue.cs" />
     <Compile Include="Diagnostics\NativeMethods.cs" />
     <Compile Include="Diagnostics\PropertyFilter.cs" />
     <Compile Include="Diagnostics\RollingFileTraceListener.cs" />
