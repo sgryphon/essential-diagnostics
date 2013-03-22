@@ -181,13 +181,16 @@ namespace Essential.Diagnostics
                 if (entryAssembly == null)
                 {
                     var moduleFileName = new StringBuilder(260);
-                    NativeMethods.GetModuleFileName(NativeMethods.NullHandleRef, moduleFileName, moduleFileName.Capacity);
-                    applicationName = Path.GetFileNameWithoutExtension(moduleFileName.ToString());
+                    int size = NativeMethods.GetModuleFileName(NativeMethods.NullHandleRef, moduleFileName, moduleFileName.Capacity);//http://msdn.microsoft.com/en-us/library/windows/desktop/ms683197%28v=vs.85%29.aspx
+                    if (size > 0)
+                    {
+                        applicationName = Path.GetFileNameWithoutExtension(moduleFileName.ToString());
+                        return;
+                    }
+                    //I don't want to raise any error here since I have a graceful result at the end.
                 }
-                else
-                {
-                    applicationName = Path.GetFileNameWithoutExtension(entryAssembly.EscapedCodeBase);
-                }
+
+                applicationName = Path.GetFileNameWithoutExtension(entryAssembly.EscapedCodeBase);
             }
         }
 

@@ -76,7 +76,6 @@ namespace Essential.Diagnostics
 
             string body = EventMessagesBuffer.ToString();
             string firstMessage = body.Substring(0, body.IndexOf("\n"));// EventMessagesBuffer.Count == 0 ? String.Empty : EventMessagesBuffer[0];
-            Debug.WriteLine("firstMessage: " + firstMessage);
             string subject = MailMessageHelper.ExtractSubject(firstMessage);
             MessageQueue.AddAndSendAsync(new MailMessage(FromAddress, ToAddress, MailMessageHelper.SanitiseSubject(subject), body));
             ClearEventMessagesBuffer();

@@ -97,8 +97,7 @@ namespace Essential.Diagnostics
         
             var assembly = results.CompiledAssembly;
             var dynamicType = assembly.GetType("Essential.Diagnostics.Dynamic." + className);
-            var compiledExpression = (ExpressionBase)Activator.CreateInstance(dynamicType);
-            return compiledExpression;
+            return (ExpressionBase)Activator.CreateInstance(dynamicType);
         }
 
         /// <summary>
@@ -107,7 +106,7 @@ namespace Essential.Diagnostics
         /// </summary>
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public abstract class ExpressionBase
+        internal abstract class ExpressionBase
         {
             /// <summary>
             /// Evaluates the filter expression to determine if an event should be traced.
