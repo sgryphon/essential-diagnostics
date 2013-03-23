@@ -181,7 +181,7 @@ namespace Essential.Diagnostics
                 if (entryAssembly == null)
                 {
                     var moduleFileName = new StringBuilder(260);
-                    int size = NativeMethods.GetModuleFileName(NativeMethods.NullHandleRef, moduleFileName, moduleFileName.Capacity);//http://msdn.microsoft.com/en-us/library/windows/desktop/ms683197%28v=vs.85%29.aspx
+                    int size = NativeMethods.GetModuleFileName(NativeMethods.NullHandleRef, moduleFileName, moduleFileName.Capacity);
                     if (size > 0)
                     {
                         applicationName = Path.GetFileNameWithoutExtension(moduleFileName.ToString());

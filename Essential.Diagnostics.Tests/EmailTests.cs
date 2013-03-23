@@ -141,10 +141,10 @@ namespace Essential.Diagnostics.Tests
 
             Trace.Listeners.Remove("emailTraceListener");//otherwise this listener will send mail as well
 
-            ErrorBufferEmailTraceListener.Clear();
+            BufferedEmailTraceListener.Clear();
             Trace.TraceWarning("Anythingbbbb. More detail go here.");
             Trace.TraceError("something wrongbbbb; can you tell? more here.");
-            ErrorBufferEmailTraceListener.SendMailOfEventMessages();
+            BufferedEmailTraceListener.SendMailOfEventMessages();
             AssertMessagesSent(1);
 
             Trace.Refresh();//so reload all listeners

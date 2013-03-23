@@ -104,7 +104,35 @@ namespace Essential.Diagnostics
             }
         }
 
-        static string[] supportedAttributes = new string[] {"maxConnections", "sendAllTimeoutInSeconds" };
+        const string defaultSubjectTemplate = "{MESSAGE} -- Machine: {MACHINENAME}; User: {USER}; Process: {PROCESS}; AppDomain: {APPDOMAIN}; Local Time: {LOCALDATETIME}";
+
+        const string defaultMessageTemplate = "Time: {LOCALDATETIME}\nMachine: {MACHINENAME}\nUser: {USER}\nProcess: {PROCESS}\nAppDomain: {APPDOMAIN}\n\n{MESSAGE}";
+
+        protected string SubjectTemplate
+        {
+            get 
+            { 
+                string s= Attributes["subjectTemplate"];
+                if (String.IsNullOrEmpty(s))
+                    return defaultSubjectTemplate;
+
+                return s;
+            }
+        }
+
+        protected string MessageTemplate
+        {
+            get 
+            { 
+                string s= Attributes["messageTemplate"];
+                if (String.IsNullOrEmpty(s))
+                    return defaultMessageTemplate;
+
+                return s;
+            }
+        }
+
+        static string[] supportedAttributes = new string[] {"maxConnections", "sendAllTimeoutInSeconds", "subjectTemplate", "messageTemplate" };
 
         protected override string[] GetSupportedAttributes()
         {
@@ -121,11 +149,8 @@ namespace Essential.Diagnostics
             mailMessage.BodyEncoding = Encoding.UTF8;
             mailMessage.From = new MailAddress(FromAddress);
             mailMessage.To.Add(recipient);
-            if (String.IsNullOrEmpty(subject))
-                subject = "Subject empty";
-
-            MailMessageHelper.SanitiseEmailSubject(mailMessage, subject);
-            mailMessage.Body = StartupInfo.GetParagraph(body);
+            mailMessage.Subject = subject;
+            mailMessage.Body = body;
             return mailMessage;
         }
 

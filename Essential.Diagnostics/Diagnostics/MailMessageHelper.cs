@@ -5,89 +5,51 @@ using System.Diagnostics;
 using System.IO;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace Essential.Diagnostics
 {
-    /// <summary>
-    /// Common info to be logged during the startup of a process or AppDomain. And the date format prefers ISO8601.
-    /// </summary>
-    internal static class StartupInfo
-    {
-
-        /// <summary>
-        /// Message suffixed with process info: machine name, user name, process name along with arguments, app domain name and local time.
-        /// </summary>
-        /// <param name="basicMessage"></param>
-        /// <returns></returns>
-        /// <remarks>Though a trace option or format might give a time stamp prefix to a message, StartupInfo enforces the info about local time in ISO8601 format.</remarks>
-        public static string GetMessageWithProcessSignature(string basicMessage)
-        {
-            return String.Format("{0} -- Machine: {1}; User: {2}/{3}; Process: {4}; AppDomain: {5} Local Time: {6}.",
-                basicMessage,
-                Environment.MachineName,
-                Environment.UserDomainName,
-                Environment.UserName,
-                Environment.CommandLine,
-                AppDomain.CurrentDomain.ToString(),
-                GetISO8601Text(DateTime.Now));
-        }
-
-        /// <summary>
-        /// StartupParagraph plus basic message.
-        /// </summary>
-        /// <param name="basicMessage"></param>
-        /// <returns></returns>
-        public static string GetParagraph(string basicMessage)
-        {
-            return String.Format("{0}+Message:\n{1}", Paragraph, basicMessage);
-        }
-
-        /// <summary>
-        /// Text lines presenting time, machine name, user name, process name and app domain.
-        /// </summary>
-        public static string Paragraph
-        {
-            get
-            {
-                return String.Format("Time        : {0}\n" +
-                                     "Machine     : {1}\n" +
-                                     "User        : {2}\\{3}\n" +
-                                     "Process     : {4}\n" +
-                                     "AppDomain   : {5}\n",
-                    NowText,
-                    Environment.MachineName,
-                    Environment.UserDomainName,
-                    Environment.UserName,
-                    Environment.CommandLine,
-                    AppDomain.CurrentDomain.ToString()
-                    );
-            }
-        }
-
-        public static string GetISO8601Text(DateTime dateTime)
-        {
-            return dateTime.ToString("yyyy-MM-dd HH:mm:ss");
-        }
-
-
-        /// <summary>
-        /// Now in ISO8601 
-        /// </summary>
-        public static string NowText
-        {
-            get
-            {
-                return DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-            }
-        }
-
-    }
-
-
-
     internal static class MailMessageHelper
     {
-        internal static string ExtractSubject(string message)
+        internal static string ComposeMessage(TraceEventCache eventCache, string template, string message)
+        {
+            return StringTemplate.Format(CultureInfo.CurrentCulture, template,
+                delegate(string name, out object value)
+                {
+                    switch (name.ToUpperInvariant())
+                    {
+                        case "MESSAGE":
+                            value = message;
+                            break;
+                        case "APPDOMAIN":
+                            value = AppDomain.CurrentDomain.FriendlyName;
+                            break;
+                        case "DATETIME":
+                        case "UTCDATETIME":
+                            value = TraceFormatter.FormatUniversalTime(eventCache);
+                            break;
+                        case "LOCALDATETIME":
+                            value = TraceFormatter.FormatLocalTime(eventCache);
+                            break;
+                        case "MACHINENAME":
+                            value = Environment.MachineName;
+                            break;
+                        case "USER":
+                            value = Environment.UserDomainName + "\\" + Environment.UserName;
+                            break;
+                        case "PROCESS":
+                            value = Environment.CommandLine;
+                            break;
+                        default:
+                            value = "{" + name + "}";
+                            return true;
+                    }
+                    return true;
+                });
+
+        }
+
+        static string ExtractSubject(string message)
         {
             Regex regex = new Regex(@"((\d{1,4}[\:\-\s/]){2,3}){1,2}");//timestamp in trace
             Match match = regex.Match(message);
@@ -97,10 +59,15 @@ namespace Essential.Diagnostics
             }
 
             string[] ss = message.Split(new string[] { ";", ", ", ". " }, 2, StringSplitOptions.None);
-            return StartupInfo.GetMessageWithProcessSignature(ss[0]);
+            return ss[0];
         }
 
-        internal static string SanitiseSubject(string subject)
+        internal static string ExtractSubject(TraceEventCache eventCache, string template, string message)
+        {
+            return SanitiseSubject( ComposeMessage(eventCache, template, ExtractSubject(message)));
+        }
+
+        static string SanitiseSubject(string subject)
         {
             const int subjectMaxLength = 254; //though .NET lib does not place any restriction, and the recent standard of Email seems to be 254, which sounds safe.
             if (subject.Length > 254)

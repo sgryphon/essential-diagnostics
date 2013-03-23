@@ -37,6 +37,4 @@ using System.Resources;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.1.0.0")]
 [assembly: AssemblyVersion("1.1.0.0")]
-[assembly: AssemblyFileVersion("1.1.30322.0")]
-
-[assembly: InternalsVisibleTo("Essential.Diagnostics.Tests")]
+[assembly: AssemblyFileVersion("1.1.30323.0")]

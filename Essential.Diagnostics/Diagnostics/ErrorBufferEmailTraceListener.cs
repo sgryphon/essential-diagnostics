@@ -16,9 +16,9 @@ namespace Essential.Diagnostics
     /// 
     /// 
     /// </summary>
-    public class ErrorBufferEmailTraceListener : EmailTraceListenerBase
+    public class BufferedEmailTraceListener : EmailTraceListenerBase
     {
-        public ErrorBufferEmailTraceListener(string toAddress)
+        public BufferedEmailTraceListener(string toAddress)
             : base(toAddress)
         {
             Filter = new EventTypeFilter(SourceLevels.Warning);
@@ -33,21 +33,7 @@ namespace Essential.Diagnostics
 
         protected override void WriteTrace(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message, Guid? relatedActivityId, object[] data)
         {
-            if (eventType <= TraceEventType.Error)//Error or Critical
-            {
-                EventMessagesBufferAdd(StartupInfo.GetISO8601Text(eventCache.DateTime) + " "
-                    + "Error: " + message);
-                EventMessagesBufferAdd("  Call Stack: " + eventCache.Callstack);
-            }
-            else if (eventType == TraceEventType.Warning)
-            {
-                EventMessagesBufferAdd(StartupInfo.GetISO8601Text(eventCache.DateTime) + " "
-                    + "Warning: " + message);
-            }
-            else
-            {
-                Debug.Fail("Hey, not Warning but " + eventType);
-            }
+            EventMessagesBufferAdd(message);
         }
 
         /// <summary>
@@ -74,10 +60,11 @@ namespace Essential.Diagnostics
             if (!HasEventErrors)
                 return;
 
-            string body = EventMessagesBuffer.ToString();
-            string firstMessage = body.Substring(0, body.IndexOf("\n"));// EventMessagesBuffer.Count == 0 ? String.Empty : EventMessagesBuffer[0];
-            string subject = MailMessageHelper.ExtractSubject(firstMessage);
-            MessageQueue.AddAndSendAsync(new MailMessage(FromAddress, ToAddress, MailMessageHelper.SanitiseSubject(subject), body));
+            string allMessages = EventMessagesBuffer.ToString();
+            string firstMessage = allMessages.Substring(0, allMessages.IndexOf("\n"));// EventMessagesBuffer.Count == 0 ? String.Empty : EventMessagesBuffer[0];
+            string subject = MailMessageHelper.ExtractSubject(null, SubjectTemplate, firstMessage);
+            string body = MailMessageHelper.ComposeMessage(null, MessageTemplate, allMessages);
+            MessageQueue.AddAndSendAsync(new MailMessage(FromAddress, ToAddress, subject, body));
             ClearEventMessagesBuffer();
         }
 
@@ -87,12 +74,12 @@ namespace Essential.Diagnostics
             base.SendAllBeforeExit();
         }
 
-        static ErrorBufferEmailTraceListener FindListener()
+        static BufferedEmailTraceListener FindListener()
         {
-            ErrorBufferEmailTraceListener myListener = null;
+            BufferedEmailTraceListener myListener = null;
             foreach (TraceListener t in Trace.Listeners)
             {
-                myListener = t as ErrorBufferEmailTraceListener;
+                myListener = t as BufferedEmailTraceListener;
                 if (myListener != null)
                     return myListener;
             }
