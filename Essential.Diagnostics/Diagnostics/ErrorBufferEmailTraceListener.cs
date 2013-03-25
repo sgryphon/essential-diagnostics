@@ -21,11 +21,16 @@ namespace Essential.Diagnostics
         public BufferedEmailTraceListener(string toAddress)
             : base(toAddress)
         {
-            Filter = new EventTypeFilter(SourceLevels.Warning);
+            if (Filter == null)
+            {
+                Filter = new EventTypeFilter(SourceLevels.Warning);
+            }
 
             EventMessagesBuffer = new StringBuilder();
         }
 
+        TraceFormatter traceFormatter = new TraceFormatter();
+        
         void EventMessagesBufferAdd(string s)
         {
             EventMessagesBuffer.AppendLine(s);
@@ -33,9 +38,16 @@ namespace Essential.Diagnostics
 
         protected override void WriteTrace(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message, Guid? relatedActivityId, object[] data)
         {
-            EventMessagesBufferAdd(message);
+            EventMessagesBufferAdd(traceFormatter.Format(TraceTemplate, eventCache, source, eventType, id, message, relatedActivityId, data));
         }
 
+        protected override string DefaultTraceTemplate
+        {
+            get
+            {
+                return "{LOCALDATETIME:HH:mm:ss} {EVENTTYPE} [{THREADID}] {MESSAGE}";
+            }
+        }
         /// <summary>
         /// Message buffer
         /// </summary>
@@ -62,8 +74,11 @@ namespace Essential.Diagnostics
 
             string allMessages = EventMessagesBuffer.ToString();
             string firstMessage = allMessages.Substring(0, allMessages.IndexOf("\n"));// EventMessagesBuffer.Count == 0 ? String.Empty : EventMessagesBuffer[0];
-            string subject = MailMessageHelper.ExtractSubject(null, SubjectTemplate, firstMessage);
-            string body = MailMessageHelper.ComposeMessage(null, MessageTemplate, allMessages);
+            string subject = MailMessageHelper.SanitiseSubject(
+    traceFormatter.Format(SubjectTemplate, null, null, TraceEventType.Information, 0, MailMessageHelper.ExtractSubject(firstMessage),    null, null)
+    );
+
+            string body = traceFormatter.Format(BodyTemplate, null, null, TraceEventType.Information, 0, allMessages, null, null);
             MessageQueue.AddAndSendAsync(new MailMessage(FromAddress, ToAddress, subject, body));
             ClearEventMessagesBuffer();
         }

@@ -47,10 +47,17 @@ namespace Essential.Diagnostics
         {
             const int interval = 200;
             int totalWaitTime = 0;
+            bool queueRunning = false;
             while ((!MessageQueue.Idle) && (totalWaitTime < SendAllTimeoutInSeconds * 1000))
             {
                 System.Threading.Thread.Sleep(interval);
                 totalWaitTime += interval;
+                queueRunning = true;
+            }
+
+            if (queueRunning)//Because of the latancy of file system or the communication stack, sometimes event if MessageQueue.Idle becomes true, the files might not yet been saved before the process exits.
+            {
+                System.Threading.Thread.Sleep(1000);//so need to wait around 1 second more.
             }
         }
 
@@ -104,35 +111,58 @@ namespace Essential.Diagnostics
             }
         }
 
-        const string defaultSubjectTemplate = "{MESSAGE} -- Machine: {MACHINENAME}; User: {USER}; Process: {PROCESS}; AppDomain: {APPDOMAIN}; Local Time: {LOCALDATETIME}";
+        protected virtual string DefaultSubjectTemplate { get { return "{MESSAGE} -- Machine: {MACHINENAME}; User: {USER}; Process: {PROCESS}; AppDomain: {APPDOMAIN}; Local Time: {LOCALDATETIME}"; } }
 
-        const string defaultMessageTemplate = "Time: {LOCALDATETIME}\nMachine: {MACHINENAME}\nUser: {USER}\nProcess: {PROCESS}\nAppDomain: {APPDOMAIN}\n\n{MESSAGE}";
+        protected virtual string DefaultBodyTemplate { get { return "Time: {LOCALDATETIME}\nMachine: {MACHINENAME}\nUser: {USER}\nProcess: {PROCESS}\nAppDomain: {APPDOMAIN}\n\n{MESSAGE}"; } }
 
+        protected virtual string DefaultTraceTemplate { get { return "{MESSAGE}"; } }
+
+        /// <summary>
+        /// For constructing an Email subject with basic process signature information for filtering Email messages.
+        /// </summary>
         protected string SubjectTemplate
         {
             get 
             { 
                 string s= Attributes["subjectTemplate"];
                 if (String.IsNullOrEmpty(s))
-                    return defaultSubjectTemplate;
+                    return DefaultSubjectTemplate;
 
                 return s;
             }
         }
 
-        protected string MessageTemplate
+        /// <summary>
+        /// For constructing the whole Email body.
+        /// </summary>
+        protected string BodyTemplate
         {
-            get 
-            { 
-                string s= Attributes["messageTemplate"];
+            get
+            {
+                string s = Attributes["bodyTemplate"];
                 if (String.IsNullOrEmpty(s))
-                    return defaultMessageTemplate;
+                    return DefaultBodyTemplate;
 
                 return s;
             }
         }
 
-        static string[] supportedAttributes = new string[] {"maxConnections", "sendAllTimeoutInSeconds", "subjectTemplate", "messageTemplate" };
+        /// <summary>
+        /// For constructing a single trace message.
+        /// </summary>
+        protected string TraceTemplate
+        {
+            get
+            {
+                string s = Attributes["traceTemplate"];
+                if (String.IsNullOrEmpty(s))
+                    return DefaultTraceTemplate;
+
+                return s;
+            }
+        }
+
+        static string[] supportedAttributes = new string[] { "maxConnections", "sendAllTimeoutInSeconds", "subjectTemplate", "bodyTemplate", "traceTemplate" };
 
         protected override string[] GetSupportedAttributes()
         {

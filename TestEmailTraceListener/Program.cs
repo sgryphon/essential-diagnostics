@@ -24,6 +24,7 @@ namespace TestEmailTraceListener
             for (int i = 0; i < count; i++)
             {
                 Trace.TraceWarning("Anything. More detail go here.");
+                Trace.TraceError("Error. More detail go here.");
                 Trace.WriteLine("This is writeline.", "Category");
                 Trace.WriteLine("This is another writeline.", "caTegory");
                 Trace.WriteLine("Writeline without right category", "CCCC");

@@ -142,8 +142,17 @@ namespace Essential.Diagnostics
                         case "PROCESSNAME":
                             value = FormatProcessName();
                             break;
+                        case "USER":
+                            value = Environment.UserDomainName + "\\" + Environment.UserName;
+                            break;
+                        case "PROCESS":
+                            value = Environment.CommandLine;
+                            break;
                         case "APPLICATIONNAME":
                             value = FormatApplicationName();
+                            break;
+                        case "APPDOMAIN":
+                            value = AppDomain.CurrentDomain.FriendlyName;
                             break;
                         case "PRINCIPALNAME":
                             value = FormatPrincipalName();

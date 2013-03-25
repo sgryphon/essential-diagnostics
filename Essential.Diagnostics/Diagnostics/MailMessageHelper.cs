@@ -11,45 +11,7 @@ namespace Essential.Diagnostics
 {
     internal static class MailMessageHelper
     {
-        internal static string ComposeMessage(TraceEventCache eventCache, string template, string message)
-        {
-            return StringTemplate.Format(CultureInfo.CurrentCulture, template,
-                delegate(string name, out object value)
-                {
-                    switch (name.ToUpperInvariant())
-                    {
-                        case "MESSAGE":
-                            value = message;
-                            break;
-                        case "APPDOMAIN":
-                            value = AppDomain.CurrentDomain.FriendlyName;
-                            break;
-                        case "DATETIME":
-                        case "UTCDATETIME":
-                            value = TraceFormatter.FormatUniversalTime(eventCache);
-                            break;
-                        case "LOCALDATETIME":
-                            value = TraceFormatter.FormatLocalTime(eventCache);
-                            break;
-                        case "MACHINENAME":
-                            value = Environment.MachineName;
-                            break;
-                        case "USER":
-                            value = Environment.UserDomainName + "\\" + Environment.UserName;
-                            break;
-                        case "PROCESS":
-                            value = Environment.CommandLine;
-                            break;
-                        default:
-                            value = "{" + name + "}";
-                            return true;
-                    }
-                    return true;
-                });
-
-        }
-
-        static string ExtractSubject(string message)
+        internal static string ExtractSubject(string message)
         {
             Regex regex = new Regex(@"((\d{1,4}[\:\-\s/]){2,3}){1,2}");//timestamp in trace
             Match match = regex.Match(message);
@@ -62,12 +24,8 @@ namespace Essential.Diagnostics
             return ss[0];
         }
 
-        internal static string ExtractSubject(TraceEventCache eventCache, string template, string message)
-        {
-            return SanitiseSubject( ComposeMessage(eventCache, template, ExtractSubject(message)));
-        }
 
-        static string SanitiseSubject(string subject)
+        internal static string SanitiseSubject(string subject)
         {
             const int subjectMaxLength = 254; //though .NET lib does not place any restriction, and the recent standard of Email seems to be 254, which sounds safe.
             if (subject.Length > 254)

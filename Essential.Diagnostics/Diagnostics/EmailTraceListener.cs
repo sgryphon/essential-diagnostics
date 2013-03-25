@@ -17,9 +17,13 @@ namespace Essential.Diagnostics
         public EmailTraceListener(string toAddress)
             : base(toAddress)
         {
-            Filter = new EventTypeFilter(SourceLevels.Warning);
+            if (Filter == null)
+            {
+                Filter = new EventTypeFilter(SourceLevels.Warning);
+            }
         }
 
+        TraceFormatter traceFormatter = new TraceFormatter();
 
         protected override void WriteTrace(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message, Guid? relatedActivityId, object[] data)
         {
@@ -28,9 +32,14 @@ namespace Essential.Diagnostics
 
             Debug.Assert(eventCache != null);
 
-            string subject = MailMessageHelper.ExtractSubject(eventCache, SubjectTemplate, message);
+            string subject = MailMessageHelper.SanitiseSubject(
+                traceFormatter.Format(SubjectTemplate, eventCache, source, eventType, id, 
+                MailMessageHelper.ExtractSubject(message), 
+                relatedActivityId, data)
+                );
 
-            string messageformated = MailMessageHelper.ComposeMessage(eventCache, MessageTemplate, message);
+
+            string messageformated = traceFormatter.Format(BodyTemplate, eventCache, source, eventType, id, message, relatedActivityId, data);
             SendEmailAsync(subject, messageformated);
         }
 
