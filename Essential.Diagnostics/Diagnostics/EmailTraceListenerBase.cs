@@ -111,11 +111,11 @@ namespace Essential.Diagnostics
             }
         }
 
-        protected virtual string DefaultSubjectTemplate { get { return "{MESSAGE} -- Machine: {MACHINENAME}; User: {USER}; Process: {PROCESS}; AppDomain: {APPDOMAIN}; Local Time: {LOCALDATETIME}"; } }
+        protected virtual string DefaultSubjectTemplate { get { return "{MESSAGE} -- Machine: {MACHINENAME}; User: {USER}; Process: {PROCESS}; AppDomain: {APPDOMAIN}"; } }
 
         protected virtual string DefaultBodyTemplate { get { return "Time: {LOCALDATETIME}\nMachine: {MACHINENAME}\nUser: {USER}\nProcess: {PROCESS}\nAppDomain: {APPDOMAIN}\n\n{MESSAGE}"; } }
 
-        protected virtual string DefaultTraceTemplate { get { return "{MESSAGE}"; } }
+        protected virtual string DefaultTraceTemplate { get { return "[{THREADID}] {EVENTTYPE}: {MESSAGE}"; } }
 
         /// <summary>
         /// For constructing an Email subject with basic process signature information for filtering Email messages.
