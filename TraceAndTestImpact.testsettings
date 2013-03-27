@@ -2,6 +2,7 @@
 <TestSettings name="Trace and Test Impact" id="34d69cf0-fff8-495d-bfa9-5adbfce8e27f" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
   <Description>These are test settings for Trace and Test Impact.</Description>
   <Execution>
+    <ExecutionThread apartmentState="MTA" />
     <TestTypeSpecific />
     <AgentRule name="Execution Agents">
       <DataCollectors>

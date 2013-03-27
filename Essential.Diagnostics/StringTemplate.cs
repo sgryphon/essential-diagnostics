@@ -171,7 +171,6 @@ namespace Essential
         /// are case-insensitive.
         /// </para>
         /// </remarks>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         public static string Format(IFormatProvider provider, string template, GetValue getValue)
         {
             if (template == null)

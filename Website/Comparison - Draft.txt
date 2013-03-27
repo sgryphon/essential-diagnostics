@@ -6,71 +6,65 @@ The System.Diagnostics column indicates both the built in features, as well as t
 
 Please contact me if you think any information in this table is out of date.
 
-! Feature ! System. Diagnostics ! Log4net ! NLog ! Enterprise Library !
-| *General Features* |  |  |  |  |
+|| General Features || System. Diagnostics || Log4net || NLog || Enterprise Library ||
 | Availability | built-in | 3rd party | 3rd party | Microsoft |
 | Levels | 5 | 5 | 6 | 5 |
-| Multiple sources | Yes | Yes | Yes | Yes |
-| > Hierarchical sources | - | Yes | Yes | - |
-| Extensible | Yes | Yes | Yes | Yes |
-| Listener chaining | - | Yes | Yes | Yes |
-| Delayed formatting | Yes | Yes | Yes | - |
-| > Lambda | - | - | Yes | - |
-| Templates | EX | Yes | Yes | Yes |
-| Logging interface | EX | Yes | Yes | - |
-| Dynamic configuration | EX | Yes | Yes | Yes |
-| Minimum trust | - | TBA | TBA | - |
-| Trace .NET framework (WCF, WIF, System.Net, etc) | Yes | - | - | - |
-| Source from .NET Trace | n/a | - | - | Yes |
-
-! Feature ! System. Diagnostics ! Log4net ! NLog ! Enterprise Library !
-| *Log Information* |  |  |  |  |
-| Event ID | Yes | contrib extension | - | Yes |
-| Priority | - | - | - | Yes |
-| Process/thread information | Yes | Yes | Yes | Yes |
-| ASP.NET information | EX | Yes | Yes | Yes |
-| Correlation identifier | Yes | via context | via context | Yes |
-| - Cross-process correlation | Yes | - | - | Yes |
-| Exceptions | - | Yes | Yes | via exception block |
-
-! Feature ! System. Diagnostics ! Log4net ! NLog ! Enterprise Library !
-| *Filters* |  |  |  |  |
-| Event level | Yes | Yes | Yes | Yes |
-| Source | Yes | Yes | Yes | Yes |
-| Property | EX | Yes | - | - |
-| String match | - | Yes | Yes | - |
-| Expression | EX | - | Yes | - |
-| Priority | - | - | - | Yes |
-
-! Feature ! System. Diagnostics ! Log4net ! NLog ! Enterprise Library !
-| *Listeners* |  |  |  |  |
-| ASP.NET Trace | Yes | Yes | Yes | - |
-| Chainsaw (log4j) | - | Yes | Yes | - |
-| Colored Console | EX | Yes | - | - |
-| Console | Yes | Yes | Yes | - |
-| Database | EX | Yes | Yes | Yes |
-| Debug | Yes | Yes | Yes | - |
-| Event Log | Yes | Yes | Yes | Yes |
-| Event Tracing (ETW) | Yes | - | - | - |
-| File | Yes | Yes | Yes | Yes |
-| Mail | - | Yes | Yes | Yes |
-| Memory | EX | Yes | Yes | - |
-| MSMQ | - | - | Yes | Yes |
-| Net Send | - | Yes | - | - |
-| Remoting | - | Yes | - | - |
-| Rolling File | Yes | Yes | Yes | Yes |
-| Syslog (unix) | - | Yes | - | - |
-| Telnet | - | Yes | - | - |
-| UDP | extension | Yes | Yes | - |
-| WMI | - | - | - | Yes |
-| XML (Service Trace) | Yes | - | - | Yes |
-| Forward to .NET Trace | n/a | Limited | Limited | Yes |
+| Multiple sources | [image:tick.png] | [image:tick.png] | [image:tick.png] | [image:tick.png] |
+| > Hierarchical sources | [image:cross.png] | [image:tick.png] | [image:tick.png] | [image:cross.png] |
+| Extensible | [image:tick.png] | [image:tick.png] | [image:tick.png] | [image:tick.png] |
+| Listener chaining | [image:cross.png] | [image:tick.png] | [image:tick.png] | [image:tick.png] |
+| Delayed formatting | [image:tick.png] | [image:tick.png] | [image:tick.png] | [image:cross.png] |
+| > Lambda | [image:cross.png] | [image:cross.png] | [image:tick.png] | [image:cross.png] |
+| Templates | [image:ex.png] | [image:tick.png] | [image:tick.png] | [image:tick.png] |
+| Logging interface | [image:ex.png] | [image:tick.png] | [image:tick.png] | [image:cross.png] |
+| Dynamic configuration | [image:ex.png] | [image:tick.png] | [image:tick.png] | [image:tick.png] |
+| Minimum trust | [image:cross.png] | TBA | TBA | [image:cross.png] |
+| Trace .NET framework (WCF, WIF, System.Net, etc) | [image:tick.png] | [image:cross.png] | [image:cross.png] | [image:cross.png] |
+| Source from .NET Trace | [image:tick.png] | [image:cross.png] | [image:cross.png] | [image:tick.png] |
+|| Log Information || System. Diagnostics || Log4net || NLog || Enterprise Library ||
+| Event ID | [image:tick.png] | contrib extension | [image:cross.png] | [image:tick.png] |
+| Priority | [image:cross.png] | [image:cross.png] | [image:cross.png] | [image:tick.png] |
+| Process/thread information | [image:tick.png] | [image:tick.png] | [image:tick.png] | [image:tick.png] |
+| ASP.NET information | [image:ex.png] | [image:tick.png] | [image:tick.png] | [image:tick.png] |
+| Trace Context | [image:tick.png] | [image:tick.png] | [image:tick.png] | [image:tick.png] |
+| > Correlation identifier | [image:tick.png] | [image:cross.png] | [image:cross.png] | [image:tick.png] |
+| > Cross-process correlation | [image:tick.png] | [image:cross.png] | [image:cross.png] | [image:tick.png] |
+| Exceptions | [image:cross.png] | [image:tick.png] | [image:tick.png] | via exception block |
+|| Filters || System. Diagnostics || Log4net || NLog || Enterprise Library ||
+| Event level | [image:tick.png] | [image:tick.png] | [image:tick.png] | [image:tick.png] |
+| Source | [image:tick.png] | [image:tick.png] | [image:tick.png] | [image:tick.png] |
+| Property | [image:ex.png] | [image:tick.png] | [image:cross.png] | [image:cross.png] |
+| String match | [image:cross.png] | [image:tick.png] | [image:tick.png] | [image:cross.png] |
+| Expression | [image:ex.png] | [image:cross.png] | [image:tick.png] | [image:cross.png] |
+| Priority | [image:cross.png] | [image:cross.png] | [image:cross.png] | [image:tick.png] |
+|| Listeners || System. Diagnostics || Log4net || NLog || Enterprise Library ||
+| > Forward to .NET Trace | [image:tick.png] | limited | limited | [image:tick.png] |
+| ASP.NET Trace | [image:tick.png] | [image:tick.png] | [image:tick.png] | [image:cross.png] |
+| Chainsaw (log4j) | [image:cross.png] | [image:tick.png] | [image:tick.png] | [image:cross.png] |
+| Colored Console | [image:ex.png] | [image:tick.png] | [image:cross.png] | [image:cross.png] |
+| Console | [image:tick.png] | [image:tick.png] | [image:tick.png] | [image:cross.png] |
+| Database | [image:ex.png] | [image:tick.png] | [image:tick.png] | [image:tick.png] |
+| Debug | [image:tick.png] | [image:tick.png] | [image:tick.png] | [image:cross.png] |
+| Event Log | [image:tick.png] | [image:tick.png] | [image:tick.png] | [image:tick.png] |
+| Event Tracing (ETW) | [image:tick.png] | [image:cross.png] | [image:cross.png] | [image:cross.png] |
+| File | [image:tick.png] | [image:tick.png] | [image:tick.png] | [image:tick.png] |
+| Mail | [image:cross.png] | [image:tick.png] | [image:tick.png] | [image:tick.png] |
+| Memory | [image:ex.png] | [image:tick.png] | [image:tick.png] | [image:cross.png] |
+| MSMQ | [image:cross.png] | [image:cross.png] | [image:tick.png] | [image:tick.png] |
+| Net Send | [image:cross.png] | [image:tick.png] | [image:cross.png] | [image:cross.png] |
+| Remoting | [image:cross.png] | [image:tick.png] | [image:cross.png] | [image:cross.png] |
+| Rolling File | [image:tick.png] | [image:tick.png] | [image:tick.png] | [image:tick.png] |
+| Syslog (unix) | [image:cross.png] | [image:tick.png] | [image:cross.png] | [image:cross.png] |
+| Telnet | [image:cross.png] | [image:tick.png] | [image:cross.png] | [image:cross.png] |
+| UDP | UdpPocketTrace extension | [image:tick.png] | [image:tick.png] | [image:cross.png] |
+| WMI | [image:cross.png] | [image:cross.png] | [image:cross.png] | [image:tick.png] |
+| XML (Service Trace) | [image:tick.png] | [image:cross.png] | [image:cross.png] | [image:tick.png] |
 
 Note that for some features the answer is more complex than a simple table, e.g. System.Diagnostics provides some process/thread information in some listeners, with Essential.Diagnostics providing additional information.
 
 In general features are only indicated where they are directly supported by the framework, for example any framework can log exception details as an argument or even just a string, but some have explicit overloads of logging methods with an Exception type parameter.
 
-Similarly, while some explicitly support logging of lambda expressions, any framework with delayed formatting could pass in a wrapper object that evaluates a lambda when ToString() is called.
+Similarly, while some explicitly support logging of lambda expressions, any framework with delayed formatting could pass in a wrapper object that evaluates a lambda when ToString() is called; or a framework that supports arbitrary Trace Context can be used as a correlation identifier, compared to those with explicit correlation identifier support.
 
 ! Performance comparison
 
@@ -92,7 +86,7 @@ Base test framework: 56 ms
 
 Logging overhead (ms for 1 million log messages):
 
-! System. Diagnostics ! System. Diagnostics (not cleared) ! System. Diagnostics EX ! Log4net ! NLog ! Enterprise Application Block !
+|| Scenario || System. Diagnostics || System. Diagnostics (not cleared) || System. Diagnostics [image:ex.png] || Log4net || NLog || Enterprise Application Block ||
 | Logging off | 50 | 50 | 50 | 46 | 3 | > 20,000 |
 | Single filtered | 59 | 85 | 54 | 43 | 8 | > 20,000 |
 | Multiple filtered | 89 | 93 | 64 | 49 | 61 | > 20,000 |
@@ -106,7 +100,11 @@ There are also several configurations in the test harness to compare various oth
 
 If you don't clear the list it may look like you have no listeners but instead you will get all messages written to the default listener, which will severely impact the performance of your application. i.e. the worst thing you can do is set the trace switch to allow a lot of messages (e.g. All) without clearing the listeners:
 
-      <!-- Bad example: will severely impact performance -->
-      <source name="MySource" switchValue="All">
-      </source>
-
+{code:xml}
+<!-- Bad example: will severely impact performance -->
+<source name="SourceWithBadSwitch" switchValue="All">
+</source>
+<!-- Correct way to turn logging off -->
+<source name="MySource" switchValue="Off">
+</source>
+{code:xml}

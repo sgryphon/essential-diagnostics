@@ -95,10 +95,10 @@ namespace Essential.Diagnostics
                             break;
                         case "DATETIME":
                         case "UTCDATETIME":
-                            value = traceFormatter.FormatUniversalTime(eventCache);
+                            value = TraceFormatter.FormatUniversalTime(eventCache);
                             break;
                         case "LOCALDATETIME":
-                            value = traceFormatter.FormatLocalTime(eventCache);
+                            value = TraceFormatter.FormatLocalTime(eventCache);
                             break;
                         case "MACHINENAME":
                             value = Environment.MachineName;

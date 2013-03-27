@@ -30,6 +30,7 @@ namespace Essential.Diagnostics.Abstractions
     /// which works well with dependency injection frameworks.
     /// </para>
     /// </remarks>
+    /// 
     public class TraceSourceWrapper : ITraceSource
     {
         TraceSource traceSource;

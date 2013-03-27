@@ -189,7 +189,11 @@ namespace Essential.Diagnostics
                     xmlBlobWriter.WriteNode(xPathNavigator, false);
                     output.Append(xmlBlob.ToString());
                 }
-                catch (Exception)
+                catch (ArgumentOutOfRangeException)// from String.Append. Though not likely output could exceed MaxCapcity. 
+                {
+                    //do nothing.
+                }
+                catch (Exception)//Pray. I will leave this one. Z.
                 {
                     output.Append(data.ToString());
                 }

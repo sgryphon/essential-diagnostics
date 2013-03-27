@@ -50,6 +50,7 @@ namespace Essential.Diagnostics.Tests
 
                     var listener2 = source.Listeners.OfType<InMemoryTraceListener>().First();
                     var events2 = listener2.GetEvents();
+                    System.Threading.Thread.Sleep(500);
                     Assert.AreEqual(777, listener2.Limit);
                     Assert.AreEqual(1, events2.Length);
                 }

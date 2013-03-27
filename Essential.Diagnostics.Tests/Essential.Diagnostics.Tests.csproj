@@ -32,6 +32,13 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -54,6 +61,7 @@
     <Compile Include="ActivityScopeTests.cs" />
     <Compile Include="ColoredConsoleTests.cs" />
     <Compile Include="ConfigurationMonitorTests.cs" />
+    <Compile Include="EmailTests.cs" />
     <Compile Include="RollingXmlTests.cs" />
     <Compile Include="RollingFileTests.cs" />
     <Compile Include="ExpressionFilterTests.cs" />
@@ -91,7 +99,9 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <Shadow Include="Test References\Essential.Diagnostics.accessor" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

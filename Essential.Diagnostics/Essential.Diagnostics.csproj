@@ -40,9 +40,9 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <WarningLevel>3</WarningLevel>
+    <CodeAnalysisRuleSet>..\EssentialDiagnostics.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
     <DocumentationFile>bin\Debug\Essential.Diagnostics.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -56,11 +56,10 @@
     <DocumentationFile>bin\Release\Essential.Diagnostics.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>false</SignAssembly>
+    <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\EssentialDiagnostics.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -68,7 +67,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Web">
       <SpecificVersion>False</SpecificVersion>
-	</Reference>
+    </Reference>
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -80,7 +79,13 @@
     <Compile Include="Diagnostics\ActivityScope.cs" />
     <Compile Include="Diagnostics\ColoredConsoleTraceListener.cs" />
     <Compile Include="ConsoleAdapter.cs" />
+    <Compile Include="Diagnostics\EmailTraceListener.cs" />
+    <Compile Include="Diagnostics\EmailTraceListenerBase.cs" />
+    <Compile Include="Diagnostics\ErrorBufferEmailTraceListener.cs" />
     <Compile Include="Diagnostics\ExpressionFilter.cs" />
+    <Compile Include="Diagnostics\GlobalSuppressions.cs" />
+    <Compile Include="Diagnostics\MailMessageHelper.cs" />
+    <Compile Include="Diagnostics\MailMessageQueue.cs" />
     <Compile Include="Diagnostics\NativeMethods.cs" />
     <Compile Include="Diagnostics\PropertyFilter.cs" />
     <Compile Include="Diagnostics\RollingFileTraceListener.cs" />
@@ -128,6 +133,11 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\EssentialDiagnostics.snk">
+      <Link>Properties\EssentialDiagnostics.snk</Link>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

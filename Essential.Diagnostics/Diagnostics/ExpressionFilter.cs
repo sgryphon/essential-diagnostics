@@ -55,7 +55,7 @@ namespace Essential.Diagnostics
             return compiledExpression.ShouldTrace(eventCache, source, eventType, id, formatOrMessage, eventCache.Callstack, dateTimeOffset, eventCache.LogicalOperationStack, eventCache.ProcessId, eventCache.ThreadId, eventCache.Timestamp);
         }
 
-        private ExpressionBase CompileExpression(string expression)
+        static ExpressionBase CompileExpression(string expression)
         {
             string className = "Class_" + Guid.NewGuid().ToString("N");
 
@@ -97,8 +97,7 @@ namespace Essential.Diagnostics
         
             var assembly = results.CompiledAssembly;
             var dynamicType = assembly.GetType("Essential.Diagnostics.Dynamic." + className);
-            var compiledExpression = (ExpressionBase)Activator.CreateInstance(dynamicType);
-            return compiledExpression;
+            return (ExpressionBase)Activator.CreateInstance(dynamicType);
         }
 
         /// <summary>

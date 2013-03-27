@@ -142,8 +142,17 @@ namespace Essential.Diagnostics
                         case "PROCESSNAME":
                             value = FormatProcessName();
                             break;
+                        case "USER":
+                            value = Environment.UserDomainName + "\\" + Environment.UserName;
+                            break;
+                        case "PROCESS":
+                            value = Environment.CommandLine;
+                            break;
                         case "APPLICATIONNAME":
                             value = FormatApplicationName();
+                            break;
+                        case "APPDOMAIN":
+                            value = AppDomain.CurrentDomain.FriendlyName;
                             break;
                         case "PRINCIPALNAME":
                             value = FormatPrincipalName();
@@ -181,13 +190,16 @@ namespace Essential.Diagnostics
                 if (entryAssembly == null)
                 {
                     var moduleFileName = new StringBuilder(260);
-                    NativeMethods.GetModuleFileName(NativeMethods.NullHandleRef, moduleFileName, moduleFileName.Capacity);
-                    applicationName = Path.GetFileNameWithoutExtension(moduleFileName.ToString());
+                    int size = NativeMethods.GetModuleFileName(NativeMethods.NullHandleRef, moduleFileName, moduleFileName.Capacity);
+                    if (size > 0)
+                    {
+                        applicationName = Path.GetFileNameWithoutExtension(moduleFileName.ToString());
+                        return;
+                    }
+                    //I don't want to raise any error here since I have a graceful result at the end.
                 }
-                else
-                {
-                    applicationName = Path.GetFileNameWithoutExtension(entryAssembly.EscapedCodeBase);
-                }
+
+                applicationName = Path.GetFileNameWithoutExtension(entryAssembly.EscapedCodeBase);
             }
         }
 
@@ -364,7 +376,7 @@ namespace Essential.Diagnostics
             return value;
         }
 
-        internal object FormatUniversalTime(TraceEventCache eventCache)
+        internal static object FormatUniversalTime(TraceEventCache eventCache)
         {
             object value;
             if (eventCache == null)
@@ -380,7 +392,7 @@ namespace Essential.Diagnostics
             return value;
         }
 
-        internal object FormatLocalTime(TraceEventCache eventCache)
+        internal static object FormatLocalTime(TraceEventCache eventCache)
         {
             object value;
             if (eventCache == null)
