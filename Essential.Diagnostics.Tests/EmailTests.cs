@@ -172,6 +172,32 @@ namespace Essential.Diagnostics.Tests
 
         [TestMethod]
         [TestCategory("MailIntegration")]
+        public void TestEmailTraceListenerWithManyTracesInThreads()
+        {
+            ClearPickupDirectory();
+
+            Action d = () =>
+            {
+                Trace.TraceWarning("Anything. More detail go here.");
+                Trace.TraceError("something wrong; can you tell? more here.");
+                Trace.WriteLine("This is writeline.", "Category");
+                Trace.WriteLine("This is another writeline.", "caTegory");
+                Trace.WriteLine("Writeline without right category", "CCCC");
+
+            };
+
+            for (int i = 0; i < 1000; i++)
+            {
+                d.BeginInvoke(null, null);
+            }
+
+            System.Threading.Thread.Sleep(10000);//need to wait, otherwise the test host is terminated resulting in thread abort.
+
+            AssertMessagesSent(2000);
+        }
+
+        [TestMethod]
+        [TestCategory("MailIntegration")]
         public void TestSmtpClientAsync()
         {
             ClearPickupDirectory();

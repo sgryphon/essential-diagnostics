@@ -43,7 +43,13 @@ namespace Essential.Diagnostics
             SendEmailAsync(subject, messageformated);
         }
 
-
+        public override bool IsThreadSafe
+        {
+            get
+            {
+                return true;
+            }
+        }
     }
 
 }
