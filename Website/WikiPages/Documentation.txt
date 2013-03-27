@@ -31,7 +31,7 @@ The following trace listeners are provided by the .NET Framework and the Essenti
 | [RollingFileTraceListener][image:EX|http://www.codeplex.com/download?ProjectName=essentialdiagnostics&DownloadId=150104] | Trace listener that writes formatted messages to a text file, rolling to a new file based on a filename template (usually including the date). |
 | [RollingXmlTraceListener][image:EX|http://www.codeplex.com/download?ProjectName=essentialdiagnostics&DownloadId=150104] | Trace listener that writes E2ETraceEvent XML fragments to a text file, rolling to a new file based on a filename template (usually including the date). |
 | [SqlDatabaseTraceListener][image:EX|http://www.codeplex.com/download?ProjectName=essentialdiagnostics&DownloadId=150104] | Writes trace information to a SQL database. |
-| TextWriterTraceListener | Writes trace events to a simple file. |
+| [TextWriterTraceListener] | Writes trace events to a simple file. Recommended you at least use [FileLogTraceListener] instead. |
 | WebPageTraceListener | Forwards trace events to the ASP.NET trace output. |
 | WMITraceListener^^1^^ | |
 | [XmlWriterTraceListener] | Writes events in XML format, suitable for import into the Service Trace Viewer utility. |
