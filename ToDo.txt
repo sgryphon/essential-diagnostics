@@ -32,6 +32,9 @@ Documentation TODO
 - List of built-in Framework trace sources (or components like WIF, WCF), and examples of output.
   1. Description, 2. Parameters, 3. Template config, 4. Example config, 5. Example output
 
+- Look at http://www.codeproject.com/Articles/42354/The-Art-of-Logging, 
+  http://www.codeproject.com/Articles/23424/TracerX-Logger-and-Viewer-for-NET
+
 Examples TODO
 -------------
 
