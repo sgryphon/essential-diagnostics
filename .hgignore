@@ -17,3 +17,4 @@ Package/Release
 Package/Debug
 glob:solution.disposechecksettings
 surveyor.csv
+Documentation/Examples/Thumbs.db
