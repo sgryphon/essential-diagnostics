@@ -1,0 +1,26 @@
+! EmailTraceListener Class
+
+(under development)
+
+Inherited from [EmailTraceListenerBase Class]. Please check the base class for further information of the configuration.
+
+This listener will write each trace message via an Email message which will be sent by a pool of SmtpClient connections asynchronously. By default, the EventTypeFilter is set to Warning. And you may adjust through adding an EventTypeFilter in the config.
+	
+!! Config Attributes
+
+In addition to attributes of [EmailTraceListenerBase Class], the following table gives more.
+
+|| Attribute || Description ||
+| bodyTemplate | The listener will substitute a trace message with additional information to form the body of the Email message. Default "Time: {LOCALDATETIME}\nMachine: {MACHINENAME}\nUser: {USER}\nProcess: {PROCESS}\nAppDomain: {APPDOMAIN}\n\n{MESSAGE}" |
+
+!! Example Config
+
+{code:xml}
+<add name="emailTraceListener" initializeData="arnold@fonlowmail.com"
+   type="Essential.Diagnostics.EmailTraceListener, Essential.Diagnostics"
+   maxConnections="2"
+   subjectTemplate="{MESSAGE} -- Machine: {MACHINENAME}; User: {USER}; Process: {PROCESS}; AppDomain: {APPDOMAIN}"
+   bodyTemplate="Time: {LOCALDATETIME}\nMachine: {MACHINENAME}\nUser: {USER}\nProcess: {PROCESS}\nAppDomain: {APPDOMAIN}\n\n{MESSAGE}">
+   <filter type="System.Diagnostics.EventTypeFilter" initializeData="Error" />
+</add>
+{code:xml}

@@ -1,0 +1,45 @@
+! BufferedEmailTraceListener Class
+
+(under development)
+
+Inherited from [EmailTraceListenerBase Class]. Please check the base class for further information of the configuration.
+
+Intended to be used in console apps which will send all warning/error traces via one Email message at the end of the hosting process. The subject is extracted from the first line of traces. If there’s no trace, this listener will send nothing.
+
+By default, the EventTypeFilter is set to Warning. And you may adjust through adding an EventTypeFilter in the config.
+	
+!! Config Attributes
+
+In addition to attributes of [EmailTraceListenerBase Class], the following table gives more.
+
+|| Attribute || Description ||
+| bodyTemplate | The listener will substitute all trace messages with additional information to form the body of the Email message. Default "Time: {LOCALDATETIME}\nMachine: {MACHINENAME}\nUser: {USER}\nProcess: {PROCESS}\nAppDomain: {APPDOMAIN}\n\n{MESSAGE}". And {MESSAGE} is substitute with all trace messages formatted with traceTemplate. |
+| traceTemplate | Substitute a trace message with additional information. Default "{LOCALDATETIME:HH:mm:ss} {EVENTTYPE} [{THREADID}] {MESSAGE}" |
+
+!! Example Config
+
+{code:xml}
+<add name="bufferTraceListener" initializeData="arnold@fonlowmail.com"
+    type="Essential.Diagnostics.BufferedEmailTraceListener, Essential.Diagnostics"
+    maxConnections="1"
+    traceTemplate="{LOCALDATETIME:HH:mm:ss} {EVENTTYPE} [{THREADID}] {MESSAGE}"
+    bodyTemplate="Time: {LOCALDATETIME}\nMachine: {MACHINENAME}\nUser: {USER}\nProcess: {PROCESS}\nAppDomain: {APPDOMAIN}\n\n{MESSAGE}"/>
+{code:xml}
+
+!! Remarks
+
+Static function SendMailOfEventMessages() allows your app codes to send the Email message before the end of the host process. For example, you might want to send one message at the end of each loop.
+
+!! Example Email message
+
+{{
+Time: 25/03/2013 10:07:18 AM +10:00
+Machine: ANDYSUPERCO-PC
+User: AndySuperCo-PC\AndySuperCo
+Process: "C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\QTAgent32.exe" /agentKey 51298043-e930-466d-9b9e-5191b2a204df /hostProcessId 6472 /hostIpcPortName eqt-8d8a2bd4-ba5e-f4a3-95e8-a82b8871817e
+AppDomain: TestAppDomain: da9d5605-7e92-49d3-a1c1-b8024e782bee
+
+10:07:18 Warning [938] Anythingbbbb. More detail go here.
+10:07:18 Error [938] something wrongbbbb; can you tell? more here.
+}}
+
