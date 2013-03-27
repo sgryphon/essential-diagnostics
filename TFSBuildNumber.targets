@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <!-- TFSBuildNumber.targets, Version 1.1 - June, 2011 -->
+  <!-- TFSBuildNumber.targets, Version 1.2 - October, 2012 -->
 
   <!-- Updates build numbers in projects based on the TFS build number.
   
@@ -12,6 +12,9 @@
          - Updating C# version attributes in the info file.
          - Writing build number into a plain Version.txt file in the project root
            (e.g. for copying to output as content along with web site files)
+         - Reset the AssemblyInfo.cs file after the build (so it isn't
+           constantly being updated in version control, including TFS 2012
+           local workspaces).
            
        To use:
        
@@ -31,7 +34,11 @@
           If you want to use a file other than the default (Properties/AssemblyInfo.cs),
           then set the <VersionInfoFile> property.
           
-       4. Set the TFSBaseBuild property in the .csproj file (defaults to 2010).
+       4. Add AfterBuild target with a dependency on ResetCSharpAssemblyInfoFile
+          to reset the changes (if you don't want to check in changes to AssemblyInfo.cs
+          after every local build).
+          
+       5. Set the TFSBaseBuild property in the .csproj file (defaults to 2010).
           By setting the base year you will have nicely increasing version
           numbers.
           
@@ -42,7 +49,7 @@
        an alternative is to set the TFSMajorBuildNumber and TFSMinorBuildNumber
        properties in your .csproj file.
        
-       Example to insert in your .csproj file:
+       Example to insert in your .csproj file (change TFSBaseBuildYear as desired):
        
        <PropertyGroup>
          <TFSBaseBuildYear>2010</TFSBaseBuildYear>
@@ -51,8 +58,11 @@
        <Target Name="BeforeBuild"
           DependsOnTargets="GetMajorMinorFromCSharpAssemblyInfoFile;WriteProjectTextAssemblyVersionFile;UpdateCSharpAssemblyInfoFile">
        </Target>
+       <Target Name="AfterBuild"
+          DependsOnTargets="ResetCSharpAssemblyInfoFile">
+       </Target>
 
-       Optional properties that can be added:
+       Additional optional properties that can be used:
 
        <PropertyGroup>
          <VersionInfoFile>$(MSBuildProjectDirectory)\VersionInfo.cs</VersionInfoFile>
@@ -63,27 +73,15 @@
        -->
 
        <!-- Based on original work in Wintellect.TFSBuildNumber.Targets 
-       by John Robbins (john@wintellect.com) -->
-
-  <!-- A set of pure MSBuild 4.0 tasks that generate build version information 
+       by John Robbins (john@wintellect.com).
+       
+       From the original description:
+       
+       "A set of pure MSBuild 4.0 tasks that generate build version information 
        for a TFS 2010 Team Build in order to have your file versions match 
        exactly the TFS build numbers. Everything is in this file, you don't 
        need to install any other DLLs, assemblies, or magic on your TFS build 
-       server. MSBuild 4.0 really is quite wonderful!
-       
-       The idea behind using these task is to follow best practices of not 
-       checking in/out any assembly version files as part of a build. The 
-       version files are created every time you run a Team Build. If the 
-       version files aren't checked in, how will you do a build on a 
-       developer machine? You'll be OK, because when you call these tasks from  
-       a developer (AKA desktop build), it will still create the version files. 
-       However, instead of using a TFS build identifier, the version files will
-       be created with the following rules:
-          - If the version file already exists, it will not be created. For
-            TFS Builds, the file is always created.
-          - The build number will be based of the current date.
-          - The revision number is hard coded to 0 to indicate it was a 
-            developer build. (TFS build numbering starts from 1)            
+       server. MSBuild 4.0 really is quite wonderful!"
        -->
 
   <PropertyGroup>
@@ -279,6 +277,58 @@
     </CreateProperty>
     <Exec Condition="Exists('$(DestinationAssemblyInfoFile)')" Command='attrib -R "$(DestinationAssemblyInfoFile)"' IgnoreExitCode='true' />
     <Message Text="Updating file '$(DestinationAssemblyInfoFile)' with file version $(AssemblyFileVersion)." />
+    <CreateProperty	Value='$([System.IO.File]::ReadAllText("$(SourceAssemblyInfoFile)"))'>
+      <Output
+        TaskParameter="Value"
+        PropertyName="OriginalAssemblyInfo" />
+    </CreateProperty>
+    <CreateProperty Value='$([System.Text.RegularExpressions.Regex]::Replace($(OriginalAssemblyInfo),"AssemblyFileVersion\s*\(.*?\)","AssemblyFileVersion($(AssemblyFileVersion))"))'>
+      <Output
+        TaskParameter="Value"
+        PropertyName="FileVersionUpdatedInfo" />
+    </CreateProperty>
+    <CreateProperty Value='$([System.Text.RegularExpressions.Regex]::Replace($(FileVersionUpdatedInfo),"AssemblyVersion\s*\(.*?\)","AssemblyVersion($(AssemblyVersion))"))'>
+      <Output
+        TaskParameter="Value"
+        PropertyName="FullUpdatedInfo" />
+    </CreateProperty>
+    <WriteLinesToFile
+      File="$(DestinationAssemblyInfoFile)"
+      Lines='$(FullUpdatedInfo)'
+      Overwrite="true" />
+    <Exec Command='attrib +R "$(DestinationAssemblyInfoFile)"' />
+  </Target>
+
+  <!-- This resets the build and release numbers in AssemblyInfo.cs.
+	 
+   With local file based version control (including local workspaces in 
+   VS2012) changes to AssemblyInfo.cs will be picked up for check in.
+   
+   If you don't want every build to trigger a change for these files,
+   then reset the build and release numbers in the AfterBuild step.
+   
+   Note: You don't want to ignore these files completely, as you need 
+   to include them as part of the project (and once added changes will 
+   be detected).
+   
+   -->
+
+  <Target Name="ResetCSharpAssemblyInfoFile"
+        DependsOnTargets="TFSBuildFileVersion" >
+    <CreateProperty Value='$(VersionInfoFile)'>
+      <Output TaskParameter="Value" PropertyName="SourceAssemblyInfoFile" />
+    </CreateProperty>
+    <CreateProperty Value='$(SourceAssemblyInfoFile)'>
+      <Output TaskParameter="Value" PropertyName="DestinationAssemblyInfoFile" />
+    </CreateProperty>
+    <CreateProperty Value='"$(TFSMajorBuildNumber).$(TFSMinorBuildNumber).0.0"'>
+      <Output TaskParameter="Value" PropertyName="AssemblyFileVersion" />
+    </CreateProperty>
+    <CreateProperty Value='"$(TFSMajorBuildNumber).$(TFSMinorBuildNumber).0.0"'>
+      <Output TaskParameter="Value" PropertyName="AssemblyVersion" />
+    </CreateProperty>
+    <Exec Condition="Exists('$(DestinationAssemblyInfoFile)')" Command='attrib -R "$(DestinationAssemblyInfoFile)"' IgnoreExitCode='true' />
+    <Message Text="Reseting file '$(DestinationAssemblyInfoFile)' to file version $(AssemblyFileVersion)." />
     <CreateProperty	Value='$([System.IO.File]::ReadAllText("$(SourceAssemblyInfoFile)"))'>
       <Output
         TaskParameter="Value"
