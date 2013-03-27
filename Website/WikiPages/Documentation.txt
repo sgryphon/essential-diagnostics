@@ -1,0 +1,80 @@
+! Documentation
+
+>{[Download] | [FAQ] | [Examples] | [Listeners] | [Filters] | [Extensions] | [Abstractions] | [Guidance]}>
+
+!! [Examples]
+
+* [Getting Started]
+* [Logging Primer]
+** [Hello Logging]
+** [Service Trace Viewer]
+** [Windows Event Log]
+** [Hello Color][image:EX|http://i3.codeplex.com/download?ProjectName=essentialdiagnostics&DownloadId=150104]
+
+!! [Listeners]
+
+The following trace listeners are provided by the .NET Framework and the Essential.Diagnostics extensions.
+
+| [BufferedEmailTraceListener][image:EX|http://www.codeplex.com/download?ProjectName=essentialdiagnostics&DownloadId=150104] | Writes trace events to an Email message sent at the end of the host process. |
+| [ColoredConsoleTraceListener][image:EX|http://www.codeplex.com/download?ProjectName=essentialdiagnostics&DownloadId=150104] | Writes formatted trace events to the console in color based on the type. |
+| [ConsoleTraceListener] | Writes trace events to the console |
+| DefaultTraceListener |  |
+| DelimitedListTraceListener | Writes trace events to a file as a delimited list. |
+| [EmailTraceListener][image:EX|http://www.codeplex.com/download?ProjectName=essentialdiagnostics&DownloadId=150104] | Writes trace events to Email messages sent asynchronously. |
+| [EventLogTraceListener] | Writes trace events to the Windows Event Log |
+| EventProviderTraceListener |  |
+| EventSchemaTraceListener |  |
+| [FileLogTraceListener] | Writes trace events to a file with advanced options for file rotation and output format. |
+| FlatFileTraceListener^^1^^ | |
+| FormattedEventLogTraceListener^^1^^ | |
+| [InMemoryTraceListener][image:EX|http://www.codeplex.com/download?ProjectName=essentialdiagnostics&DownloadId=150104] | Writes traces to an in-memory array. |
+| [RollingFileTraceListener][image:EX|http://www.codeplex.com/download?ProjectName=essentialdiagnostics&DownloadId=150104] | Trace listener that writes formatted messages to a text file, rolling to a new file based on a filename template (usually including the date). |
+| [RollingXmlTraceListener][image:EX|http://www.codeplex.com/download?ProjectName=essentialdiagnostics&DownloadId=150104] | Trace listener that writes E2ETraceEvent XML fragments to a text file, rolling to a new file based on a filename template (usually including the date). |
+| [SqlDatabaseTraceListener][image:EX|http://www.codeplex.com/download?ProjectName=essentialdiagnostics&DownloadId=150104] | Writes trace information to a SQL database. |
+| TextWriterTraceListener | Writes trace events to a simple file. |
+| WebPageTraceListener | Forwards trace events to the ASP.NET trace output. |
+| WMITraceListener^^1^^ | |
+| [XmlWriterTraceListener] | Writes events in XML format, suitable for import into the Service Trace Viewer utility. |
+
+Note: ^^1^^ These trace listeners from the Enterprise Library Logging Application Block can also be used directly with System.Diagnostics (for details see [url:http://msdn.microsoft.com/en-us/library/ff664735%28v=PandP.50%29.aspx]).
+
+!! [Filters]
+
+| EventTypeFilter | Filters based on the level of the TraceEventType, e.g. Warning, Error, etc. |
+| [ExpressionFilter][image:EX|http://www.codeplex.com/download?ProjectName=essentialdiagnostics&DownloadId=150104] | Filter events based on an expression. |
+| [PropertyFilter][image:EX|http://www.codeplex.com/download?ProjectName=essentialdiagnostics&DownloadId=150104] | Filter events based on the value of a single property. |
+| SourceFilter | Filters based on the TraceSource that generated the message. |
+
+!! [Extensions]
+
+| [ActivityScope][image:EX|http://www.codeplex.com/download?ProjectName=essentialdiagnostics&DownloadId=150104] | Sets the correlation ActivityId for the life of the scope object, performs a transfer, and logs activity messages. |
+| [LogicalOperationScope][image:EX|http://www.codeplex.com/download?ProjectName=essentialdiagnostics&DownloadId=150104] | Sets the correlation LogicalOperation stack for the life of the scope object. |
+| [TraceFormatter][image:EX|http://www.codeplex.com/download?ProjectName=essentialdiagnostics&DownloadId=150104] | Inserts trace information into a provided template string. Used to provide the advanced formatting for several listeners. |
+| [TraceConfigurationMonitor][image:EX|http://www.codeplex.com/download?ProjectName=essentialdiagnostics&DownloadId=150104] | Monitors the config file for changes are refreshes trace listeners when required. |
+
+!! [Diagnostics.Abstractions|Abstractions]
+
+| [AssemblyTraceSource<T>][image:EX|ex.png] | Enable applications to trace the execution of code and associate trace messages with a source named after the assembly the generic type is from. |
+| [ITraceSource][image:EX|ex.png] | Defines a set of methods and properties that enable applications to trace the execution of code and associate trace messages with their source.  |
+| [ITraceSource<T>][image:EX|ex.png] | Defines a set of methods and properties that enable applications to trace the execution of code and associate trace messages with a source related to a specific class. |
+| [TraceSourceWrapper][image:EX|ex.png] | Provides a wrapper around TraceSource that implements the ITraceSource interface, enable applications to trace the execution of code and associate trace messages with their source in a decoupled manner. |
+
+!! Base Classes
+
+| TraceListener | Base trace listener class provided by the .NET framework. |
+| [TraceListenerBase][image:EX|http://www.codeplex.com/download?ProjectName=essentialdiagnostics&DownloadId=150104] | Extended trace listener designed to be subclassed with as little as a single template method override. |
+| TraceFilter | Base trace filter class provided by the .NET framework. |
+
+!! [Guidance]
+
+Guidance on considerations when implementing logging and other instrumentation for your project:
+
+* [Logging Levels]
+* [Theory of Event Ids|Event Ids]
+* [Correlation]
+* [Integration]
+* [Comparison of logging frameworks|Comparison]
+
+Guidance related to the Essential.Diagnostics project:
+
+* [Design guidelines for TraceListener extensions|TraceListener Design Guidelines]

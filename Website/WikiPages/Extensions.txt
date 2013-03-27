@@ -1,0 +1,6 @@
+! Extensions
+
+| [ActivityScope][image:EX|http://www.codeplex.com/download?ProjectName=essentialdiagnostics&DownloadId=150104] | Sets the correlation ActivityId for the life of the scope object, performs a transfer, and logs activity messages. |
+| [LogicalOperationScope][image:EX|http://www.codeplex.com/download?ProjectName=essentialdiagnostics&DownloadId=150104] | Sets the correlation LogicalOperation stack for the life of the scope object. |
+| [TraceFormatter][image:EX|http://www.codeplex.com/download?ProjectName=essentialdiagnostics&DownloadId=150104] | Inserts trace information into a provided template string. Used to provide the advanced formatting for several listeners. |
+| [TraceConfigurationMonitor][image:EX|http://www.codeplex.com/download?ProjectName=essentialdiagnostics&DownloadId=150104] | Monitors the config file for changes are refreshes trace listeners when required. |

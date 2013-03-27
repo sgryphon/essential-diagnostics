@@ -1,0 +1,6 @@
+
+Links
+
+
+https://essentialdiagnostics.codeplex.com/wikipage?title=ErrorBufferEmailTraceListener%20class
+https://essentialdiagnostics.codeplex.com/wikipage?title=EmailTraceListener%20Class

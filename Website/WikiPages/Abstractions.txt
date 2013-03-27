@@ -1,0 +1,7 @@
+! [Diagnostics.Abstractions]
+
+| [AssemblyTraceSource<T>][image:EX|ex.png] | Enable applications to trace the execution of code and associate trace messages with a source named after the assembly the generic type is from. |
+| [ITraceSource][image:EX|ex.png] | Defines a set of methods and properties that enable applications to trace the execution of code and associate trace messages with their source.  |
+| [ITraceSource<T>][image:EX|ex.png] | Defines a set of methods and properties that enable applications to trace the execution of code and associate trace messages with a source related to a specific class. |
+| [TraceSourceWrapper][image:EX|ex.png] | Provides a wrapper around TraceSource that implements the ITraceSource interface, enable applications to trace the execution of code and associate trace messages with their source in a decoupled manner. |
+
