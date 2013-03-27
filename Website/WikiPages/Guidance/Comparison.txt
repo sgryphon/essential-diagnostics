@@ -6,7 +6,7 @@ The System.Diagnostics column indicates both the built in features, as well as t
 
 Please contact me if you think any information in this table is out of date.
 
-|| General Features || System. Diagnostics || Log4net || NLog || Enterprise Library ||
+|| General Features || System. Diagnostics || log4net || NLog || Enterprise Library ||
 | Availability | built-in | 3rd party | 3rd party | Microsoft |
 | Levels | 5 | 5 | 6 | 5 |
 | Multiple sources | [image:tick.png] | [image:tick.png] | [image:tick.png] | [image:tick.png] |
@@ -48,7 +48,7 @@ Please contact me if you think any information in this table is out of date.
 | Event Log | [image:tick.png] | [image:tick.png] | [image:tick.png] | [image:tick.png] |
 | Event Tracing (ETW) | [image:tick.png] | [image:cross.png] | [image:cross.png] | [image:cross.png] |
 | File | [image:tick.png] | [image:tick.png] | [image:tick.png] | [image:tick.png] |
-| Mail | [image:cross.png] | [image:tick.png] | [image:tick.png] | [image:tick.png] |
+| Mail | Ukadc.Diagnostics extension | [image:tick.png] | [image:tick.png] | [image:tick.png] |
 | Memory | [image:ex.png] | [image:tick.png] | [image:tick.png] | [image:cross.png] |
 | MSMQ | [image:cross.png] | [image:cross.png] | [image:tick.png] | [image:tick.png] |
 | Net Send | [image:cross.png] | [image:tick.png] | [image:cross.png] | [image:cross.png] |
@@ -84,13 +84,13 @@ The source code for the performance testing application is available in the code
 
 Base test framework: 56 ms
 
-Logging overhead (ms for 1 million log messages):
+Logging overhead (ms for 1 million log messages, lower is better):
 
-|| Scenario || System. Diagnostics || System. Diagnostics (not cleared) || System. Diagnostics [image:ex.png] || Log4net || NLog || Enterprise Application Block ||
-| Logging off | 50 | 50 | 50 | 46 | 3 | > 20,000 |
-| Single filtered | 59 | 85 | 54 | 43 | 8 | > 20,000 |
-| Multiple filtered | 89 | 93 | 64 | 49 | 61 | > 20,000 |
-| One full | 484 | 620 | 238 | 114 | 867 | > 20,000 |
+|| Scenario (logged messages) || System. Diagnostics — FileLog || [image:ex.png] RollingFile || log4net — RollingFile || NLog — File || Enterprise Application Block — RollingFlatFile ||
+| Logging off (0) | 50 | 50 | 46 | 3 | > 20,000 |
+| Single filtered (16) | 59 | 54 | 43 | 8 | > 20,000 |
+| Multiple filtered (245) | 89 | 64 | 49 | 61 | > 20,000 |
+| One full (3,907) | 484 | 238 | 114 | 867 | > 20,000 |
 
 There are also several configurations in the test harness to compare various other scenarios, for example a source with switchValue=”Off” versus no source defined at all.
 
@@ -101,10 +101,14 @@ There are also several configurations in the test harness to compare various oth
 If you don't clear the list it may look like you have no listeners but instead you will get all messages written to the default listener, which will severely impact the performance of your application. i.e. the worst thing you can do is set the trace switch to allow a lot of messages (e.g. All) without clearing the listeners:
 
 {code:xml}
-<!-- Bad example: will severely impact performance -->
+<!-- Bad example: will severely impact performance (clear listeners, but leave source) -->
 <source name="SourceWithBadSwitch" switchValue="All">
 </source>
-<!-- Correct way to turn logging off -->
+<!-- Correct way to turn logging off (set switch to Off, or simply delete completely) -->
 <source name="MySource" switchValue="Off">
+  <listeners>
+    <clear/>
+    <add name="filelog"/>
+   </listeners>
 </source>
 {code:xml}
