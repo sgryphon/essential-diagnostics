@@ -16,3 +16,4 @@ syntax: glob
 Package/Release
 Package/Debug
 glob:solution.disposechecksettings
+surveyor.csv
