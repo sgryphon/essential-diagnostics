@@ -41,7 +41,7 @@ namespace EssentialDiagnosticsIntegrationTests
         {
             MailMessageQueue queue = new MailMessageQueue("mail.fonlow.com", 25, 3);
             queue.AddAndSendAsync(new System.Net.Mail.MailMessage("HeyAndy@fonlow.com", "NotExist@fonlow.com", "HelloAsync", "are you there? async"));
-            System.Threading.Thread.Sleep(5000);
+            System.Threading.Thread.Sleep(10000);
             Assert.IsFalse(queue.AcceptItem);
             queue.AddAndSendAsync(new System.Net.Mail.MailMessage("HeyAndy@fonlow.com", "NotExist@fonlow.com", "HelloAsync", "are you there? async"));
             System.Threading.Thread.Sleep(2000);//need to wait, otherwise the test host is terminated resulting in thread abort.

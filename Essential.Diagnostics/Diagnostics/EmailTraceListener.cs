@@ -25,6 +25,14 @@ namespace Essential.Diagnostics
 
         TraceFormatter traceFormatter = new TraceFormatter();
 
+        public override bool IsThreadSafe
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         protected override void WriteTrace(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message, Guid? relatedActivityId, object[] data)
         {
             if (String.IsNullOrEmpty(message))

@@ -55,7 +55,15 @@ namespace Essential.Diagnostics
 
         public void ClearEventMessagesBuffer()
         {
-            EventMessagesBuffer = new StringBuilder();
+            EventMessagesBuffer = new StringBuilder(100000);
+        }
+
+        public override bool IsThreadSafe
+        {
+            get
+            {
+                return false;
+            }
         }
 
         /// <summary>

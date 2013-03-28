@@ -48,7 +48,7 @@ namespace Essential.Diagnostics
             const int interval = 200;
             int totalWaitTime = 0;
             bool queueRunning = false;
-            while ((!MessageQueue.Idle) && (totalWaitTime < SendAllTimeoutInSeconds * 1000))
+            while ((!MessageQueue.Idle) && (totalWaitTime < 2000))//The total execution time of all ProcessExit event handlers is limited, just as the total execution time of all finalizers is limited at process shutdown. The default is two seconds in .NET. 
             {
                 System.Threading.Thread.Sleep(interval);
                 totalWaitTime += interval;
@@ -98,16 +98,6 @@ namespace Essential.Diagnostics
                 string s = Attributes["maxConnections"];
                 int m;
                 return Int32.TryParse(s, out m) ? m : 2;
-            }
-        }
-
-        protected int SendAllTimeoutInSeconds
-        {
-            get
-            {//todo: test with config change.
-                string s = Attributes["sendAllTimeoutInSeconds"];
-                int m;
-                return Int32.TryParse(s, out m) ? m : 10;
             }
         }
 
@@ -162,7 +152,7 @@ namespace Essential.Diagnostics
             }
         }
 
-        static string[] supportedAttributes = new string[] { "maxConnections", "sendAllTimeoutInSeconds", "subjectTemplate", "bodyTemplate", "traceTemplate" };
+        static string[] supportedAttributes = new string[] { "maxConnections", "subjectTemplate", "bodyTemplate", "traceTemplate" };
 
         protected override string[] GetSupportedAttributes()
         {
