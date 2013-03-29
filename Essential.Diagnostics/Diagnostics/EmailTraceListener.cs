@@ -25,6 +25,9 @@ namespace Essential.Diagnostics
 
         TraceFormatter traceFormatter = new TraceFormatter();
 
+        /// <summary>
+        /// True.
+        /// </summary>
         public override bool IsThreadSafe
         {
             get

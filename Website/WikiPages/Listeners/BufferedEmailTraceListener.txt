@@ -1,34 +1,72 @@
-! BufferedEmailTraceListener Class
+﻿! BufferedEmailTraceListener Class
 
-(under development)
-
-Inherited from [EmailTraceListenerBase Class]. Please check the base class for further information of the configuration.
-
-Intended to be used in console apps which will send all warning/error traces via one Email message at the end of the hosting process. The subject is extracted from the first line of traces. If there�s no trace, this listener will send nothing.
+Intended to be used in console apps which will send all warning/error traces via one Email message at the end of the hosting process. The subject is extracted from the first line of traces. If there’s no trace, this listener will not send anything.
 
 By default, the EventTypeFilter is set to Warning. And you may adjust through adding an EventTypeFilter in the config.
+
+!! Remarks
+
+The initializeData for the listener should contain a to Email address, which is mandatory. And you may define multiple addresses separated by comma in initialzeData. 
+
+The subject line of the Email message will be the text before ':', ';', ',', '.', '-' in the trace message, along with the identity of the application defined by attribute “subjectTemplate”.
+
+The identity of the application consists of the following information:
+
+# Machine name
+# User name including the domain name
+# Process name including arguments
+# AppDomain name
+
+The event and context information can be formatted using a custom format string containing argument tokens in curly braces. Standard .NET formatting can be applied to these values, e.g. "{DateTime:yyyy-MM-dd}" outputs the year, month and day. For more information on the template tokens available, [TraceFormatter].
+
+The following parameters are available in the template string: Data, Data0, EventType, Id, Message, ActivityId, RelatedActivityId, Source, Callstack, DateTime (or UtcDateTime), LocalDateTime, LogicalOperationStack, ProcessId, ThreadId, Timestamp, MachineName, ProcessName, ThreadName, ApplicationName.
+
+Static function SendMailOfEventMessages() allows your app codes to send the Email message before the end of the host process. For example, you might want to send one message at the end of each loop.
 	
 !! Config Attributes
 
-In addition to attributes of [EmailTraceListenerBase Class], the following table gives more.
-
 || Attribute || Description ||
+| initializeData | The Email address of the recipient. Multiple recipients are defined through Comma Separated Value, for example, “andy@fonlowmail.com,john@freenet.com”. |
+| maxConnections | Maximum SMTP client connections in pool. Default 2 connections. |
+|subjectTemplate | With a subject extracted from a trace message, the listener will substitute the subject with additional information. Default "{MESSAGE} -- Machine: {MACHINENAME}; User: {USER}; Process: {PROCESS}; AppDomain: {APPDOMAIN}" |
 | bodyTemplate | The listener will substitute all trace messages with additional information to form the body of the Email message. Default "Time: {LOCALDATETIME}\nMachine: {MACHINENAME}\nUser: {USER}\nProcess: {PROCESS}\nAppDomain: {APPDOMAIN}\n\n{MESSAGE}". And {MESSAGE} is substitute with all trace messages formatted with traceTemplate. |
 | traceTemplate | Substitute a trace message with additional information. Default "{LOCALDATETIME:HH:mm:ss} {EVENTTYPE} [{THREADID}] {MESSAGE}" |
 
 !! Example Config
 
 {code:xml}
-<add name="bufferTraceListener" initializeData="arnold@fonlowmail.com"
-    type="Essential.Diagnostics.BufferedEmailTraceListener, Essential.Diagnostics"
-    maxConnections="1"
-    traceTemplate="{LOCALDATETIME:HH:mm:ss} {EVENTTYPE} [{THREADID}] {MESSAGE}"
-    bodyTemplate="Time: {LOCALDATETIME}\nMachine: {MACHINENAME}\nUser: {USER}\nProcess: {PROCESS}\nAppDomain: {APPDOMAIN}\n\n{MESSAGE}"/>
+<?xml version="1.0"?>
+<configuration>
+  <system.diagnostics>
+
+    <trace autoflush="true" indentsize="4">
+      <listeners>
+        <add name="bufferTraceListener" initializeData="arnold@fonlowmail.com"
+            type="Essential.Diagnostics.BufferedEmailTraceListener, Essential.Diagnostics"
+            maxConnections="1"
+            traceTemplate="{LOCALDATETIME:HH:mm:ss} {EVENTTYPE} [{THREADID}] {MESSAGE}"
+            bodyTemplate="Time: {LOCALDATETIME}\nMachine: {MACHINENAME}\nUser: {USER}\nProcess: {PROCESS}\nAppDomain: {APPDOMAIN}\n\n{MESSAGE}"/>
+
+      </listeners>
+    </trace>
+
+  </system.diagnostics>
+
+  <system.net>
+    <mailSettings>
+      <smtp deliveryMethod="Network" from="andy@fonlowmail.com">
+        <network
+          host="localhost"
+          port="25"
+          defaultCredentials="true"
+        />
+      </smtp>
+    </mailSettings>
+  </system.net>
+
+</configuration>
+
 {code:xml}
-
-!! Remarks
-
-Static function SendMailOfEventMessages() allows your app codes to send the Email message before the end of the host process. For example, you might want to send one message at the end of each loop.
 
 !! Example Email message
 
