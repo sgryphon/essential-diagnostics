@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Security.Permissions;
 using System.ComponentModel;
-using System.Net.Mail;
 
 namespace Essential.Diagnostics
 {
@@ -48,7 +47,7 @@ namespace Essential.Diagnostics
             const int interval = 200;
             int totalWaitTime = 0;
             bool queueRunning = false;
-            while ((!MessageQueue.Idle) && (totalWaitTime < 2000))//The total execution time of all ProcessExit event handlers is limited, just as the total execution time of all finalizers is limited at process shutdown. The default is two seconds in .NET. 
+            while ((SmtpEmailHelper.Busy) && (totalWaitTime < 2000))//The total execution time of all ProcessExit event handlers is limited, just as the total execution time of all finalizers is limited at process shutdown. The default is two seconds in .NET. 
             {
                 System.Threading.Thread.Sleep(interval);
                 totalWaitTime += interval;
@@ -159,24 +158,26 @@ namespace Essential.Diagnostics
             return supportedAttributes;
         }
 
-        // object clientLock = new object();
-
-        MailMessage CreateMailMessage(string subject, string body, string recipient)
+        Abstractions.ISmtpEmailHelper smtpEmailHelper;
+   
+        protected virtual Abstractions.ISmtpEmailHelper SmtpEmailHelper
         {
-            MailMessage mailMessage = new MailMessage();
+            get
+            {
+                if (smtpEmailHelper == null)
+                {
+                    smtpEmailHelper = new SmtpEmailWriterAsync(MaxConnections);//the listener is staying forever generally, no need to care about CA2000.
+                }
 
-            mailMessage.IsBodyHtml = false;
-            mailMessage.BodyEncoding = Encoding.UTF8;
-            mailMessage.From = new MailAddress(FromAddress);
-            mailMessage.To.Add(recipient);
-            mailMessage.Subject = subject;
-            mailMessage.Body = body;
-            return mailMessage;
+                return smtpEmailHelper;
+            }
         }
+
+
 
         protected void SendEmailAsync(string subject, string body, string recipient)
         {
-            MessageQueue.AddAndSendAsync(CreateMailMessage(subject, body, recipient));
+            SmtpEmailHelper.Send(subject, body, recipient, FromAddress);
         }
 
         /// <summary>
@@ -187,30 +188,6 @@ namespace Essential.Diagnostics
         protected void SendEmailAsync(string subject, string body)
         {
             SendEmailAsync(subject, body, ToAddress);
-        }
-
-        MailMessageQueue messageQueue;
-
-        static object objectLock = new object();
-
-        /// <summary>
-        /// Mail message queue created upon the first warning trace.
-        /// </summary>
-        protected MailMessageQueue MessageQueue
-        {
-            get
-            {
-                lock (objectLock)
-                {
-                    if (messageQueue == null)
-                    {
-                        messageQueue = new MailMessageQueue(MaxConnections);
-                        Debug.WriteLine("MessageQueue is created with some connections: " + MaxConnections);
-                    }
-                }
-
-                return messageQueue;
-            }
         }
 
 

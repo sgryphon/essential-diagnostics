@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Security.Permissions;
 using System.ComponentModel;
-using System.Net.Mail;
 
 namespace Essential.Diagnostics
 {
@@ -90,7 +89,7 @@ namespace Essential.Diagnostics
     );
 
             string body = traceFormatter.Format(BodyTemplate, null, null, TraceEventType.Information, 0, allMessages, null, null);
-            MessageQueue.AddAndSendAsync(new MailMessage(FromAddress, ToAddress, subject, body));
+            SmtpEmailHelper.Send(subject, body, ToAddress, FromAddress);
             ClearEventMessagesBuffer();
         }
 

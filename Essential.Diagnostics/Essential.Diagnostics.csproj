@@ -73,6 +73,7 @@
   <ItemGroup>
     <Compile Include="Data\DbProviderFactoryExtensions.cs" />
     <Compile Include="Diagnostics\Abstractions\AssemblyTraceSourceT.cs" />
+    <Compile Include="Diagnostics\Abstractions\IEmailHelper.cs" />
     <Compile Include="Diagnostics\Abstractions\ITraceSource.cs" />
     <Compile Include="Diagnostics\Abstractions\ITraceSourceT.cs" />
     <Compile Include="Diagnostics\Abstractions\TraceSourceWrapper.cs" />
@@ -91,6 +92,7 @@
     <Compile Include="Diagnostics\RollingFileTraceListener.cs" />
     <Compile Include="Diagnostics\RollingTextWriter.cs" />
     <Compile Include="Diagnostics\RollingXmlTraceListener.cs" />
+    <Compile Include="Diagnostics\SmtpEmailWriterAsync.cs" />
     <Compile Include="Diagnostics\TraceConfigurationMonitor.cs" />
     <Compile Include="IConsole.cs" />
     <Compile Include="Diagnostics\InMemoryTraceListener.cs" />
