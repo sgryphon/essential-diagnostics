@@ -159,14 +159,19 @@ namespace Essential.Diagnostics
         }
 
         Abstractions.ISmtpEmailHelper smtpEmailHelper;
+
+        static object smtpEmailHelperLockForInit = new object();
    
         protected virtual Abstractions.ISmtpEmailHelper SmtpEmailHelper
         {
             get
             {
-                if (smtpEmailHelper == null)
+                lock (smtpEmailHelperLockForInit)//use Lazy<T> in .net 4.
                 {
-                    smtpEmailHelper = new SmtpEmailWriterAsync(MaxConnections);//the listener is staying forever generally, no need to care about CA2000.
+                    if (smtpEmailHelper == null)
+                    {
+                        smtpEmailHelper = new SmtpEmailWriterAsync(MaxConnections);//the listener is staying forever generally, no need to care about CA2000.
+                    }
                 }
 
                 return smtpEmailHelper;
