@@ -180,7 +180,7 @@ namespace Essential.Diagnostics
 
 
 
-        protected void SendEmailAsync(string subject, string body, string recipient)
+        protected void SendEmail(string subject, string body, string recipient)
         {
             SmtpEmailHelper.Send(subject, body, recipient, FromAddress);
         }
@@ -190,9 +190,9 @@ namespace Essential.Diagnostics
         /// </summary>
         /// <param name="subject"></param>
         /// <param name="body"></param>
-        protected void SendEmailAsync(string subject, string body)
+        protected void SendEmail(string subject, string body)
         {
-            SendEmailAsync(subject, body, ToAddress);
+            SendEmail(subject, body, ToAddress);
         }
 
 

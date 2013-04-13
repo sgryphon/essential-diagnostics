@@ -51,7 +51,7 @@ namespace Essential.Diagnostics
 
 
             string messageformated = traceFormatter.Format(BodyTemplate, eventCache, source, eventType, id, message, relatedActivityId, data);
-            SendEmailAsync(subject, messageformated);
+            SendEmail(subject, messageformated);
         }
 
 
