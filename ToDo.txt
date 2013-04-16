@@ -4,6 +4,8 @@ TODO: Essential.Diagnostics
 Features TODO
 -------------
 
+Also see website.
+
 - Allow multiple listeners (within one process) writing to the same rolling file.
   This would allow different templates to be used with different filters.
 
@@ -17,17 +19,18 @@ Features TODO
 Bug fixes TODO
 --------------
 
+- Off-by-one error in Poking loop in HelloLogging examples.
 
 Packaging TODO
 --------------
 
+- Add Essential.Diagnostics Configuration package that inserts examples into .config
+- Add System.Diagnostics Configuration package that inserts examples into .config
 
 Documentation TODO
 ------------------
 
-- Guidance article on logging levels.
-
-- Comparison with NLog, Log4net, Common.Logging, EntLib logging framework.
+- Consider contents of /Documentation and /Website to separate out design docs
 
 - List of built-in Framework trace sources (or components like WIF, WCF), and examples of output.
   1. Description, 2. Parameters, 3. Template config, 4. Example config, 5. Example output
@@ -43,5 +46,13 @@ Full file logging example (using VB logger), which version of VB, example settin
 ASPNET tracing example, including config settings to turn on tracing, security considerations, URL, screen shots
 
 Event Logging considerations, e.g. installutil required to create the log name first
+
+
+Other TODO
+----------
+
+- Remove/cleanup TestEmail..., TestError... directories
+- Add dot separators to name EssentialDiagnosticsIntegrationTests
+- Change "3rdParty" folder into a nuget-like packages folder
 
 
