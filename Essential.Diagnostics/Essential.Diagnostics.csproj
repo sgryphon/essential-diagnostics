@@ -82,7 +82,7 @@
     <Compile Include="ConsoleAdapter.cs" />
     <Compile Include="Diagnostics\EmailTraceListener.cs" />
     <Compile Include="Diagnostics\EmailTraceListenerBase.cs" />
-    <Compile Include="Diagnostics\ErrorBufferEmailTraceListener.cs" />
+    <Compile Include="Diagnostics\BufferedEmailTraceListener.cs" />
     <Compile Include="Diagnostics\ExpressionFilter.cs" />
     <Compile Include="Diagnostics\GlobalSuppressions.cs" />
     <Compile Include="Diagnostics\MailMessageHelper.cs" />
