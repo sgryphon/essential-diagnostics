@@ -116,6 +116,9 @@
   <Import Project="..\TFSBuildNumber.targets" />
   <Target Name="BeforeBuild" DependsOnTargets="GetMajorMinorFromCSharpAssemblyInfoFile;UpdateCSharpAssemblyInfoFile">
   </Target>
+  <Target Name="AfterBuild"
+     DependsOnTargets="ResetCSharpAssemblyInfoFile">
+  </Target>
   <PropertyGroup>
     <PostBuildEvent>robocopy $(TargetDir) $(SolutionDir)Package\$(ConfigurationName)\tools *.exe *.exe.config *.sql
 exit 0</PostBuildEvent>

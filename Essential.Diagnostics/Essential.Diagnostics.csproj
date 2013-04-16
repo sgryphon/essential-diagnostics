@@ -156,6 +156,9 @@
   <Import Project="..\TFSBuildNumber.targets" />
   <Target Name="BeforeBuild" DependsOnTargets="GetMajorMinorFromCSharpAssemblyInfoFile;&#xD;&#xA;					  WriteProjectTextAssemblyVersionFile;UpdateCSharpAssemblyInfoFile">
   </Target>
+  <Target Name="AfterBuild"
+     DependsOnTargets="ResetCSharpAssemblyInfoFile">
+  </Target>
   <PropertyGroup>
     <PostBuildEvent>robocopy $(TargetDir) $(SolutionDir)Package\$(ConfigurationName)\lib *.dll *.xml
 robocopy $(SolutionDir) $(SolutionDir)Package\$(ConfigurationName) ReadMe.txt License.txt
