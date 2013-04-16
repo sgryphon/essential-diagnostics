@@ -23,7 +23,8 @@ namespace Essential.Diagnostics.Tests
     [TestClass]
     public class EmailTests
     {
-        public EmailTests()
+        [TestInitialize]
+        public void TestInitialize()
         {
             smtpConfig = System.Configuration.ConfigurationManager.GetSection("system.net/mailSettings/smtp") as System.Net.Configuration.SmtpSection;
             mockSmtpPort = smtpConfig.Network.Port;
@@ -33,9 +34,22 @@ namespace Essential.Diagnostics.Tests
             {
                 if (!Directory.Exists(pickupDirectory))
                 {
-                    Directory.CreateDirectory(pickupDirectory);
+                    try
+                    {
+                        Directory.CreateDirectory(pickupDirectory);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new ApplicationException(
+                            string.Format("Cannot create pickup directory '{0}'; can't run tests.", pickupDirectory), ex);
+                    }
                 }
             }
+        }
+
+        [TestCleanup]
+        public void TestCleanup()
+        {
         }
 
         string pickupDirectory;
