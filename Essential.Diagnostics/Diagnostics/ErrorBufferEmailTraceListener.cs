@@ -35,14 +35,6 @@ namespace Essential.Diagnostics
             EventMessagesBuffer.AppendLine(s);
         }
 
-        public override bool IsThreadSafe
-        {
-            get
-            {
-                return false;
-            }
-        }
-
         protected override void WriteTrace(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message, Guid? relatedActivityId, object[] data)
         {
             EventMessagesBufferAdd(traceFormatter.Format(TraceTemplate, eventCache, source, eventType, id, message, relatedActivityId, data));

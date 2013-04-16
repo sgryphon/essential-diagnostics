@@ -21,7 +21,7 @@ namespace TestEmailTraceListener
                 File.Delete(filePath);
 
             Console.WriteLine("Test if all messages are sent before the hosting process finishes.");
-            Action<int> d = (k) =>
+            Func<int> doSomething = () =>
             {
                 Trace.TraceWarning("Anything. More detail go here.");
                 Trace.TraceError("Error. More detail go here.");
@@ -29,7 +29,6 @@ namespace TestEmailTraceListener
                 Trace.WriteLine("This is another writeline.", "caTegory");
                 Trace.WriteLine("Writeline without right category", "CCCC");
                 return 0;
-
             };
             const int count = 5000;
           //  Parallel.For(0, count, d);
@@ -39,12 +38,13 @@ namespace TestEmailTraceListener
             for (int i = 0; i < count; i++)
             {
                 tasks.Add(factory.StartNew(doSomething));
-
             };
-            const int count = 1000;
-             Parallel.For(0, count,d);
+
+            Task.WaitAll(tasks.ToArray(), System.Threading.Timeout.Infinite);//so now we have a long mail message queue.
 
             //the listener will wait the end of the process anyway.
+            System.Threading.Thread.Sleep(30000);//just to wait all threads finished.
+            Console.WriteLine(String.Format("Check if there are {0} mail messages in pickup directory at {1}.", count * 2, pickupDirectory));
         }
 
 
