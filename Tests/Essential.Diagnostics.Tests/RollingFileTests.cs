@@ -28,8 +28,8 @@ namespace Essential.Diagnostics.Tests
 
             Assert.AreEqual(1, mockFileSystem.OpenedItems.Count);
             var tuple0 = mockFileSystem.OpenedItems[0];
-            // Process name for test runner is 'QTAgent32'
-            StringAssert.StartsWith(tuple0.Item1, "QTAgent32-" + DateTimeOffset.Now.Year.ToString());
+            // VS2012 process name (earlier name was "QTAgent32-")
+            StringAssert.StartsWith(tuple0.Item1, "vstest.executionengine.x86-" + DateTimeOffset.Now.Year.ToString());
             var data = tuple0.Item2.GetBuffer();
             var output = Encoding.UTF8.GetString(data, 0, (int)tuple0.Item2.Length);
             StringAssert.Contains(output, "Information source 1: 2-A");
@@ -48,8 +48,8 @@ namespace Essential.Diagnostics.Tests
 
             Assert.AreEqual(1, mockFileSystem.OpenedItems.Count);
             var tuple0 = mockFileSystem.OpenedItems[0];
-            // Process name for test runner is 'QTAgent32'
-            StringAssert.StartsWith(tuple0.Item1, "QTAgent32-" + DateTimeOffset.Now.Year.ToString());
+            // VS2012 process name (earlier name was "QTAgent32-")
+            StringAssert.StartsWith(tuple0.Item1, "vstest.executionengine.x86-" + DateTimeOffset.Now.Year.ToString());
             var output = Encoding.UTF8.GetString(tuple0.Item2.GetBuffer(), 0, (int)tuple0.Item2.Length);
             StringAssert.Contains(output, "Warning rollingFile1Source 2: 3-B");
         }

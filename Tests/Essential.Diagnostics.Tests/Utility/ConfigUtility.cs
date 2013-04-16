@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Reflection;
 
 namespace Essential.Diagnostics.Tests.Utility
 {
@@ -22,7 +23,8 @@ namespace Essential.Diagnostics.Tests.Utility
 //                configDir = Path.Combine(configDir, @"Essential.Diagnostics.Tests\" + expectedTargetDir);
 //            }
 //            var configPath = Path.Combine(configDir, "Essential.Diagnostics.Tests.dll.config");
-            return Path.Combine( testDir + "\\Out", "Essential.Diagnostics.Tests.dll.config");
+            //return Path.Combine( testDir + "\\Out", "Essential.Diagnostics.Tests.dll.config");
+            return Assembly.GetExecutingAssembly().Location + ".config";
         }
 
     }
