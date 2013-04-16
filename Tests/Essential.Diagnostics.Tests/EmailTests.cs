@@ -21,9 +21,9 @@ namespace Essential.Diagnostics.Tests
     /// Summary description for TestSystem
     /// </summary>
     [TestClass]
-    public class TestSystem
+    public class EmailTests
     {
-        public TestSystem()
+        public EmailTests()
         {
             smtpConfig = System.Configuration.ConfigurationManager.GetSection("system.net/mailSettings/smtp") as System.Net.Configuration.SmtpSection;
             mockSmtpPort = smtpConfig.Network.Port;
@@ -38,9 +38,9 @@ namespace Essential.Diagnostics.Tests
             }
         }
 
-       string pickupDirectory;
+        string pickupDirectory;
 
-       System.Net.Configuration.SmtpSection smtpConfig;
+        System.Net.Configuration.SmtpSection smtpConfig;
         int mockSmtpPort = 9999;
 
         private TestContext testContextInstance;
