@@ -14,6 +14,8 @@ namespace Essential.Diagnostics
     /// </summary>
     public class EmailTraceListener : EmailTraceListenerBase
     {
+        TraceFormatter traceFormatter = new TraceFormatter();
+
         public EmailTraceListener(string toAddress)
             : base(toAddress)
         {
@@ -23,10 +25,8 @@ namespace Essential.Diagnostics
             }
         }
 
-        TraceFormatter traceFormatter = new TraceFormatter();
-
         /// <summary>
-        /// True.
+        /// Gets a value indicating whether the trace listener is thread safe.
         /// </summary>
         public override bool IsThreadSafe
         {
@@ -36,21 +36,20 @@ namespace Essential.Diagnostics
             }
         }
 
+        /// <summary>
+        /// Write trace event with data.
+        /// </summary>
         protected override void WriteTrace(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message, Guid? relatedActivityId, object[] data)
         {
-            if (String.IsNullOrEmpty(message))
-                return;
-
-            Debug.Assert(eventCache != null);
-
-            string subject = MailMessageHelper.SanitiseSubject(
+            string subject = SanitiseSubject(
                 traceFormatter.Format(SubjectTemplate, eventCache, source, eventType, id, 
-                MailMessageHelper.ExtractSubject(message), 
-                relatedActivityId, data)
+                    ExtractSubject(message), 
+                    relatedActivityId, data
+                    )
                 );
+            string messageformated = traceFormatter.Format(BodyTemplate, eventCache, source, eventType, id, 
+                message, relatedActivityId, data);
 
-
-            string messageformated = traceFormatter.Format(BodyTemplate, eventCache, source, eventType, id, message, relatedActivityId, data);
             SendEmail(subject, messageformated);
         }
 

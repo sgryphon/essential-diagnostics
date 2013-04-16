@@ -23,12 +23,12 @@ namespace Essential.Diagnostics.Tests
     [TestClass]
     public class EmailTests
     {
-        [TestInitialize]
-        public void TestInitialize()
-        {
-            smtpConfig = System.Configuration.ConfigurationManager.GetSection("system.net/mailSettings/smtp") as System.Net.Configuration.SmtpSection;
-            mockSmtpPort = smtpConfig.Network.Port;
+        static string pickupDirectory;
 
+        [ClassInitialize()]
+        public static void ClassInitialize(TestContext testContext)
+        {
+            var smtpConfig = System.Configuration.ConfigurationManager.GetSection("system.net/mailSettings/smtp") as System.Net.Configuration.SmtpSection;
             pickupDirectory = (smtpConfig != null) ? smtpConfig.SpecifiedPickupDirectory.PickupDirectoryLocation : null;
             if (!String.IsNullOrEmpty(pickupDirectory))
             {
@@ -45,48 +45,29 @@ namespace Essential.Diagnostics.Tests
                     }
                 }
             }
+
+        }
+
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            if (!string.IsNullOrEmpty(pickupDirectory))
+            {
+                ClearPickupDirectory();
+            }
+        }
+
+        void ClearPickupDirectory()
+        {
+            string[] filePaths = Directory.GetFiles(pickupDirectory);
+            foreach (string filePath in filePaths)
+                File.Delete(filePath);
         }
 
         [TestCleanup]
         public void TestCleanup()
         {
         }
-
-        string pickupDirectory;
-
-        System.Net.Configuration.SmtpSection smtpConfig;
-        int mockSmtpPort = 9999;
-
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        //
-        // You can use the following additional attributes as you write your tests:
-        //
-        // Use ClassInitialize to run code before running the first test in the class
-        [ClassInitialize()]
-        public static void MyClassInitialize(TestContext testContext)
-        {
-
-        }
-
-        #endregion
 
         // 2013-04-16 SG: Accessor missing
         //[TestMethod]
@@ -114,33 +95,21 @@ namespace Essential.Diagnostics.Tests
         //////////////////////// Integration tests for Email functions should not be executed often.
         ///*During integration tests, it is good to have a local SMTP server installed. Windows 7 does not have one, so you may use hMailServer. External SMTP server might be subject to spam control and network issue.
 
-
-
         void AssertMessagesSent(int expected)
         {
             Assert.AreEqual(expected, Directory.GetFiles(pickupDirectory).Count());
-        }
-
-        void ClearPickupDirectory()
-        {
-            string[] filePaths = Directory.GetFiles(pickupDirectory);
-            foreach (string filePath in filePaths)
-                File.Delete(filePath);
         }
 
         [TestMethod]
         [TestCategory("MailIntegration")]
         public void TestEmailTraceListener()
         {
-            ClearPickupDirectory();
+            TraceSource source = new TraceSource("emailSource");
 
+            source.TraceEvent(TraceEventType.Warning, 0, "Anything. More detail go here.");
+            source.TraceEvent(TraceEventType.Error, 0, "something wrong; can you tell? more here.");
+            source.TraceInformation("Default filter does not include Info.");
 
-            Trace.TraceWarning("Anything. More detail go here.");
-            Trace.TraceError("something wrong; can you tell? more here.");
-            Trace.TraceInformation("Just some information");
-            Trace.WriteLine("This is writeline.", "Category");
-            Trace.WriteLine("This is another writeline.", "caTegory");
-            Trace.WriteLine("Writeline without right category", "CCCC");
             System.Threading.Thread.Sleep(5000);//need to wait, otherwise the test host is terminated resulting in thread abort.
 
             AssertMessagesSent(2);
@@ -150,32 +119,32 @@ namespace Essential.Diagnostics.Tests
         [TestCategory("MailIntegration")]
         public void TestErrorBufferTraceListener()
         {
-            ClearPickupDirectory();
+            var source = new TraceSource("bufferedEmailSource");
 
-            Trace.Listeners.Remove("emailTraceListener");//otherwise this listener will send mail as well
+            BufferedEmailTraceListener.ClearAll();
 
-            BufferedEmailTraceListener.Clear();
-            Trace.TraceWarning("Anythingbbbb. More detail go here.");
-            Trace.TraceError("something wrongbbbb; can you tell? more here.");
-            BufferedEmailTraceListener.SendMailOfEventMessages();
+            source.TraceEvent(TraceEventType.Warning, 0, "Anythingbbbb. More detail go here.");
+            source.TraceEvent(TraceEventType.Error, 0, "something wrongbbbb; can you tell? more here.");
+            source.TraceInformation("Default filter does not include Info.");
+
+            BufferedEmailTraceListener.SendAll();
+            System.Threading.Thread.Sleep(5000);//need to wait, otherwise the test host is terminated resulting in thread abort.
+
             AssertMessagesSent(1);
 
-            Trace.Refresh();//so reload all listeners
         }
 
         [TestMethod]
         [TestCategory("MailIntegration")]
         public void TestEmailTraceListenerWithManyTraces()
         {
-            ClearPickupDirectory();
+            TraceSource source = new TraceSource("emailSource");
 
             for (int i = 0; i < 1000; i++)
             {
-                Trace.TraceWarning("Anything. More detail go here.");
-                Trace.TraceError("something wrong; can you tell? more here.");
-                Trace.WriteLine("This is writeline.", "Category");
-                Trace.WriteLine("This is another writeline.", "caTegory");
-                Trace.WriteLine("Writeline without right category", "CCCC");
+                source.TraceEvent(TraceEventType.Warning, 0, "Anything. More detail go here.");
+                source.TraceEvent(TraceEventType.Error, 0, "something wrong; can you tell? more here.");
+                source.TraceInformation("Default filter does not include Info.");
             }
 
             System.Threading.Thread.Sleep(10000);//need to wait, otherwise the test host is terminated resulting in thread abort.
@@ -187,16 +156,13 @@ namespace Essential.Diagnostics.Tests
         [TestCategory("MailIntegration")]
         public void TestEmailTraceListenerWithManyTracesInThreads()
         {
-            ClearPickupDirectory();
+            TraceSource source = new TraceSource("emailSource");
 
             Action d = () =>
             {
-                Trace.TraceWarning("Anything. More detail go here.");
-                Trace.TraceError("something wrong; can you tell? more here.");
-                Trace.WriteLine("This is writeline.", "Category");
-                Trace.WriteLine("This is another writeline.", "caTegory");
-                Trace.WriteLine("Writeline without right category", "CCCC");
-
+                source.TraceEvent(TraceEventType.Warning, 0, "Anything. More detail go here.");
+                source.TraceEvent(TraceEventType.Error, 0, "something wrong; can you tell? more here.");
+                source.TraceInformation("Default filter does not include Info.");
             };
 
             for (int i = 0; i < 1000; i++)
@@ -213,9 +179,8 @@ namespace Essential.Diagnostics.Tests
         [TestCategory("MailIntegration")]
         public void TestSmtpClientAsync()
         {
-            ClearPickupDirectory();
             MailMessageQueue queue = new MailMessageQueue(3);
-            queue.AddAndSendAsync(new System.Net.Mail.MailMessage("andy@fonlowmail.com", "arnold@fonlowmail.com", "HelloAsync", "are you there? async"));
+            queue.AddAndSendAsync(new System.Net.Mail.MailMessage("user1@example.com", "user2@example.com", "HelloAsync", "are you there? async"));
             System.Threading.Thread.Sleep(500);//need to wait, otherwise the test host is terminated resulting in thread abort.
             AssertMessagesSent(1);
             Assert.IsTrue(queue.AcceptItem);
@@ -227,10 +192,9 @@ namespace Essential.Diagnostics.Tests
         [TestCategory("MailIntegration")]
         public void TestSmtpClientAsync2()
         {
-            ClearPickupDirectory();
             MailMessageQueue queue = new MailMessageQueue(4);
-            queue.AddAndSendAsync(new System.Net.Mail.MailMessage("andy@fonlowmail.com", "arnold@fonlowmail.com", "HelloAsync", "are you there? async"));
-            queue.AddAndSendAsync(new System.Net.Mail.MailMessage("andy@fonlowmail.com", "arnold@fonlowMail.com", "HelloAsync", "are you there? async"));
+            queue.AddAndSendAsync(new System.Net.Mail.MailMessage("user1@example.com", "user2@example.com", "HelloAsync", "are you there? async"));
+            queue.AddAndSendAsync(new System.Net.Mail.MailMessage("user1@example.com", "user2@example.com", "HelloAsync", "are you there? async"));
             System.Threading.Thread.Sleep(2000);//need to wait, otherwise the test host is terminated resulting in thread abort.
             AssertMessagesSent(2);
             Assert.IsTrue(queue.AcceptItem);
@@ -243,13 +207,12 @@ namespace Essential.Diagnostics.Tests
         public void TestSmtpClientAsyncWithManyMessages()
         {
             const int messageCount = 1000;
-            ClearPickupDirectory();
 
             MailMessageQueue queue = new MailMessageQueue(4);//smtp4dev apparently accept only 2 concurrent connections, according to http://smtp4dev.codeplex.com/discussions/273848
             Debug.WriteLine("Start sending messages at " + DateTime.Now.ToString());
             for (int i = 0; i < messageCount; i++)
             {
-                queue.AddAndSendAsync(new System.Net.Mail.MailMessage("andy@fonlowmail.com", "arnold@fonlowmail.com", "HelloAsync", "are you there? async"));
+                queue.AddAndSendAsync(new System.Net.Mail.MailMessage("user1@example.com", "user2@example.com", "HelloAsync", "are you there? async"));
             }
             System.Threading.Thread.Sleep(2000);//need to wait for around 1-3 seconds for 1000 messages., otherwise the test host is terminated resulting in thread abort.
             AssertMessagesSent(messageCount);
@@ -257,8 +220,5 @@ namespace Essential.Diagnostics.Tests
             Assert.AreEqual(0, queue.Count);
         }
 
-
-
-        //   Integration tests end                */
     }
 }

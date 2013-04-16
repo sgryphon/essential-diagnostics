@@ -9,16 +9,14 @@ namespace Essential.Diagnostics
     /// <summary>
     /// Send Email message asynchronously through a pool of SmtpClient connections.
     /// </summary>
-    internal class SmtpEmailWriterAsync : Abstractions.ISmtpEmailHelper, IDisposable
+    internal class SmtpEmailWriterAsync : IDisposable
     {
-        #region ISmtpEmailHelper Members
-
-        void Abstractions.ISmtpEmailHelper.Send(string subject, string body, string recipient, string from)
+        public void Send(string subject, string body, string recipient)
         {
-            MessageQueue.AddAndSendAsync(CreateMailMessage(subject, body, recipient, from));//EmailMessage will be disposed in the queue after being sent.
+            MessageQueue.AddAndSendAsync(CreateMailMessage(subject, body, recipient));//EmailMessage will be disposed in the queue after being sent.
         }
 
-        bool Abstractions.ISmtpEmailHelper.Busy
+        public bool Busy
         {
             get 
             {
@@ -32,8 +30,6 @@ namespace Essential.Diagnostics
                 }
             }
         }
-
-        #endregion
 
         public SmtpEmailWriterAsync(int maxConnections)
         {
@@ -66,13 +62,12 @@ namespace Essential.Diagnostics
             }
         }
 
-        static MailMessage CreateMailMessage(string subject, string body, string recipient, string from)
+        static MailMessage CreateMailMessage(string subject, string body, string recipient)
         {
             MailMessage mailMessage = new MailMessage();
 
             mailMessage.IsBodyHtml = false;
             mailMessage.BodyEncoding = Encoding.UTF8;
-            mailMessage.From = new MailAddress(from);
             mailMessage.To.Add(recipient);
             mailMessage.Subject = subject;
             mailMessage.Body = body;

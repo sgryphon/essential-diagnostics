@@ -7,10 +7,18 @@ using Essential.Diagnostics;
 //using Rnwood.SmtpServer;
 using System.Diagnostics;
 
+// ***********************************************************************************
+//
+//      NOTE: Need to have mail server running for these tests to work.
+//
+// ***********************************************************************************
+
+
+
 namespace EssentialDiagnosticsIntegrationTests
 {
     [TestFixture]
-    [Description("Test with a local SMTP server that may handle domain fonlowmail.com.")]
+    [Description("Test with a local SMTP server that may handle domain example.com.")]
     public class EmailTraceListenersTests
     {
         public EmailTraceListenersTests()
@@ -57,7 +65,7 @@ namespace EssentialDiagnosticsIntegrationTests
             //server.Start();
 
             MailMessageQueue queue = new MailMessageQueue(3);
-            queue.AddAndSendAsync(new System.Net.Mail.MailMessage("andy@fonlowmail.com", "arnold@fonlowmail.com", "HelloAsync", "are you there? async"));
+            queue.AddAndSendAsync(new System.Net.Mail.MailMessage("user1@example.com", "user2@example.com", "HelloAsync", "are you there? async"));
             System.Threading.Thread.Sleep(3000);//need to wait, otherwise the test host is terminated resulting in thread abort.
        //     server.Stop();
 
@@ -71,8 +79,8 @@ namespace EssentialDiagnosticsIntegrationTests
         {
 
             MailMessageQueue queue = new MailMessageQueue(4);
-            queue.AddAndSendAsync(new System.Net.Mail.MailMessage("andy@fonlowmail.com", "arnold@fonlowmail.com", "HelloAsync", "are you there? async"));
-            queue.AddAndSendAsync(new System.Net.Mail.MailMessage("andy@fonlowmail.com", "arnold@fonlowmail.com", "HelloAsync", "are you there? async"));
+            queue.AddAndSendAsync(new System.Net.Mail.MailMessage("user1@example.com", "user2@example.com", "HelloAsync", "are you there? async"));
+            queue.AddAndSendAsync(new System.Net.Mail.MailMessage("user1@example.com", "user2@example.com", "HelloAsync", "are you there? async"));
             System.Threading.Thread.Sleep(2000);//need to wait, otherwise the test host is terminated resulting in thread abort.
 
             Assert.IsTrue(queue.AcceptItem);
@@ -93,7 +101,7 @@ namespace EssentialDiagnosticsIntegrationTests
             Debug.WriteLine("Start sending messages at " + DateTime.Now.ToString());
             for (int i = 0; i < messageCount; i++)
             {
-                queue.AddAndSendAsync(new System.Net.Mail.MailMessage("andy@fonlowmail.com", "arnold@fonlowmail.com", "HelloAsync", "are you there? async"));
+                queue.AddAndSendAsync(new System.Net.Mail.MailMessage("user1@example.com", "user2@example.com", "HelloAsync", "are you there? async"));
             }
             Debug.WriteLine(String.Format("total time (Milliseconds) to queue {0} messages: {1}", messageCount, (DateTime.Now - dt).TotalMilliseconds));
 
@@ -130,7 +138,7 @@ namespace EssentialDiagnosticsIntegrationTests
             Trace.WriteLine("This is writeline.", "Category");
             Trace.WriteLine("This is another writeline.", "caTegory");
             Trace.WriteLine("Writeline without right category", "CCCC");
-            BufferedEmailTraceListener.SendMailOfEventMessages();
+            BufferedEmailTraceListener.SendAll();
             System.Threading.Thread.Sleep(5000);
         }
 
