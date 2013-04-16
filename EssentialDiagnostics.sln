@@ -8,11 +8,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		EssentialDiagnostics.msbuild = EssentialDiagnostics.msbuild
 		EssentialDiagnostics.vsmdi = EssentialDiagnostics.vsmdi
 		License.txt = License.txt
-		LocalTestRun.TestRunConfig = LocalTestRun.TestRunConfig
 		ReadMe.txt = ReadMe.txt
 		TFSBuildNumber.targets = TFSBuildNumber.targets
 		ToDo.txt = ToDo.txt
-		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Diagnostics.RegSql", "Essential.Diagnostics.RegSql\Essential.Diagnostics.RegSql.csproj", "{252DDE2C-C596-4F3B-96E3-87CB9F7ED839}"
