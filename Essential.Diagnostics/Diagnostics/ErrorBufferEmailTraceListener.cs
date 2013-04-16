@@ -25,7 +25,7 @@ namespace Essential.Diagnostics
                 Filter = new EventTypeFilter(SourceLevels.Warning);
             }
 
-            EventMessagesBuffer = new StringBuilder();
+            EventMessagesBuffer = new StringBuilder(10000);
         }
 
         TraceFormatter traceFormatter = new TraceFormatter();
@@ -33,6 +33,14 @@ namespace Essential.Diagnostics
         void EventMessagesBufferAdd(string s)
         {
             EventMessagesBuffer.AppendLine(s);
+        }
+
+        public override bool IsThreadSafe
+        {
+            get
+            {
+                return false;
+            }
         }
 
         protected override void WriteTrace(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message, Guid? relatedActivityId, object[] data)

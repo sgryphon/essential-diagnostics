@@ -54,7 +54,13 @@ namespace Essential.Diagnostics
             SendEmail(subject, messageformated);
         }
 
-
+        public override bool IsThreadSafe
+        {
+            get
+            {
+                return true;
+            }
+        }
     }
 
 }

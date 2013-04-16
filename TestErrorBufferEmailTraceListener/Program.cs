@@ -34,7 +34,7 @@ namespace TestErrorBufferEmailTraceListener
             Parallel.For(0, count, d);
 
             Trace.TraceWarning("The last message");
-           // System.Threading.Thread.Sleep(200);
+            System.Threading.Thread.Sleep(200);
             //though it is not likely a console app could have many threads, test the performance with threads anyway, while BufferedEmailTraceListener's IsThreadSafe=false;
             Console.WriteLine(String.Format("Check if there is 1 mail message in pickup directory at {0} in the same size.", pickupDirectory));
         }
