@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!--This file represents the results of running a test suite-->
+<test-results name="C:\Code\Diagnostics\EssentialDiagnostics\Tests\Essential.Diagnostics.Integration.Tests.nunit" total="7" errors="1" failures="3" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2013-04-16" time="14:10:14">
+  <environment nunit-version="2.6.2.12296" clr-version="2.0.50727.6400" os-version="Microsoft Windows NT 6.2.9200.0" platform="Win32NT" cwd="C:\Code\Diagnostics\EssentialDiagnostics\packages\NUnit.Runners.2.6.2\tools" machine-name="ALIEN8" user="Sly" user-domain="ALIEN8" />
+  <culture-info current-culture="en-AU" current-uiculture="en-US" />
+  <test-suite type="Project" name="C:\Code\Diagnostics\EssentialDiagnostics\Tests\Essential.Diagnostics.Integration.Tests.nunit" executed="False" result="Cancelled">
+    <results>
+      <test-suite type="Assembly" name="C:\Code\Diagnostics\EssentialDiagnostics\Tests\Essential.Diagnostics.IntegrationTests\bin\Debug\EssentialDiagnosticsIntegrationTests.dll" executed="False" result="Cancelled">
+        <results>
+          <test-suite type="Namespace" name="EssentialDiagnosticsIntegrationTests" executed="False" result="Cancelled">
+            <results>
+              <test-suite type="TestFixture" name="EmailTraceListenersTests" description="Test with a local SMTP server that may handle domain fonlowmail.com." executed="False" result="Cancelled">
+                <results>
+                  <test-case name="EssentialDiagnosticsIntegrationTests.EmailTraceListenersTests.TestAnErrorBufferTraceListenerWithoutDefinedIn" description="Expect an error trace." executed="True" result="Success" success="True" time="5.099" asserts="0" />
+                  <test-case name="EssentialDiagnosticsIntegrationTests.EmailTraceListenersTests.TestEmailTraceListener" description="EmailTraceListener defined in config should be working and sending Email messages out." executed="True" result="Success" success="True" time="5.002" asserts="0" />
+                  <test-case name="EssentialDiagnosticsIntegrationTests.EmailTraceListenersTests.TestMailMessageQueue" executed="True" result="Failure" success="False" time="3.352" asserts="2">
+                    <failure>
+                      <message><![CDATA[  Expected: 0
+  But was:  1
+]]></message>
+                      <stack-trace><![CDATA[at EssentialDiagnosticsIntegrationTests.EmailTraceListenersTests.TestMailMessageQueue() in c:\Code\Diagnostics\EssentialDiagnostics\Tests\Essential.Diagnostics.IntegrationTests\EmailTraceListenersTests.cs:line 65
+]]></stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case name="EssentialDiagnosticsIntegrationTests.EmailTraceListenersTests.TestMailMessageQueue2" executed="True" result="Failure" success="False" time="2.003" asserts="2">
+                    <failure>
+                      <message><![CDATA[  Expected: 0
+  But was:  2
+]]></message>
+                      <stack-trace><![CDATA[at EssentialDiagnosticsIntegrationTests.EmailTraceListenersTests.TestMailMessageQueue2() in c:\Code\Diagnostics\EssentialDiagnostics\Tests\Essential.Diagnostics.IntegrationTests\EmailTraceListenersTests.cs:line 79
+]]></stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case name="EssentialDiagnosticsIntegrationTests.EmailTraceListenersTests.TestMailMessageQueueWithInvalidRecipient" executed="True" result="Failure" success="False" time="11.195" asserts="1">
+                    <failure>
+                      <message><![CDATA[  Expected: False
+  But was:  True
+]]></message>
+                      <stack-trace><![CDATA[at EssentialDiagnosticsIntegrationTests.EmailTraceListenersTests.TestMailMessageQueueWithInvalidRecipient() in c:\Code\Diagnostics\EssentialDiagnostics\Tests\Essential.Diagnostics.IntegrationTests\EmailTraceListenersTests.cs:line 45
+]]></stack-trace>
+                    </failure>
+                  </test-case>
+                  <test-case name="EssentialDiagnosticsIntegrationTests.EmailTraceListenersTests.TestMailMessageQueueWithInvalidSmtpHost" executed="True" result="Success" success="True" time="10.527" asserts="3" />
+                  <test-case name="EssentialDiagnosticsIntegrationTests.EmailTraceListenersTests.TestMailMessageQueueWithManyMessages" description="Stress testing the Smtp" executed="False" result="Cancelled">
+                    <failure>
+                      <message><![CDATA[Test cancelled by user]]></message>
+                      <stack-trace><![CDATA[at System.RuntimeMethodHandle.InvokeMethod(Object target, Object[] arguments, Signature sig, Boolean constructor)
+at System.Reflection.RuntimeMethodInfo.UnsafeInvokeInternal(Object obj, Object[] parameters, Object[] arguments)
+at System.Reflection.RuntimeMethodInfo.Invoke(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+at NUnit.Core.Reflect.InvokeMethod(MethodInfo method, Object fixture, Object[] args)
+at NUnit.Core.TestMethod.RunTestMethod(TestResult testResult)
+at NUnit.Core.TestMethod.RunTestCase(TestResult testResult)
+]]></stack-trace>
+                    </failure>
+                  </test-case>
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>
