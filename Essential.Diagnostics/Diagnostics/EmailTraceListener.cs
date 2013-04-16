@@ -41,16 +41,13 @@ namespace Essential.Diagnostics
         /// </summary>
         protected override void WriteTrace(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message, Guid? relatedActivityId, object[] data)
         {
-            string subject = SanitiseSubject(
-                traceFormatter.Format(SubjectTemplate, eventCache, source, eventType, id, 
-                    ExtractSubject(message), 
-                    relatedActivityId, data
-                    )
-                );
-            string messageformated = traceFormatter.Format(BodyTemplate, eventCache, source, eventType, id, 
+            string subject = traceFormatter.Format(SubjectTemplate, eventCache, source, 
+                eventType, id, message, relatedActivityId, data);
+
+            string body = traceFormatter.Format(BodyTemplate, eventCache, source, eventType, id, 
                 message, relatedActivityId, data);
 
-            SendEmail(subject, messageformated);
+            SendEmail(subject, body);
         }
 
     }

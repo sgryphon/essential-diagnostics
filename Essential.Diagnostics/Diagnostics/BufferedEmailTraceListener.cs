@@ -18,6 +18,9 @@ namespace Essential.Diagnostics
     public class BufferedEmailTraceListener : EmailTraceListenerBase
     {
         TraceFormatter traceFormatter = new TraceFormatter();
+        object bufferLock = new object();
+        StringBuilder eventMessagesBuffer = new StringBuilder(10000);
+        string firstMessage;
 
         /// <summary>
         /// 
@@ -30,24 +33,6 @@ namespace Essential.Diagnostics
             {
                 Filter = new EventTypeFilter(SourceLevels.Warning);
             }
-
-            EventMessagesBuffer = new StringBuilder(10000);
-        }
-
-
-        /// <summary>
-        /// Message buffer
-        /// </summary>
-        public StringBuilder EventMessagesBuffer { 
-            get; 
-            private set; 
-        }
-
-        /// <summary>
-        /// Gets whether or not the listener has any messages buffered.
-        /// </summary>
-        public bool HasEventErrors { 
-            get { return EventMessagesBuffer.Length > 0; } 
         }
 
         /// <summary>
@@ -57,7 +42,8 @@ namespace Essential.Diagnostics
         {
             get
             {
-                return false;
+                // if you don't make the listener thread safe then it simply locks on the whole thing!
+                return true;
             }
         }
 
@@ -87,7 +73,14 @@ namespace Essential.Diagnostics
         /// </summary>
         public void Clear()
         {
-            EventMessagesBuffer = new StringBuilder(100000);
+            lock (bufferLock)
+            {
+                if (eventMessagesBuffer.Length > 0)
+                {
+                    eventMessagesBuffer = new StringBuilder(100000);
+                    firstMessage = null;
+                }
+            }
         }
 
         /// <summary>
@@ -118,19 +111,33 @@ namespace Essential.Diagnostics
         /// </remarks>
         public void Send()
         {
-            if (!HasEventErrors)
-                return;
+            StringBuilder bufferToSend;
+            string firstMessageToSend;
 
-            string allMessages = EventMessagesBuffer.ToString();
-            string firstMessage = allMessages.Substring(0, allMessages.IndexOf("\n"));// EventMessagesBuffer.Count == 0 ? String.Empty : EventMessagesBuffer[0];
-            string subject = SanitiseSubject(
-    traceFormatter.Format(SubjectTemplate, null, null, TraceEventType.Information, 0, ExtractSubject(firstMessage), null, null)
-    );
+            lock (bufferLock)
+            {
+                bufferToSend = eventMessagesBuffer;
+                firstMessageToSend = firstMessage;
+                if (eventMessagesBuffer.Length > 0)
+                {
+                    eventMessagesBuffer = new StringBuilder(100000);
+                    firstMessage = null;
+                }
+            }
 
-            string body = traceFormatter.Format(BodyTemplate, null, null, TraceEventType.Information, 0, allMessages, null, null);
-            EmailWriter.Send(subject, body, ToAddress);
+            if (bufferToSend.Length > 0)
+            {
+                // TODO: Would it be easier to simply format the subject using the first message?
+                //       Sure the user could put in something like the event level which is event specific, but that's their choice.
+                string subject = traceFormatter.Format(SubjectTemplate, null, null, TraceEventType.Information, 0,
+                    firstMessage, null, null);
 
-            Clear();
+                // TODO: Maybe replace 'BodyTemplate' with 'HeaderTemplate' (generated from first message), then simply append all traces using the trace format??
+                string allMessages = bufferToSend.ToString();
+                string body = traceFormatter.Format(BodyTemplate, null, null, TraceEventType.Information, 0, allMessages, null, null);
+
+                SendEmail(subject, body);
+            }
         }
 
         /// <summary>
@@ -156,19 +163,24 @@ namespace Essential.Diagnostics
             }
         }
 
-
-
         protected override void WriteTrace(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message, Guid? relatedActivityId, object[] data)
         {
-            
-            EventMessagesBufferAdd(traceFormatter.Format(TraceTemplate, eventCache, source, eventType, id, message, relatedActivityId, data));
+            var traceDetails = traceFormatter.Format(TraceTemplate, eventCache, source, eventType, id, message, relatedActivityId, data);
+            lock (bufferLock)
+            {
+                if (eventMessagesBuffer.Length == 0)
+                {
+                    firstMessage = message;
+                }
+                eventMessagesBuffer.AppendLine(traceDetails);
+            }
         }
 
         protected virtual string DefaultTraceTemplate
         {
             get
             {
-                return "{LOCALDATETIME:HH:mm:ss} {EVENTTYPE} [{THREADID}] {MESSAGE}";
+                return "{LocalDateTime:HH:mm:ss} {EventType} [{ThreadId}] {Message}";
             }
         }
 
@@ -184,12 +196,6 @@ namespace Essential.Diagnostics
 
 
         // ================================================================================================================================
-
-        void EventMessagesBufferAdd(string s)
-        {
-            EventMessagesBuffer.AppendLine(s);
-        }
-
 
         static IEnumerable<BufferedEmailTraceListener> FindListeners()
         {

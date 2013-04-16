@@ -7,6 +7,7 @@ using System.Security.Permissions;
 using System.ComponentModel;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using System.Net.Mail;
 
 namespace Essential.Diagnostics
 {
@@ -27,15 +28,19 @@ namespace Essential.Diagnostics
     /// </remarks>
     public abstract class EmailTraceListenerBase : TraceListenerBase
     {
+        const int subjectMaxLength = 254; //though .NET lib does not place any restriction, and the recent standard of Email seems to be 254, which sounds safe.
         const int defaultMaxConnections = 2;
-        string toAddress;
+        static readonly Regex controlCharRegex = new Regex(@"\p{C}", RegexOptions.Compiled);
         static string[] supportedAttributes = new string[] { 
             "maxConnections", "MaxConnections", "maxconnections",
             "subjectTemplate", "SubjectTemplate", "subjecttemplate",
             "bodyTemplate", "BodyTemplate", "bodytemplate",
             "traceTemplate", "TraceTemplate", "tracetemplate" };
-        SmtpEmailWriterAsync emailWriter;
-        static object smtpEmailHelperLockForInit = new object();
+
+        string toAddress;
+        MailMessageQueue messageQueue;
+        static object objectLock = new object();
+
 
         protected EmailTraceListenerBase(string toAddress)
         {
@@ -124,9 +129,9 @@ namespace Essential.Diagnostics
         }
 
 
-        protected virtual string DefaultSubjectTemplate { get { return "{MESSAGE} -- Machine: {MACHINENAME}; User: {USER}; Process: {PROCESS}; AppDomain: {APPDOMAIN}"; } }
+        protected virtual string DefaultSubjectTemplate { get { return "{MessagePrefix} -- Machine: {MachineName}; User: {User}; Process: {Process}; AppDomain: {AppDomain}"; } }
 
-        protected virtual string DefaultBodyTemplate { get { return "Time: {LOCALDATETIME}\nMachine: {MACHINENAME}\nUser: {USER}\nProcess: {PROCESS}\nAppDomain: {APPDOMAIN}\n\n{MESSAGE}"; } }
+        protected virtual string DefaultBodyTemplate { get { return "Time: {LocalDateTime}\nMachine: {MachineName}\nUser: {User}\nProcess: {Process}\nAppDomain: {AppDomain}\n\n{Message}"; } }
 
 
         protected override string[] GetSupportedAttributes()
@@ -134,19 +139,20 @@ namespace Essential.Diagnostics
             return supportedAttributes;
         }
 
-        internal SmtpEmailWriterAsync EmailWriter
+        MailMessageQueue MessageQueue
         {
             get
             {
-                lock (smtpEmailHelperLockForInit)//use Lazy<T> in .net 4.
+                lock (objectLock)
                 {
-                    if (emailWriter == null)
+                    if (messageQueue == null)
                     {
-                        emailWriter = new SmtpEmailWriterAsync(MaxConnections);//the listener is staying forever generally, no need to care about CA2000.
+                        messageQueue = new MailMessageQueue(MaxConnections);
+                        Debug.WriteLine("MessageQueue is created with some connections: " + MaxConnections);
                     }
                 }
 
-                return emailWriter;
+                return messageQueue;
             }
         }
 
@@ -155,7 +161,7 @@ namespace Essential.Diagnostics
             const int interval = 200;
             int totalWaitTime = 0;
             bool queueRunning = false;
-            while ((EmailWriter.Busy) && (totalWaitTime < 2000))//The total execution time of all ProcessExit event handlers is limited, just as the total execution time of all finalizers is limited at process shutdown. The default is two seconds in .NET. 
+            while ((!MessageQueue.Idle) && (totalWaitTime < 2000))//The total execution time of all ProcessExit event handlers is limited, just as the total execution time of all finalizers is limited at process shutdown. The default is two seconds in .NET. 
             {
                 System.Threading.Thread.Sleep(interval);
                 totalWaitTime += interval;
@@ -168,19 +174,22 @@ namespace Essential.Diagnostics
             }
         }
 
-        protected void SendEmail(string subject, string body, string recipient)
-        {
-            EmailWriter.Send(subject, body, recipient);
-        }
-
         /// <summary>
         /// Send Email via a SmtpClient in pool.
         /// </summary>
         /// <param name="subject"></param>
         /// <param name="body"></param>
-        protected void SendEmail(string subject, string body)
+        internal void SendEmail(string subject, string body)
         {
-            SendEmail(subject, body, ToAddress);
+            MailMessage mailMessage = new MailMessage();
+
+            mailMessage.IsBodyHtml = false;
+            mailMessage.BodyEncoding = Encoding.UTF8;
+            mailMessage.To.Add(ToAddress);
+            mailMessage.Subject = SanitiseSubject(subject);
+            mailMessage.Body = body;
+
+            MessageQueue.AddAndSendAsync(mailMessage);//EmailMessage will be disposed in the queue after being sent.
         }
 
         void CurrentDomain_ProcessExit(object sender, EventArgs e)
@@ -188,43 +197,19 @@ namespace Essential.Diagnostics
             SendAllBeforeExit();
         }
 
-        internal static string ExtractSubject(string message)
+        static string SanitiseSubject(string subject)
         {
-            Regex regex = new Regex(@"((\d{1,4}[\:\-\s/]){2,3}){1,2}");//timestamp in trace
-            Match match = regex.Match(message);
-            if (match.Success)
+            if (subject.Length > 254) 
             {
-                message = message.Substring(match.Length);//so remove the timestamp
+                subject = subject.Substring(0, subjectMaxLength - 3) + "...";
             }
 
-            string[] ss = message.Split(new string[] { ";", ", ", ". " }, 2, StringSplitOptions.None);
-            return ss[0];
-        }
-
-
-        internal static string SanitiseSubject(string subject)
-        {
-            const int subjectMaxLength = 254; //though .NET lib does not place any restriction, and the recent standard of Email seems to be 254, which sounds safe.
-            if (subject.Length > 254)
-                subject = subject.Substring(0, subjectMaxLength);
-
-            try
+            if (controlCharRegex.IsMatch(subject))
             {
-                for (int i = 0; i < subject.Length; i++)
-                {
-                    if (Char.IsControl(subject[i]))
-                    {
-                        return subject.Substring(0, i);
-                    }
-                }
-                return subject;
-
-            }
-            catch (ArgumentException)
-            {
-                return "Invalid subject removed by TraceListener";
+                subject = controlCharRegex.Replace(subject, "");
             }
 
+            return subject;
         }
 
     }

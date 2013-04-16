@@ -90,7 +90,6 @@
     <Compile Include="Diagnostics\RollingFileTraceListener.cs" />
     <Compile Include="Diagnostics\RollingTextWriter.cs" />
     <Compile Include="Diagnostics\RollingXmlTraceListener.cs" />
-    <Compile Include="Diagnostics\SmtpEmailWriterAsync.cs" />
     <Compile Include="Diagnostics\TraceConfigurationMonitor.cs" />
     <Compile Include="IConsole.cs" />
     <Compile Include="Diagnostics\InMemoryTraceListener.cs" />
@@ -156,8 +155,7 @@
   <Import Project="..\TFSBuildNumber.targets" />
   <Target Name="BeforeBuild" DependsOnTargets="GetMajorMinorFromCSharpAssemblyInfoFile;&#xD;&#xA;					  WriteProjectTextAssemblyVersionFile;UpdateCSharpAssemblyInfoFile">
   </Target>
-  <Target Name="AfterBuild"
-     DependsOnTargets="ResetCSharpAssemblyInfoFile">
+  <Target Name="AfterBuild" DependsOnTargets="ResetCSharpAssemblyInfoFile">
   </Target>
   <PropertyGroup>
     <PostBuildEvent>robocopy $(TargetDir) $(SolutionDir)Package\$(ConfigurationName)\lib *.dll *.xml

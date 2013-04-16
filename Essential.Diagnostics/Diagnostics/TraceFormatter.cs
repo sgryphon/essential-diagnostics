@@ -93,6 +93,9 @@ namespace Essential.Diagnostics
                         case "MESSAGE":
                             value = message;
                             break;
+                        case "MESSAGEPREFIX":
+                            value = FormatPrefix(message);
+                            break;
                         case "SOURCE":
                             value = source;
                             break;
@@ -301,6 +304,20 @@ namespace Essential.Diagnostics
                 value = null;
             }
             return value;
+        }
+
+        private string FormatPrefix(string message)
+        {
+            if (!string.IsNullOrEmpty(message))
+            {
+                // Prefix is the part of the message before the first <;,.:>
+                string[] ss = message.Split(new string[] { ";", ", ", ".", ":" }, 2, StringSplitOptions.None);
+                return ss[0];
+            }
+            else
+            {
+                return message;
+            }
         }
 
         internal static object FormatPrincipalName()
