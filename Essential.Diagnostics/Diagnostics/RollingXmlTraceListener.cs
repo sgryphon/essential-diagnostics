@@ -241,12 +241,12 @@ namespace Essential.Diagnostics
                 // Cast to DateTimeOffset first, to get consistent behaviour of ToUniversal/ToLocal
                 // (i.e. Unspecified Kind is treated as Local)
                 var dateTimeOffset = ((DateTimeOffset)eventCache.DateTime).ToUniversalTime();
-                output.Append(dateTimeOffset.DateTime.ToString("o", CultureInfo.InvariantCulture));
+                output.Append(dateTimeOffset.DateTime.ToString("o", CultureInfo.InvariantCulture)).Append("Z");
             }
             else
             {
                 var now = DateTimeOffset.UtcNow;
-                output.Append(now.DateTime.ToString("o", CultureInfo.InvariantCulture));
+                output.Append(now.DateTime.ToString("o", CultureInfo.InvariantCulture)).Append("Z");
             }
             output.Append("\" />");
             output.Append("<Source Name=\"");
