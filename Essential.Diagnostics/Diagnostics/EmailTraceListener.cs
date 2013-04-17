@@ -30,10 +30,10 @@ namespace Essential.Diagnostics
         public EmailTraceListener(string toAddress)
             : base(toAddress)
         {
-            if (Filter == null)
-            {
-                Filter = new EventTypeFilter(SourceLevels.Warning);
-            }
+            //if (Filter == null)
+            //{
+            //    Filter = new EventTypeFilter(SourceLevels.Warning);
+            //}
         }
 
         /// <summary>

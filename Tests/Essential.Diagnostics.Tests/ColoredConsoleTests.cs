@@ -17,7 +17,7 @@ namespace Essential.Diagnostics.Tests
         public TestContext TestContext { get; set; }
 
         [TestMethod]
-        public void CorrectDefaultCriticalEventColor()
+        public void ColoredCorrectDefaultCriticalEventColor()
         {
             var mockConsole = new MockConsole();
             var listener = new ColoredConsoleTraceListener();
@@ -30,7 +30,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod]
-        public void CorrectDefaultErrorEventColor()
+        public void ColoredCorrectDefaultErrorEventColor()
         {
             var mockConsole = new MockConsole();
             var listener = new ColoredConsoleTraceListener();
@@ -43,7 +43,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod]
-        public void CorrectDefaultWarningEventColor()
+        public void ColoredCorrectDefaultWarningEventColor()
         {
             var mockConsole = new MockConsole();
             var listener = new ColoredConsoleTraceListener();
@@ -56,7 +56,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod]
-        public void CorrectDefaultInformationEventColor()
+        public void ColoredCorrectDefaultInformationEventColor()
         {
             var mockConsole = new MockConsole();
             var listener = new ColoredConsoleTraceListener();
@@ -69,7 +69,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod]
-        public void CorrectDefaultVerboseEventColor()
+        public void ColoredCorrectDefaultVerboseEventColor()
         {
             var mockConsole = new MockConsole();
             var listener = new ColoredConsoleTraceListener();
@@ -82,7 +82,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod]
-        public void CorrectMessageWritten()
+        public void ColoredCorrectMessageWritten()
         {
             var mockConsole = new MockConsole();
             var listener = new ColoredConsoleTraceListener();
@@ -95,7 +95,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod]
-        public void ConfigParametersLoadedCorrectly()
+        public void ColoredConfigParametersLoadedCorrectly()
         {
             TraceSource source = new TraceSource("colored1Source");
             var listener = source.Listeners.OfType<ColoredConsoleTraceListener>().First();
@@ -113,7 +113,7 @@ namespace Essential.Diagnostics.Tests
 
 
         [TestMethod]
-        public void OtherConfigParametersLoadedCorrectly()
+        public void ColoredOtherConfigParametersLoadedCorrectly()
         {
             TraceSource source = new TraceSource("colored2Source");
             var listener = source.Listeners.OfType<ColoredConsoleTraceListener>().First();
@@ -128,7 +128,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod]
-        public void ConfigParametersRefreshCorrectly()
+        public void ColoredConfigParametersRefreshCorrectly()
         {
             TraceSource source = new TraceSource("colored1Source");
             var listener1 = source.Listeners.OfType<ColoredConsoleTraceListener>().First();
@@ -167,7 +167,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod]
-        public void InitializeDataRefreshCorrectly()
+        public void ColoredInitializeDataRefreshCorrectly()
         {
             TraceSource source = new TraceSource("colored1Source");
             var listener1 = source.Listeners.OfType<ColoredConsoleTraceListener>().First();

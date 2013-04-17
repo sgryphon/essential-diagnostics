@@ -17,7 +17,7 @@ namespace Essential.Diagnostics.Tests
         public TestContext TestContext { get; set; }
 
         [TestMethod]
-        public void RecordsTraceEventSentDirectly()
+        public void MemoryRecordsTraceEventSentDirectly()
         {
             var listener = new InMemoryTraceListener();
 
@@ -32,7 +32,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod]
-        public void OverwriteWhenMoreTracesThanLimit()
+        public void MemoryOverwriteWhenMoreTracesThanLimit()
         {
             var listener = new InMemoryTraceListener(6);
 
@@ -49,7 +49,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod]
-        public void RecordsEventFromTraceSource()
+        public void MemoryRecordsEventFromTraceSource()
         {
             TraceSource source = new TraceSource("inmemory1Source");
 
@@ -73,7 +73,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod]
-        public void ResetClearsAndResetsPointer()
+        public void MemoryResetClearsAndResetsPointer()
         {
             TraceSource source = new TraceSource("inmemory1Source");
             var listener = source.Listeners.OfType<InMemoryTraceListener>().First();
@@ -95,7 +95,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod]
-        public void ConfigParametersLoadedCorrectly()
+        public void MemoryConfigParametersLoadedCorrectly()
         {
             TraceSource source = new TraceSource("inmemory1Source");
 
@@ -106,7 +106,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod]
-        public void InitializeDataRefreshCorrectly()
+        public void MemoryInitializeDataRefreshCorrectly()
         {
             TraceSource source = new TraceSource("inmemory1Source");
             var listener1 = source.Listeners.OfType<InMemoryTraceListener>().First();

@@ -153,8 +153,20 @@ namespace Essential.Net.Mail
             if (asyncResultToProcess != null)
             {
                 Debug.WriteLine(string.Format("{0:mm':'ss.ffffff}: Before SendAsync, active count = {1}, queue length = {2}", DateTimeOffset.Now, activeSmtpClients.Count, messageQueue.Count));
-                clientToUse.SendAsync(asyncResultToProcess.Message, asyncResultToProcess);
+                Exception exception = null;
+                try
+                {
+                    clientToUse.SendAsync(asyncResultToProcess.Message, asyncResultToProcess);
+                }
+                catch (Exception ex)
+                {
+                    exception = ex;
+                }
                 Debug.WriteLine(string.Format("{0:mm':'ss.ffffff}: After SendAsync, active count = {1}, queue length = {2}", DateTimeOffset.Now, activeSmtpClients.Count, messageQueue.Count));
+                if (exception != null)
+                {
+                    asyncResultToProcess.Complete(exception, true);
+                }
             }
             else
             {

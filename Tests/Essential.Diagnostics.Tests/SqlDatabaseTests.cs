@@ -16,7 +16,7 @@ namespace Essential.Diagnostics.Tests
         public TestContext TestContext { get; set; }
 
         [TestMethod]
-        public void HandlesEventSentDirectly()
+        public void SqlHandlesEventSentDirectly()
         {
             // Test should pull our mock command off the queue
             var mockCommand1 = new MockCommand();
@@ -36,7 +36,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod]
-        public void HandlesEventFromTraceSource()
+        public void SqlHandlesEventFromTraceSource()
         {
             // Test should pull our mock command off the queue
             var mockCommand1 = new MockCommand();
@@ -58,7 +58,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod]
-        public void ConfigParametersLoadedCorrectly()
+        public void SqlConfigParametersLoadedCorrectly()
         {
             TraceSource source = new TraceSource("sql2Source");
             var listener = source.Listeners.OfType<SqlDatabaseTraceListener>().First();

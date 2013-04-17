@@ -17,7 +17,7 @@ namespace Essential.Diagnostics.Tests
         public TestContext TestContext { get; set; }
 
         [TestMethod]
-        public void HandlesEventSentDirectly()
+        public void FileHandlesEventSentDirectly()
         {
             var mockFileSystem = new MockFileSystem();
             var listener = new RollingFileTraceListener(null);
@@ -36,7 +36,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod]
-        public void HandlesEventFromTraceSource()
+        public void FileHandlesEventFromTraceSource()
         {
             var mockFileSystem = new MockFileSystem();
             TraceSource source = new TraceSource("rollingFile1Source");
@@ -55,7 +55,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod]
-        public void RollOverTest()
+        public void FileRollOverTest()
         {
             var mockFileSystem = new MockFileSystem();
             var listener = new RollingFileTraceListener("Log{DateTime:HHmmss}");
@@ -70,7 +70,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod]
-        public void ConfigParametersLoadedCorrectly()
+        public void FileConfigParametersLoadedCorrectly()
         {
             TraceSource source = new TraceSource("rollingFile2Source");
             var listener = source.Listeners.OfType<RollingFileTraceListener>().First();

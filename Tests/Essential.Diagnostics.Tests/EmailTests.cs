@@ -103,59 +103,71 @@ namespace Essential.Diagnostics.Tests
 
         [TestMethod]
         [TestCategory("MailIntegration")]
-        public void TestEmailTraceListener()
+        public void EmailSendTwo()
         {
             TraceSource source = new TraceSource("emailSource");
 
-            source.TraceEvent(TraceEventType.Warning, 0, "Anything. More detail go here.");
-            source.TraceEvent(TraceEventType.Error, 0, "something wrong; can you tell? more here.");
-            source.TraceInformation("Default filter does not include Info.");
+            source.TraceEvent(TraceEventType.Warning, 0, "Message 1");
+            source.TraceEvent(TraceEventType.Error, 0, "Message 2");
 
-            System.Threading.Thread.Sleep(5000);//need to wait, otherwise the test host is terminated resulting in thread abort.
+            System.Threading.Thread.Sleep(2000);//need to wait, otherwise the test host is terminated resulting in thread abort.
 
             AssertMessagesSent(2);
         }
 
         [TestMethod]
         [TestCategory("MailIntegration")]
-        public void TestErrorBufferTraceListener()
+        public void EmailFilterSendFiltered()
+        {
+            TraceSource source = new TraceSource("emailFilterSource");
+
+            source.TraceEvent(TraceEventType.Error, 0, "Include Error.");
+            source.TraceInformation("Include Info.");
+            source.TraceEvent(TraceEventType.Verbose, 0, "Default filter does not include Verbose.");
+
+            System.Threading.Thread.Sleep(2000);//need to wait, otherwise the test host is terminated resulting in thread abort.
+
+            AssertMessagesSent(2);
+        }
+
+
+        [TestMethod]
+        [TestCategory("MailIntegration")]
+        public void BufferedSendOne()
         {
             var source = new TraceSource("bufferedEmailSource");
 
             BufferedEmailTraceListener.ClearAll();
 
-            source.TraceEvent(TraceEventType.Warning, 0, "Anythingbbbb. More detail go here.");
-            source.TraceEvent(TraceEventType.Error, 0, "something wrongbbbb; can you tell? more here.");
-            source.TraceInformation("Default filter does not include Info.");
+            source.TraceEvent(TraceEventType.Warning, 0, "Message 1");
+            source.TraceEvent(TraceEventType.Error, 0, "Message 2");
 
             BufferedEmailTraceListener.SendAll();
-            System.Threading.Thread.Sleep(5000);//need to wait, otherwise the test host is terminated resulting in thread abort.
+            System.Threading.Thread.Sleep(2000);//need to wait, otherwise the test host is terminated resulting in thread abort.
 
             AssertMessagesSent(1);
-
         }
 
         [TestMethod]
         [TestCategory("MailIntegration")]
-        public void TestEmailTraceListenerWithManyTraces()
+        public void EmailSendMany()
         {
             TraceSource source = new TraceSource("emailSource");
 
             for (int i = 0; i < 1000; i++)
             {
-                source.TraceEvent(TraceEventType.Warning, 0, "Anything. More detail go here.");
-                source.TraceEvent(TraceEventType.Error, 0, "something wrong; can you tell? more here.");
-                source.TraceInformation("Default filter does not include Info.");
+                source.TraceEvent(TraceEventType.Warning, 0, "Message 1 - {0}", i);
+                source.TraceEvent(TraceEventType.Error, 0, "Message 2 - {0}", i);
             }
 
-            System.Threading.Thread.Sleep(10000);//need to wait, otherwise the test host is terminated resulting in thread abort.
+            System.Threading.Thread.Sleep(5000);//need to wait, otherwise the test host is terminated resulting in thread abort.
 
             AssertMessagesSent(2000);
         }
 
         [TestMethod]
         [TestCategory("MailIntegration")]
-        public void TestEmailTraceListenerWithManyTracesInThreads()
+        public void EmailSendManyThreads()
         {
             TraceSource source = new TraceSource("emailSource");
 
@@ -163,9 +175,9 @@ namespace Essential.Diagnostics.Tests
             {
                 try
                 {
-                    source.TraceEvent(TraceEventType.Warning, 0, "Anything. More detail go here.");
-                    source.TraceEvent(TraceEventType.Error, 0, "something wrong; can you tell? more here.");
-                    source.TraceInformation("Default filter does not include Info.");
+                    var guid = Guid.NewGuid();
+                    source.TraceEvent(TraceEventType.Warning, 0, "Message 1 - {0}", guid);
+                    source.TraceEvent(TraceEventType.Error, 0, "Message 2 - {0}", guid);
                 }
                 catch (Exception ex)
                 {
@@ -179,55 +191,10 @@ namespace Essential.Diagnostics.Tests
             }
 
             // Need to wait, otherwise messages haven't been sent and Assert throws exception
-            System.Threading.Thread.Sleep(2000);
+            System.Threading.Thread.Sleep(3000);
 
             AssertMessagesSent(2000);
         }
-
-        //[TestMethod]
-        //[TestCategory("MailIntegration")]
-        //public void TestSmtpClientAsync()
-        //{
-        //    MailMessageQueue queue = new MailMessageQueue(3);
-        //    queue.AddAndSendAsync(new System.Net.Mail.MailMessage("user1@example.com", "user2@example.com", "HelloAsync", "are you there? async"));
-        //    System.Threading.Thread.Sleep(500);//need to wait, otherwise the test host is terminated resulting in thread abort.
-        //    AssertMessagesSent(1);
-        //    Assert.IsTrue(queue.AcceptItem);
-        //    Assert.AreEqual(0, queue.Count);
-        //}
-
-
-        //[TestMethod]
-        //[TestCategory("MailIntegration")]
-        //public void TestSmtpClientAsync2()
-        //{
-        //    MailMessageQueue queue = new MailMessageQueue(4);
-        //    queue.AddAndSendAsync(new System.Net.Mail.MailMessage("user1@example.com", "user2@example.com", "HelloAsync", "are you there? async"));
-        //    queue.AddAndSendAsync(new System.Net.Mail.MailMessage("user1@example.com", "user2@example.com", "HelloAsync", "are you there? async"));
-        //    System.Threading.Thread.Sleep(2000);//need to wait, otherwise the test host is terminated resulting in thread abort.
-        //    AssertMessagesSent(2);
-        //    Assert.IsTrue(queue.AcceptItem);
-        //    Assert.AreEqual(0, queue.Count);
-        //}
-
-
-        //[TestMethod]
-        //[TestCategory("MailIntegration")]
-        //public void TestSmtpClientAsyncWithManyMessages()
-        //{
-        //    const int messageCount = 1000;
-
-        //    MailMessageQueue queue = new MailMessageQueue(4);//smtp4dev apparently accept only 2 concurrent connections, according to http://smtp4dev.codeplex.com/discussions/273848
-        //    Debug.WriteLine("Start sending messages at " + DateTime.Now.ToString());
-        //    for (int i = 0; i < messageCount; i++)
-        //    {
-        //        queue.AddAndSendAsync(new System.Net.Mail.MailMessage("user1@example.com", "user2@example.com", "HelloAsync", "are you there? async"));
-        //    }
-        //    System.Threading.Thread.Sleep(2000);//need to wait for around 1-3 seconds for 1000 messages., otherwise the test host is terminated resulting in thread abort.
-        //    AssertMessagesSent(messageCount);
-        //    Assert.IsTrue(queue.AcceptItem);
-        //    Assert.AreEqual(0, queue.Count);
-        //}
 
     }
 }
