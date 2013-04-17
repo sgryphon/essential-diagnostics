@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Net.Mail;
+using Essential.Net.Mail;
 
 namespace Essential.Diagnostics
 {
@@ -38,7 +39,8 @@ namespace Essential.Diagnostics
             "traceTemplate", "TraceTemplate", "tracetemplate" };
 
         string toAddress;
-        MailMessageQueue messageQueue;
+        //MailMessageQueue messageQueue;
+        SmtpWorkerPool smtpWorkerPool;
         static object objectLock = new object();
 
 
@@ -139,20 +141,37 @@ namespace Essential.Diagnostics
             return supportedAttributes;
         }
 
-        MailMessageQueue MessageQueue
+        //MailMessageQueue MessageQueue
+        //{
+        //    get
+        //    {
+        //        lock (objectLock)
+        //        {
+        //            if (messageQueue == null)
+        //            {
+        //                messageQueue = new MailMessageQueue(MaxConnections);
+        //                Debug.WriteLine("MessageQueue is created with some connections: " + MaxConnections);
+        //            }
+        //        }
+
+        //        return messageQueue;
+        //    }
+        //}
+
+        SmtpWorkerPool SmtpWorkerPool
         {
             get
             {
                 lock (objectLock)
                 {
-                    if (messageQueue == null)
+                    if (smtpWorkerPool == null)
                     {
-                        messageQueue = new MailMessageQueue(MaxConnections);
-                        Debug.WriteLine("MessageQueue is created with some connections: " + MaxConnections);
+                        smtpWorkerPool = new SmtpWorkerPool(MaxConnections);
+                        //Debug.WriteLine("MessageQueue is created with some connections: " + MaxConnections);
                     }
                 }
 
-                return messageQueue;
+                return smtpWorkerPool;
             }
         }
 
@@ -161,12 +180,13 @@ namespace Essential.Diagnostics
             const int interval = 200;
             int totalWaitTime = 0;
             bool queueRunning = false;
-            while ((!MessageQueue.Idle) && (totalWaitTime < 2000))//The total execution time of all ProcessExit event handlers is limited, just as the total execution time of all finalizers is limited at process shutdown. The default is two seconds in .NET. 
-            {
-                System.Threading.Thread.Sleep(interval);
-                totalWaitTime += interval;
-                queueRunning = true;
-            }
+            // TODO: Probably should simply move into SmtpWorkerPool
+            //while ((!MessageQueue.Idle) && (totalWaitTime < 2000))//The total execution time of all ProcessExit event handlers is limited, just as the total execution time of all finalizers is limited at process shutdown. The default is two seconds in .NET. 
+            //{
+            //    System.Threading.Thread.Sleep(interval);
+            //    totalWaitTime += interval;
+            //    queueRunning = true;
+            //}
 
             if (queueRunning)//Because of the latancy of file system or the communication stack, sometimes event if MessageQueue.Idle becomes true, the files might not yet been saved before the process exits.
             {
@@ -189,7 +209,10 @@ namespace Essential.Diagnostics
             mailMessage.Subject = SanitiseSubject(subject);
             mailMessage.Body = body;
 
-            MessageQueue.AddAndSendAsync(mailMessage);//EmailMessage will be disposed in the queue after being sent.
+            //MessageQueue.AddAndSendAsync(mailMessage);//EmailMessage will be disposed in the queue after being sent.
+            SmtpWorkerPool.BeginSend(mailMessage,
+                (asyncResult) => { ((MailMessage)asyncResult.AsyncState).Dispose(); }, 
+                mailMessage);
         }
 
         void CurrentDomain_ProcessExit(object sender, EventArgs e)
