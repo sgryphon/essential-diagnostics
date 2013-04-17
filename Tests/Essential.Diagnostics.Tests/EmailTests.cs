@@ -161,9 +161,16 @@ namespace Essential.Diagnostics.Tests
 
             Action d = () =>
             {
-                source.TraceEvent(TraceEventType.Warning, 0, "Anything. More detail go here.");
-                source.TraceEvent(TraceEventType.Error, 0, "something wrong; can you tell? more here.");
-                source.TraceInformation("Default filter does not include Info.");
+                try
+                {
+                    source.TraceEvent(TraceEventType.Warning, 0, "Anything. More detail go here.");
+                    source.TraceEvent(TraceEventType.Error, 0, "something wrong; can you tell? more here.");
+                    source.TraceInformation("Default filter does not include Info.");
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(string.Format("Action exception: {0}", ex));
+                }
             };
 
             for (int i = 0; i < 1000; i++)
@@ -171,7 +178,8 @@ namespace Essential.Diagnostics.Tests
                 d.BeginInvoke(null, null);
             }
 
-            System.Threading.Thread.Sleep(10000);//need to wait, otherwise the test host is terminated resulting in thread abort.
+            // Need to wait, otherwise messages haven't been sent and Assert throws exception
+            System.Threading.Thread.Sleep(2000);
 
             AssertMessagesSent(2000);
         }

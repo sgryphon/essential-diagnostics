@@ -10,8 +10,19 @@ using System.Net.Mail;
 namespace Essential.Diagnostics
 {
     /// <summary>
-    /// Send Email against TraceWarning and TraceError.
+    /// Listener that sends a formatted email containing the contents of the trace.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Sending an email is an expensive operation, so messages are queued and sent on
+    /// a separate thread. If there is a flood of messages exceeding the queue size then
+    /// messages will be dropped.
+    /// </para>
+    /// <para>
+    /// It is strongly recommended to set a filter to only accept Warning and above errors,
+    /// or otherwise reduce the number of trace events that are processed by this listener.
+    /// </para>
+    /// </remarks>
     public class EmailTraceListener : EmailTraceListenerBase
     {
         TraceFormatter traceFormatter = new TraceFormatter();
@@ -47,7 +58,7 @@ namespace Essential.Diagnostics
             string body = traceFormatter.Format(BodyTemplate, eventCache, source, eventType, id, 
                 message, relatedActivityId, data);
 
-            SendEmail(subject, body);
+            SendEmail(subject, body, false);
         }
 
     }

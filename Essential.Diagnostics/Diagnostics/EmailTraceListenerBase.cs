@@ -40,13 +40,12 @@ namespace Essential.Diagnostics
 
         string toAddress;
         SmtpWorkerPool smtpWorkerPool;
-        static object objectLock = new object();
-
+        SmtpWorkerPool2 smtpWorkerPool2;
+        static object smtpWorkerPoolLock = new object();
 
         protected EmailTraceListenerBase(string toAddress)
         {
             this.toAddress = toAddress;
-            AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
         }
 
         /// <summary>
@@ -144,7 +143,7 @@ namespace Essential.Diagnostics
         {
             get
             {
-                lock (objectLock)
+                lock (smtpWorkerPoolLock)
                 {
                     if (smtpWorkerPool == null)
                     {
@@ -157,22 +156,20 @@ namespace Essential.Diagnostics
             }
         }
 
-        protected virtual void SendAllBeforeExit()
+        SmtpWorkerPool2 SmtpWorkerPool2
         {
-            const int interval = 200;
-            int totalWaitTime = 0;
-            bool queueRunning = false;
-            // TODO: Probably should simply move into SmtpWorkerPool
-            //while ((!MessageQueue.Idle) && (totalWaitTime < 2000))//The total execution time of all ProcessExit event handlers is limited, just as the total execution time of all finalizers is limited at process shutdown. The default is two seconds in .NET. 
-            //{
-            //    System.Threading.Thread.Sleep(interval);
-            //    totalWaitTime += interval;
-            //    queueRunning = true;
-            //}
-
-            if (queueRunning)//Because of the latancy of file system or the communication stack, sometimes event if MessageQueue.Idle becomes true, the files might not yet been saved before the process exits.
+            get
             {
-                System.Threading.Thread.Sleep(1000);//so need to wait around 1 second more.
+                lock (smtpWorkerPoolLock)
+                {
+                    if (smtpWorkerPool2 == null)
+                    {
+                        smtpWorkerPool2 = new SmtpWorkerPool2(MaxConnections);
+                        //Debug.WriteLine("MessageQueue is created with some connections: " + MaxConnections);
+                    }
+                }
+
+                return smtpWorkerPool2;
             }
         }
 
@@ -181,7 +178,7 @@ namespace Essential.Diagnostics
         /// </summary>
         /// <param name="subject"></param>
         /// <param name="body"></param>
-        internal void SendEmail(string subject, string body)
+        internal void SendEmail(string subject, string body, bool waitForComplete)
         {
             MailMessage mailMessage = new MailMessage();
 
@@ -191,14 +188,13 @@ namespace Essential.Diagnostics
             mailMessage.Subject = SanitiseSubject(subject);
             mailMessage.Body = body;
 
-            SmtpWorkerPool.BeginSend(mailMessage,
-                (asyncResult) => { ((MailMessage)asyncResult.AsyncState).Dispose(); }, 
+            var asyncResult = SmtpWorkerPool2.BeginSend(mailMessage,
+                (ar) => { ((MailMessage)ar.AsyncState).Dispose(); }, 
                 mailMessage);
-        }
-
-        void CurrentDomain_ProcessExit(object sender, EventArgs e)
-        {
-            SendAllBeforeExit();
+            if (waitForComplete)
+            {
+                SmtpWorkerPool2.EndSend(asyncResult);
+            }
         }
 
         static string SanitiseSubject(string subject)

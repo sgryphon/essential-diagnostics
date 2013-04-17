@@ -46,18 +46,19 @@ namespace Essential.Net.Mail
 
     public class SmtpWorkerPool : IDisposable
     {
+        const int maxExitWaitMilliseconds = 2000;
+        const int exitCheckIntervalMilliseconds = 100;
+
         int maxConnections;
         Queue<SmtpWorkerAsyncResult> messageQueue = new Queue<SmtpWorkerAsyncResult>();
         object queueLock = new object();
 
         List<SmtpClient> activeSmtpClients = new List<SmtpClient>();
 
-        //Stack<SmtpWorker> smtpWorkerPool = new Stack<SmtpWorker>();
-        //SmtpWorker smtpWorker;
-
         public SmtpWorkerPool(int maxConnections)
         {
             this.maxConnections = maxConnections;
+            AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
         }
 
         public IAsyncResult BeginSend(MailMessage message, AsyncCallback callback, object state)
@@ -66,6 +67,7 @@ namespace Essential.Net.Mail
             SmtpClient newWorker = null;
             lock (queueLock)
             {
+                // lock keeps queue count and active client count in sync
                 messageQueue.Enqueue(asyncResult);
                 newWorker = CheckNewWorker();
             }
@@ -96,11 +98,6 @@ namespace Essential.Net.Mail
         {
             if (disposing)
             {
-                //var worker = smtpWorker;
-                //if (worker != null)
-                //{
-                //    worker.Dispose();
-                //}
                 foreach (var client in activeSmtpClients)
                 {
                     TryDisposeSmtpClient(client);
@@ -131,7 +128,7 @@ namespace Essential.Net.Mail
             SmtpWorkerAsyncResult completedAsyncResult = (SmtpWorkerAsyncResult)e.UserState;
             completedAsyncResult.Complete(e.Error, false);
             completedAsyncResult.Dispose();
-
+            // Use the completed thread to check for any new messages in queue
             var smtpClient = (SmtpClient)sender;
             ProcessQueue(smtpClient);
         }
@@ -141,6 +138,7 @@ namespace Essential.Net.Mail
             SmtpWorkerAsyncResult asyncResultToProcess = null;
             lock (queueLock)
             {
+                // lock keeps queue count and active client count in sync
                 if (messageQueue.Count > 0)
                 {
                     asyncResultToProcess = messageQueue.Dequeue();
@@ -150,8 +148,6 @@ namespace Essential.Net.Mail
                 {
                     // Nothing to process; shut down the SmtpClient
                     activeSmtpClients.Remove(clientToUse);
-                    // TODO: Dispose SmtpClient if possible
-                    TryDisposeSmtpClient(clientToUse);
                 }
             };
             if (asyncResultToProcess != null)
@@ -160,104 +156,37 @@ namespace Essential.Net.Mail
                 clientToUse.SendAsync(asyncResultToProcess.Message, asyncResultToProcess);
                 Debug.WriteLine(string.Format("{0:mm':'ss.ffffff}: After SendAsync, active count = {1}, queue length = {2}", DateTimeOffset.Now, activeSmtpClients.Count, messageQueue.Count));
             }
+            else
+            {
+                TryDisposeSmtpClient(clientToUse);
+            }
         }
 
-        private void TryDisposeSmtpClient(SmtpClient clientToUse)
+        private void TryDisposeSmtpClient(SmtpClient smtpClient)
         {
+            Debug.WriteLine(string.Format("{0:mm':'ss.ffffff}: TryDisposeSmtpClient, active count = {1}, queue length = {2}", DateTimeOffset.Now, activeSmtpClients.Count, messageQueue.Count));
             if (typeof(SmtpClient).GetInterface("IDisposable") != null)//In .NET 4, SmtpClient has IDisposable.
             {
-                IDisposable disposable = clientToUse as IDisposable;
+                IDisposable disposable = smtpClient as IDisposable;
                 disposable.Dispose();
             }
         }
 
+        void CurrentDomain_ProcessExit(object sender, EventArgs e)
+        {
+            SendAllBeforeExit();
+        }
 
-        //private void EnsureWorker()
-        //{
-        //    //if (smtpWorkerPool.Count == 0)
-        //    //{
-        //    //    var worker = new SmtpWorker(this);
-        //    //}
-        //    if (smtpWorker == null)
-        //    {
-        //        smtpWorker = new SmtpWorker(this);
-        //        smtpWorker.Start();
-        //    }
-        //}
+        void SendAllBeforeExit()
+        {
+            int totalWaitTime = 0;
+            while (activeSmtpClients.Count > 0 && totalWaitTime < maxExitWaitMilliseconds)
+            {
+                Thread.Sleep(exitCheckIntervalMilliseconds);
+                totalWaitTime += exitCheckIntervalMilliseconds;
+            }
+        }
 
-        //private class SmtpWorker : IDisposable
-        //{
-        //    SmtpWorkerPool pool;
-        //    SmtpClient SmtpClient { get; set; }
-        //    Thread Thread { get; set; }
 
-        //    public SmtpWorker(SmtpWorkerPool pool)
-        //    {
-        //        this.pool = pool;
-        //        Thread = new Thread(ThreadStart);
-        //        Thread.IsBackground = true;
-        //        Thread.Name = "SmtpWorker";
-        //    }
-
-        //    public void Dispose()
-        //    {
-        //        Dispose(true);
-        //        GC.SuppressFinalize(this);
-        //    }
-
-        //    public void Start()
-        //    {
-        //        Thread.Start();
-        //    }
-
-        //    protected virtual void Dispose(bool disposing)
-        //    {
-        //        if (disposing)
-        //        {
-        //            if (SmtpClient != null)
-        //            {
-        //                if (typeof(SmtpClient).GetInterface("IDisposable") != null)//In .NET 4, SmtpClient has IDisposable.
-        //                {
-        //                    SmtpClient client = SmtpClient;
-        //                    IDisposable disposable = client as IDisposable;
-        //                    disposable.Dispose();
-        //                }
-        //            }
-        //        }
-        //    }
-
-        //    private void ThreadStart()
-        //    {
-        //        SmtpClient = new SmtpClient();
-
-        //        while (true)
-        //        {
-        //            SmtpWorkerAsyncResult asyncResultToProcess = null;
-        //            lock (pool.queueLock)
-        //            {
-        //                if (pool.messageQueue.Count > 0)
-        //                {
-        //                    asyncResultToProcess = pool.messageQueue.Dequeue();
-        //                }
-        //            }
-        //            if (asyncResultToProcess != null)
-        //            {
-        //                var message = asyncResultToProcess.Message;
-        //                Exception exception = null;
-        //                try
-        //                {
-        //                    SmtpClient.Send(message);
-        //                }
-        //                catch (Exception ex)
-        //                {
-        //                    exception = ex;
-        //                }
-        //                asyncResultToProcess.Complete(exception, false);
-        //            }
-        //            Thread.Sleep(0);
-        //        }
-
-        //    }
-        //}
     }
 }

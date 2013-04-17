@@ -9,12 +9,16 @@ using System.ComponentModel;
 namespace Essential.Diagnostics
 {
     /// <summary>
-    /// Intended to be used in console apps which will send all warning/error traces via Email at the end of the process.
-    /// 
-    /// The listener will put error and warning trace messages into a buffer. 
-    /// 
-    /// 
+    /// Listener that adds formatted trace messages to a buffer and sends an email when the process exits, or on request.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Intended to be used in console apps which will send all warning/error traces via email at the end of the process.
+    /// </para>
+    /// <para>
+    /// The listener will put error and warning trace messages into a buffer. 
+    /// </para>
+    /// </remarks>
     public class BufferedEmailTraceListener : EmailTraceListenerBase
     {
         TraceFormatter traceFormatter = new TraceFormatter();
@@ -33,6 +37,7 @@ namespace Essential.Diagnostics
             {
                 Filter = new EventTypeFilter(SourceLevels.Warning);
             }
+            AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
         }
 
         /// <summary>
@@ -111,33 +116,7 @@ namespace Essential.Diagnostics
         /// </remarks>
         public void Send()
         {
-            StringBuilder bufferToSend;
-            string firstMessageToSend;
-
-            lock (bufferLock)
-            {
-                bufferToSend = eventMessagesBuffer;
-                firstMessageToSend = firstMessage;
-                if (eventMessagesBuffer.Length > 0)
-                {
-                    eventMessagesBuffer = new StringBuilder(100000);
-                    firstMessage = null;
-                }
-            }
-
-            if (bufferToSend.Length > 0)
-            {
-                // TODO: Would it be easier to simply format the subject using the first message?
-                //       Sure the user could put in something like the event level which is event specific, but that's their choice.
-                string subject = traceFormatter.Format(SubjectTemplate, null, null, TraceEventType.Information, 0,
-                    firstMessage, null, null);
-
-                // TODO: Maybe replace 'BodyTemplate' with 'HeaderTemplate' (generated from first message), then simply append all traces using the trace format??
-                string allMessages = bufferToSend.ToString();
-                string body = traceFormatter.Format(BodyTemplate, null, null, TraceEventType.Information, 0, allMessages, null, null);
-
-                SendEmail(subject, body);
-            }
+            InternalSend(false);
         }
 
         /// <summary>
@@ -184,18 +163,13 @@ namespace Essential.Diagnostics
             }
         }
 
-        //protected virtual string DefaultTraceTemplate { get { return "[{THREADID}] {EVENTTYPE}: {MESSAGE}"; } }
-
-
-        protected override void SendAllBeforeExit()
-        {
-            Send();
-            base.SendAllBeforeExit();
-        }
-
-
-
         // ================================================================================================================================
+
+        void CurrentDomain_ProcessExit(object sender, EventArgs e)
+        {
+            // Send anything queued
+            InternalSend(true);
+        }
 
         static IEnumerable<BufferedEmailTraceListener> FindListeners()
         {
@@ -213,6 +187,37 @@ namespace Essential.Diagnostics
             if (!listenerFound)
             {
                 Trace.TraceError("You want to use BufferedEmailTraceListener, but there's none in Trace.Listeners, probably not defined in the config file.");
+            }
+        }
+
+        private void InternalSend(bool waitForComplete)
+        {
+            StringBuilder bufferToSend;
+            string firstMessageToSend;
+
+            lock (bufferLock)
+            {
+                bufferToSend = eventMessagesBuffer;
+                firstMessageToSend = firstMessage;
+                if (eventMessagesBuffer.Length > 0)
+                {
+                    eventMessagesBuffer = new StringBuilder(100000);
+                    firstMessage = null;
+                }
+            }
+
+            if (bufferToSend.Length > 0)
+            {
+                // TODO: Would it be easier to simply format the subject using the first message?
+                //       Sure the user could put in something like the event level which is event specific, but that's their choice.
+                string subject = traceFormatter.Format(SubjectTemplate, null, null, TraceEventType.Information, 0,
+                    firstMessage, null, null);
+
+                // TODO: Maybe replace 'BodyTemplate' with 'HeaderTemplate' (generated from first message), then simply append all traces using the trace format??
+                string allMessages = bufferToSend.ToString();
+                string body = traceFormatter.Format(BodyTemplate, null, null, TraceEventType.Information, 0, allMessages, null, null);
+
+                SendEmail(subject, body, waitForComplete);
             }
         }
 
