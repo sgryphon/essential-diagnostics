@@ -39,7 +39,8 @@ namespace Essential.Diagnostics
             "traceTemplate", "TraceTemplate", "tracetemplate" };
 
         string toAddress;
-        //MailMessageQueue messageQueue;
+        MailMessageQueue messageQueue;
+
         SmtpWorkerPool smtpWorkerPool;
         static object objectLock = new object();
 
@@ -141,22 +142,22 @@ namespace Essential.Diagnostics
             return supportedAttributes;
         }
 
-        //MailMessageQueue MessageQueue
-        //{
-        //    get
-        //    {
-        //        lock (objectLock)
-        //        {
-        //            if (messageQueue == null)
-        //            {
-        //                messageQueue = new MailMessageQueue(MaxConnections);
-        //                Debug.WriteLine("MessageQueue is created with some connections: " + MaxConnections);
-        //            }
-        //        }
+        MailMessageQueue MessageQueue
+        {
+            get
+            {
+                lock (objectLock)
+                {
+                    if (messageQueue == null)
+                    {
+                        messageQueue = new MailMessageQueue(MaxConnections);
+                        Debug.WriteLine("MessageQueue is created with some connections: " + MaxConnections);
+                    }
+                }
 
-        //        return messageQueue;
-        //    }
-        //}
+                return messageQueue;
+            }
+        }
 
         SmtpWorkerPool SmtpWorkerPool
         {
