@@ -176,8 +176,6 @@ namespace Essential.Diagnostics
         /// <summary>
         /// Send Email via a SmtpClient in pool.
         /// </summary>
-        /// <param name="subject"></param>
-        /// <param name="body"></param>
         internal void SendEmail(string subject, string body, bool waitForComplete)
         {
             MailMessage mailMessage = new MailMessage();

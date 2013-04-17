@@ -61,6 +61,21 @@ namespace Essential.Diagnostics
         // Public Methods
 
         /// <summary>
+        /// Closes the listener so it no longer receives tracing or debugging output.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// The default implementation calls Flush().
+        /// </para>
+        /// </remarks>
+        public override void Close()
+        {
+            // Always Flush before Close
+            Flush();
+            base.Close();
+        }
+
+        /// <summary>
         /// Writes the trace data to the listener output, if allowed by the configured filter.
         /// The data is forwarded to the WriteTrace template method.
         /// </summary>
