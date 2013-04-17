@@ -19,6 +19,12 @@ System.Diagnostics trace listeners, filters, and other utilities.
 Version History
 ---------------
 
+v1.1.Next
+
+* Issue #14: Inverted condition in TraceListenerBase.TraceWriteAsEvent
+* Issue #21: RollingFileTraceListener should be flushed when it's closed.
+* Issue #22: Missing timezone specified "Z" in RollingXmlTraceListener
+
 v1.1.20103 (January 2012)
 
 * Feature #4: Add HttpContext items -- RequestUrl, RequestPath, UserHostAddress, 
