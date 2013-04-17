@@ -39,8 +39,6 @@ namespace Essential.Diagnostics
             "traceTemplate", "TraceTemplate", "tracetemplate" };
 
         string toAddress;
-        MailMessageQueue messageQueue;
-
         SmtpWorkerPool smtpWorkerPool;
         static object objectLock = new object();
 
@@ -142,23 +140,6 @@ namespace Essential.Diagnostics
             return supportedAttributes;
         }
 
-        MailMessageQueue MessageQueue
-        {
-            get
-            {
-                lock (objectLock)
-                {
-                    if (messageQueue == null)
-                    {
-                        messageQueue = new MailMessageQueue(MaxConnections);
-                        Debug.WriteLine("MessageQueue is created with some connections: " + MaxConnections);
-                    }
-                }
-
-                return messageQueue;
-            }
-        }
-
         SmtpWorkerPool SmtpWorkerPool
         {
             get
@@ -210,7 +191,6 @@ namespace Essential.Diagnostics
             mailMessage.Subject = SanitiseSubject(subject);
             mailMessage.Body = body;
 
-            //MessageQueue.AddAndSendAsync(mailMessage);//EmailMessage will be disposed in the queue after being sent.
             SmtpWorkerPool.BeginSend(mailMessage,
                 (asyncResult) => { ((MailMessage)asyncResult.AsyncState).Dispose(); }, 
                 mailMessage);

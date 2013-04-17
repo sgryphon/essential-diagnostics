@@ -84,7 +84,6 @@
     <Compile Include="Diagnostics\BufferedEmailTraceListener.cs" />
     <Compile Include="Diagnostics\ExpressionFilter.cs" />
     <Compile Include="Diagnostics\GlobalSuppressions.cs" />
-    <Compile Include="Diagnostics\MailMessageQueue.cs" />
     <Compile Include="Diagnostics\NativeMethods.cs" />
     <Compile Include="Diagnostics\PropertyFilter.cs" />
     <Compile Include="Diagnostics\RollingFileTraceListener.cs" />
@@ -98,8 +97,6 @@
     <Compile Include="IO\FileSystem.cs" />
     <Compile Include="IO\IFileSystem.cs" />
     <Compile Include="Net\Mail\SmtpWorkerAsyncResult.cs" />
-    <Compile Include="Net\Mail\MailStatusEventArgs.cs" />
-    <Compile Include="Net\Mail\MailSystemStatus.cs" />
     <Compile Include="Net\Mail\SmtpWorkerPool.cs" />
     <Compile Include="Resource.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -110,7 +107,6 @@
     <Compile Include="Diagnostics\TraceListenerBase.cs" />
     <Compile Include="Diagnostics\TraceFormatter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Net\Mail\SmtpClientPool.cs" />
     <Compile Include="StringTemplate.cs" />
     <Compile Include="Web\HttpContextAdapter.cs" />
     <Compile Include="Web\IHttpTraceContext.cs" />

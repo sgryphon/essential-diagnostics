@@ -14,6 +14,7 @@ using System.Net;
 using Essential.Diagnostics;
 using System.ComponentModel;
 using System.IO;
+using Essential.Net.Mail;
 
 namespace Essential.Diagnostics.Tests
 {
@@ -175,50 +176,50 @@ namespace Essential.Diagnostics.Tests
             AssertMessagesSent(2000);
         }
 
-        [TestMethod]
-        [TestCategory("MailIntegration")]
-        public void TestSmtpClientAsync()
-        {
-            MailMessageQueue queue = new MailMessageQueue(3);
-            queue.AddAndSendAsync(new System.Net.Mail.MailMessage("user1@example.com", "user2@example.com", "HelloAsync", "are you there? async"));
-            System.Threading.Thread.Sleep(500);//need to wait, otherwise the test host is terminated resulting in thread abort.
-            AssertMessagesSent(1);
-            Assert.IsTrue(queue.AcceptItem);
-            Assert.AreEqual(0, queue.Count);
-        }
+        //[TestMethod]
+        //[TestCategory("MailIntegration")]
+        //public void TestSmtpClientAsync()
+        //{
+        //    MailMessageQueue queue = new MailMessageQueue(3);
+        //    queue.AddAndSendAsync(new System.Net.Mail.MailMessage("user1@example.com", "user2@example.com", "HelloAsync", "are you there? async"));
+        //    System.Threading.Thread.Sleep(500);//need to wait, otherwise the test host is terminated resulting in thread abort.
+        //    AssertMessagesSent(1);
+        //    Assert.IsTrue(queue.AcceptItem);
+        //    Assert.AreEqual(0, queue.Count);
+        //}
 
 
-        [TestMethod]
-        [TestCategory("MailIntegration")]
-        public void TestSmtpClientAsync2()
-        {
-            MailMessageQueue queue = new MailMessageQueue(4);
-            queue.AddAndSendAsync(new System.Net.Mail.MailMessage("user1@example.com", "user2@example.com", "HelloAsync", "are you there? async"));
-            queue.AddAndSendAsync(new System.Net.Mail.MailMessage("user1@example.com", "user2@example.com", "HelloAsync", "are you there? async"));
-            System.Threading.Thread.Sleep(2000);//need to wait, otherwise the test host is terminated resulting in thread abort.
-            AssertMessagesSent(2);
-            Assert.IsTrue(queue.AcceptItem);
-            Assert.AreEqual(0, queue.Count);
-        }
+        //[TestMethod]
+        //[TestCategory("MailIntegration")]
+        //public void TestSmtpClientAsync2()
+        //{
+        //    MailMessageQueue queue = new MailMessageQueue(4);
+        //    queue.AddAndSendAsync(new System.Net.Mail.MailMessage("user1@example.com", "user2@example.com", "HelloAsync", "are you there? async"));
+        //    queue.AddAndSendAsync(new System.Net.Mail.MailMessage("user1@example.com", "user2@example.com", "HelloAsync", "are you there? async"));
+        //    System.Threading.Thread.Sleep(2000);//need to wait, otherwise the test host is terminated resulting in thread abort.
+        //    AssertMessagesSent(2);
+        //    Assert.IsTrue(queue.AcceptItem);
+        //    Assert.AreEqual(0, queue.Count);
+        //}
 
 
-        [TestMethod]
-        [TestCategory("MailIntegration")]
-        public void TestSmtpClientAsyncWithManyMessages()
-        {
-            const int messageCount = 1000;
+        //[TestMethod]
+        //[TestCategory("MailIntegration")]
+        //public void TestSmtpClientAsyncWithManyMessages()
+        //{
+        //    const int messageCount = 1000;
 
-            MailMessageQueue queue = new MailMessageQueue(4);//smtp4dev apparently accept only 2 concurrent connections, according to http://smtp4dev.codeplex.com/discussions/273848
-            Debug.WriteLine("Start sending messages at " + DateTime.Now.ToString());
-            for (int i = 0; i < messageCount; i++)
-            {
-                queue.AddAndSendAsync(new System.Net.Mail.MailMessage("user1@example.com", "user2@example.com", "HelloAsync", "are you there? async"));
-            }
-            System.Threading.Thread.Sleep(2000);//need to wait for around 1-3 seconds for 1000 messages., otherwise the test host is terminated resulting in thread abort.
-            AssertMessagesSent(messageCount);
-            Assert.IsTrue(queue.AcceptItem);
-            Assert.AreEqual(0, queue.Count);
-        }
+        //    MailMessageQueue queue = new MailMessageQueue(4);//smtp4dev apparently accept only 2 concurrent connections, according to http://smtp4dev.codeplex.com/discussions/273848
+        //    Debug.WriteLine("Start sending messages at " + DateTime.Now.ToString());
+        //    for (int i = 0; i < messageCount; i++)
+        //    {
+        //        queue.AddAndSendAsync(new System.Net.Mail.MailMessage("user1@example.com", "user2@example.com", "HelloAsync", "are you there? async"));
+        //    }
+        //    System.Threading.Thread.Sleep(2000);//need to wait for around 1-3 seconds for 1000 messages., otherwise the test host is terminated resulting in thread abort.
+        //    AssertMessagesSent(messageCount);
+        //    Assert.IsTrue(queue.AcceptItem);
+        //    Assert.AreEqual(0, queue.Count);
+        //}
 
     }
 }

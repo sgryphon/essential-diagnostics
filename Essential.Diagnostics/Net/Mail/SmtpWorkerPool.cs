@@ -40,7 +40,11 @@ namespace Essential.Net.Mail
     // exception). If we don't even want to block on the initial connection, then we need to use
     // a separate worker thread.
 
-    internal class SmtpWorkerPool : IDisposable
+
+
+    // TODO: Do we really want this public?? -- it is used for testing.
+
+    public class SmtpWorkerPool : IDisposable
     {
         int maxConnections;
         Queue<SmtpWorkerAsyncResult> messageQueue = new Queue<SmtpWorkerAsyncResult>();

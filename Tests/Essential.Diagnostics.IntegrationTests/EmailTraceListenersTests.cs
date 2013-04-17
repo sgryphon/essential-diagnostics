@@ -32,89 +32,89 @@ namespace EssentialDiagnosticsIntegrationTests
         System.Net.Configuration.SmtpSection smtpConfig;
         int mockSmtpPort = 9999;
 
-        [Test]
-        public void TestMailMessageQueueWithInvalidSmtpHost()
-        {
-            MailMessageQueue queue = new MailMessageQueue("funky.fonlow.com", 25, 3);
-            Assert.IsTrue(queue.AcceptItem);
-            queue.AddAndSendAsync(new System.Net.Mail.MailMessage("andy@fonlow.com", "arnold@fonlow.com", "HelloAsync", "are you there? async"));
-            queue.AddAndSendAsync(new System.Net.Mail.MailMessage("andy@fonlow.com", "arnold@fonlow.com", "HelloAsync", "are you there? async"));
-            System.Threading.Thread.Sleep(10000);//need to wait longer for resolving the host, otherwise the test host is terminated resulting in thread abort.
-            Assert.IsFalse(queue.AcceptItem);
-            Assert.AreEqual(1, queue.Count);
-        }
+       // [Test]
+       // public void TestMailMessageQueueWithInvalidSmtpHost()
+       // {
+       //     MailMessageQueue queue = new MailMessageQueue("funky.fonlow.com", 25, 3);
+       //     Assert.IsTrue(queue.AcceptItem);
+       //     queue.AddAndSendAsync(new System.Net.Mail.MailMessage("andy@fonlow.com", "arnold@fonlow.com", "HelloAsync", "are you there? async"));
+       //     queue.AddAndSendAsync(new System.Net.Mail.MailMessage("andy@fonlow.com", "arnold@fonlow.com", "HelloAsync", "are you there? async"));
+       //     System.Threading.Thread.Sleep(10000);//need to wait longer for resolving the host, otherwise the test host is terminated resulting in thread abort.
+       //     Assert.IsFalse(queue.AcceptItem);
+       //     Assert.AreEqual(1, queue.Count);
+       // }
 
-        [Test]
-        public void TestMailMessageQueueWithInvalidRecipient()
-        {
-            MailMessageQueue queue = new MailMessageQueue("mail.fonlow.com", 25, 3);
-            queue.AddAndSendAsync(new System.Net.Mail.MailMessage("HeyAndy@fonlow.com", "NotExist@fonlow.com", "HelloAsync", "are you there? async"));
-            System.Threading.Thread.Sleep(10000);
-            Assert.IsFalse(queue.AcceptItem);
-            queue.AddAndSendAsync(new System.Net.Mail.MailMessage("HeyAndy@fonlow.com", "NotExist@fonlow.com", "HelloAsync", "are you there? async"));
-            System.Threading.Thread.Sleep(2000);//need to wait, otherwise the test host is terminated resulting in thread abort.
-            Assert.AreEqual(0, queue.Count);
-        }
+       // [Test]
+       // public void TestMailMessageQueueWithInvalidRecipient()
+       // {
+       //     MailMessageQueue queue = new MailMessageQueue("mail.fonlow.com", 25, 3);
+       //     queue.AddAndSendAsync(new System.Net.Mail.MailMessage("HeyAndy@fonlow.com", "NotExist@fonlow.com", "HelloAsync", "are you there? async"));
+       //     System.Threading.Thread.Sleep(10000);
+       //     Assert.IsFalse(queue.AcceptItem);
+       //     queue.AddAndSendAsync(new System.Net.Mail.MailMessage("HeyAndy@fonlow.com", "NotExist@fonlow.com", "HelloAsync", "are you there? async"));
+       //     System.Threading.Thread.Sleep(2000);//need to wait, otherwise the test host is terminated resulting in thread abort.
+       //     Assert.AreEqual(0, queue.Count);
+       // }
 
-        [Test]
-        public void TestMailMessageQueue()
-        {
-            //List<Message> messages = new List<Message>();
-            //DefaultServer server = new DefaultServer(mockSmtpPort);
-            //server.MessageReceived += (s, ea) => messages.Add(ea.Message);
-            //server.Start();
+       // [Test]
+       // public void TestMailMessageQueue()
+       // {
+       //     //List<Message> messages = new List<Message>();
+       //     //DefaultServer server = new DefaultServer(mockSmtpPort);
+       //     //server.MessageReceived += (s, ea) => messages.Add(ea.Message);
+       //     //server.Start();
 
-            MailMessageQueue queue = new MailMessageQueue(3);
-            queue.AddAndSendAsync(new System.Net.Mail.MailMessage("user1@example.com", "user2@example.com", "HelloAsync", "are you there? async"));
-            System.Threading.Thread.Sleep(3000);//need to wait, otherwise the test host is terminated resulting in thread abort.
-       //     server.Stop();
+       //     MailMessageQueue queue = new MailMessageQueue(3);
+       //     queue.AddAndSendAsync(new System.Net.Mail.MailMessage("user1@example.com", "user2@example.com", "HelloAsync", "are you there? async"));
+       //     System.Threading.Thread.Sleep(3000);//need to wait, otherwise the test host is terminated resulting in thread abort.
+       ////     server.Stop();
 
-            Assert.IsTrue(queue.AcceptItem);
-            Assert.AreEqual(0, queue.Count);
-         //   Assert.AreEqual(1, messages.Count);
-        }
+       //     Assert.IsTrue(queue.AcceptItem);
+       //     Assert.AreEqual(0, queue.Count);
+       //  //   Assert.AreEqual(1, messages.Count);
+       // }
 
-        [Test]
-        public void TestMailMessageQueue2()
-        {
+       // [Test]
+       // public void TestMailMessageQueue2()
+       // {
 
-            MailMessageQueue queue = new MailMessageQueue(4);
-            queue.AddAndSendAsync(new System.Net.Mail.MailMessage("user1@example.com", "user2@example.com", "HelloAsync", "are you there? async"));
-            queue.AddAndSendAsync(new System.Net.Mail.MailMessage("user1@example.com", "user2@example.com", "HelloAsync", "are you there? async"));
-            System.Threading.Thread.Sleep(2000);//need to wait, otherwise the test host is terminated resulting in thread abort.
+       //     MailMessageQueue queue = new MailMessageQueue(4);
+       //     queue.AddAndSendAsync(new System.Net.Mail.MailMessage("user1@example.com", "user2@example.com", "HelloAsync", "are you there? async"));
+       //     queue.AddAndSendAsync(new System.Net.Mail.MailMessage("user1@example.com", "user2@example.com", "HelloAsync", "are you there? async"));
+       //     System.Threading.Thread.Sleep(2000);//need to wait, otherwise the test host is terminated resulting in thread abort.
 
-            Assert.IsTrue(queue.AcceptItem);
-            Assert.AreEqual(0, queue.Count);
-        }
+       //     Assert.IsTrue(queue.AcceptItem);
+       //     Assert.AreEqual(0, queue.Count);
+       // }
 
 
 
-        [Test]
-        [Description("Stress testing the Smtp")]
-        public void TestMailMessageQueueWithManyMessages()
-        {
-            const int messageCount = 1000;
-            bool done = false;
-            MailMessageQueue queue = new MailMessageQueue(8);
-            DateTime dt = DateTime.Now;
-            queue.QueueEmpty += (obj, e) => { done = true; };
-            Debug.WriteLine("Start sending messages at " + DateTime.Now.ToString());
-            for (int i = 0; i < messageCount; i++)
-            {
-                queue.AddAndSendAsync(new System.Net.Mail.MailMessage("user1@example.com", "user2@example.com", "HelloAsync", "are you there? async"));
-            }
-            Debug.WriteLine(String.Format("total time (Milliseconds) to queue {0} messages: {1}", messageCount, (DateTime.Now - dt).TotalMilliseconds));
+       // [Test]
+       // [Description("Stress testing the Smtp")]
+       // public void TestMailMessageQueueWithManyMessages()
+       // {
+       //     const int messageCount = 1000;
+       //     bool done = false;
+       //     MailMessageQueue queue = new MailMessageQueue(8);
+       //     DateTime dt = DateTime.Now;
+       //     queue.QueueEmpty += (obj, e) => { done = true; };
+       //     Debug.WriteLine("Start sending messages at " + DateTime.Now.ToString());
+       //     for (int i = 0; i < messageCount; i++)
+       //     {
+       //         queue.AddAndSendAsync(new System.Net.Mail.MailMessage("user1@example.com", "user2@example.com", "HelloAsync", "are you there? async"));
+       //     }
+       //     Debug.WriteLine(String.Format("total time (Milliseconds) to queue {0} messages: {1}", messageCount, (DateTime.Now - dt).TotalMilliseconds));
 
-            while (!done)
-            {
-                System.Threading.Thread.Sleep(1000);//need to wait for around 1-3 seconds for 1000 messages., otherwise the test host is terminated resulting in thread abort.
+       //     while (!done)
+       //     {
+       //         System.Threading.Thread.Sleep(1000);//need to wait for around 1-3 seconds for 1000 messages., otherwise the test host is terminated resulting in thread abort.
 
-            }            
+       //     }            
 
-            Assert.IsTrue(queue.AcceptItem);
-            Assert.AreEqual(0, queue.Count);
-            Debug.WriteLine("total time (seconds): " + (DateTime.Now - dt).TotalSeconds);
-        }
+       //     Assert.IsTrue(queue.AcceptItem);
+       //     Assert.AreEqual(0, queue.Count);
+       //     Debug.WriteLine("total time (seconds): " + (DateTime.Now - dt).TotalSeconds);
+       // }
 
 
         [Test]

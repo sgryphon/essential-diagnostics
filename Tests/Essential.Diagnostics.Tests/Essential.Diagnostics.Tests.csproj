@@ -66,6 +66,7 @@
     <Compile Include="RollingFileTests.cs" />
     <Compile Include="ExpressionFilterTests.cs" />
     <Compile Include="PropertyFilterTests.cs" />
+    <Compile Include="SmtpWorkerPoolTests.cs" />
     <Compile Include="TraceFormatterTest.cs" />
     <Compile Include="TraceListenerBaseTests.cs" />
     <Compile Include="Utility\ConfigUtility.cs" />
