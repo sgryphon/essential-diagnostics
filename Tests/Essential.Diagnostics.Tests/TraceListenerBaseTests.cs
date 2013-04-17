@@ -197,9 +197,107 @@ namespace Essential.Diagnostics.Tests
                 .ThenVerifyTraceInfo("testSource", TraceEventType.Transfer, 2, expectedMessage, null, activityId);
         }
 
+        [TestMethod]
+        public void BaseHandlesWriteNumber()
+        {
+            GivenTestSource()
+                .WhenTraceAction(source => Trace.Write(1))
+                .ThenVerifyTraceInfo(null, TraceEventType.Verbose, 0, null, new object[] { 1 }, null);
+        }
+
+        [TestMethod]
+        public void BaseHandlesWriteString()
+        {
+            GivenTrace()
+                .WhenTraceAction(source => Trace.Write("ab"))
+                .ThenVerifyTraceInfo(null, TraceEventType.Verbose, 0, "ab", null, null);
+        }
+
+        [TestMethod]
+        public void BaseHandlesWriteNullObject()
+        {
+            object param = null;
+            GivenTestSource()
+                .WhenTraceAction(source => Trace.Write(param))
+                .ThenVerifyTraceInfo(null, TraceEventType.Verbose, 0, null, null, null);
+        }
+
+        [TestMethod]
+        public void BaseHandlesWriteNullString()
+        {
+            string s = null;
+            GivenTrace()
+                .WhenTraceAction(source => Trace.Write(s))
+                .ThenVerifyTraceInfo(null, TraceEventType.Verbose, 0, null, null, null);
+        }
+
+        [TestMethod]
+        public void BaseHandlesWriteCategoryString()
+        {
+            GivenTrace()
+                .WhenTraceAction(source => Trace.Write("ab", "c1"))
+                .ThenVerifyTraceInfo(null, TraceEventType.Verbose, 0, "c1: ab", null, null);
+        }
+
+        [TestMethod]
+        public void BaseHandlesWriteCategoryNumber()
+        {
+            GivenTrace()
+                .WhenTraceAction(source => Trace.Write(1, "c1"))
+                .ThenVerifyTraceInfo(null, TraceEventType.Verbose, 0, "c1", new object[] { 1 }, null);
+        }
+
+        [TestMethod]
+        public void BaseHandlesWriteCategoryNullString()
+        {
+            string s = null;
+            GivenTrace()
+                .WhenTraceAction(source => Trace.Write(s, "c1"))
+                .ThenVerifyTraceInfo(null, TraceEventType.Verbose, 0, "c1: ", null, null);
+        }
+
+        [TestMethod]
+        public void BaseHandlesWriteCategoryEmptyString()
+        {
+            string s = null;
+            GivenTrace()
+                .WhenTraceAction(source => Trace.Write("", "c1"))
+                .ThenVerifyTraceInfo(null, TraceEventType.Verbose, 0, "c1: ", null, null);
+        }
+
+        [TestMethod]
+        public void BaseHandlesWriteNullCategoryString()
+        {
+            GivenTrace()
+                .WhenTraceAction(source => Trace.Write("ab", null))
+                .ThenVerifyTraceInfo(null, TraceEventType.Verbose, 0, "ab", null, null);
+        }
+
+        [TestMethod]
+        public void BaseHandlesWriteEmptyCategoryString()
+        {
+            GivenTrace()
+                .WhenTraceAction(source => Trace.Write("ab", ""))
+                .ThenVerifyTraceInfo(null, TraceEventType.Verbose, 0, ": ab", null, null);
+        }
+
+        [TestMethod]
+        public void BaseHandlesTraceTraceInformation()
+        {
+            var processName = "vstest.executionengine.x86.exe";
+            GivenTrace()
+                .WhenTraceAction(source => Trace.TraceInformation("a{0}b", 1))
+                .ThenVerifyTraceInfo(processName, TraceEventType.Information, 0, "a1b", null, null);
+        }
+
         private TestSourceContext GivenTestSource()
         {
-            return new TestSourceContext();
+            return new TestSourceContext("testSource");
+        }
+
+        private TestSourceContext GivenTrace()
+        {
+            return new TestSourceContext(null);
         }
 
         class TestSourceContext
@@ -207,11 +305,19 @@ namespace Essential.Diagnostics.Tests
             TraceSource source;
             TestTraceListener listener;
 
-            public TestSourceContext()
+            public TestSourceContext(string sourceName)
             {
-                source = new TraceSource("testSource");
-                listener = source.Listeners.OfType<TestTraceListener>().First();
-                listener.MethodCallInformation.Clear();
+                if (!string.IsNullOrEmpty(sourceName))
+                {
+                    source = new TraceSource(sourceName);
+                    listener = source.Listeners.OfType<TestTraceListener>().First();
+                    listener.MethodCallInformation.Clear();
+                }
+                else
+                {
+                    listener = Trace.Listeners.OfType<TestTraceListener>().First();
+                    listener.MethodCallInformation.Clear();
+                }
             }
 
             public TestSourceContext WhenTraceAction(Action<TraceSource> action)

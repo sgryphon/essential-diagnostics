@@ -337,18 +337,7 @@ namespace Essential.Diagnostics
         {
             if ((base.Filter == null) || base.Filter.ShouldTrace(null, null, TraceEventType.Verbose, 0, message, new object[] { category }, data, null))
             {
-                if (message != null)
-                {
-                    if (category != null)
-                    {
-                        WriteTrace(null, null, TraceEventType.Verbose, 0, category, null, new object[] { data });
-                    }
-                    else
-                    {
-                        WriteTrace(null, null, TraceEventType.Verbose, 0, null, null, new object[] { data });
-                    }
-                }
-                else
+                if (data == null)
                 {
                     if (category != null)
                     {
@@ -359,6 +348,10 @@ namespace Essential.Diagnostics
                     {
                         WriteTrace(null, null, TraceEventType.Verbose, 0, message, null, null);
                     }
+                }
+                else
+                {
+                    WriteTrace(null, null, TraceEventType.Verbose, 0, category, null, new object[] { data });
                 }
             }
         }
