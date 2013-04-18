@@ -10,7 +10,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		License.txt = License.txt
 		ReadMe.txt = ReadMe.txt
 		Sample.Essential.Diagnostics.config = Sample.Essential.Diagnostics.config
+		Sample.Essential.Diagnostics.ReadMe.txt = Sample.Essential.Diagnostics.ReadMe.txt
 		Sample.System.Diagnostics.config = Sample.System.Diagnostics.config
+		Sample.System.Diagnostics.ReadMe.txt = Sample.System.Diagnostics.ReadMe.txt
 		TFSBuildNumber.targets = TFSBuildNumber.targets
 		ToDo.txt = ToDo.txt
 	EndProjectSection
