@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Web Developer Express 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2012 for Web
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloLogging", "HelloLogging\HelloLogging.csproj", "{1B94311E-4CD8-405F-8B3A-ECF9527241CE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonitorConfig", "MonitorConfig\MonitorConfig.csproj", "{4BD5C76B-93F8-4A8F-A01F-F10883357C4A}"
@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbstractionDependency", "Ab
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TemplateArguments", "TemplateArguments\TemplateArguments.csproj", "{A68666E1-B66B-4B29-ABE7-248C32071F1C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloWeb", "HelloWeb\HelloWeb.csproj", "{DE6B2A74-B7D9-44E8-8383-571486031850}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloMvc3", "HelloMvc3\HelloMvc3.csproj", "{4FF19FF2-634B-486D-914E-BA47C937AF19}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -85,16 +85,16 @@ Global
 		{A68666E1-B66B-4B29-ABE7-248C32071F1C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{A68666E1-B66B-4B29-ABE7-248C32071F1C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{A68666E1-B66B-4B29-ABE7-248C32071F1C}.Release|x86.ActiveCfg = Release|Any CPU
-		{DE6B2A74-B7D9-44E8-8383-571486031850}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DE6B2A74-B7D9-44E8-8383-571486031850}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DE6B2A74-B7D9-44E8-8383-571486031850}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{DE6B2A74-B7D9-44E8-8383-571486031850}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{DE6B2A74-B7D9-44E8-8383-571486031850}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{DE6B2A74-B7D9-44E8-8383-571486031850}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DE6B2A74-B7D9-44E8-8383-571486031850}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DE6B2A74-B7D9-44E8-8383-571486031850}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{DE6B2A74-B7D9-44E8-8383-571486031850}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{DE6B2A74-B7D9-44E8-8383-571486031850}.Release|x86.ActiveCfg = Release|Any CPU
+		{4FF19FF2-634B-486D-914E-BA47C937AF19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FF19FF2-634B-486D-914E-BA47C937AF19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FF19FF2-634B-486D-914E-BA47C937AF19}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{4FF19FF2-634B-486D-914E-BA47C937AF19}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{4FF19FF2-634B-486D-914E-BA47C937AF19}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4FF19FF2-634B-486D-914E-BA47C937AF19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FF19FF2-634B-486D-914E-BA47C937AF19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FF19FF2-634B-486D-914E-BA47C937AF19}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{4FF19FF2-634B-486D-914E-BA47C937AF19}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{4FF19FF2-634B-486D-914E-BA47C937AF19}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

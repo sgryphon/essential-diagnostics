@@ -19,3 +19,4 @@ glob:solution.disposechecksettings
 surveyor.csv
 Documentation/Examples/Thumbs.db
 */Thumbs.db
+Examples/HelloMvc3/App_Data/*

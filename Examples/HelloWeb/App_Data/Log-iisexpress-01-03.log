@@ -1,5 +1,0 @@
-04:34:56 [9] Verbose HelloWeb 0: [/HelloWeb/Home/Log] [::1] Message (verbose) 1.
-04:34:56 [9] Information HelloWeb 1000: [/HelloWeb/Home/Log] [::1] Message (information) 2.
-04:34:56 [9] Warning HelloWeb 4000: [/HelloWeb/Home/Log] [::1] Message (warning) 3.
-04:34:56 [9] Error HelloWeb 5000: [/HelloWeb/Home/Log] [::1] Message (error) 4.
-04:34:56 [9] Critical HelloWeb 9000: [/HelloWeb/Home/Log] [::1] Message (critical) 5.
