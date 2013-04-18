@@ -304,6 +304,8 @@ function Package-Essential-Config($solutionPath, $version) {
 	$nuspecTemplatePath = (Join-Path $solutionPath "Packaging\Essential.Diagnostics.Config.nuspec")
     $nuspec = [xml](Get-Content -Path $nuspecTemplatePath)
     $nuspec.package.metadata.version = "$version"
+	#TODO: Fix this for next version packaging
+    #$nuspec.package.metadata.dependencies.dependency.version = "$version"
         
     $outputNuspecPath = (Join-Path $path "Essential.Diagnostics.Config.nuspec")
 	Write-Host "$($pre)Creating nuspec file '$outputNuspecPath'"
