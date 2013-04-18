@@ -96,9 +96,9 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="IO\FileSystem.cs" />
     <Compile Include="IO\IFileSystem.cs" />
-    <Compile Include="Net\Mail\SmtpWorkerPool2.cs" />
+    <Compile Include="Net\Mail\SmtpWorkerPoolB.cs" />
     <Compile Include="Net\Mail\SmtpWorkerAsyncResult.cs" />
-    <Compile Include="Net\Mail\SmtpWorkerPool.cs" />
+    <Compile Include="Net\Mail\SmtpWorkerPoolC.cs" />
     <Compile Include="Resource.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -157,8 +157,8 @@
   <Target Name="AfterBuild" DependsOnTargets="ResetCSharpAssemblyInfoFile">
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>robocopy $(TargetDir) $(SolutionDir)Package\$(ConfigurationName)\lib *.dll *.xml
-robocopy $(SolutionDir) $(SolutionDir)Package\$(ConfigurationName) ReadMe.txt License.txt
+    <PostBuildEvent>robocopy $(TargetDir) $(SolutionDir)Packaging\$(ConfigurationName)\lib *.dll *.xml
+robocopy $(SolutionDir) $(SolutionDir)Packaging\$(ConfigurationName) ReadMe.txt License.txt
 exit 0</PostBuildEvent>
   </PropertyGroup>
 </Project>

@@ -10,11 +10,11 @@ glob:TestResults/*
 glob:Documentation/Help/*
 glob:Examples/Essential.Diagnostics.dll
 glob:Essential.Diagnostics/Version.txt
-glob:Package/Output/*
+glob:Packaging/Output/*
 glob:Examples/Binaries/*
 syntax: glob
-Package/Release
-Package/Debug
+Packaging/Release
+Packaging/Debug
 glob:solution.disposechecksettings
 surveyor.csv
 Documentation/Examples/Thumbs.db

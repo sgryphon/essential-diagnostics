@@ -9,7 +9,7 @@ using System.ComponentModel;
 namespace Essential.Diagnostics
 {
     /// <summary>
-    /// Listener that adds formatted trace messages to a buffer and sends an email when the process exits, or on request.
+    /// Adds formatted trace messages to a buffer and sends an email when the process exits, or on request.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -168,7 +168,9 @@ namespace Essential.Diagnostics
         void CurrentDomain_ProcessExit(object sender, EventArgs e)
         {
             // Send anything queued
+            Debug.WriteLine("BufferedEmailTraceListener CurrentDomain_ProcessExit - Sending synchronously");
             InternalSend(true);
+            Debug.WriteLine("BufferedEmailTraceListener CurrentDomain_ProcessExit - Send DONE");
         }
 
         static IEnumerable<BufferedEmailTraceListener> FindListeners()

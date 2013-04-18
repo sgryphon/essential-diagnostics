@@ -312,6 +312,7 @@
             which works well with dependency injection frameworks.
             </para>
             </remarks>
+            
         </member>
         <member name="M:Essential.Diagnostics.Abstractions.TraceSourceWrapper.#ctor(System.String)">
             <summary>
@@ -627,6 +628,16 @@
             Constructor used when creating dynamically in code. The name should be set in the constructor.
             </summary>
             <param name="name">Name of the trace listener.</param>
+        </member>
+        <member name="M:Essential.Diagnostics.TraceListenerBase.Close">
+            <summary>
+            Closes the listener so it no longer receives tracing or debugging output.
+            </summary>
+            <remarks>
+            <para>
+            The default implementation calls Flush().
+            </para>
+            </remarks>
         </member>
         <member name="M:Essential.Diagnostics.TraceListenerBase.TraceData(System.Diagnostics.TraceEventCache,System.String,System.Diagnostics.TraceEventType,System.Int32,System.Object)">
             <summary>
@@ -951,6 +962,162 @@
         <member name="P:Essential.ConsoleAdapter.Out">
             <summary>
             Gets the standard output stream.
+            </summary>
+        </member>
+        <member name="T:Essential.Diagnostics.EmailTraceListener">
+            <summary>
+            Sends a formatted email containing the contents of the trace.
+            </summary>
+            <remarks>
+            <para>
+            Sends each trace message received in an email, using the specified subject 
+            and body templates.
+            </para>
+            <para>
+            It is strongly recommended to set a filter to only accept Warning and above errors,
+            or otherwise reduce the number of trace events that are processed by this listener
+            to avoid flooding.
+            </para>
+            <para>
+            Sending an email is an expensive operation, so messages are queued and sent on
+            a separate thread. If there is a flood of messages exceeding the queue size then
+            messages will be dropped.
+            </para>
+            </remarks>
+        </member>
+        <member name="T:Essential.Diagnostics.EmailTraceListenerBase">
+            <remarks>
+            Output trace messages of warning and error only as Email messages via SMTP. Every messages sent will go through a MailMessage queue which will send 
+            messages through multiple SmtpClient connections in a connection pool.
+            
+            The subject line of the Email message will be the text before ':', ';', ',', '.', '-' in the trace message, along with the identity of the application.
+            The body of the Email will be the trace message.
+            
+            The SMTP host settings are defined in MailSettings of app.config, as documented at http://msdn.microsoft.com/en-us/library/w355a94k.aspx. 
+            
+            It supports the following custom attributes used in config:
+            * maxConnections: Maximum SmtpClient connections in pool. The default is 2.
+            
+            Because the Email messages will be sent in multiple threads, the send time of Email messages may not be in the exact order and the exact time of the creation of the message, tehrefore,
+            it is recommended that the Email subject or body should log the datetime of the trace message.
+            </remarks>
+        </member>
+        <member name="M:Essential.Diagnostics.EmailTraceListenerBase.SendEmail(System.String,System.String,System.Boolean)">
+            <summary>
+            Send Email via a SmtpClient in pool.
+            </summary>
+        </member>
+        <member name="P:Essential.Diagnostics.EmailTraceListenerBase.ToAddress">
+            <summary>
+            Gets the email address the trace messages will be sent to.
+            </summary>
+            <remarks>
+            <para>
+            This value is part of initializeData; if the value changes the
+            listener is recreated. See the constructor parameter for details
+            of the supported formats.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:Essential.Diagnostics.EmailTraceListenerBase.MaxConnections">
+            <summary>
+            Gets or sets the maximum concurrent connections in the SmtpClient pool.
+            </summary>
+            <remarks>
+            <para>
+            The is deffined by the custom attribute maxConnections. The default value is 2.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:Essential.Diagnostics.EmailTraceListenerBase.SubjectTemplate">
+            <summary>
+            Gets or sets the template used to construct the email subject.
+            </summary>
+        </member>
+        <member name="P:Essential.Diagnostics.EmailTraceListenerBase.BodyTemplate">
+            <summary>
+            Gets or sets the template used to construct the email body.
+            </summary>
+        </member>
+        <member name="M:Essential.Diagnostics.EmailTraceListener.WriteTrace(System.Diagnostics.TraceEventCache,System.String,System.Diagnostics.TraceEventType,System.Int32,System.String,System.Nullable{System.Guid},System.Object[])">
+            <summary>
+            Write trace event with data.
+            </summary>
+        </member>
+        <member name="P:Essential.Diagnostics.EmailTraceListener.IsThreadSafe">
+            <summary>
+            Gets a value indicating whether the trace listener is thread safe.
+            </summary>
+        </member>
+        <member name="T:Essential.Diagnostics.BufferedEmailTraceListener">
+            <summary>
+            Adds formatted trace messages to a buffer and sends an email when the process exits, or on request.
+            </summary>
+            <remarks>
+            <para>
+            Intended to be used in console apps which will send all warning/error traces via email at the end of the process.
+            </para>
+            <para>
+            The listener will put error and warning trace messages into a buffer. 
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Essential.Diagnostics.BufferedEmailTraceListener.#ctor(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="toAddress"></param>
+        </member>
+        <member name="M:Essential.Diagnostics.BufferedEmailTraceListener.Clear">
+            <summary>
+            Clears all buffered messages.
+            </summary>
+        </member>
+        <member name="M:Essential.Diagnostics.BufferedEmailTraceListener.ClearAll">
+            <summary>
+            Clears the buffer for all BufferedEmailTraceListener attached to Trace.
+            </summary>
+            <remarks>
+            <para>
+            Note that this does not clear listeners that are only attached to a TraceSource,
+            they must be attached to the main Trace entry as well.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Essential.Diagnostics.BufferedEmailTraceListener.Send">
+            <summary>
+            Send all trace messages in buffer in a single email message. If the buffer is empty, no email is sent.
+            </summary>
+            <remarks>
+            <para>
+            The buffer is then cleared.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Essential.Diagnostics.BufferedEmailTraceListener.SendAll">
+            <summary>
+            Send all buffered messages for all listeners attached to Trace.
+            </summary>
+            <remarks>
+            <para>
+            While the listener will send an email message at the end of the hosting process. This function allow your 
+            application code to send the email message earlier. For example, you might want to send one message at the 
+            end of each loop. 
+            </para>
+            <para>
+            Note that this does not clear listeners that are only attached to a TraceSource,
+            they must be attached to the main Trace entry as well.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:Essential.Diagnostics.BufferedEmailTraceListener.IsThreadSafe">
+            <summary>
+            Gets a value indicating whether the trace listener is thread safe. BufferedEmailTraceListener is not threadsafe.
+            </summary>
+        </member>
+        <member name="P:Essential.Diagnostics.BufferedEmailTraceListener.TraceTemplate">
+            <summary>
+            Gets or sets the template for a a single trace message.
             </summary>
         </member>
         <member name="T:Essential.Diagnostics.ExpressionFilter">
@@ -1545,6 +1712,11 @@
         <member name="P:Essential.Resource.InvalidConsoleColor">
             <summary>
               Looks up a localized string similar to Console color specified is invalid..
+            </summary>
+        </member>
+        <member name="P:Essential.Resource.RollingTextWriter_ExhaustedLogfileNames">
+            <summary>
+              Looks up a localized string similar to &quot;Exhausted possible logfile names&quot;.
             </summary>
         </member>
         <member name="P:Essential.Resource.StringTemplate_ArgumentNotFound">

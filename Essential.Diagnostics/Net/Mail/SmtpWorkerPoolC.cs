@@ -44,7 +44,7 @@ namespace Essential.Net.Mail
 
     // TODO: Do we really want this public?? -- it is used for testing.
 
-    public class SmtpWorkerPool : IDisposable
+    internal class SmtpWorkerPoolC : IDisposable
     {
         const int maxExitWaitMilliseconds = 2000;
         const int exitCheckIntervalMilliseconds = 100;
@@ -55,7 +55,7 @@ namespace Essential.Net.Mail
 
         List<SmtpClient> activeSmtpClients = new List<SmtpClient>();
 
-        public SmtpWorkerPool(int maxConnections)
+        public SmtpWorkerPoolC(int maxConnections)
         {
             this.maxConnections = maxConnections;
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
@@ -191,12 +191,14 @@ namespace Essential.Net.Mail
 
         void SendAllBeforeExit()
         {
+            Debug.WriteLine(string.Format("{0:mm':'ss.ffffff}: SendAllBeforeExit, active count = {1}, queue length = {2}", DateTimeOffset.Now, activeSmtpClients.Count, messageQueue.Count));
             int totalWaitTime = 0;
             while (activeSmtpClients.Count > 0 && totalWaitTime < maxExitWaitMilliseconds)
             {
                 Thread.Sleep(exitCheckIntervalMilliseconds);
                 totalWaitTime += exitCheckIntervalMilliseconds;
             }
+            Debug.WriteLine(string.Format("{0:mm':'ss.ffffff}: DONE SendAllBeforeExit, active count = {1}, queue length = {2}", DateTimeOffset.Now, activeSmtpClients.Count, messageQueue.Count));
         }
 
 

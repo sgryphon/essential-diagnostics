@@ -44,7 +44,7 @@ namespace Essential.Net.Mail
 
     // TODO: Do we really want this public?? -- it is used for testing.
 
-    public class SmtpWorkerPool2 : IDisposable
+    internal class SmtpWorkerPoolB : IDisposable
     {
         const int maxExitWaitMilliseconds = 2000;
         const int exitCheckIntervalMilliseconds = 100;
@@ -54,7 +54,7 @@ namespace Essential.Net.Mail
         object queueLock = new object();
         List<SmtpWorker> smtpWorkerPool = new List<SmtpWorker>();
 
-        public SmtpWorkerPool2(int maxConnections)
+        public SmtpWorkerPoolB(int maxConnections)
         {
             this.maxConnections = maxConnections;
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
@@ -139,22 +139,24 @@ namespace Essential.Net.Mail
 
         void SendAllBeforeExit()
         {
+            Debug.WriteLine(string.Format("{0:mm':'ss.ffffff}: SendAllBeforeExit, pool count = {1}, queue length = {2}", DateTimeOffset.Now, this.smtpWorkerPool.Count, this.messageQueue.Count));
             int totalWaitTime = 0;
             while (smtpWorkerPool.Count > 0 && totalWaitTime < maxExitWaitMilliseconds)
             {
                 Thread.Sleep(exitCheckIntervalMilliseconds);
                 totalWaitTime += exitCheckIntervalMilliseconds;
             }
+            Debug.WriteLine(string.Format("{0:mm':'ss.ffffff}: DONE SendAllBeforeExit, pool count = {1}, queue length = {2}", DateTimeOffset.Now, this.smtpWorkerPool.Count, this.messageQueue.Count));
         }
 
         private class SmtpWorker
         {
             const int idleTimeoutMilliseconds = 500;
-            SmtpWorkerPool2 pool;
+            SmtpWorkerPoolB pool;
             Thread thread;
             bool isIdle;
 
-            public SmtpWorker(SmtpWorkerPool2 pool)
+            public SmtpWorker(SmtpWorkerPoolB pool)
             {
                 this.pool = pool;
                 thread = new Thread(ThreadStart);

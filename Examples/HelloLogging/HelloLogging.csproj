@@ -37,7 +37,7 @@
   <ItemGroup>
     <Reference Include="Essential.Diagnostics, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Essential.Diagnostics.1.1.20103.0\lib\Essential.Diagnostics.dll</HintPath>
+      <HintPath>..\packages\Essential.Diagnostics.1.1.30418.0\lib\Essential.Diagnostics.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -52,8 +52,16 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="BufferedEmail\HelloLogging.exe.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Console\HelloLogging.exe.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Email\HelloLogging.exe.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
     <None Include="EventLog\HelloLogging.exe.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

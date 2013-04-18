@@ -33,8 +33,13 @@ in the Service Trace Viewer.
 Essential.Diagnostics listeners
 -------------------------------
 
+BufferedEmail - Essential.Diagnostics.BufferedEmailTraceListener that adds formatted trace messages to a buffer and 
+sends an email when the process exits, or on request.
+
 ColoredConsole - Essential.Diagnostics.ColoredConsoleTraceListener that logs to the console using configurable colors 
 and with a configurable message template.
+
+Email - Essential.Diagnostics.EmailTraceListener that sends a formatted email containing the contents of the trace.
 
 InMemory - Essential.Diagnostics.InMemoryTraceListener
 

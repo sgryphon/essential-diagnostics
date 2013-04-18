@@ -36,11 +36,12 @@ namespace Essential.Diagnostics
             "maxConnections", "MaxConnections", "maxconnections",
             "subjectTemplate", "SubjectTemplate", "subjecttemplate",
             "bodyTemplate", "BodyTemplate", "bodytemplate",
-            "traceTemplate", "TraceTemplate", "tracetemplate" };
+            "traceTemplate", "TraceTemplate", "tracetemplate",
+            "poolVersion" };
 
         string toAddress;
-        SmtpWorkerPool smtpWorkerPool;
-        SmtpWorkerPool2 smtpWorkerPool2;
+        SmtpWorkerPoolC smtpWorkerPoolC;
+        SmtpWorkerPoolB smtpWorkerPoolB;
         static object smtpWorkerPoolLock = new object();
 
         protected EmailTraceListenerBase(string toAddress)
@@ -139,37 +140,39 @@ namespace Essential.Diagnostics
             return supportedAttributes;
         }
 
-        SmtpWorkerPool SmtpWorkerPool
+        // Callback version
+        SmtpWorkerPoolC SmtpWorkerPoolC
         {
             get
             {
                 lock (smtpWorkerPoolLock)
                 {
-                    if (smtpWorkerPool == null)
+                    if (smtpWorkerPoolC == null)
                     {
-                        smtpWorkerPool = new SmtpWorkerPool(MaxConnections);
+                        smtpWorkerPoolC = new SmtpWorkerPoolC(MaxConnections);
                         //Debug.WriteLine("MessageQueue is created with some connections: " + MaxConnections);
                     }
                 }
 
-                return smtpWorkerPool;
+                return smtpWorkerPoolC;
             }
         }
 
-        SmtpWorkerPool2 SmtpWorkerPool2
+        // Background Thread version
+        SmtpWorkerPoolB SmtpWorkerPoolB
         {
             get
             {
                 lock (smtpWorkerPoolLock)
                 {
-                    if (smtpWorkerPool2 == null)
+                    if (smtpWorkerPoolB == null)
                     {
-                        smtpWorkerPool2 = new SmtpWorkerPool2(MaxConnections);
+                        smtpWorkerPoolB = new SmtpWorkerPoolB(MaxConnections);
                         //Debug.WriteLine("MessageQueue is created with some connections: " + MaxConnections);
                     }
                 }
 
-                return smtpWorkerPool2;
+                return smtpWorkerPoolB;
             }
         }
 
@@ -186,12 +189,26 @@ namespace Essential.Diagnostics
             mailMessage.Subject = SanitiseSubject(subject);
             mailMessage.Body = body;
 
-            var asyncResult = SmtpWorkerPool2.BeginSend(mailMessage,
-                (ar) => { ((MailMessage)ar.AsyncState).Dispose(); }, 
-                mailMessage);
-            if (waitForComplete)
+            // Use hidden/undocumented attribute to switch versions (for testing)
+            if (Attributes["poolVersion"] == "C")
             {
-                SmtpWorkerPool2.EndSend(asyncResult);
+                var asyncResult = SmtpWorkerPoolC.BeginSend(mailMessage,
+                    (ar) => { ((MailMessage)ar.AsyncState).Dispose(); },
+                    mailMessage);
+                if (waitForComplete)
+                {
+                    SmtpWorkerPoolC.EndSend(asyncResult);
+                }
+            }
+            else // default
+            {
+                var asyncResult = SmtpWorkerPoolB.BeginSend(mailMessage,
+                    (ar) => { ((MailMessage)ar.AsyncState).Dispose(); },
+                    mailMessage);
+                if (waitForComplete)
+                {
+                    SmtpWorkerPoolB.EndSend(asyncResult);
+                }
             }
         }
 

@@ -155,31 +155,31 @@ function Add-Examples($zipFile, $zipPath, $solutionPath) {
 	Add-File $zipFile $zipPath $path "HelloLogging\SqlDatabase\HelloLogging.exe.config"
 	Add-File $zipFile $zipPath $path "HelloLogging\XmlWriter\HelloLogging.exe.config"
 
-	Add-File $zipFile $zipPath $path "HelloWeb\HelloWeb.csproj" 
-	Add-File $zipFile $zipPath $path "HelloWeb\Global.asax"
-	Add-File $zipFile $zipPath $path "HelloWeb\Global.asax.cs"
-	Add-File $zipFile $zipPath $path "HelloWeb\HelloWeb_ReadMe.txt"
-	Add-File $zipFile $zipPath $path "HelloWeb\packages.config" 
-	Add-File $zipFile $zipPath $path "HelloWeb\Web.config" 
-	Add-File $zipFile $zipPath $path "HelloWeb\Content\Site.css"	
-	Add-File $zipFile $zipPath $path "HelloWeb\Controllers\HomeController.cs"	
-	Add-File $zipFile $zipPath $path "HelloWeb\Properties\AssemblyInfo.cs"	
-	Add-File $zipFile $zipPath $path "HelloWeb\Scripts\jquery.validate.js"	
-	Add-File $zipFile $zipPath $path "HelloWeb\Scripts\jquery.validate.min.js"	
-	Add-File $zipFile $zipPath $path "HelloWeb\Scripts\jquery.validate-vsdoc.js"	
-	Add-File $zipFile $zipPath $path "HelloWeb\Scripts\jquery-1.4.1.js"	
-	Add-File $zipFile $zipPath $path "HelloWeb\Scripts\jquery-1.4.1.min.js"	
-	Add-File $zipFile $zipPath $path "HelloWeb\Scripts\jquery-1.4.1-vsdoc.js"	
-	Add-File $zipFile $zipPath $path "HelloWeb\Scripts\MicrosoftAjax.debug.js"	
-	Add-File $zipFile $zipPath $path "HelloWeb\Scripts\MicrosoftAjax.js"	
-	Add-File $zipFile $zipPath $path "HelloWeb\Scripts\MicrosoftMvcAjax.debug.js"	
-	Add-File $zipFile $zipPath $path "HelloWeb\Scripts\MicrosoftMvcAjax.js"	
-	Add-File $zipFile $zipPath $path "HelloWeb\Scripts\MicrosoftMvcValidation.debug.js"	
-	Add-File $zipFile $zipPath $path "HelloWeb\Scripts\MicrosoftMvcValidation.js"	
-	Add-File $zipFile $zipPath $path "HelloWeb\Views\Web.config"	
-	Add-File $zipFile $zipPath $path "HelloWeb\Views\Home\Index.aspx"	
-	Add-File $zipFile $zipPath $path "HelloWeb\Views\Home\Log.aspx"	
-	Add-File $zipFile $zipPath $path "HelloWeb\Views\Shared\Site.master"	
+	Add-File $zipFile $zipPath $path "HelloMvc3\HelloMvc3.csproj" 
+	Add-File $zipFile $zipPath $path "HelloMvc3\Global.asax"
+	Add-File $zipFile $zipPath $path "HelloMvc3\Global.asax.cs"
+	Add-File $zipFile $zipPath $path "HelloMvc3\HelloMvc3_ReadMe.txt"
+	Add-File $zipFile $zipPath $path "HelloMvc3\packages.config" 
+	Add-File $zipFile $zipPath $path "HelloMvc3\Web.config" 
+	Add-File $zipFile $zipPath $path "HelloMvc3\Content\Site.css"	
+	Add-File $zipFile $zipPath $path "HelloMvc3\Controllers\HomeController.cs"	
+	Add-File $zipFile $zipPath $path "HelloMvc3\Properties\AssemblyInfo.cs"	
+	Add-File $zipFile $zipPath $path "HelloMvc3\Scripts\jquery.validate.js"	
+	Add-File $zipFile $zipPath $path "HelloMvc3\Scripts\jquery.validate.min.js"	
+	Add-File $zipFile $zipPath $path "HelloMvc3\Scripts\jquery.validate-vsdoc.js"	
+	Add-File $zipFile $zipPath $path "HelloMvc3\Scripts\jquery-1.4.1.js"	
+	Add-File $zipFile $zipPath $path "HelloMvc3\Scripts\jquery-1.4.1.min.js"	
+	Add-File $zipFile $zipPath $path "HelloMvc3\Scripts\jquery-1.4.1-vsdoc.js"	
+	Add-File $zipFile $zipPath $path "HelloMvc3\Scripts\MicrosoftAjax.debug.js"	
+	Add-File $zipFile $zipPath $path "HelloMvc3\Scripts\MicrosoftAjax.js"	
+	Add-File $zipFile $zipPath $path "HelloMvc3\Scripts\MicrosoftMvcAjax.debug.js"	
+	Add-File $zipFile $zipPath $path "HelloMvc3\Scripts\MicrosoftMvcAjax.js"	
+	Add-File $zipFile $zipPath $path "HelloMvc3\Scripts\MicrosoftMvcValidation.debug.js"	
+	Add-File $zipFile $zipPath $path "HelloMvc3\Scripts\MicrosoftMvcValidation.js"	
+	Add-File $zipFile $zipPath $path "HelloMvc3\Views\Web.config"	
+	Add-File $zipFile $zipPath $path "HelloMvc3\Views\Home\Index.aspx"	
+	Add-File $zipFile $zipPath $path "HelloMvc3\Views\Home\Log.aspx"	
+	Add-File $zipFile $zipPath $path "HelloMvc3\Views\Shared\Site.master"	
 
 	Add-File $zipFile $zipPath $path "MonitorConfig\MonitorConfig.csproj" 
 	Add-File $zipFile $zipPath $path "MonitorConfig\App.config"
@@ -212,12 +212,13 @@ function Package-ApplicationBinaries($solutionPath, $configuration, $version) {
 	}
 
 	$zipPath = ""
-	$binariesPath = (Join-Path $solutionPath "Package\$configuration")
+	$binariesPath = (Join-Path $solutionPath "Packaging\$configuration")
     Add-Binaries $zipFile $zipPath $binariesPath
 
-	$zipFilePath = (Join-Path $solutionPath "Package\Output\Essential.Diagnostics_BinariesOnly_$($version).zip")
+	$zipFilePath = (Join-Path $solutionPath "Packaging\Output\Essential.Diagnostics_BinariesOnly_$($version).zip")
 	Write-Host "$($pre)Saving application binaries package to '$zipFilePath'"
 	if (-not $WhatIf) {
+        Ensure-Directory (Join-Path $solutionPath "Packaging\Output")
 		$zipFile.Save($zipFilePath)
 		$zipFile.Dispose()
 	}
@@ -243,9 +244,10 @@ function Package-Complete($solutionPath, $version) {
 	$zipPath = "packages\Essential.Diagnostics.$version"
     Add-Binaries $zipFile $zipPath $binariesPath
 
-	$zipFilePath = (Join-Path $solutionPath "Package\Output\Essential.Diagnostics_$($version).zip")
+	$zipFilePath = (Join-Path $solutionPath "Packaging\Output\Essential.Diagnostics_$($version).zip")
 	Write-Host "$($pre)Saving examples package to '$zipFilePath'"
 	if (-not $WhatIf) {
+        Ensure-Directory (Join-Path $solutionPath "Packaging\Output")
 		$zipFile.Save($zipFilePath)
 		$zipFile.Dispose()
 	}
@@ -255,9 +257,9 @@ function Package-NuPack($solutionPath, $configuration, $version) {
 	Write-Host ""
 	Write-Host "# Creating NuGet package..."
     
-	$path = (Join-Path $solutionPath "Package\$configuration")
+	$path = (Join-Path $solutionPath "Packaging\$configuration")
 
-  	$nuspecTemplatePath = (Join-Path $solutionPath "Package\Essential.Diagnostics.nuspec")
+  	$nuspecTemplatePath = (Join-Path $solutionPath "Packaging\Essential.Diagnostics.nuspec")
     $nuspec = [xml](Get-Content -Path $nuspecTemplatePath)
     $nuspec.package.metadata.version = "$version"
     #$now = [System.DateTimeOffset]::UtcNow
@@ -271,7 +273,7 @@ function Package-NuPack($solutionPath, $configuration, $version) {
       $nuspec.Save($outputNuspecPath)
     }
     
-    $packagePath = (Join-Path $solutionPath "Package\Output")
+    $packagePath = (Join-Path $solutionPath "Packaging\Output")
 	Write-Host "$($pre)Running: nupack ""$outputNuspecPath"" ""$packagePath"""
 	if (-not $WhatIf) {
         & $NuGet pack "$outputNuspecPath" -OutputDirectory "$packagePath"
@@ -282,7 +284,7 @@ function Update-Examples($solutionPath, $configuration, $version) {
 	Write-Host ""
 	Write-Host "# Updating references in examples..."
     
-	$path = (Join-Path $solutionPath "Package\$configuration")
+	$path = (Join-Path $solutionPath "Packaging\$configuration")
 	$target = (Join-Path $solutionPath "Examples\packages\Essential.Diagnostics.$version")
 	
 	foreach($existingPackage in (Get-ChildItem "$solutionPath\Examples\packages\Essential.Diagnostics*")) {
@@ -300,7 +302,7 @@ function Update-Examples($solutionPath, $configuration, $version) {
       Copy-Item "$path\tools" "$target\tools" -Container -Recurse
     }
 
-    $packageFolder = (Join-Path $solutionPath "Package\Output")
+    $packageFolder = (Join-Path $solutionPath "Packaging\Output")
 	$packageFile = (Join-Path $packageFolder "Essential.Diagnostics.$version.nupkg")
 	Write-Host "$($pre)Copying package to '$target'"
 	if (-not $WhatIf) {
@@ -318,8 +320,9 @@ function Update-Examples($solutionPath, $configuration, $version) {
 	
 	Write-Host "Update reference to '$referenceReplace' and path to '$pathReplace'"
 
-	$exampleProjects = @( "AbstractionDependency", "FilteringExample", "HelloLogging",
-        "HelloWeb", "MonitorConfig", "ScopeExample", "TemplateArguments" )
+	$exampleProjects = @( "AbstractionDependency", "BufferedEmailExample", "EmailExample",
+		"FilteringExample", "HelloLogging", "HelloMvc3", "MonitorConfig", "ScopeExample",
+		"TemplateArguments" )
 	
 	foreach ($project in $exampleProjects) {
 		$projectPath = Join-Path $solutionPath "Examples\$project\$project.csproj"
@@ -355,7 +358,7 @@ $executingScriptDirectory = Split-Path -Path $MyInvocation.MyCommand.Definition 
 Add-Type -Path $executingScriptDirectory\Ionic.Zip.dll
 
 $solutionPath = (Split-Path $executingScriptDirectory -Parent)
-$outputPath = (Join-Path $solutionPath "Package\Output")
+$outputPath = (Join-Path $solutionPath "Packaging\Output")
 Ensure-Directory $outputPath
 
 if ($PackageFull) {

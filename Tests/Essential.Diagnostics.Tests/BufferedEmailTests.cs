@@ -22,7 +22,7 @@ namespace Essential.Diagnostics.Tests
     /// Summary description for TestSystem
     /// </summary>
     [TestClass]
-    public class EmailTests
+    public class BufferedEmailTests
     {
         static string pickupDirectory;
 
@@ -103,79 +103,19 @@ namespace Essential.Diagnostics.Tests
 
         [TestMethod]
         [TestCategory("MailIntegration")]
-        public void EmailSendTwo()
+        public void BufferedSendOne()
         {
-            TraceSource source = new TraceSource("emailSource");
+            var source = new TraceSource("bufferedEmailSource");
+
+            BufferedEmailTraceListener.ClearAll();
 
             source.TraceEvent(TraceEventType.Warning, 0, "Message 1");
             source.TraceEvent(TraceEventType.Error, 0, "Message 2");
 
+            BufferedEmailTraceListener.SendAll();
             System.Threading.Thread.Sleep(2000);//need to wait, otherwise the test host is terminated resulting in thread abort.
 
-            AssertMessagesSent(2);
-        }
-
-        [TestMethod]
-        [TestCategory("MailIntegration")]
-        public void EmailFilterSendFiltered()
-        {
-            TraceSource source = new TraceSource("emailFilterSource");
-
-            source.TraceEvent(TraceEventType.Error, 0, "Include Error.");
-            source.TraceInformation("Include Info.");
-            source.TraceEvent(TraceEventType.Verbose, 0, "Default filter does not include Verbose.");
-
-            System.Threading.Thread.Sleep(2000);//need to wait, otherwise the test host is terminated resulting in thread abort.
-
-            AssertMessagesSent(2);
-        }
-
-        [TestMethod]
-        [TestCategory("MailIntegration")]
-        public void EmailSendMany()
-        {
-            TraceSource source = new TraceSource("emailSource");
-
-            for (int i = 0; i < 1000; i++)
-            {
-                source.TraceEvent(TraceEventType.Warning, 0, "Message 1 - {0}", i);
-                source.TraceEvent(TraceEventType.Error, 0, "Message 2 - {0}", i);
-            }
-
-            System.Threading.Thread.Sleep(5000);//need to wait, otherwise the test host is terminated resulting in thread abort.
-
-            AssertMessagesSent(2000);
-        }
-
-        [TestMethod]
-        [TestCategory("MailIntegration")]
-        public void EmailSendManyThreads()
-        {
-            TraceSource source = new TraceSource("emailSource");
-
-            Action d = () =>
-            {
-                try
-                {
-                    var guid = Guid.NewGuid();
-                    source.TraceEvent(TraceEventType.Warning, 0, "Message 1 - {0}", guid);
-                    source.TraceEvent(TraceEventType.Error, 0, "Message 2 - {0}", guid);
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine(string.Format("Action exception: {0}", ex));
-                }
-            };
-
-            for (int i = 0; i < 1000; i++)
-            {
-                d.BeginInvoke(null, null);
-            }
-
-            // Need to wait, otherwise messages haven't been sent and Assert throws exception
-            System.Threading.Thread.Sleep(3000);
-
-            AssertMessagesSent(2000);
+            AssertMessagesSent(1);
         }
 
     }

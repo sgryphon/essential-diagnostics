@@ -23,14 +23,19 @@ namespace TestErrorBufferEmailTraceListener
             Console.WriteLine("Test if all messages are sent before the hosting process finishes.");
             Action<int> d = (k) =>
             {
+                var x = new Random().Next(26);
+                Console.Write((char)(97 + x));
+                Debug.WriteLine((char)(97 + x));
+
                 Trace.TraceWarning("Anything. More detail go here.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
                 Trace.TraceError("Error. More detail go here.@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@222222222222222222222222222222222222");
                 Trace.WriteLine("This is writeline.", "Category");
                 Trace.WriteLine("This is another writeline.", "caTegory");
                 Trace.WriteLine("Writeline without right category", "CCCC");
-
+                Console.Write((char)(65 + x));
+                Debug.WriteLine((char)(65 + x));
             };
-            const int count = 20000;
+            const int count = 200;
             Parallel.For(0, count, d);
 
             Trace.TraceWarning("The last message");
