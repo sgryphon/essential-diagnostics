@@ -5,12 +5,12 @@
     <version>1.1.20103</version>
     <title>Essential.Diagnostics Configuration</title>
     <authors>Sly Gryphon</authors>
-    <description>Configuration examples, with guidance for all available settings, for the Essential.Diagnostics extensions to the .NET Framework System.Diagnostics trace logging.
-    This package depends on the main Essential.Diagnostics library, but note that you do not need to compile against the library - tracing configuration can be changed for an existing binary simply by making sure the DLL containing the listeners is available.
-    
-  </description>
-	<summary>Sample config file for Essential.Diagnostics logging including colored console, formatted 
-  rolling file, email and database listeners.</summary>
+    <description>Configuration of additional trace listeners, filters and utility classes for the .NET Framework System.Diagnostics trace logging.
+	
+Included are colored console (that allows custom formats), SQL database (including a tool to create tables), rolling file (with custom formats), rolling XML (for Service Trace Viewer), email (per trace or batched), and in-memory trace listeners, plus simple property and expression filters. 
+	
+This package depends on Essential.Diagnostics. See the project site on CodePlex for examples and documentation.</description>
+	<summary>Trace listeners and filters, with configuration, for System.Diagnostics logging, including colored console, formatted rolling file, database and email listeners.</summary>
     <projectUrl>http://essentialdiagnostics.codeplex.com/</projectUrl>
     <licenseUrl>http://essentialdiagnostics.codeplex.com/license</licenseUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>

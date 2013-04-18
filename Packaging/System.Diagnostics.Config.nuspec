@@ -10,7 +10,7 @@
 This configuration file is maintained as part of the Essential.Diagnostics project that provides guidance and examples on using System.Diagnostics, as well as additional listeners and extensions.
 
 See the Essential.Diagnostics project site on CodePlex for additional examples and documentation.</description>
-	<summary>Sample config file for System.Diagnostics logging including console, rolling file, Windows event log and XML listeners.</summary>
+	<summary>Sample config for System.Diagnostics logging with console, rolling file, event log and XML listeners.</summary>
     <projectUrl>http://essentialdiagnostics.codeplex.com/</projectUrl>
     <licenseUrl>http://essentialdiagnostics.codeplex.com/license</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
