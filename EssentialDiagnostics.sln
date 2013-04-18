@@ -9,19 +9,23 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		EssentialDiagnostics.vsmdi = EssentialDiagnostics.vsmdi
 		License.txt = License.txt
 		ReadMe.txt = ReadMe.txt
+		Sample.Essential.Diagnostics.config = Sample.Essential.Diagnostics.config
+		Sample.System.Diagnostics.config = Sample.System.Diagnostics.config
 		TFSBuildNumber.targets = TFSBuildNumber.targets
 		ToDo.txt = ToDo.txt
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Diagnostics.RegSql", "Essential.Diagnostics.RegSql\Essential.Diagnostics.RegSql.csproj", "{252DDE2C-C596-4F3B-96E3-87CB9F7ED839}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Package", "Package", "{AA216E78-7C19-4349-ADAF-419480C7FD8C}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Packaging", "Packaging", "{AA216E78-7C19-4349-ADAF-419480C7FD8C}"
 	ProjectSection(SolutionItems) = preProject
-		Package\Essential.Diagnostics.nuspec = Package\Essential.Diagnostics.nuspec
-		Package\Ionic.Zip.dll = Package\Ionic.Zip.dll
-		Package\NuGet.exe = Package\NuGet.exe
-		Package\Package.cmd = Package\Package.cmd
-		Package\Package.ps1 = Package\Package.ps1
+		Packaging\Essential.Diagnostics.Config.nuspec = Packaging\Essential.Diagnostics.Config.nuspec
+		Packaging\Essential.Diagnostics.nuspec = Packaging\Essential.Diagnostics.nuspec
+		Packaging\Ionic.Zip.dll = Packaging\Ionic.Zip.dll
+		Packaging\NuGet.exe = Packaging\NuGet.exe
+		Packaging\Package.cmd = Packaging\Package.cmd
+		Packaging\Package.ps1 = Packaging\Package.ps1
+		Packaging\System.Diagnostics.Config.nuspec = Packaging\System.Diagnostics.Config.nuspec
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{083118A3-01C9-45A0-977A-8C9A038964CE}"

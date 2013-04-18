@@ -35,6 +35,7 @@ param (
     [switch]$nuPack = $true,
     [switch]$UpdateExamples = $true,
     [switch]$PackageFull = $false,
+	[switch]$PackageConfig = $false,
     [switch]$WhatIf = $false
 )
 if ($WhatIf) {
@@ -253,6 +254,70 @@ function Package-Complete($solutionPath, $version) {
 	}
 }
 
+function Package-System-Config($solutionPath, $version) {
+	Write-Host ""
+	Write-Host "# Creating System.Diagnostics.Config NuGet package..."
+
+	$path = (Join-Path $solutionPath "Packaging\SystemConfig")
+	
+	Write-Host "$($pre)Copying Config files to '$path'"
+	if (-not $WhatIf) {
+	  Ensure-Directory "$path\content"
+      Copy-Item "$solutionPath\License.txt" "$path\License.txt"
+      Copy-Item "$solutionPath\Sample.System.Diagnostics.ReadMe.txt" "$path\ReadMe.txt"
+      Copy-Item "$solutionPath\Sample.System.Diagnostics.config" "$path\content\app.config.transform"
+      Copy-Item "$solutionPath\Sample.System.Diagnostics.config" "$path\content\web.config.transform"
+    }
+
+	$nuspecTemplatePath = (Join-Path $solutionPath "Packaging\System.Diagnostics.Config.nuspec")
+    $nuspec = [xml](Get-Content -Path $nuspecTemplatePath)
+    $nuspec.package.metadata.version = "$version"
+        
+    $outputNuspecPath = (Join-Path $path "System.Diagnostics.Config.nuspec")
+	Write-Host "$($pre)Creating nuspec file '$outputNuspecPath'"
+	if (-not $WhatIf) {
+      $nuspec.Save($outputNuspecPath)
+    }
+    
+    $packagePath = (Join-Path $solutionPath "Packaging\Output")
+	Write-Host "$($pre)Running: nupack ""$outputNuspecPath"" ""$packagePath"""
+	if (-not $WhatIf) {
+        & $NuGet pack "$outputNuspecPath" -OutputDirectory "$packagePath"
+    }
+}
+
+function Package-Essential-Config($solutionPath, $version) {
+	Write-Host ""
+	Write-Host "# Creating Essential.Diagnostics.Config NuGet package..."
+
+	$path = (Join-Path $solutionPath "Packaging\EssentialConfig")
+	
+	Write-Host "$($pre)Copying Config files to '$path'"
+	if (-not $WhatIf) {
+	  Ensure-Directory "$path\content"
+      Copy-Item "$solutionPath\License.txt" "$path\License.txt"
+      Copy-Item "$solutionPath\Sample.Essential.Diagnostics.ReadMe.txt" "$path\ReadMe.txt"
+      Copy-Item "$solutionPath\Sample.Essential.Diagnostics.config" "$path\content\app.config.transform"
+      Copy-Item "$solutionPath\Sample.Essential.Diagnostics.config" "$path\content\web.config.transform"
+    }
+
+	$nuspecTemplatePath = (Join-Path $solutionPath "Packaging\Essential.Diagnostics.Config.nuspec")
+    $nuspec = [xml](Get-Content -Path $nuspecTemplatePath)
+    $nuspec.package.metadata.version = "$version"
+        
+    $outputNuspecPath = (Join-Path $path "Essential.Diagnostics.Config.nuspec")
+	Write-Host "$($pre)Creating nuspec file '$outputNuspecPath'"
+	if (-not $WhatIf) {
+      $nuspec.Save($outputNuspecPath)
+    }
+    
+    $packagePath = (Join-Path $solutionPath "Packaging\Output")
+	Write-Host "$($pre)Running: nupack ""$outputNuspecPath"" ""$packagePath"""
+	if (-not $WhatIf) {
+        & $NuGet pack "$outputNuspecPath" -OutputDirectory "$packagePath"
+    }
+}
+
 function Package-NuPack($solutionPath, $configuration, $version) {
 	Write-Host ""
 	Write-Host "# Creating NuGet package..."
@@ -369,32 +434,43 @@ if ($PackageFull) {
 	
 	Package-Complete $solutionPath $version
 } else {
-	if ($Package -or $Build) {
-		if ($Build) {
-			Build-Solution $solutionPath "Release"
-		}
-
+	if ($PackageConfig) {
 		$version = (Get-Content (Join-Path $solutionPath "Essential.Diagnostics\Version.txt"))
+		
 		Write-Host ""
-		Write-Host "# Packaging version $version to '$outputPath'"
+		Write-Host "# Packaging config for version $version to '$outputPath'"
+		
+		Package-System-Config $solutionPath $version
+		Package-Essential-Config $solutionPath $version
+	} else {
+		if ($Package -or $Build) {
+			if ($Build) {
+				Build-Solution $solutionPath "Release"
+			}
 
-		if ($PackageBin) {
-			Package-ApplicationBinaries $solutionPath "Release" $version
-		}
+			$version = (Get-Content (Join-Path $solutionPath "Essential.Diagnostics\Version.txt"))
+			Write-Host ""
+			Write-Host "# Packaging version $version to '$outputPath'"
 
-		if ($nuPack) {
-			Package-NuPack $solutionPath "Release" $version
+			if ($PackageBin) {
+				Package-ApplicationBinaries $solutionPath "Release" $version
+			}
+
+			if ($nuPack) {
+				Package-NuPack $solutionPath "Release" $version
+			}
+				
+			if ($UpdateExamples) {
+				Update-Examples $solutionPath "Release" $version
+			}
 		}
-			
-		if ($UpdateExamples) {
-			Update-Examples $solutionPath "Release" $version
+		else
+		{
+			Write-Host "./Package.ps1 -Build         : to do a build release and then package BinariesOnly, nuget and examples"
+			Write-Host "./Package.ps1 -Package       : to package (only) BinariesOnly, nuget and examples"
+			Write-Host "./Package.ps1 -PackageFull   : to package the examples (including a copy of the binaries)"
+			Write-Host "./Package.ps1 -PackageConfig : to package the sample configuration files"
 		}
-	}
-	else
-	{
-		Write-Host "./Package.ps1 -Build       : to do a build release and then package BinariesOnly, nuget and examples"
-		Write-Host "./Package.ps1 -Package     : to package (only) BinariesOnly, nuget and examples"
-		Write-Host "./Package.ps1 -PackageFull : to package the examples (including a copy of the binaries)"
 	}
 }
 

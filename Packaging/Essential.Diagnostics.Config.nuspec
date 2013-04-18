@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Essential.Diagnostics.Config</id>
+    <version>1.1.20103</version>
+    <title>Essential.Diagnostics Configuration</title>
+    <authors>Sly Gryphon</authors>
+    <description>Configuration examples, with guidance for all available settings,
+    for the Essential.Diagnostics extensions to the .NET Framework System.Diagnostics trace logging.
+    This package depends on the main Essential.Diagnostics library, but note that you do not
+    need to compile against the library - tracing configuration can be changed for an existing
+    binary simply by making sure the DLL containing the listeners is available.
+  </description>
+	<summary>Sample config file for Essential.Diagnostics logging including colored console, formatted 
+  rolling file, email and database listeners.</summary>
+    <projectUrl>http://essentialdiagnostics.codeplex.com/</projectUrl>
+    <licenseUrl>http://essentialdiagnostics.codeplex.com/license</licenseUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <tags>Logging Tracing Diagnostics Log Trace TraceListener Config Configuration</tags>
+    <dependencies>
+      <dependency id="Essential.Diagnostics" version="1.1.20103" />
+    </dependencies>
+  </metadata>
+</package>

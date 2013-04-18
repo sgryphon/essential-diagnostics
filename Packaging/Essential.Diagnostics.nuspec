@@ -5,8 +5,17 @@
     <version>1.1.1011</version>
     <title>Essential.Diagnostics</title>
     <authors>Sly Gryphon</authors>
-    <description>Essential.Diagnostics contains additional trace listeners, filters and utility classes for the .NET Framework System.Diagnostics trace logging. Included are colored console (that allows custom formats), SQL database (including a tool to create tables), rolling file (with custom formats), rolling XML and in-memory trace listeners, simple property and expression filters, activity and logical operation scopes, and configuration file monitoring. The library also includes Diagnostics.Abstractions interfaces and classes for better support of dependency injection frameworks. See the project site on CodePlex for examples and documentation.</description>
-	<summary>Additional trace listeners, filters and utility classes for System.Diagnostics logging including colored console, formatted rolling file and database listeners.</summary>
+    <description>Essential.Diagnostics contains additional trace listeners, filters and utility classes 
+    for the .NET Framework System.Diagnostics trace logging. Included are colored console (that allows
+    custom formats), SQL database (including a tool to create tables), rolling file (with custom formats), 
+    rolling XML, email (per trace or batched), and in-memory trace listeners, simple property and 
+    expression filters, activity and logical operation scopes, and configuration file monitoring. 
+    The library also includes Diagnostics.Abstractions interfaces and classes for better support of
+    dependency injection frameworks. See the project site on CodePlex for examples and documentation. 
+    You may also want the Essential.Diagnostics Configuration package, for sample configuration sections.
+  </description>
+	<summary>Additional trace listeners, filters and utility classes for System.Diagnostics logging including 
+  colored console, formatted rolling file, email and database listeners.</summary>
     <projectUrl>http://essentialdiagnostics.codeplex.com/</projectUrl>
     <licenseUrl>http://essentialdiagnostics.codeplex.com/license</licenseUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>

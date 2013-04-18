@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>System.Diagnostics.Config</id>
+    <version>1.1.20103</version>
+    <title>System.Diagnostics Configuration</title>
+    <authors>Sly Gryphon</authors>
+    <description>
+      Configuration settings for some common .NET Framework System.Diagnostics trace listeners
+      and sources, including console, rolling file, Windows event log and XML listeners
+      (for viewing using the Service Trace Viewer). 
+      This configuration file is maintained as part of the Essential.Diagnostics
+      project that provides guidance and examples on using System.Diagnostics, as well as
+      additional listeners and extensions.
+      See the Essential.Diagnostics project site on CodePlex for additional examples and documentation.</description>
+	<summary>Sample config file for System.Diagnostics logging including console, rolling file,
+  Windows event log and XML listeners.</summary>
+    <projectUrl>http://essentialdiagnostics.codeplex.com/</projectUrl>
+    <licenseUrl>http://essentialdiagnostics.codeplex.com/license</licenseUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <tags>Logging Tracing Diagnostics Log Trace TraceListener Config Configuration</tags>
+  </metadata>
+</package>
