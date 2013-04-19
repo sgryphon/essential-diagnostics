@@ -18,29 +18,35 @@ namespace Essential.Diagnostics
     /// </remarks>
     public class BufferedEmailTraceListener : TraceListenerBase
     {
-        const string DefaultSubjectTemplate = "{Listener} {DateTime:u}; {MachineName}; {User}; {Process}";
-        const string DefaultBodyTemplate = @"Date (UTC): {DateTime:u}
-Date (Local): {LocalDateTime:u}
-User: {User}
-Computer: {MachineName}
-AppDomain: {AppDomain}
-Process ID: {ProcessId}
-Process Name: {ProcessName}
+        const string DefaultSubjectTemplate = "{Listener} {DateTime:u}; {MachineName}; {User}; {ProcessName}";
+        const string DefaultHeaderTemplate = @"Date (UTC): {DateTime:u}
+Date (Local): {LocalDateTime:yyyy'-'MM'-'dd HH':'mm':'ss (K)}
 
-Message:
-{Message}";
+Application Information:
+ Computer: {MachineName}
+ Application Name: {ApplicationName}
+ Application Domain: {AppDomain}
+
+Process Information:
+ Process ID: {ProcessId}
+ Process Name: {ProcessName}
+ Process: {Process}
+ User: {User}
+
+Trace Events:";
         const string DefaultTraceTemplate = "{DateTime:u} [{Thread}] {EventType} {Source} {Id}: {Message}{Data}";
 
         TraceFormatter traceFormatter = new TraceFormatter();
         object bufferLock = new object();
         StringBuilder eventMessagesBuffer = new StringBuilder(10000);
-        string firstMessage;
+        string eventMessagesHeader;
+        string eventMessagesSubject;
 
         const int defaultMaxConnections = 2;
         static string[] supportedAttributes = new string[] { 
             "maxConnections", "MaxConnections", "maxconnections",
             "subjectTemplate", "SubjectTemplate", "subjecttemplate",
-            "bodyTemplate", "BodyTemplate", "bodytemplate",
+            "headerTemplate", "HeaderTemplate", "headertemplate",
             "traceTemplate", "TraceTemplate", "tracetemplate",
             "poolVersion" };
 
@@ -58,40 +64,6 @@ Message:
         {
             this.toAddress = toAddress;
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
-        }
-
-        /// <summary>
-        /// Gets or sets the template used to construct the email body.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// See TraceFormatter for details of the supported formats.
-        /// </para>
-        /// <para>
-        /// The default template includes the Source, Date (UTC and Local), Event ID, Level, 
-        /// Activity, User, Computer, AppDomain, Process ID, Process Name, Thread ID, 
-        /// Message (full) and Data.
-        /// </para>
-        /// <para>
-        /// Note if configuring in XML to use the entity escape sequence to encode new
-        /// lines, "&#xD;&#xA;" (if setting in code, encode new lines with '\n' as normal).
-        /// </para>
-        /// </remarks>
-        public string BodyTemplate
-        {
-            get
-            {
-                string s = Attributes["bodyTemplate"];
-                if (String.IsNullOrEmpty(s))
-                {
-                    return DefaultBodyTemplate;
-                }
-                return s;
-            }
-            set
-            {
-                Attributes["bodyTemplate"] = value;
-            }
         }
 
         /// <summary>
@@ -121,6 +93,45 @@ Message:
             set
             {
                 Attributes["fromAddress"] = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the template used to construct the header of the email body.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// See TraceFormatter for details of the supported formats.
+        /// </para>
+        /// <para>
+        /// The default template includes the Date (UTC and Local), User, Computer, 
+        /// AppDomain, Process ID, and Process Name. The details used are based on
+        /// the first trace received, so should be used for information that will 
+        /// be consistent or meaningful for all traces.
+        /// </para>
+        /// The rest of the body of the email then contains the buffered messages 
+        /// using TraceTemplate (including the buffered first message in the 
+        /// TraceTemplate format).
+        /// </para>
+        /// <para>
+        /// Note if configuring in XML to use the entity escape sequence to encode new
+        /// lines, "&#xD;&#xA;" (if setting in code, encode new lines with '\n' as normal).
+        /// </para>
+        /// </remarks>
+        public string HeaderTemplate
+        {
+            get
+            {
+                string s = Attributes["headerTemplate"];
+                if (String.IsNullOrEmpty(s))
+                {
+                    return DefaultHeaderTemplate;
+                }
+                return s;
+            }
+            set
+            {
+                Attributes["headerTemplate"] = value;
             }
         }
 
@@ -167,12 +178,9 @@ Message:
         /// See TraceFormatter for details of the supported formats.
         /// </para>
         /// <para>
-        /// The default value is "{EventType} {Id}: {MessagePrefix}; {MachineName}; {User}; {Process}".
-        /// </para>
-        /// <para>
-        /// Note that the {MessagePrefix} inserts the trace message up to the first punctuation
-        /// character with a maximum length of 40 characters. This keeps the email subject header
-        /// short; the full message is included in the email body.
+        /// The default value is "{Listener} {DateTime:u}; {MachineName}; {User}; {Process}", 
+        /// and uses details from the first trace received, so should contain information that will 
+        /// be consistent or meaningful for all traces.        
         /// </para>
         /// </remarks>
         public string SubjectTemplate
@@ -249,7 +257,8 @@ Message:
                 if (eventMessagesBuffer.Length > 0)
                 {
                     eventMessagesBuffer = new StringBuilder(100000);
-                    firstMessage = null;
+                    eventMessagesHeader = null;
+                    eventMessagesSubject = null;
                 }
             }
         }
@@ -322,13 +331,19 @@ Message:
         protected override void WriteTrace(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message, Guid? relatedActivityId, object[] data)
         {
             var traceDetails = traceFormatter.Format(TraceTemplate, this, eventCache, source, eventType, id, message, relatedActivityId, data);
+            bool firstMessage = false;
             lock (bufferLock)
             {
                 if (eventMessagesBuffer.Length == 0)
                 {
-                    firstMessage = message;
+                    firstMessage = true;
                 }
                 eventMessagesBuffer.AppendLine(traceDetails);
+            }
+            if (firstMessage)
+            {
+                eventMessagesSubject = traceFormatter.Format(SubjectTemplate, this, eventCache, source, eventType, id, message, relatedActivityId, data);
+                eventMessagesHeader = traceFormatter.Format(HeaderTemplate, this, eventCache, source, eventType, id, message, relatedActivityId, data);
             }
         }
 
@@ -396,34 +411,30 @@ Message:
         private void InternalSend(bool waitForComplete)
         {
             StringBuilder bufferToSend;
-            string firstMessageToSend;
+            string headerToSend;
+            string subjectToSend;
 
             lock (bufferLock)
             {
-                bufferToSend = eventMessagesBuffer;
-                firstMessageToSend = firstMessage;
+                bufferToSend = this.eventMessagesBuffer;
+                headerToSend = this.eventMessagesHeader;
+                subjectToSend = this.eventMessagesSubject;
                 if (eventMessagesBuffer.Length > 0)
                 {
                     eventMessagesBuffer = new StringBuilder(100000);
-                    firstMessage = null;
+                    eventMessagesHeader = null;
+                    eventMessagesSubject = null;
                 }
             }
 
             if (bufferToSend.Length > 0)
             {
-                // TODO: Would it be easier to simply format the subject using the first message?
-                //       Sure the user could put in something like the event level which is event specific, but that's their choice.
-                string subject = traceFormatter.Format(SubjectTemplate, this, null, null, TraceEventType.Information, 0,
-                    firstMessage, null, null);
-
-                // TODO: Maybe replace 'BodyTemplate' with 'HeaderTemplate' (generated from first message), then simply append all traces using the trace format??
-                string allMessages = bufferToSend.ToString();
-                string body = traceFormatter.Format(BodyTemplate, this, null, null, TraceEventType.Information, 0, allMessages, null, null);
+                string body = headerToSend + Environment.NewLine + bufferToSend.ToString();
 
                 // Use hidden/undocumented attribute to switch versions (for testing)
                 if (Attributes["poolVersion"] == "C")
                 {
-                    var asyncResult = SmtpWorkerPoolC.BeginSend(FromAddress, ToAddress, subject, body, null, null);
+                    var asyncResult = SmtpWorkerPoolC.BeginSend(FromAddress, ToAddress, subjectToSend, body, null, null);
                     if (waitForComplete)
                     {
                         SmtpWorkerPoolC.EndSend(asyncResult);
@@ -431,7 +442,7 @@ Message:
                 }
                 else // default
                 {
-                    var asyncResult = SmtpWorkerPoolB.BeginSend(FromAddress, ToAddress, subject, body, null, null);
+                    var asyncResult = SmtpWorkerPoolB.BeginSend(FromAddress, ToAddress, subjectToSend, body, null, null);
                     if (waitForComplete)
                     {
                         SmtpWorkerPoolB.EndSend(asyncResult);

@@ -81,19 +81,29 @@ namespace Essential.Diagnostics
 
         TraceFormatter traceFormatter = new TraceFormatter();
 
-        const string DefaultSubjectTemplate = "{EventType} {Id}: {MessagePrefix}; {MachineName}; {User}; {Process}";
+        const string DefaultSubjectTemplate = "{EventType} {Id}: {MessagePrefix}; {MachineName}; {User}; {ProcessName}";
         const string DefaultBodyTemplate = @"Source: {Source}
 Date (UTC): {DateTime:u}
-Date (Local): {LocalDateTime:u}
+Date (Local): {LocalDateTime:yyyy'-'MM'-'dd HH':'mm':'ss (K)}
 Event ID: {Id}
 Level: {EventType}
 Activity: {ActivityId}
-User: {User}
-Computer: {MachineName}
-AppDomain: {AppDomain}
-Process ID: {ProcessId}
-Process Name: {ProcessName}
-Thread ID: [{Thread}]
+
+Application Information:
+ Computer: {MachineName}
+ Application Name: {ApplicationName}
+ Application Domain: {AppDomain}
+
+Process Information:
+ Process ID: {ProcessId}
+ Process Name: {ProcessName}
+ Process: {Process}
+ User: {User}
+
+Thread Information:
+ Thread ID: [{ThreadId}]
+ Thread Name: {ThreadName}
+ Thread Principal: {PrincipalName}
 
 Message:
 {Message}

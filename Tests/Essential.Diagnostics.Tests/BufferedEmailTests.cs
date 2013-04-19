@@ -109,6 +109,7 @@ namespace Essential.Diagnostics.Tests
 
             BufferedEmailTraceListener.ClearAll();
 
+//            source.TraceEvent(TraceEventType.Warning, 0, "Message 1 \u4E0D");
             source.TraceEvent(TraceEventType.Warning, 0, "Message 1");
             source.TraceEvent(TraceEventType.Error, 0, "Message 2");
 
