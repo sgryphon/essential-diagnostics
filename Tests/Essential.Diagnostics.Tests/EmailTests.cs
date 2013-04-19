@@ -196,6 +196,36 @@ namespace Essential.Diagnostics.Tests
             AssertMessagesSent(50);
         }
 
+        [TestMethod]
+        [TestCategory("MailIntegration")]
+        public void EmailFloodManyThreads()
+        {
+            TraceSource source = new TraceSource("emailFlood2Source");
+
+            Action d = () =>
+            {
+                try
+                {
+                    var guid = Guid.NewGuid();
+                    source.TraceEvent(TraceEventType.Warning, 0, "Message 1 - {0}", guid);
+                    source.TraceEvent(TraceEventType.Error, 0, "Message 2 - {0}", guid);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(string.Format("Action exception: {0}", ex));
+                }
+            };
+
+            for (int i = 0; i < 200; i++)
+            {
+                d.BeginInvoke(null, null);
+            }
+
+            // Need to wait, otherwise messages haven't been sent and Assert throws exception
+            System.Threading.Thread.Sleep(3000);
+
+            AssertMessagesSent(50);
+        }
 
         [TestMethod]
         [TestCategory("MailIntegration")]
