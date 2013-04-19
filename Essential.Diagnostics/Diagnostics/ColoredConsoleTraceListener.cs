@@ -237,6 +237,19 @@ namespace Essential.Diagnostics
         /// <summary>
         /// Gets or sets the token format string to use to display trace output.
         /// </summary>
+        /// <remarks>
+        /// <para>
+        /// See TraceFormatter for details of the supported formats.
+        /// </para>
+        /// <para>
+        /// The default value is "{Source} {EventType}: {Id} : {Message}", which matches ConsoleTraceListener.
+        /// </para>
+        /// <para>
+        /// It is recommended, however, to include the time and thread values, for example by
+        /// using something similar to the format of RollingFileTraceListener:
+        /// "{DateTime:HH':'mm':'ssZ} [{Thread}] {EventType} {Source} {Id}: {Message}{Data}".
+        /// </para>
+        /// </remarks>
         public string Template
         {
             get

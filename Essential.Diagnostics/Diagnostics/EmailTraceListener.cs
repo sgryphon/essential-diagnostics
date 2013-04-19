@@ -23,6 +23,43 @@ namespace Essential.Diagnostics
     /// a separate thread. If there is a flood of messages exceeding the queue size then
     /// messages will be dropped.
     /// </para>
+    /// <para>
+    /// The SMTP host settings are defined in MailSettings of app.config, as documented 
+    /// at http://msdn.microsoft.com/en-us/library/w355a94k.aspx.  
+    /// </para>
+    /// <para>
+    /// The following attributes can be set when adding the trace listener
+    /// entry in the configuration file.
+    /// </para>
+    /// <para>
+    /// <list type="table">
+    /// <listheader>
+    ///     <term>Attribute</term>
+    ///     <value>Description</value>
+    /// </listheader>
+    /// <item>
+    /// <term>initializeData</term>
+    /// <value>Email address of the recipient. Multiple recipients may be separated by commas.</value>
+    /// </item>
+    /// <item>
+    /// <term>traceOutputOptions</term>
+    /// <value>Ignored.</value>
+    /// </item>
+    /// <item>
+    /// <term>maxConnections</term>
+    /// <value>Maximum SMTP client connections in pool. Default 2 connections.</value>
+    /// </item>
+    /// <item>
+    /// <term>subjectTemplate</term>
+    /// <value>Template to use to format the email subject.
+    /// For more information on the template tokens available, <see cref="TraceFormatter"/>.</value>
+    /// </item>
+    /// <item>
+    /// <term>bodyTemplate</term>
+    /// <value>Template to use to format the email subject.</value>
+    /// </item>
+    /// </list>
+    /// </para>
     /// </remarks>
     public class EmailTraceListener : TraceListenerBase
     {
@@ -44,13 +81,32 @@ namespace Essential.Diagnostics
 
         TraceFormatter traceFormatter = new TraceFormatter();
 
-        const int subjectMaxLength = 254; //though .NET lib does not place any restriction, and the recent standard of Email seems to be 254, which sounds safe.
+        const string DefaultSubjectTemplate = "{EventType} {Id}: {MessagePrefix}; {MachineName}; {User}; {Process}";
+        const string DefaultBodyTemplate = @"Source: {Source}
+Date (UTC): {DateTime:u}
+Date (Local): {LocalDateTime:u}
+Event ID: {Id}
+Level: {EventType}
+Activity: {ActivityId}
+User: {User}
+Computer: {MachineName}
+AppDomain: {AppDomain}
+Process ID: {ProcessId}
+Process Name: {ProcessName}
+Thread ID: [{Thread}]
+
+Message:
+{Message}
+
+Data:
+{Data}";
+
         const int defaultMaxConnections = 2;
+
         static string[] supportedAttributes = new string[] { 
             "maxConnections", "MaxConnections", "maxconnections",
             "subjectTemplate", "SubjectTemplate", "subjecttemplate",
             "bodyTemplate", "BodyTemplate", "bodytemplate",
-            "traceTemplate", "TraceTemplate", "tracetemplate",
             "poolVersion" };
 
         string toAddress;
@@ -65,13 +121,36 @@ namespace Essential.Diagnostics
         }
 
         /// <summary>
-        /// Gets a value indicating whether the trace listener is thread safe.
+        /// Gets or sets the template used to construct the email body.
         /// </summary>
-        public override bool IsThreadSafe
+        /// <remarks>
+        /// <para>
+        /// See TraceFormatter for details of the supported formats.
+        /// </para>
+        /// <para>
+        /// The default template includes the Source, Date (UTC and Local), Event ID, Level, 
+        /// Activity, User, Computer, AppDomain, Process ID, Process Name, Thread ID, 
+        /// Message (full) and Data.
+        /// </para>
+        /// <para>
+        /// Note if configuring in XML to use the entity escape sequence to encode new
+        /// lines, "&#xD;&#xA;" (if setting in code, encode new lines with '\n' as normal).
+        /// </para>
+        /// </remarks>
+        public string BodyTemplate
         {
             get
             {
-                return true;
+                string s = Attributes["bodyTemplate"];
+                if (String.IsNullOrEmpty(s))
+                {
+                    return DefaultBodyTemplate;
+                }
+                return s;
+            }
+            set
+            {
+                Attributes["bodyTemplate"] = value;
             }
         }
 
@@ -106,20 +185,14 @@ namespace Essential.Diagnostics
         }
 
         /// <summary>
-        /// Gets the email address the trace messages will be sent to.
+        /// Gets a value indicating the trace listener is thread safe.
         /// </summary>
-        /// <remarks>
-        /// <para>
-        /// This value is part of initializeData; if the value changes the
-        /// listener is recreated. See the constructor parameter for details
-        /// of the supported formats.
-        /// </para>
-        /// </remarks>
-        public string ToAddress
+        /// <value>true</value>
+        public override bool IsThreadSafe
         {
             get
             {
-                return toAddress;
+                return true;
             }
         }
 
@@ -128,7 +201,7 @@ namespace Essential.Diagnostics
         /// </summary>
         /// <remarks>
         /// <para>
-        /// The is deffined by the custom attribute maxConnections. The default value is 2.
+        /// The default value is 2.
         /// </para>
         /// </remarks>
         public int MaxConnections
@@ -148,6 +221,19 @@ namespace Essential.Diagnostics
         /// <summary>
         /// Gets or sets the template used to construct the email subject.
         /// </summary>
+        /// <remarks>
+        /// <para>
+        /// See TraceFormatter for details of the supported formats.
+        /// </para>
+        /// <para>
+        /// The default value is "{EventType} {Id}: {MessagePrefix}; {MachineName}; {User}; {Process}".
+        /// </para>
+        /// <para>
+        /// Note that the {MessagePrefix} inserts the trace message up to the first punctuation
+        /// character with a maximum length of 40 characters. This keeps the email subject header
+        /// short; the full message is included in the email body.
+        /// </para>
+        /// </remarks>
         public string SubjectTemplate
         {
             get
@@ -166,35 +252,52 @@ namespace Essential.Diagnostics
         }
 
         /// <summary>
-        /// Gets or sets the template used to construct the email body.
+        /// Gets the email address the trace messages will be sent to.
         /// </summary>
-        public string BodyTemplate
+        /// <remarks>
+        /// <para>
+        /// This value is part of initializeData; if the value changes the
+        /// listener is recreated. See the constructor parameter for details
+        /// of the supported formats.
+        /// </para>
+        /// </remarks>
+        public string ToAddress
         {
             get
             {
-                string s = Attributes["bodyTemplate"];
-                if (String.IsNullOrEmpty(s))
-                {
-                    return DefaultBodyTemplate;
-                }
-                return s;
-            }
-            set
-            {
-                Attributes["bodyTemplate"] = value;
+                return toAddress;
             }
         }
 
-
-        protected virtual string DefaultSubjectTemplate { get { return "{MessagePrefix} -- Machine: {MachineName}; User: {User}; Process: {Process}; AppDomain: {AppDomain}"; } }
-
-        protected virtual string DefaultBodyTemplate { get { return "Time: {LocalDateTime}\nMachine: {MachineName}\nUser: {User}\nProcess: {Process}\nAppDomain: {AppDomain}\n\n{Message}"; } }
-
-
+        /// <summary>
+        /// Allowed attributes for this trace listener.
+        /// </summary>
         protected override string[] GetSupportedAttributes()
         {
             return supportedAttributes;
         }
+
+        /// <summary>
+        /// Write trace event with data.
+        /// </summary>
+        protected override void WriteTrace(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message, Guid? relatedActivityId, object[] data)
+        {
+            string subject = traceFormatter.Format(SubjectTemplate, eventCache, source,
+                eventType, id, message, relatedActivityId, data);
+
+            string body = traceFormatter.Format(BodyTemplate, eventCache, source, eventType, id,
+                message, relatedActivityId, data);
+
+            // Use hidden/undocumented attribute to switch versions (for testing)
+            if (Attributes["poolVersion"] == "C")
+            {
+                var asyncResultC = SmtpWorkerPoolC.BeginSend(FromAddress, ToAddress, subject, body, null, null);
+                return;
+            }
+
+            var asyncResultB = SmtpWorkerPoolB.BeginSend(FromAddress, ToAddress, subject, body, null, null);
+        }
+
 
         // Callback version
         SmtpWorkerPoolC SmtpWorkerPoolC
@@ -206,10 +309,8 @@ namespace Essential.Diagnostics
                     if (smtpWorkerPoolC == null)
                     {
                         smtpWorkerPoolC = new SmtpWorkerPoolC(MaxConnections);
-                        //Debug.WriteLine("MessageQueue is created with some connections: " + MaxConnections);
                     }
                 }
-
                 return smtpWorkerPoolC;
             }
         }
@@ -224,50 +325,10 @@ namespace Essential.Diagnostics
                     if (smtpWorkerPoolB == null)
                     {
                         smtpWorkerPoolB = new SmtpWorkerPoolB(MaxConnections);
-                        //Debug.WriteLine("MessageQueue is created with some connections: " + MaxConnections);
                     }
                 }
-
                 return smtpWorkerPoolB;
             }
-        }
-
-        /// <summary>
-        /// Send Email via a SmtpClient in pool.
-        /// </summary>
-        internal void SendEmail(string subject, string body, bool waitForComplete)
-        {
-            // Use hidden/undocumented attribute to switch versions (for testing)
-            if (Attributes["poolVersion"] == "C")
-            {
-                var asyncResult = SmtpWorkerPoolC.BeginSend(FromAddress, ToAddress, subject, body, null, null);
-                if (waitForComplete)
-                {
-                    SmtpWorkerPoolC.EndSend(asyncResult);
-                }
-            }
-            else // default
-            {
-                var asyncResult = SmtpWorkerPoolB.BeginSend(FromAddress, ToAddress, subject, body, null, null);
-                if (waitForComplete)
-                {
-                    SmtpWorkerPoolB.EndSend(asyncResult);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Write trace event with data.
-        /// </summary>
-        protected override void WriteTrace(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message, Guid? relatedActivityId, object[] data)
-        {
-            string subject = traceFormatter.Format(SubjectTemplate, eventCache, source, 
-                eventType, id, message, relatedActivityId, data);
-
-            string body = traceFormatter.Format(BodyTemplate, eventCache, source, eventType, id, 
-                message, relatedActivityId, data);
-
-            SendEmail(subject, body, false);
         }
 
     }

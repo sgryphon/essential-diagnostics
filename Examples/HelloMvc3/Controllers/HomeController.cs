@@ -13,6 +13,7 @@ namespace HelloMvc3.Controllers
 
         public ActionResult Index()
         {
+            throw new Exception("Foo");
             return View();
         }
 
