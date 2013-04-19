@@ -258,6 +258,7 @@ namespace Essential.Diagnostics
             // i.e. if any T-O-O are set, then append them anyway??
 
             var output = traceFormatter.Format(Template,
+                this,
                 eventCache,
                 source,
                 eventType,

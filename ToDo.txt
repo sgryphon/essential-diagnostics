@@ -13,8 +13,6 @@ Also see website.
 
 - Improve TraceConfigurationMonitor to support system.diagnostics section in separate config file.
 
-- Support {Listener} or {ListenerName} property in the rolling file path template
-
 
 Bug fixes TODO
 --------------

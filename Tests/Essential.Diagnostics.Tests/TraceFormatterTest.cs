@@ -15,6 +15,7 @@ namespace Essential.Diagnostics.Tests
         public void FormatIdAndMessageTest()
         {
             var traceFormatter = new TraceFormatter();
+            TraceListener listener = null;
             TraceEventCache eventCache = null;
             string source = "test"; 
             TraceEventType eventType = TraceEventType.Warning;
@@ -25,7 +26,7 @@ namespace Essential.Diagnostics.Tests
             string template = "{Id}.{Message}";
             string expected = "5.fnord";
 
-            var actual = traceFormatter.Format(template, eventCache, source, eventType, id,
+            var actual = traceFormatter.Format(template, listener, eventCache, source, eventType, id,
                 message, relatedActivityId, data);
 
             Assert.AreEqual(expected, actual);
@@ -35,6 +36,7 @@ namespace Essential.Diagnostics.Tests
         public void FormatPrincipalNameTest()
         {
             var traceFormatter = new TraceFormatter();
+            TraceListener listener = null;
             TraceEventCache eventCache = null;
             string source = "test";
             TraceEventType eventType = TraceEventType.Warning;
@@ -48,7 +50,7 @@ namespace Essential.Diagnostics.Tests
 
             using (var scope = new UserResetScope("testuser"))
             {
-                actual = traceFormatter.Format(template, eventCache, source, eventType, id,
+                actual = traceFormatter.Format(template, listener, eventCache, source, eventType, id,
                     message, relatedActivityId, data);
             }
             
@@ -59,6 +61,7 @@ namespace Essential.Diagnostics.Tests
         public void FormatProcessIdTest()
         {
             var traceFormatter = new TraceFormatter();
+            TraceListener listener = null;
             TraceEventCache eventCache = null;
             string source = "test";
             TraceEventType eventType = TraceEventType.Warning;
@@ -69,7 +72,7 @@ namespace Essential.Diagnostics.Tests
             string template = "{ProcessId}";
             string expected = Process.GetCurrentProcess().Id.ToString();
 
-            var actual = traceFormatter.Format(template, eventCache, source, eventType, id,
+            var actual = traceFormatter.Format(template, listener, eventCache, source, eventType, id,
                     message, relatedActivityId, data);
 
             Assert.AreEqual(expected, actual);
@@ -82,6 +85,7 @@ namespace Essential.Diagnostics.Tests
             mockHttpTraceContext.RequestUrl = new Uri("http://test/x");
             var traceFormatter = new TraceFormatter();
             traceFormatter.HttpTraceContext = mockHttpTraceContext;
+            TraceListener listener = null;
             TraceEventCache eventCache = null;
             string source = "test";
             TraceEventType eventType = TraceEventType.Warning;
@@ -92,7 +96,7 @@ namespace Essential.Diagnostics.Tests
             string template = "|{RequestUrl}|";
             string expected = "|http://test/x|";
 
-            var actual = traceFormatter.Format(template, eventCache, source, eventType, id,
+            var actual = traceFormatter.Format(template, listener, eventCache, source, eventType, id,
                     message, relatedActivityId, data);
 
             Assert.AreEqual(expected, actual);
@@ -103,6 +107,7 @@ namespace Essential.Diagnostics.Tests
         {
             // The default is HttpContext.Current, which should be empty when running unit test
             var traceFormatter = new TraceFormatter();
+            TraceListener listener = null;
             TraceEventCache eventCache = null;
             string source = "test";
             TraceEventType eventType = TraceEventType.Warning;
@@ -113,7 +118,7 @@ namespace Essential.Diagnostics.Tests
             string template = "|{RequestUrl}|";
             string expected = "||";
 
-            var actual = traceFormatter.Format(template, eventCache, source, eventType, id,
+            var actual = traceFormatter.Format(template, listener, eventCache, source, eventType, id,
                     message, relatedActivityId, data);
 
             Assert.AreEqual(expected, actual);
@@ -124,6 +129,7 @@ namespace Essential.Diagnostics.Tests
         {
             var traceFormatter = new TraceFormatter();
             TraceEventCache eventCache = null;
+            TraceListener listener = null;
             string source = "test";
             TraceEventType eventType = TraceEventType.Warning;
             int id = 0;
@@ -134,7 +140,7 @@ namespace Essential.Diagnostics.Tests
 
             string expected = "<Something to say>";
 
-            var actual = traceFormatter.Format(template, eventCache, source, eventType, id,
+            var actual = traceFormatter.Format(template, listener, eventCache, source, eventType, id,
                 message, relatedActivityId, data);
 
             Assert.AreEqual(expected, actual);
@@ -145,6 +151,7 @@ namespace Essential.Diagnostics.Tests
         {
             var traceFormatter = new TraceFormatter();
             TraceEventCache eventCache = null;
+            TraceListener listener = null;
             string source = "test";
             TraceEventType eventType = TraceEventType.Warning;
             int id = 0;
@@ -154,7 +161,7 @@ namespace Essential.Diagnostics.Tests
             string message = "Something to say. the rest of the trace.";
             string expected = "<Something to say>";
 
-            var actual = traceFormatter.Format(template, eventCache, source, eventType, id,
+            var actual = traceFormatter.Format(template, listener, eventCache, source, eventType, id,
                 message, relatedActivityId, data);
 
             Assert.AreEqual(expected, actual);
@@ -165,6 +172,7 @@ namespace Essential.Diagnostics.Tests
         {
             var traceFormatter = new TraceFormatter();
             TraceEventCache eventCache = null;
+            TraceListener listener = null;
             string source = "test";
             TraceEventType eventType = TraceEventType.Warning;
             int id = 0;
@@ -175,7 +183,7 @@ namespace Essential.Diagnostics.Tests
             string message = "Something to say Something to say Something to say. the rest of the trace.";
             string expect = "<Something to say Something to say Som...>";
 
-            var actual = traceFormatter.Format(template, eventCache, source, eventType, id,
+            var actual = traceFormatter.Format(template, listener, eventCache, source, eventType, id,
                 message, relatedActivityId, data);
 
             Assert.AreEqual(expect, actual);
@@ -186,6 +194,7 @@ namespace Essential.Diagnostics.Tests
         {
             var traceFormatter = new TraceFormatter();
             TraceEventCache eventCache = null;
+            TraceListener listener = null;
             string source = "test";
             TraceEventType eventType = TraceEventType.Warning;
             int id = 0;
@@ -196,7 +205,7 @@ namespace Essential.Diagnostics.Tests
 
             string expected = "<Something tosay>";
 
-            var actual = traceFormatter.Format(template, eventCache, source, eventType, id,
+            var actual = traceFormatter.Format(template, listener, eventCache, source, eventType, id,
                 message, relatedActivityId, data);
 
             Assert.AreEqual(expected, actual);

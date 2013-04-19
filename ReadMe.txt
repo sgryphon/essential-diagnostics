@@ -21,7 +21,7 @@ Version History
 
 v1.1.Next
 
-* Added TraceFormatter parameters: AppDomain, MessagePrefix.
+* Added TraceFormatter parameters: AppDomain, Listener, MessagePrefix.
 * Issue #14: Inverted condition in TraceListenerBase.TraceWriteAsEvent
 * Issue #21: RollingFileTraceListener should be flushed when it's closed.
 * Issue #22: Missing timezone specified "Z" in RollingXmlTraceListener

@@ -62,6 +62,23 @@ namespace Essential.Diagnostics
         /// <returns>A string containing the values formatted using the provided template.</returns>
         /// <remarks>
         /// <para>
+        /// Obsolete. Should use the overload that includes listener instead.
+        /// </para>
+        /// </remarks>
+        [Obsolete("Should use the overload that includes listener instead.")]
+        public string Format(string template, TraceEventCache eventCache, string source,
+            TraceEventType eventType, int id, string message,
+            Guid? relatedActivityId, object[] data)
+        {
+            return Format(template, null, eventCache, source, eventType, id, message, relatedActivityId, data);
+        }
+
+        /// <summary>
+        /// Formats a trace event, inserted the provided values into the provided template.
+        /// </summary>
+        /// <returns>A string containing the values formatted using the provided template.</returns>
+        /// <remarks>
+        /// <para>
         /// Uses the StringTemplate.Format function to format trace output using a supplied template
         /// and trace information. The formatted event can then be written to the console, a
         /// file, or other text-based output.
@@ -78,8 +95,8 @@ namespace Essential.Diagnostics
         /// "{Source} {EventType}: {Id} : {Message}".
         /// </para>
         /// </remarks>
-        public string Format(string template, TraceEventCache eventCache, string source, 
-            TraceEventType eventType, int id, string message, 
+        public string Format(string template, TraceListener listener, TraceEventCache eventCache, 
+            string source, TraceEventType eventType, int id, string message, 
             Guid? relatedActivityId, object[] data)
         {
             var result = StringTemplate.Format(CultureInfo.CurrentCulture, template,
@@ -177,6 +194,9 @@ namespace Essential.Diagnostics
                             break;
                         case "APPDATA":
                             value = HttpTraceContext.AppDataPath;
+                            break;
+                        case "LISTENER":
+                            value = (listener == null) ? "" : listener.Name;
                             break;
                         default:
                             value = "{" + name + "}";

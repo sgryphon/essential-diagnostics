@@ -408,6 +408,7 @@ namespace Essential.Diagnostics
             */
 
             var output = traceFormatter.Format(Template,
+                this,
                 eventCache,
                 source,
                 eventType,

@@ -114,6 +114,9 @@ Data:
         SmtpWorkerPoolB smtpWorkerPoolB;
         static object smtpWorkerPoolLock = new object();
 
+        /// <summary>
+        /// Constructor. Sends each trace event in an email to the specified address.
+        /// </summary>
         public EmailTraceListener(string toAddress)
             : base(toAddress)
         {
@@ -197,7 +200,7 @@ Data:
         }
 
         /// <summary>
-        /// Gets or sets the maximum concurrent connections in the SmtpClient pool.
+        /// Gets or sets the maximum concurrent SMTP connections.
         /// </summary>
         /// <remarks>
         /// <para>
@@ -282,10 +285,10 @@ Data:
         /// </summary>
         protected override void WriteTrace(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message, Guid? relatedActivityId, object[] data)
         {
-            string subject = traceFormatter.Format(SubjectTemplate, eventCache, source,
+            string subject = traceFormatter.Format(SubjectTemplate, this, eventCache, source,
                 eventType, id, message, relatedActivityId, data);
 
-            string body = traceFormatter.Format(BodyTemplate, eventCache, source, eventType, id,
+            string body = traceFormatter.Format(BodyTemplate, this, eventCache, source, eventType, id,
                 message, relatedActivityId, data);
 
             // Use hidden/undocumented attribute to switch versions (for testing)
