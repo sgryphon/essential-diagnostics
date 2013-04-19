@@ -15,6 +15,7 @@ using Essential.Diagnostics;
 using System.ComponentModel;
 using System.IO;
 using Essential.Net.Mail;
+using System.Threading;
 
 namespace Essential.Diagnostics.Tests
 {
@@ -177,6 +178,49 @@ namespace Essential.Diagnostics.Tests
 
             AssertMessagesSent(2000);
         }
+
+        [TestMethod]
+        [TestCategory("MailIntegration")]
+        public void EmailSendIntermittent()
+        {
+            TraceSource source = new TraceSource("emailSource");
+
+            Debug.WriteLine("Expect 1");
+            source.TraceEvent(TraceEventType.Warning, 0, "Message 1");
+            Debug.WriteLine("Expect 2");
+            source.TraceEvent(TraceEventType.Error, 0, "Message 2");
+            source.TraceEvent(TraceEventType.Error, 0, "Message 3");
+            source.TraceEvent(TraceEventType.Error, 0, "Message 4");
+
+            Thread.Sleep(300);
+            source.TraceEvent(TraceEventType.Warning, 0, "Message 5");
+            Thread.Sleep(150);
+            Debug.WriteLine("Expect 1");
+            Thread.Sleep(150);
+            source.TraceEvent(TraceEventType.Warning, 0, "Message 6");
+            Thread.Sleep(300);
+            source.TraceEvent(TraceEventType.Warning, 0, "Message 7");
+
+            Thread.Sleep(450);
+            Debug.WriteLine("Expect 0");
+            Thread.Sleep(450);
+
+            Debug.WriteLine("Expect 1");
+            source.TraceEvent(TraceEventType.Warning, 0, "Message 8");
+            Thread.Sleep(300);
+            source.TraceEvent(TraceEventType.Warning, 0, "Message 9");
+            Thread.Sleep(300);
+            source.TraceEvent(TraceEventType.Warning, 0, "Message 10");
+
+            Debug.WriteLine("Expect 2");
+            source.TraceEvent(TraceEventType.Warning, 0, "Message 11");
+            source.TraceEvent(TraceEventType.Warning, 0, "Message 12");
+
+            System.Threading.Thread.Sleep(2000);//need to wait, otherwise the test host is terminated resulting in thread abort.
+
+            AssertMessagesSent(12);
+        }
+
 
     }
 }

@@ -48,6 +48,7 @@ namespace Essential.Net.Mail
     {
         const int maxExitWaitMilliseconds = 2000;
         const int exitCheckIntervalMilliseconds = 100;
+        const int idleTimeoutMilliseconds = 500;
 
         int maxConnections;
         Queue<SmtpWorkerAsyncResult> messageQueue = new Queue<SmtpWorkerAsyncResult>();
@@ -167,7 +168,6 @@ namespace Essential.Net.Mail
 
         private class SmtpWorker
         {
-            const int idleTimeoutMilliseconds = 500;
             SmtpWorkerPoolB pool;
             Thread thread;
             bool isIdle;
