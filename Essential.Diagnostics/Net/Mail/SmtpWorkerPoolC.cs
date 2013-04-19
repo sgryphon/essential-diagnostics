@@ -78,6 +78,21 @@ namespace Essential.Net.Mail
             return asyncResult;
         }
 
+        public IAsyncResult BeginSend(string from, string recipients, string subject, string body, AsyncCallback callback, object state)
+        {
+            var mailMessage = new MailMessage(from, recipients, subject, body);
+            var asyncResult = BeginSend(mailMessage,
+                    (ar) => {
+                        mailMessage.Dispose();
+                        if (callback != null)
+                        {
+                            callback(ar);
+                        }
+                    },
+                    state);
+            return asyncResult;
+        }
+
         public void Dispose()
         {
             Dispose(true);

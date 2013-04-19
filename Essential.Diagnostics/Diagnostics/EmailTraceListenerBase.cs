@@ -49,6 +49,36 @@ namespace Essential.Diagnostics
         }
 
         /// <summary>
+        /// Gets or sets an alternate from address, instead of the one configured in system.net mailSettings.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Generally the value set in system.net mailSettings is used as the From address field in any email
+        /// sent, however this attribute may be set to override the value.
+        /// </para>
+        /// </remarks>
+        public string FromAddress
+        {
+            get
+            {
+                if (Attributes.ContainsKey("fromAddress"))
+                {
+                    return Attributes["fromAddress"];
+                }
+                else
+                {
+                    var smtpConfig = System.Configuration.ConfigurationManager.GetSection("system.net/mailSettings/smtp") as System.Net.Configuration.SmtpSection;
+                    Attributes["fromAddress"] = smtpConfig.From;
+                    return Attributes["fromAddress"];
+                }
+            }
+            set
+            {
+                Attributes["fromAddress"] = value;
+            }
+        }
+
+        /// <summary>
         /// Gets the email address the trace messages will be sent to.
         /// </summary>
         /// <remarks>
@@ -180,20 +210,10 @@ namespace Essential.Diagnostics
         /// </summary>
         internal void SendEmail(string subject, string body, bool waitForComplete)
         {
-            MailMessage mailMessage = new MailMessage();
-
-            mailMessage.IsBodyHtml = false;
-            mailMessage.BodyEncoding = Encoding.UTF8;
-            mailMessage.To.Add(ToAddress);
-            mailMessage.Subject = subject;
-            mailMessage.Body = body;
-
             // Use hidden/undocumented attribute to switch versions (for testing)
             if (Attributes["poolVersion"] == "C")
             {
-                var asyncResult = SmtpWorkerPoolC.BeginSend(mailMessage,
-                    (ar) => { ((MailMessage)ar.AsyncState).Dispose(); },
-                    mailMessage);
+                var asyncResult = SmtpWorkerPoolC.BeginSend(FromAddress, ToAddress, subject, body, null, null);
                 if (waitForComplete)
                 {
                     SmtpWorkerPoolC.EndSend(asyncResult);
@@ -201,9 +221,7 @@ namespace Essential.Diagnostics
             }
             else // default
             {
-                var asyncResult = SmtpWorkerPoolB.BeginSend(mailMessage,
-                    (ar) => { ((MailMessage)ar.AsyncState).Dispose(); },
-                    mailMessage);
+                var asyncResult = SmtpWorkerPoolB.BeginSend(FromAddress, ToAddress, subject, body, null, null);
                 if (waitForComplete)
                 {
                     SmtpWorkerPoolB.EndSend(asyncResult);
