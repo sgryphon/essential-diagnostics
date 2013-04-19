@@ -12,7 +12,7 @@ namespace Essential.Diagnostics.Tests
     public class TraceFormatterTest
     {
         [TestMethod()]
-        public void BasicFormatTest()
+        public void FormatIdAndMessageTest()
         {
             var traceFormatter = new TraceFormatter();
             TraceEventCache eventCache = null;
@@ -32,7 +32,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod()]
-        public void BasicContextTest()
+        public void FormatPrincipalNameTest()
         {
             var traceFormatter = new TraceFormatter();
             TraceEventCache eventCache = null;
@@ -56,7 +56,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod()]
-        public void ProcessContextTest()
+        public void FormatProcessIdTest()
         {
             var traceFormatter = new TraceFormatter();
             TraceEventCache eventCache = null;
@@ -76,7 +76,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod()]
-        public void HttpContextTest()
+        public void FormatHttpRequestUrlTest()
         {
             var mockHttpTraceContext  =new MockHttpTraceContext();
             mockHttpTraceContext.RequestUrl = new Uri("http://test/x");
@@ -99,7 +99,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod()]
-        public void EmptyHttpContextTest()
+        public void FormatEmptyHttpContextTest()
         {
             // The default is HttpContext.Current, which should be empty when running unit test
             var traceFormatter = new TraceFormatter();
@@ -115,6 +115,89 @@ namespace Essential.Diagnostics.Tests
 
             var actual = traceFormatter.Format(template, eventCache, source, eventType, id,
                     message, relatedActivityId, data);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void FormatMessagePrefixAll()
+        {
+            var traceFormatter = new TraceFormatter();
+            TraceEventCache eventCache = null;
+            string source = "test";
+            TraceEventType eventType = TraceEventType.Warning;
+            int id = 0;
+            Guid? relatedActivityId = null;
+            object[] data = null;
+            string template = "<{MessagePrefix}>";
+            string message = "Something to say";
+
+            string expected = "<Something to say>";
+
+            var actual = traceFormatter.Format(template, eventCache, source, eventType, id,
+                message, relatedActivityId, data);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void FormatMessagePrefixSentinel()
+        {
+            var traceFormatter = new TraceFormatter();
+            TraceEventCache eventCache = null;
+            string source = "test";
+            TraceEventType eventType = TraceEventType.Warning;
+            int id = 0;
+            Guid? relatedActivityId = null;
+            object[] data = null;
+            string template = "<{MessagePrefix}>";
+            string message = "Something to say. the rest of the trace.";
+            string expected = "<Something to say>";
+
+            var actual = traceFormatter.Format(template, eventCache, source, eventType, id,
+                message, relatedActivityId, data);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void FormatMessagePrefixLength()
+        {
+            var traceFormatter = new TraceFormatter();
+            TraceEventCache eventCache = null;
+            string source = "test";
+            TraceEventType eventType = TraceEventType.Warning;
+            int id = 0;
+            Guid? relatedActivityId = null;
+            object[] data = null;
+            string template = "<{MessagePrefix}>";
+            //                1234567890123456789012345678901234567890
+            string message = "Something to say Something to say Something to say. the rest of the trace.";
+            string expect = "<Something to say Something to say Som...>";
+
+            var actual = traceFormatter.Format(template, eventCache, source, eventType, id,
+                message, relatedActivityId, data);
+
+            Assert.AreEqual(expect, actual);
+        }
+
+        [TestMethod()]
+        public void FormatMessagePrefixControlCharacter()
+        {
+            var traceFormatter = new TraceFormatter();
+            TraceEventCache eventCache = null;
+            string source = "test";
+            TraceEventType eventType = TraceEventType.Warning;
+            int id = 0;
+            Guid? relatedActivityId = null;
+            object[] data = null;
+            string template = "<{MessagePrefix}>";
+            string message = "Something to\tsay";
+
+            string expected = "<Something tosay>";
+
+            var actual = traceFormatter.Format(template, eventCache, source, eventType, id,
+                message, relatedActivityId, data);
 
             Assert.AreEqual(expected, actual);
         }

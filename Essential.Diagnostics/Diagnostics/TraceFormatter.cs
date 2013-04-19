@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using Essential.Web;
 using System.Web;
+using System.Text.RegularExpressions;
 
 namespace Essential.Diagnostics
 {
@@ -27,7 +28,7 @@ namespace Essential.Diagnostics
     /// Data, Data0, EventType, Id, Message, ActivityId, RelatedActivityId, Source, 
     /// Callstack, DateTime (or UtcDateTime), LocalDateTime, LogicalOperationStack, 
     /// ProcessId, ThreadId, Timestamp, MachineName, ProcessName, ThreadName,
-    /// ApplicationName.
+    /// ApplicationName, MessagePrefix, AppDomain.
     /// </para>
     /// <para>
     /// An example template that generates the same output as the ConsoleListener is:
@@ -36,8 +37,10 @@ namespace Essential.Diagnostics
     /// </remarks>
     public class TraceFormatter
     {
+        const int MaxPrefixLength = 40;
+        const string PrefixContinuation = "...";
 
-        // TODO: AppDomainFriendlyName
+        static readonly Regex controlCharRegex = new Regex(@"\p{C}", RegexOptions.Compiled);
 
         string applicationName;
         private IHttpTraceContext httpTraceContext = new HttpContextAdapter(HttpContext.Current);
@@ -311,8 +314,21 @@ namespace Essential.Diagnostics
             if (!string.IsNullOrEmpty(message))
             {
                 // Prefix is the part of the message before the first <;,.:>
-                string[] ss = message.Split(new string[] { ";", ", ", ".", ":" }, 2, StringSplitOptions.None);
-                return ss[0];
+                string[] split = message.Split(new char[] { '.', '!', '?', ':', ';', ',', '\r', '\n' }, 2, StringSplitOptions.None);
+                string prefix;
+                if (split[0].Length <= MaxPrefixLength)
+                {
+                    prefix = split[0];
+                }
+                else
+                {
+                    prefix = split[0].Substring(0, MaxPrefixLength - PrefixContinuation.Length) + PrefixContinuation;
+                }
+                if (controlCharRegex.IsMatch(prefix))
+                {
+                    prefix = controlCharRegex.Replace(prefix, "");
+                }
+                return prefix;
             }
             else
             {

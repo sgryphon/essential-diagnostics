@@ -31,7 +31,6 @@ namespace Essential.Diagnostics
     {
         const int subjectMaxLength = 254; //though .NET lib does not place any restriction, and the recent standard of Email seems to be 254, which sounds safe.
         const int defaultMaxConnections = 2;
-        static readonly Regex controlCharRegex = new Regex(@"\p{C}", RegexOptions.Compiled);
         static string[] supportedAttributes = new string[] { 
             "maxConnections", "MaxConnections", "maxconnections",
             "subjectTemplate", "SubjectTemplate", "subjecttemplate",
@@ -186,7 +185,7 @@ namespace Essential.Diagnostics
             mailMessage.IsBodyHtml = false;
             mailMessage.BodyEncoding = Encoding.UTF8;
             mailMessage.To.Add(ToAddress);
-            mailMessage.Subject = SanitiseSubject(subject);
+            mailMessage.Subject = subject;
             mailMessage.Body = body;
 
             // Use hidden/undocumented attribute to switch versions (for testing)
@@ -211,21 +210,5 @@ namespace Essential.Diagnostics
                 }
             }
         }
-
-        static string SanitiseSubject(string subject)
-        {
-            if (subject.Length > 254) 
-            {
-                subject = subject.Substring(0, subjectMaxLength - 3) + "...";
-            }
-
-            if (controlCharRegex.IsMatch(subject))
-            {
-                subject = controlCharRegex.Replace(subject, "");
-            }
-
-            return subject;
-        }
-
     }
 }

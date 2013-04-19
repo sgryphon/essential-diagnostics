@@ -21,14 +21,15 @@ Version History
 
 v1.1.Next
 
+* Added TraceFormatter parameters: AppDomain, MessagePrefix.
 * Issue #14: Inverted condition in TraceListenerBase.TraceWriteAsEvent
 * Issue #21: RollingFileTraceListener should be flushed when it's closed.
 * Issue #22: Missing timezone specified "Z" in RollingXmlTraceListener
 
 v1.1.20103 (January 2012)
 
-* Feature #4: Add HttpContext items -- RequestUrl, RequestPath, UserHostAddress, 
-  AppData.
+* Feature #4: Add HttpContext items to TraceFormatter parameters: RequestUrl, 
+  RequestPath, UserHostAddress, AppData.
 * Issue #1: TraceFormatter.cs dependent on System.Windows.Forms.
   We only want the application name part, so use either Assembly.GetEntryAssembly() 
   directly, or for native code use kernel32 GetModuleFileName(), without checking 
