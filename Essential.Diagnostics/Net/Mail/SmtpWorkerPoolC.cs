@@ -141,6 +141,10 @@ namespace Essential.Net.Mail
         private void SendCompleted(object sender, AsyncCompletedEventArgs e)
         {
             SmtpWorkerAsyncResult completedAsyncResult = (SmtpWorkerAsyncResult)e.UserState;
+            if (e.Error != null)
+            {
+                Debug.WriteLine(string.Format("SendCompleted Exception: {0}", e.Error));
+            }
             completedAsyncResult.Complete(e.Error, false);
             completedAsyncResult.Dispose();
             // Use the completed thread to check for any new messages in queue
@@ -176,6 +180,7 @@ namespace Essential.Net.Mail
                 catch (Exception ex)
                 {
                     exception = ex;
+                    Debug.WriteLine(string.Format("SendAsync Exception: {0}", exception));
                 }
                 Debug.WriteLine(string.Format("{0:mm':'ss.ffffff}: After SendAsync, active count = {1}, queue length = {2}", DateTimeOffset.Now, activeSmtpClients.Count, messageQueue.Count));
                 if (exception != null)

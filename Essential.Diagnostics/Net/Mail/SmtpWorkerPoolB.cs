@@ -238,6 +238,7 @@ namespace Essential.Net.Mail
                             catch (Exception ex)
                             {
                                 exception = ex;
+                                Debug.WriteLine(string.Format("Error sending: {0}", exception));
                             }
                             asyncResultToProcess.Complete(exception, false);
                         }

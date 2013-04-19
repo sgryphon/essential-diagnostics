@@ -191,7 +191,7 @@ namespace Essential.Diagnostics.Tests
                 source.TraceEvent(TraceEventType.Error, 0, "Message 2 - {0}", i);
             }
 
-            System.Threading.Thread.Sleep(5000);//need to wait, otherwise the test host is terminated resulting in thread abort.
+            System.Threading.Thread.Sleep(10000);//need to wait, otherwise the test host is terminated resulting in thread abort.
 
             AssertMessagesSent(50);
         }

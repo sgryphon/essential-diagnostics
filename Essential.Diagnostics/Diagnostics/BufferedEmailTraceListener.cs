@@ -432,20 +432,20 @@ Trace Events:";
                 string body = headerToSend + Environment.NewLine + bufferToSend.ToString();
 
                 // Use hidden/undocumented attribute to switch versions (for testing)
-                if (Attributes["poolVersion"] == "C")
-                {
-                    var asyncResult = SmtpWorkerPoolC.BeginSend(FromAddress, ToAddress, subjectToSend, body, null, null);
-                    if (waitForComplete)
-                    {
-                        SmtpWorkerPoolC.EndSend(asyncResult);
-                    }
-                }
-                else // default
+                if (Attributes["poolVersion"] == "B")
                 {
                     var asyncResult = SmtpWorkerPoolB.BeginSend(FromAddress, ToAddress, subjectToSend, body, null, null);
                     if (waitForComplete)
                     {
                         SmtpWorkerPoolB.EndSend(asyncResult);
+                    }
+                }
+                else // default
+                {
+                    var asyncResult = SmtpWorkerPoolC.BeginSend(FromAddress, ToAddress, subjectToSend, body, null, null);
+                    if (waitForComplete)
+                    {
+                        SmtpWorkerPoolC.EndSend(asyncResult);
                     }
                 }
 

@@ -382,13 +382,13 @@ Data:
                     message, relatedActivityId, data);
 
                 // Use hidden/undocumented attribute to switch versions (for testing)
-                if (Attributes["poolVersion"] == "C")
+                if (Attributes["poolVersion"] == "B")
                 {
-                    var asyncResultC = SmtpWorkerPoolC.BeginSend(FromAddress, ToAddress, subject, body, null, null);
+                    var asyncResultB = SmtpWorkerPoolB.BeginSend(FromAddress, ToAddress, subject, body, null, null);
                     return;
                 }
+                var asyncResultC = SmtpWorkerPoolC.BeginSend(FromAddress, ToAddress, subject, body, null, null);
 
-                var asyncResultB = SmtpWorkerPoolB.BeginSend(FromAddress, ToAddress, subject, body, null, null);
             }
             else
             {
