@@ -181,6 +181,24 @@ namespace Essential.Diagnostics.Tests
 
         [TestMethod]
         [TestCategory("MailIntegration")]
+        public void EmailFloodTest()
+        {
+            TraceSource source = new TraceSource("emailFloodSource");
+
+            for (int i = 0; i < 100; i++)
+            {
+                source.TraceEvent(TraceEventType.Warning, 0, "Message 1 - {0}", i);
+                source.TraceEvent(TraceEventType.Error, 0, "Message 2 - {0}", i);
+            }
+
+            System.Threading.Thread.Sleep(5000);//need to wait, otherwise the test host is terminated resulting in thread abort.
+
+            AssertMessagesSent(50);
+        }
+
+
+        [TestMethod]
+        [TestCategory("MailIntegration")]
         public void EmailSendIntermittent()
         {
             TraceSource source = new TraceSource("emailSource");

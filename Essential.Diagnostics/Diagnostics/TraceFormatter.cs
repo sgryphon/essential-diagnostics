@@ -429,9 +429,9 @@ namespace Essential.Diagnostics
             return value;
         }
 
-        internal static object FormatUniversalTime(TraceEventCache eventCache)
+        internal static DateTimeOffset FormatUniversalTime(TraceEventCache eventCache)
         {
-            object value;
+            DateTimeOffset value;
             if (eventCache == null)
             {
                 value = DateTimeOffset.UtcNow;

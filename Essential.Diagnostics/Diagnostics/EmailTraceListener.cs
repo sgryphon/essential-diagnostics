@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.Globalization;
+using System.Threading;
 
 namespace Essential.Diagnostics
 {
@@ -112,9 +113,11 @@ Data:
 {Data}";
 
         const int defaultMaxConnections = 2;
+        const int defaultMaxTraces = 50;
 
         static string[] supportedAttributes = new string[] { 
             "maxConnections", "MaxConnections", "maxconnections",
+            "maxTracesPerHour", "MaxTracesPerHour", "maxtracesperhour",
             "subjectTemplate", "SubjectTemplate", "subjecttemplate",
             "bodyTemplate", "BodyTemplate", "bodytemplate",
             "poolVersion" };
@@ -232,6 +235,45 @@ Data:
         }
 
         /// <summary>
+        /// Gets or sets the maximum number of emails per hour that will be sent, to prevent flooding.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// The default value is 50.
+        /// </para>
+        /// <para>
+        /// To prevent flooding with emails this listener has a maximum number of email messages it
+        /// will send per hour. Normally the frequency of emails should be controlled by adding
+        /// an appropriate filter, for example add an EventTypeFilter that only send messages of
+        /// Warning level and above.
+        /// </para>
+        /// <para>
+        /// However there could still be an issue that causes repeated error events to be generated,
+        /// which would result in a flood of emails. To prevent this the component drops any further
+        /// traces once the limit is reached.
+        /// </para>
+        /// <para>
+        /// Note that restarting the process clears the counter and will send additional messages.
+        /// </para>
+        /// <para>
+        /// Setting the value to "0" will put no limit on the number of messages sent.
+        /// </para>
+        /// </remarks>
+        public int MaxTracesPerHour
+        {
+            get
+            {//todo: test with config change.
+                string s = Attributes["maxTracesPerHour"];
+                int value;
+                return Int32.TryParse(s, out value) ? value : defaultMaxTraces;
+            }
+            set
+            {
+                Attributes["maxTracesPerHour"] = value.ToString(CultureInfo.InvariantCulture);
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the template used to construct the email subject.
         /// </summary>
         /// <remarks>
@@ -290,25 +332,68 @@ Data:
             return supportedAttributes;
         }
 
+        const int floodLimitStatus_Ok = 0;
+        const int floodLimitStatus_Block = 1;
+
+
+        object floodLimitLock = new object();
+        static TimeSpan floodLimitWindow = TimeSpan.FromHours(1);
+        DateTimeOffset floodLimitReset;
+        int floodNumberOfTraces;
+        int floodLimitStatus;
+
         /// <summary>
         /// Write trace event with data.
         /// </summary>
         protected override void WriteTrace(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message, Guid? relatedActivityId, object[] data)
         {
-            string subject = traceFormatter.Format(SubjectTemplate, this, eventCache, source,
-                eventType, id, message, relatedActivityId, data);
+            var traceTime = TraceFormatter.FormatUniversalTime(eventCache);
+            int maxPerHour = MaxTracesPerHour;
+            bool sendEmail = false;
 
-            string body = traceFormatter.Format(BodyTemplate, this, eventCache, source, eventType, id,
-                message, relatedActivityId, data);
-
-            // Use hidden/undocumented attribute to switch versions (for testing)
-            if (Attributes["poolVersion"] == "C")
+            if (maxPerHour > 0)
             {
-                var asyncResultC = SmtpWorkerPoolC.BeginSend(FromAddress, ToAddress, subject, body, null, null);
-                return;
+                lock (floodLimitLock)
+                {
+                    if (traceTime > floodLimitReset)
+                    {
+                        // start a new flood limit
+                        floodLimitReset = traceTime.Add(floodLimitWindow);
+                        floodNumberOfTraces = 0;
+                    }
+                    if (floodNumberOfTraces < maxPerHour)
+                    {
+                        floodNumberOfTraces++;
+                        sendEmail = true;
+                    }
+                }
+            }
+            else
+            {
+                sendEmail = true;
             }
 
-            var asyncResultB = SmtpWorkerPoolB.BeginSend(FromAddress, ToAddress, subject, body, null, null);
+            if (sendEmail)
+            {
+                string subject = traceFormatter.Format(SubjectTemplate, this, eventCache, source,
+                    eventType, id, message, relatedActivityId, data);
+
+                string body = traceFormatter.Format(BodyTemplate, this, eventCache, source, eventType, id,
+                    message, relatedActivityId, data);
+
+                // Use hidden/undocumented attribute to switch versions (for testing)
+                if (Attributes["poolVersion"] == "C")
+                {
+                    var asyncResultC = SmtpWorkerPoolC.BeginSend(FromAddress, ToAddress, subject, body, null, null);
+                    return;
+                }
+
+                var asyncResultB = SmtpWorkerPoolB.BeginSend(FromAddress, ToAddress, subject, body, null, null);
+            }
+            else
+            {
+                Debug.WriteLine("Dropped message due to flood protection.");
+            }
         }
 
 
