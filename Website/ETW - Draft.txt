@@ -1,0 +1,236 @@
+XML Logging
+===========
+
+
+There are several loggers that can produce XML output.
+
+== XmlWriterTraceListener ==
+
+Produces a file, usually with the extension .svclog, containing XML Fragments for 
+each trace event. Note that this is not a well formed XML document as there is no 
+root element.
+
+<E2ETraceEvent xmlns="http://schemas.microsoft.com/2004/06/E2ETraceEvent">
+  <System xmlns="http://schemas.microsoft.com/2004/06/windows/eventlog/system">
+    <EventID>2000</EventID>
+    <Type>3</Type>
+    <SubType Name="Information">0</SubType>
+    <Level>8</Level>
+    <TimeCreated SystemTime="2013-04-19T11:01:31.1609003Z" />
+    <Source Name="HelloProgram" />
+    <Correlation ActivityID="{f56f00fe-f739-4ad2-a6a9-63e19d54c804}" />
+    <Execution ProcessName="HelloLogging" ProcessID="9576" ThreadID="1" />
+    <Channel/>
+    <Computer>ALIEN8</Computer>
+  </System>
+  <ApplicationData>Creating 3 workers</ApplicationData>
+</E2ETraceEvent>
+
+This file can be opened by the WCF Service Trace Viewer tool, part of the Windows
+SDK, which does a good job of displaying correlated activities, including opening
+files from multiple tiers where WCF passes correlation identifiers across.
+
+Service Trace Viewer is normally found somewhere like the following (it can
+vary depending on which SDK is installed):
+
+& "C:\Program Files (x86)\Microsoft SDKs\Windows\v8.0A\bin\NETFX 4.0 Tools\SvcTraceViewer.exe"
+
+These events use wrappers from the "http://schemas.microsoft.com/2004/06/E2ETraceEvent"
+schema, with inner content from "http://schemas.microsoft.com/2004/06/windows/eventlog/system".
+
+
+== RollingXmlTraceListener (in Essential.Diagnostics) ==
+
+This listener, from the Essential.Diagnostics extension library, uses the
+same format as XmlWriterTraceListener and produces a .svclog file containing
+XML fragments for each trace event.
+
+The main difference with RollingXmlTraceListener is that it generates files
+on a rolling basis, e.g. daily, whereas the Framework listener only creates a
+single file.
+
+<E2ETraceEvent xmlns="http://schemas.microsoft.com/2004/06/E2ETraceEvent">
+  <System xmlns="http://schemas.microsoft.com/2004/06/windows/eventlog/system">
+    <EventID>2000</EventID>
+    <Type>3</Type>
+    <SubType Name="Information">0</SubType>
+    <Level>8</Level>
+    <TimeCreated SystemTime="2013-04-19T11:01:54.8309092Z" />
+    <Source Name="HelloProgram" />
+    <Correlation ActivityID="{b8972468-5de2-45ce-ac48-a4887921ab31}" />
+    <Execution ProcessName="HelloLogging" ProcessID="2976" ThreadID="1" />
+    <Channel/>
+    <Computer>ALIEN8</Computer>
+  </System>
+  <ApplicationData>Creating 2 workers</ApplicationData>
+</E2ETraceEvent>
+
+== EventSchemaTraceListener (in System.Core) ==
+
+Similar to the other XML writers, this creates a file containing XML fragements
+for each trace message, using a slightly different XML format.
+
+One benefit of EventSchemaTraceListener is that it has several different log
+retention options, including LimitedCircularFiles that uses a circular list of
+files.
+
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Guid="{00000000-0000-0000-0000-000000000000}"/>
+    <EventID>2000</EventID>
+    <Level>8</Level>
+    <TimeCreated SystemTime="2013-04-19T11:00:47.1712814Z"/>
+    <Correlation ActivityID="{e5075cb8-9e9a-46f5-a71b-461e92973163}"/>
+    <Execution ProcessID="6440" ThreadID="1"/>
+    <Computer>ALIEN8</Computer>
+  </System>
+  <EventData>
+    <Data>Creating 2 workers</Data>
+  </EventData>
+  <RenderingInfo Culture="en-EN">
+    <Level>Information</Level>
+  </RenderingInfo>
+  <System.Diagnostics.ExtendedData xmlns="http://schemas.microsoft.com/2006/09/System.Diagnostics/ExtendedData">
+    <Timestamp>291943859254</Timestamp>
+  </System.Diagnostics.ExtendedData>
+</Event>
+
+Note that you always want to turn on traceOutputOptions="ProcessId,DateTime",
+otherwise you will not get the process/thread information or the date and
+time of events! (See the output of EventsA.xml in the EventRetentionExample.)
+
+Note that Event schema files can be opened (imported) by the Service Trace Viewer,
+which first converts them to the .svclog format, but does a pretty bad job
+at the conversion -- in fact it loses probably the most critical piece of 
+information which is the message itself!
+
+<E2ETraceEvent xmlns="http://schemas.microsoft.com/2004/06/E2ETraceEvent">
+  <System xmlns="http://schemas.microsoft.com/2004/06/windows/eventlog/system">
+    <EventID>2000</EventID>
+    <Type>3</Type>
+    <SubType Name="Information" />
+    <Level>8</Level>
+    <TimeCreated SystemTime="4/19/2013 9:00:47 PM" />
+    <Source Name="" Id="{00000000-0000-0000-0000-000000000000}" />
+    <Correlation ActivityID="{e5075cb8-9e9a-46f5-a71b-461e92973163}" />
+    <Execution ProcessID="6440" ThreadID="1" />
+    <Channel />
+    <Computer>ALIEN8</Computer>
+    <Security />
+    <Provider Guid="{00000000-0000-0000-0000-000000000000}" xmlns="http://schemas.microsoft.com/win/2004/08/events/event" />
+  </System>
+  <ApplicationData>
+    <TraceData>
+      <DataItem>
+        <TraceRecord Severity="Information" xmlns="http://schemas.microsoft.com/2004/10/E2ETraceEvent/TraceRecord">
+          <TraceIdentifier />
+          <Description />
+          <ExtendedData>
+            <RenderingInfo Culture="en-EN" xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+              <Level>Information</Level>
+            </RenderingInfo>
+            <System.Diagnostics.ExtendedData xmlns="http://schemas.microsoft.com/2006/09/System.Diagnostics/ExtendedData">
+              <Timestamp>291943859254</Timestamp>
+            </System.Diagnostics.ExtendedData>
+          </ExtendedData>
+        </TraceRecord>
+      </DataItem>
+    </TraceData>
+  </ApplicationData>
+</E2ETraceEvent>
+
+== EventProviderTraceListener ==
+
+The EventProviderTraceListener is more difficult to set up, as it doesn't write
+directly to a file but acts as a provider to the Event Tracing for Windows (ETW)
+system.
+
+To access the traces you need to use an ETW listener, for example the command 
+line logman.exe tool can be used to write traces to a log file.
+
+To use this, first open PowerShell as Administrator and use logman.exe to start
+a file logging session. You need to use the provider GUID specified in the 
+initializeData of the listener:
+
+logman start "hellosession" -p `{BDE5930E-34C9-4E2F-A6EC-89E1F1EA69CC`} -o "hello.etl" -ets
+
+Once the session is started, run the logging program (or the session can attach to an 
+already running program). When finished you can stop the session:
+
+logman stop "hellosession" -ets
+
+The session will create the specified .etl file, which is a binary format. To
+convert to a readable text format, use the tracerpt.exe tool.
+
+tracerpt hello.etl -o hello.xml
+
+This will create an XML file (as it is being processed a root wrapper is added),
+containing entries using the Event schema. A header entry is added containing some
+general information, and the events use slighly different fields than 
+EventSchemaTraceListener and some information missing such as the EventID,
+Correlation, and Computer.
+
+<Events>
+...
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+	<System>
+		<Provider Guid="{bde5930e-34c9-4e2f-a6ec-89e1f1ea69cc}" />
+		<EventID>0</EventID>
+		<Version>0</Version>
+		<Level>8</Level>
+		<Task>0</Task>
+		<Opcode>0</Opcode>
+		<Keywords>0x0</Keywords>
+		<TimeCreated SystemTime="2013-04-19T22:48:50.670575200Z" />
+		<Correlation ActivityID="{00000000-0000-0000-0000-000000000000}" />
+		<Execution ProcessID="6384" ThreadID="4848" ProcessorID="3" KernelTime="60" UserTime="30" />
+		<Channel />
+		<Computer />
+	</System>
+    <Data>Creating 2 workers</Data>
+</Event>
+
+The tracerpt.exe tool can also convert to CSV, but it is still missing information such as
+the Event ID:
+
+tracerpt hello.etl -of csv -o hello.csv
+
+It can also convert to .evtx format, which can be opened in the Windows Event Viewer (note
+that it puts the most recent, i.e. last, event at the top), however the same information
+is still missing:
+
+tracerpt hello.etl -of evtx -o hello.evtx
+
+The ETL file can also be imported by Service Trace Viewer, but again you 
+lose even more information (note from the timestamp that this is the
+same event):
+
+<E2ETraceEvent xmlns="http://schemas.microsoft.com/2004/06/E2ETraceEvent">
+  <System xmlns="http://schemas.microsoft.com/2004/06/windows/eventlog/system">
+    <EventID>0</EventID>
+    <Type>3</Type>
+    <SubType>0</SubType>
+    <Level>0</Level>
+    <Version>0</Version>
+    <TimeCreated SystemTime="2013-04-19T22:48:50.6704990+10:00"/>
+    <Source Name="{bde5930e-34c9-4e2f-a6ec-89e1f1ea69cc}" ID="{bde5930e-34c9-4e2f-a6ec-89e1f1ea69cc}"/>
+    <Correlation ActivityID="{00000000-0000-0000-0000-000000000000}"/>
+    <Execution ProcessID="6384" ThreadID="4848"/>
+    <Channel />
+    <Computer />
+  </System>
+  <ApplicationData>
+    <TraceData>
+      <DataItem>
+        <Length>30</Length>
+      </DataItem>
+    </TraceData>
+  </ApplicationData>
+</E2ETraceEvent>
+
+There are also tools like SvcPerf which can load .etl files directly, but it 
+can't display the custom information.
+
+
+
+
