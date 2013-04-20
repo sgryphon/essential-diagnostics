@@ -44,6 +44,19 @@ if ($WhatIf) {
 
 $NuGet = Join-Path (Split-Path $MyInvocation.MyCommand.Path) "NuGet.exe"
 
+function Add-Directory($zipFile, $zipPath, $path, $directory) {
+    $directoryLocation = (Join-Path $path $directory)
+	$items = Get-ChildItem $directoryLocation
+	foreach ($item in $items) {
+		if ($item.PSIsContainer) {
+			Add-Directory $zipFile $zipPath $path (Join-Path $directory $item.Name)
+		} else {
+			$file = Join-Path $directory $item.Name
+			Add-File $zipFile $zipPath $path $file
+		}
+	}
+}
+
 function Add-File($zipFile, $zipPath, $path, $file) {
     $fileLocation = (Join-Path $path $file)
     $fileRelativePath = (Split-Path $file)
@@ -121,7 +134,6 @@ function Add-Examples($zipFile, $zipPath, $solutionPath) {
 	$path = (Join-Path $solutionPath "Examples")
     
 	Add-File $zipFile $zipPath $path "Essential.Diagnostics.Examples.sln" 
-	Add-File $zipFile $zipPath $path "Diagnostics.Sample.config" 
 
 	Add-File $zipFile $zipPath $path "AbstractionDependency\AbstractionDependency.csproj" 
 	Add-File $zipFile $zipPath $path "AbstractionDependency\AbstractionDependency_ReadMe.txt"
@@ -132,6 +144,27 @@ function Add-Examples($zipFile, $zipPath, $solutionPath) {
 	Add-File $zipFile $zipPath $path "AbstractionDependency\packages.config" 
 	Add-File $zipFile $zipPath $path "AbstractionDependency\Program.cs" 
 	Add-File $zipFile $zipPath $path "AbstractionDependency\Properties\AssemblyInfo.cs"
+
+	Add-File $zipFile $zipPath $path "BufferedEmailExample\BufferedEmailExample.csproj" 
+	Add-File $zipFile $zipPath $path "BufferedEmailExample\App.config"
+	#Add-File $zipFile $zipPath $path "BufferedEmailExample\EmailExample_ReadMe.txt"
+	Add-File $zipFile $zipPath $path "BufferedEmailExample\packages.config" 
+	Add-File $zipFile $zipPath $path "BufferedEmailExample\Program.cs" 
+	Add-File $zipFile $zipPath $path "BufferedEmailExample\Properties\AssemblyInfo.cs"
+
+	Add-File $zipFile $zipPath $path "EmailExample\EmailExample.csproj" 
+	Add-File $zipFile $zipPath $path "EmailExample\App.config"
+	#Add-File $zipFile $zipPath $path "EmailExample\EmailExample_ReadMe.txt"
+	Add-File $zipFile $zipPath $path "EmailExample\packages.config" 
+	Add-File $zipFile $zipPath $path "EmailExample\Program.cs" 
+	Add-File $zipFile $zipPath $path "EmailExample\Properties\AssemblyInfo.cs"
+
+	Add-File $zipFile $zipPath $path "EventRetentionExample\EventRetentionExample.csproj" 
+	Add-File $zipFile $zipPath $path "EventRetentionExample\App.config"
+	Add-File $zipFile $zipPath $path "EventRetentionExample\EventRetentionExample_ReadMe.txt"
+	Add-File $zipFile $zipPath $path "EventRetentionExample\packages.config" 
+	Add-File $zipFile $zipPath $path "EventRetentionExample\Program.cs" 
+	Add-File $zipFile $zipPath $path "EventRetentionExample\Properties\AssemblyInfo.cs"
     
 	Add-File $zipFile $zipPath $path "FilteringExample\FilteringExample.csproj" 
 	Add-File $zipFile $zipPath $path "FilteringExample\App.config"
@@ -145,9 +178,13 @@ function Add-Examples($zipFile, $zipPath, $solutionPath) {
 	Add-File $zipFile $zipPath $path "HelloLogging\HelloLogging.cs" 
 	Add-File $zipFile $zipPath $path "HelloLogging\HelloLogging_ReadMe.txt" 
 	Add-File $zipFile $zipPath $path "HelloLogging\packages.config" 
+	Add-File $zipFile $zipPath $path "HelloLogging\BufferedEmail\HelloLogging.exe.config"
 	Add-File $zipFile $zipPath $path "HelloLogging\ColoredConsole\HelloLogging.exe.config"
 	Add-File $zipFile $zipPath $path "HelloLogging\Console\HelloLogging.exe.config"
+	Add-File $zipFile $zipPath $path "HelloLogging\Email\HelloLogging.exe.config"
+	Add-File $zipFile $zipPath $path "HelloLogging\ETW\HelloLogging.exe.config"
 	Add-File $zipFile $zipPath $path "HelloLogging\EventLog\HelloLogging.exe.config"
+	Add-File $zipFile $zipPath $path "HelloLogging\EventSchema\HelloLogging.exe.config"
 	Add-File $zipFile $zipPath $path "HelloLogging\FileLog\HelloLogging.exe.config"
 	Add-File $zipFile $zipPath $path "HelloLogging\InMemory\HelloLogging.exe.config"
 	Add-File $zipFile $zipPath $path "HelloLogging\Properties\AssemblyInfo.cs"
@@ -163,24 +200,16 @@ function Add-Examples($zipFile, $zipPath, $solutionPath) {
 	Add-File $zipFile $zipPath $path "HelloMvc3\packages.config" 
 	Add-File $zipFile $zipPath $path "HelloMvc3\Web.config" 
 	Add-File $zipFile $zipPath $path "HelloMvc3\Content\Site.css"	
+	Add-Directory $zipFile $zipPath $path "HelloMvc3\Content\themes\base"	
 	Add-File $zipFile $zipPath $path "HelloMvc3\Controllers\HomeController.cs"	
 	Add-File $zipFile $zipPath $path "HelloMvc3\Properties\AssemblyInfo.cs"	
-	Add-File $zipFile $zipPath $path "HelloMvc3\Scripts\jquery.validate.js"	
-	Add-File $zipFile $zipPath $path "HelloMvc3\Scripts\jquery.validate.min.js"	
-	Add-File $zipFile $zipPath $path "HelloMvc3\Scripts\jquery.validate-vsdoc.js"	
-	Add-File $zipFile $zipPath $path "HelloMvc3\Scripts\jquery-1.4.1.js"	
-	Add-File $zipFile $zipPath $path "HelloMvc3\Scripts\jquery-1.4.1.min.js"	
-	Add-File $zipFile $zipPath $path "HelloMvc3\Scripts\jquery-1.4.1-vsdoc.js"	
-	Add-File $zipFile $zipPath $path "HelloMvc3\Scripts\MicrosoftAjax.debug.js"	
-	Add-File $zipFile $zipPath $path "HelloMvc3\Scripts\MicrosoftAjax.js"	
-	Add-File $zipFile $zipPath $path "HelloMvc3\Scripts\MicrosoftMvcAjax.debug.js"	
-	Add-File $zipFile $zipPath $path "HelloMvc3\Scripts\MicrosoftMvcAjax.js"	
-	Add-File $zipFile $zipPath $path "HelloMvc3\Scripts\MicrosoftMvcValidation.debug.js"	
-	Add-File $zipFile $zipPath $path "HelloMvc3\Scripts\MicrosoftMvcValidation.js"	
+	Add-Directory $zipFile $zipPath $path "HelloMvc3\Scripts\"	
 	Add-File $zipFile $zipPath $path "HelloMvc3\Views\Web.config"	
-	Add-File $zipFile $zipPath $path "HelloMvc3\Views\Home\Index.aspx"	
-	Add-File $zipFile $zipPath $path "HelloMvc3\Views\Home\Log.aspx"	
-	Add-File $zipFile $zipPath $path "HelloMvc3\Views\Shared\Site.master"	
+	Add-File $zipFile $zipPath $path "HelloMvc3\Views\_ViewStart.cshtml"
+	Add-File $zipFile $zipPath $path "HelloMvc3\Views\Home\Index.cshtml"	
+	Add-File $zipFile $zipPath $path "HelloMvc3\Views\Home\Log.cshtml"	
+	Add-File $zipFile $zipPath $path "HelloMvc3\Views\Shared\_Layout.cshtml"	
+	Add-File $zipFile $zipPath $path "HelloMvc3\Views\Shared\Error.cshtml"	
 
 	Add-File $zipFile $zipPath $path "MonitorConfig\MonitorConfig.csproj" 
 	Add-File $zipFile $zipPath $path "MonitorConfig\App.config"
@@ -236,15 +265,17 @@ function Package-Complete($solutionPath, $version) {
 	$zipPath = ""
 	Add-File $zipFile $zipPath $solutionPath "ReadMe.txt"
 	Add-File $zipFile $zipPath $solutionPath "License.txt"
-
-	Add-File $zipFile $zipPath "$solutionPath\Examples" "packages\Essential.Diagnostics.$version\Essential.Diagnostics.$version.nupkg" 
+	Add-File $zipFile $zipPath $solutionPath "Sample.Essential.Diagnostics.config" 
+	Add-File $zipFile $zipPath $solutionPath "Sample.System.Diagnostics.config" 
 
     Add-Examples $zipFile $zipPath $solutionPath
-	
-	$binariesPath = (Join-Path $solutionPath "Examples\packages\Essential.Diagnostics.$version")
-	$zipPath = "packages\Essential.Diagnostics.$version"
-    Add-Binaries $zipFile $zipPath $binariesPath
 
+	#Add-Directory $zipFile $zipPath "$solutionPath\Examples" "packages"	
+	Add-File $zipFile $zipPath "$solutionPath\Examples" "packages\Essential.Diagnostics.$version\Essential.Diagnostics.$version.nupkg" 
+	$zipPath = "packages\Essential.Diagnostics.$version"
+	$binariesPath = (Join-Path $solutionPath "Examples\packages\Essential.Diagnostics.$version")
+    Add-Binaries $zipFile $zipPath $binariesPath
+	
 	$zipFilePath = (Join-Path $solutionPath "Packaging\Output\Essential.Diagnostics_$($version).zip")
 	Write-Host "$($pre)Saving examples package to '$zipFilePath'"
 	if (-not $WhatIf) {
