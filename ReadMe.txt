@@ -21,10 +21,17 @@ Version History
 
 v1.1.Next
 
+* Add Essential.Diagnostics.Config package that inserts sample .config 
+  sections, with a dependency on the main Essential.Diagnostics.
+  This is now the preferred way to add a reference (i.e. with the config)
+* Add System.Diagnostics Configuration package with sample .config
+  sections for Framework listeners.
+* Added EmailTraceListener, BufferedEmailTraceListener
 * Added TraceFormatter parameters: AppDomain, Listener, MessagePrefix.
 * Issue #14: Inverted condition in TraceListenerBase.TraceWriteAsEvent
 * Issue #21: RollingFileTraceListener should be flushed when it's closed.
 * Issue #22: Missing timezone specified "Z" in RollingXmlTraceListener
+
 
 v1.1.20103 (January 2012)
 
