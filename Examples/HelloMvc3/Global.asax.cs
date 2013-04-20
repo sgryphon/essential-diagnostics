@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -40,6 +41,9 @@ namespace HelloMvc3
 
             RegisterGlobalFilters(GlobalFilters.Filters);
             RegisterRoutes(RouteTable.Routes);
+
+            TraceSource source = new TraceSource("HelloMvc3");
+            source.TraceEvent(TraceEventType.Information, 1001, "Application Start.");
         }
     }
 }
