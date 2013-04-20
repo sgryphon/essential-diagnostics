@@ -22,8 +22,7 @@ Bug fixes TODO
 Packaging TODO
 --------------
 
-- Add Essential.Diagnostics Configuration package that inserts examples into .config
-- Add System.Diagnostics Configuration package that inserts examples into .config
+- Modernize PowerShell script, e.g. add Cmdlet behaviours.
 
 Documentation TODO
 ------------------
