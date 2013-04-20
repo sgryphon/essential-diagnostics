@@ -36,6 +36,7 @@ The different frameworks compared:
 * System.Diagnostics, using built-in FileLogTraceListener.
 * System.Diagnostics, using built-in FileLogTraceListener + DefaultTraceListener (i.e. if you don't clear the listeners)
 * System.Diagnostics, using Essential.Diagnostics RollingFileTraceListener.
+* System.Diagnostics, using built-in EventSchemaTraceListener.
 * log4net
 * NLog
 * Enterprise Library Logging Application Block

@@ -1,14 +1,32 @@
-XML Logging
-===========
+XML Logging in the .NET Framework
+=================================
 
+This was originally going to be some guideline instructions for a CodePlex project, Essential.Diagnostics that I work on, but it ended up being more an opinion piece so I thought it would fit better on a blog.
 
-There are several loggers that can produce XML output.
+There are several trace listeners (loggers) in the .NET Framework that can produce XML output. Outputting to XML results in more complex (verbose) files than, say, a simple text file output, but usually has the benefit of being better processed by tools, correlated across tiers, etc.
+
+There are three main XML listeners, plus one extension in Essential.Diagnostics:
+
+* XmlWriterTraceListener
+* RollingXmlTraceListener (in Essential.Diagnostics)
+* EventSchemaTraceListener (in System.Core)
+* EventProviderTraceListener (in System.Core)
+
+Examples of how to configure and use each one (used to produce the output below) is provided in the Essential.Diagnostics project.
+
 
 == XmlWriterTraceListener ==
 
-Produces a file, usually with the extension .svclog, containing XML Fragments for 
-each trace event. Note that this is not a well formed XML document as there is no 
-root element.
+This produces a file, usually with the extension .svclog, containing XML Fragments for each trace event. Note that this is not a well formed XML document as there is no root element.
+
+Sample config:
+
+      <add name="xmlwriter"
+           type="System.Diagnostics.XmlWriterTraceListener"
+           initializeData="C:\Temp\Logs\Trace.svclog" >
+      </add>
+
+Fragments look like the following:
 
 <E2ETraceEvent xmlns="http://schemas.microsoft.com/2004/06/E2ETraceEvent">
   <System xmlns="http://schemas.microsoft.com/2004/06/windows/eventlog/system">
@@ -26,28 +44,31 @@ root element.
   <ApplicationData>Creating 3 workers</ApplicationData>
 </E2ETraceEvent>
 
-This file can be opened by the WCF Service Trace Viewer tool, part of the Windows
-SDK, which does a good job of displaying correlated activities, including opening
-files from multiple tiers where WCF passes correlation identifiers across.
+These events use wrappers from the "http://schemas.microsoft.com/2004/06/E2ETraceEvent" schema, with inner content from "http://schemas.microsoft.com/2004/06/windows/eventlog/system".
 
-Service Trace Viewer is normally found somewhere like the following (it can
-vary depending on which SDK is installed):
+This file can be opened by the WCF Service Trace Viewer tool, part of the Windows SDK, which does a good job of displaying correlated activities, including opening files from multiple tiers where WCF passes correlation identifiers across. 
 
-& "C:\Program Files (x86)\Microsoft SDKs\Windows\v8.0A\bin\NETFX 4.0 Tools\SvcTraceViewer.exe"
+For in-depth log analysis of complex systems a properly instrumented application (with correlation activity transferes) Service Trace Viewer is a very good tool, particularly where you have errors occuring on the client and need to trace back to activity on the server.
 
-These events use wrappers from the "http://schemas.microsoft.com/2004/06/E2ETraceEvent"
-schema, with inner content from "http://schemas.microsoft.com/2004/06/windows/eventlog/system".
-
+Service Trace Viewer is normally found somewhere like the following (it can vary depending on which SDK is installed):
+  & "C:\Program Files (x86)\Microsoft SDKs\Windows\v8.0A\bin\NETFX 4.0 Tools\SvcTraceViewer.exe"
 
 == RollingXmlTraceListener (in Essential.Diagnostics) ==
 
-This listener, from the Essential.Diagnostics extension library, uses the
-same format as XmlWriterTraceListener and produces a .svclog file containing
-XML fragments for each trace event.
+This listener, from the Essential.Diagnostics extension library, uses the same format as XmlWriterTraceListener and produces a .svclog file containing XML fragments for each trace event.
 
-The main difference with RollingXmlTraceListener is that it generates files
-on a rolling basis, e.g. daily, whereas the Framework listener only creates a
-single file.
+The main difference with RollingXmlTraceListener is that it generates files on a rolling basis, e.g. daily, whereas the Framework listener only creates a single file. This allows you to clean up old files on a regular basis (currently this requires a separate clean up job).
+
+Note that one feature of Service Trace Viewer is that it can easily load multiple log files, so if an activity starts in one file and continues in the next, the tool can still reconstruct the activity flow.
+
+Sample config:
+
+      <add name="rollingxml"
+        type="Essential.Diagnostics.RollingXmlTraceListener, Essential.Diagnostics"
+        initializeData="C:\Temp\Logs\{ApplicationName}-{DateTime:yyyyMMdd}.svclog" >
+      </add>
+
+Example fragments from this listener are exactly the same:
 
 <E2ETraceEvent xmlns="http://schemas.microsoft.com/2004/06/E2ETraceEvent">
   <System xmlns="http://schemas.microsoft.com/2004/06/windows/eventlog/system">
@@ -67,12 +88,27 @@ single file.
 
 == EventSchemaTraceListener (in System.Core) ==
 
-Similar to the other XML writers, this creates a file containing XML fragements
-for each trace message, using a slightly different XML format.
+See http://msdn.microsoft.com/en-us/library/system.diagnostics.eventschematracelistener.aspx which provides an example configuration section and good detail on the options available and what is included in the output.
 
-One benefit of EventSchemaTraceListener is that it has several different log
-retention options, including LimitedCircularFiles that uses a circular list of
-files.
+Similar to the other XML writers, this creates a file containing XML fragements for each trace message, however using a slightly different XML format with the "Events" schema. In fact the schemas are so similar that one either evolved from the other, or else they come from a common ancestor.
+
+One benefit of EventSchemaTraceListener is that it has several different log retention options, including UnlimitedSequentialFiles that creates new files, sequentially numbered, based on size and LimitedCircularFiles that uses a circular list of files.
+
+The listener is also claimed to be quite performant as it efficiently buffers writes to disk. I have added it to the performance comparison in Essential.Diagnostics and it is quite fast.
+
+Sample config:
+
+      <add name="events"
+        type="System.Diagnostics.EventSchemaTraceListener, System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
+        initializeData="TraceOutput.xml"
+        traceOutputOptions="ProcessId,DateTime"
+        logRetentionOption="LimitedCircularFiles"
+        maximumNumberOfFiles="9"
+        maximumFileSize="1048576"
+        bufferSize="65536">
+      </add>
+
+The generated fragments have the following format, and can be compared to the above. There are a few elements missing, such as the Source and ProcessName. On the other hand the EventSchemaTraceListener does allow you to turn on TimeStamp (shown below), CallStack and LogicalOperationStack traceOutputOptions, although generally those are of limited benefit.
 
 <Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
   <System>
@@ -95,14 +131,13 @@ files.
   </System.Diagnostics.ExtendedData>
 </Event>
 
-Note that you always want to turn on traceOutputOptions="ProcessId,DateTime",
-otherwise you will not get the process/thread information or the date and
-time of events! (See the output of EventsA.xml in the EventRetentionExample.)
+Note that you always want to turn on at least traceOutputOptions="ProcessId,DateTime", otherwise you will not get the process/thread information or the date and time of events! (This seems quite silly, to have all the rich log information but make the date/time optional.)
 
-Note that Event schema files can be opened (imported) by the Service Trace Viewer,
-which first converts them to the .svclog format, but does a pretty bad job
-at the conversion -- in fact it loses probably the most critical piece of 
-information which is the message itself!
+While EventSchemaTraceListener looks promising, particularly with logRetentionOption, unfortunately I haven't been able to find a good tool to view them in.
+
+Although the Event schema files can be opened (actually imported) by the Service Trace Viewer, converting them to the .svclog format, it does a pretty bad job at the conversion -- in fact it loses probably the most critical piece of information which is the message itself!
+
+The resulting E2ETraceEvent fragments look like the following -- note the actual message (in <EventData> above) is missing, and the TimeCreated has been converted to local time (I have a +10 offset) and is in a non-standard (for XML) format.
 
 <E2ETraceEvent xmlns="http://schemas.microsoft.com/2004/06/E2ETraceEvent">
   <System xmlns="http://schemas.microsoft.com/2004/06/windows/eventlog/system">
@@ -139,36 +174,38 @@ information which is the message itself!
   </ApplicationData>
 </E2ETraceEvent>
 
-== EventProviderTraceListener ==
+The resulting file can be loaded in Service Trace Viewer, but really isn't very useful for analysis.
 
-The EventProviderTraceListener is more difficult to set up, as it doesn't write
-directly to a file but acts as a provider to the Event Tracing for Windows (ETW)
-system.
+It shouldn't been too difficult to write a processor that converts each fragment (possibly using some simple XSLT) into something usable by Service Trace Viewer -- I will have to add it to the TODO list for Essential.Diagnostics.
 
-To access the traces you need to use an ETW listener, for example the command 
-line logman.exe tool can be used to write traces to a log file.
+== EventProviderTraceListener (in System.Core) ==
 
-To use this, first open PowerShell as Administrator and use logman.exe to start
-a file logging session. You need to use the provider GUID specified in the 
-initializeData of the listener:
+There is not much info on this, but see http://blogs.msdn.com/b/peaceofmind/archive/2008/04/16/using-eventprovidertracelistener.aspx for some details, as MSDN is pretty sparse.
 
-logman start "hellosession" -p `{BDE5930E-34C9-4E2F-A6EC-89E1F1EA69CC`} -o "hello.etl" -ets
+The EventProviderTraceListener is more difficult to set up, as it doesn't write directly to a file but acts as a provider to the Event Tracing for Windows (ETW) system. In theory ETW is highly performant, flexible, can correlant with system events (such as performance counters) and all sorts of other goodness.
 
-Once the session is started, run the logging program (or the session can attach to an 
-already running program). When finished you can stop the session:
+Sample config:
 
-logman stop "hellosession" -ets
+      <add name="etw" type="System.Diagnostics.Eventing.EventProviderTraceListener, System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
+           initializeData="{BDE5930E-34C9-4E2F-A6EC-89E1F1EA69CC}" />
 
-The session will create the specified .etl file, which is a binary format. To
-convert to a readable text format, use the tracerpt.exe tool.
+So, to access the traces you need to use an ETW listener, for example the command line logman.exe tool can be used to write traces to a log file, otherwise you get nothing.
 
-tracerpt hello.etl -o hello.xml
+To use this, first open PowerShell as Administrator and use logman.exe to start a file logging session. You need to use the provider GUID specified in the initializeData of the listener:
 
-This will create an XML file (as it is being processed a root wrapper is added),
-containing entries using the Event schema. A header entry is added containing some
-general information, and the events use slighly different fields than 
-EventSchemaTraceListener and some information missing such as the EventID,
-Correlation, and Computer.
+  logman start "hellosession" -p `{BDE5930E-34C9-4E2F-A6EC-89E1F1EA69CC`} -o "hello.etl" -ets
+
+Once the session is started, run the logging program (or the session can attach to an already running program). When finished you can stop the session:
+
+  logman stop "hellosession" -ets
+
+The session will create the specified .etl file, which is a binary format. To convert to a readable text format, use the tracerpt.exe tool.
+
+  tracerpt hello.etl -o hello.xml
+
+This will create an XML file (as it is being processed a root wrapper is added), containing entries using the Event schema. A header entry is added containing some general information such as processing time, and the events use slighly different fields and values than EventSchemaTraceListener. In particular some information missing such as the EventID, Correlation, and Computer.
+
+The document has the following structure, with one example Event shown:
 
 <Events>
 ...
@@ -189,21 +226,18 @@ Correlation, and Computer.
 	</System>
     <Data>Creating 2 workers</Data>
 </Event>
+...
+</Events>
 
-The tracerpt.exe tool can also convert to CSV, but it is still missing information such as
-the Event ID:
+The tracerpt.exe tool can also convert to CSV, but it is still missing information such as the Event ID:
 
-tracerpt hello.etl -of csv -o hello.csv
+  tracerpt hello.etl -of csv -o hello.csv
 
-It can also convert to .evtx format, which can be opened in the Windows Event Viewer (note
-that it puts the most recent, i.e. last, event at the top), however the same information
-is still missing:
+It can also convert to .evtx format, which can be opened in the Windows Event Viewer, which is a nice interface, however the same information is still missing (note that it puts the most recent, i.e. last, event at the top):
 
-tracerpt hello.etl -of evtx -o hello.evtx
+  tracerpt hello.etl -of evtx -o hello.evtx
 
-The ETL file can also be imported by Service Trace Viewer, but again you 
-lose even more information (note from the timestamp that this is the
-same event):
+The ETL file can also be imported by Service Trace Viewer, but again you lose even more information (note from the timestamp that this is the same event):
 
 <E2ETraceEvent xmlns="http://schemas.microsoft.com/2004/06/E2ETraceEvent">
   <System xmlns="http://schemas.microsoft.com/2004/06/windows/eventlog/system">
@@ -228,8 +262,20 @@ same event):
   </ApplicationData>
 </E2ETraceEvent>
 
-There are also tools like SvcPerf which can load .etl files directly, but it 
-can't display the custom information.
+There are also tools like SvcPerf which can load .etl files directly, but it can't display the information such as the message (without some kind of schema file, which I haven't investigated).
+
+Other options for using ETW are to use the other clases in the System.Diagnostics.Eventing namespace and write directly to ETW. In fact, this is your only option if you are writing a WinRT application.
+
+== Conclusion ==
+
+XmlWriterTraceListener still has the best tool support (Service Trace Viewer) and should be the default choice if you want rich XML output and have only the .NET Framework.
+
+RollingXmlTraceListener from Essential.Diagnostics, extends this will rolling log file support and can be easily added to a project: it can be installed, with sample configuration sections, via "NuGet Essential.Diagnostics.Config". (Yes, this is a plug for my own project.)
+
+EventSchemaTraceListener (in System.Core) looks promising, particularly with logRetentionOption="LimitedCircularFiles", but lacks proper tool support at the moment (the import into Service Trace Viewer is all but useless).
+
+EventProviderTraceListener (in System.Core), while it can claim to hook into Event Tracing for Windows (ETW), simply currently has too many limitations (is missing the most information) to be recommended at this stage.
+
 
 
 

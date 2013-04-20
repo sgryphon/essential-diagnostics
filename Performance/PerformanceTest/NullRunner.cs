@@ -7,6 +7,13 @@ namespace PerformanceTest
 {
     class NullRunner : RunnerBase
     {
+        public override string Name
+        {
+            get
+            {
+                return base.Name + " (base time)";
+            }
+        }
         protected override void TraceCritical1(int id, string message, params object[] data)
         {
         }

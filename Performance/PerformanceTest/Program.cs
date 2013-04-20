@@ -31,6 +31,9 @@ namespace PerformanceTest
                 new SystemDiagnosticsRunner("Essential - One Filt.", "EssentialWarningSource1", "NoSource2"),
                 new SystemDiagnosticsRunner("Essential - Two Filt.", "EssentialWarningSource1", "EssentialWarningSource2"),
                 new SystemDiagnosticsRunner("Essential - One Full", "EssentialFullSource1", "EssentialWarningSource2"),
+                new SystemDiagnosticsRunner("Events - One Filt.", "EventsWarningSource1", "NoSource2"),
+                new SystemDiagnosticsRunner("Events - Two Filt.", "EventsWarningSource1", "EventsWarningSource2"),
+                new SystemDiagnosticsRunner("Events - One Full", "EventsFullSource1", "EventsWarningSource2"),
                 new log4netCheckRunner(),
                 new log4netRunner("None", "None.NoSource1", "None.NoSource2"),
                 new log4netRunner("One Filtered", "Warn.WarningSource1", "None.NoSource2"),
@@ -57,6 +60,9 @@ namespace PerformanceTest
             Console.WriteLine("- Warnings logged for source 1", iterations);
             Console.WriteLine("- Warnings logged for both sources", iterations);
             Console.WriteLine("- All source 1, warnings for source 2", iterations);
+            Console.WriteLine("");
+            Console.WriteLine("Times (in milliseconds) show difference compared to a NullRunner that does nothing,");
+            Console.WriteLine("i.e. to eliminate the overhead time taken for the actual looping.");
 
             Console.WriteLine("");
             Console.WriteLine("Warming up...");
@@ -71,9 +77,12 @@ namespace PerformanceTest
             }
 
             Console.WriteLine("Running performance tests:");
+            Console.WriteLine("");
             nullRunner.Output = true;
             nullRunner.Iterations = iterations;
             nullRunner.Run();
+            Console.WriteLine("");
+
             foreach (var runner in runners)
             {
                 runner.BaseTime = nullRunner.Elapsed;
