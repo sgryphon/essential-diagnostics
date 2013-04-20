@@ -14,10 +14,18 @@
 #                              Need to -Build or -Package first to copy the latest version to 
 #                              the Examples package folder.
 #  
+# ./Package.ps1 -PackageConfig : Create nuget package for Essential.Diagnostics.Config
+#                              and System.Diagnostics.Config, containing config transform
+#                              with sample config settings.
+#  
 # To skip the binaries ZIP, nuget package or example update, you can turn off the following flags:
 #   -PackageBin:$false
 #   -nuPack:$false
 #   -UpdateExamples:$false
+#
+# To override the version number (rather than version.txt from the build). Useful with -Package
+# to reset the version used in Examples and avoid triggering commit changes.
+#   -Version <version>
 #
 # To show output only (i.e. don't actually do anthing), use:             
 #   -WhatIf
@@ -36,6 +44,7 @@ param (
     [switch]$UpdateExamples = $true,
     [switch]$PackageFull = $false,
 	[switch]$PackageConfig = $false,
+	$Version,
     [switch]$WhatIf = $false
 )
 if ($WhatIf) {
@@ -428,17 +437,19 @@ $solutionPath = (Split-Path $executingScriptDirectory -Parent)
 $outputPath = (Join-Path $solutionPath "Packaging\Output")
 Ensure-Directory $outputPath
 
-if ($PackageFull) {
-	$version = (Get-Content (Join-Path $solutionPath "Essential.Diagnostics\Version.txt"))
-	
+if ($PackageFull) {	
+	if (-not $Version) {
+		$Version = (Get-Content (Join-Path $solutionPath "Essential.Diagnostics\Version.txt"))
+	}
 	Write-Host ""
 	Write-Host "# Packaging examples for version $version to '$outputPath'"
 	
-	Package-Complete $solutionPath $version
+	Package-Complete $solutionPath $Version
 } else {
 	if ($PackageConfig) {
-		$version = (Get-Content (Join-Path $solutionPath "Essential.Diagnostics\Version.txt"))
-		
+		if (-not $Version) {
+			$Version = (Get-Content (Join-Path $solutionPath "Essential.Diagnostics\Version.txt"))
+		}
 		Write-Host ""
 		Write-Host "# Packaging config for version $version to '$outputPath'"
 		
@@ -449,8 +460,10 @@ if ($PackageFull) {
 			if ($Build) {
 				Build-Solution $solutionPath "Release"
 			}
-
-			$version = (Get-Content (Join-Path $solutionPath "Essential.Diagnostics\Version.txt"))
+			# Get Version after build
+			if (-not $Version) {
+				$Version = (Get-Content (Join-Path $solutionPath "Essential.Diagnostics\Version.txt"))
+			}
 			Write-Host ""
 			Write-Host "# Packaging version $version to '$outputPath'"
 
