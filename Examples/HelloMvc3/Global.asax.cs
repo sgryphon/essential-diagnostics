@@ -15,6 +15,8 @@ namespace HelloMvc3
 
     public class MvcApplication : System.Web.HttpApplication
     {
+        TraceSource source = new TraceSource("HelloMvc3");
+
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
             filters.Add(new HandleErrorAttribute());
@@ -42,7 +44,6 @@ namespace HelloMvc3
             RegisterGlobalFilters(GlobalFilters.Filters);
             RegisterRoutes(RouteTable.Routes);
 
-            TraceSource source = new TraceSource("HelloMvc3");
             source.TraceEvent(TraceEventType.Information, 1001, "Application Start.");
         }
     }

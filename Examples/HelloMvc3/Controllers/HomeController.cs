@@ -13,7 +13,8 @@ namespace HelloMvc3.Controllers
 
         public ActionResult Index()
         {
-            throw new Exception("Foo");
+            //throw new Exception("Foo");
+            source.TraceEvent(TraceEventType.Information, 1002, "HomeController Index.");
             return View();
         }
 

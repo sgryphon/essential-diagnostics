@@ -43,7 +43,7 @@ namespace Essential.Diagnostics
         static readonly Regex controlCharRegex = new Regex(@"\p{C}", RegexOptions.Compiled);
 
         string applicationName;
-        private IHttpTraceContext httpTraceContext = new HttpContextAdapter(HttpContext.Current);
+        private IHttpTraceContext httpTraceContext = new HttpContextCurrentAdapter();
         int processId;
         string processName;
 
@@ -329,7 +329,7 @@ namespace Essential.Diagnostics
             return value;
         }
 
-        private string FormatPrefix(string message)
+        private static string FormatPrefix(string message)
         {
             if (!string.IsNullOrEmpty(message))
             {
