@@ -1,7 +1,7 @@
 ﻿Essential.Diagnostics - Scope Example
 =====================================
 
-An example using of different filters than can be applied to trace listeners.
+An example how ActivityScope can be used to simplify management of .
 
 Instructions
 ------------
