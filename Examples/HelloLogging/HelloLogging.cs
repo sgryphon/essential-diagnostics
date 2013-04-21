@@ -81,9 +81,9 @@ class Worker {
     Trace.CorrelationManager.StartLogicalOperation(string.Format("Worker:{0}", Id));
     _trace.TraceEvent(TraceEventType.Start, 1500, "Worker {0} start.", Id);
 	// Do work
-	int numberOfPokes = Program.Random.Next(3, 7);
+	int numberOfPokes = Program.Random.Next(3, 6);
 	_trace.TraceEvent(TraceEventType.Information, 2500, "Worker {0} will poke {1} times", Id, numberOfPokes);
-    for(int i = 1; i < numberOfPokes; i++) {
+    for(int i = 1; i <= numberOfPokes; i++) {
       Thread.Sleep(Program.Random.Next(500));
       int index = Program.Random.Next(Program.Workers.Count);
       _trace.TraceEvent(TraceEventType.Verbose, 0, "Worker {0} poking {1}", Id, index);
