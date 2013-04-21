@@ -14,11 +14,6 @@ Also see website.
 - Improve TraceConfigurationMonitor to support system.diagnostics section in separate config file.
 
 
-Bug fixes TODO
---------------
-
-- Off-by-one error in Poking loop in HelloLogging examples.
-
 Packaging TODO
 --------------
 
@@ -48,8 +43,5 @@ Event Logging considerations, e.g. installutil required to create the log name f
 Other TODO
 ----------
 
-- Remove/cleanup TestEmail..., TestError... directories
-- Add dot separators to name EssentialDiagnosticsIntegrationTests
-- Change "3rdParty" folder into a nuget-like packages folder
 
 

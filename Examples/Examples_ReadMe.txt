@@ -1,8 +1,18 @@
 Essential.Diagnostics Examples ReadMe
 =====================================
 
-Note: To get the ASP.NET MVC3 project to build, you need to enable
-Projects > Enable NuGet Package Restore.
+-------------------------------------------------------------------------------
+NOTE:
+
+If you build and get the error "Package restore is disabled by default" it is
+because the HelloMvc3 project has additional dependencies. 
+
+To allow HelloMvc3 to build, you can go to Tools > Options, then in Package 
+Manager enable "Allow NuGet to download missing packages during build".
+
+Alternatively, to just build all other projects in the solution except 
+HelloMvc3, go to Build > Configuration Manager and uncheck HelloMvc3.
+-------------------------------------------------------------------------------
 
 
 HelloLogging - The main example, with example configurations for most common
@@ -29,10 +39,6 @@ trace listeners.
 HelloMvc3 - Example using WebPageTraceListener to direct output to trace.axd,
 as well as using FileLogTraceListener (.NET Framework) and 
 RollingFileTraceListener (Essential.Diagnostics extensions) in a web application.
-
-Note: The MVC example has additional dependencies and is turned off in 
-Build > Configuration Manager. You need to turn on Project > Enable NuGet
-Package Restore to get the additional dependencies to build this project.
 
 MonitorConfig - Example using TraceConfigurationMonitor to monitor your 
 application config file for changes and refresh the diagnostics as needed.

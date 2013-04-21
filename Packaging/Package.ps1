@@ -143,6 +143,7 @@ function Add-Examples($zipFile, $zipPath, $solutionPath) {
 	$path = (Join-Path $solutionPath "Examples")
     
 	Add-File $zipFile $zipPath $path "Essential.Diagnostics.Examples.sln" 
+	Add-Directory $zipFile $zipPath $path ".nuget"	
 
 	Add-File $zipFile $zipPath $path "AbstractionDependency\AbstractionDependency.csproj" 
 	Add-File $zipFile $zipPath $path "AbstractionDependency\AbstractionDependency_ReadMe.txt"

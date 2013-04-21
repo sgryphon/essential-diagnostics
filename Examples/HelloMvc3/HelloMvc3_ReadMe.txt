@@ -1,6 +1,16 @@
 ﻿Essential.Diagnostics - Hello Mvc3
 ==================================
 
+-------------------------------------------------------------------------------
+NOTE:
+
+If you build and get the error "Package restore is disabled by default" it is
+because the HelloMvc3 project has additional dependencies. 
+
+To allow HelloMvc3 to build, you can go to Tools > Options, then in Package 
+Manager enable "Allow NuGet to download missing packages during build".
+-------------------------------------------------------------------------------
+
 Shows how System.Diagnostics tracing can be integrated with ASP.NET, by forwarding events to page tracing.
 
 Also shows how to use the built in FileLogTraceListener with web applications by setting a custom location, 
@@ -8,13 +18,7 @@ plus use of the {AppData} token with the extended RollingFileTraceListener.
 
 Note that the project is configured to use IIS Express, included with Visual Studio Express 2012 for Web.
 
-The project also requires additional Nuget dependencies that are not included in the download, so in 
-order for other examples to be compiled during a solution build it should be removed from 
-Build > Configuration Manager.
-
-To download the missing dependencies, turn on Project > Enable NuGet Package Restore.
-
-For the Framework FileLogTraceListener to work you also need to ensure a directory "C:\Temp\Logs" exists,
+For the Framework FileLogTraceListener to work you need to ensure a directory "C:\Temp\Logs" exists,
 or change the configuration.
 
 Instructions
