@@ -86,7 +86,7 @@ class Worker {
     for(int i = 1; i <= numberOfPokes; i++) {
       Thread.Sleep(Program.Random.Next(500));
       int index = Program.Random.Next(Program.Workers.Count);
-      _trace.TraceEvent(TraceEventType.Verbose, 0, "Worker {0} poking {1}", Id, index);
+      _trace.TraceEvent(TraceEventType.Verbose, 0, "Worker {0} poking {1}", Id, Program.Workers[index].Id);
       Program.Workers[index].Poke();
     }
 	FinishedEvent.Set();
