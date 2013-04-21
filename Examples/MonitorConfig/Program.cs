@@ -32,6 +32,9 @@ namespace MonitorConfig
             {
                 timer.Elapsed += new ElapsedEventHandler(timer_Elapsed);
                 timer.Enabled = true;
+
+                Console.WriteLine("TraceConfigurationMonitor is started.");
+                Console.WriteLine("Modify the MonitorConfig.exe.config file to see the effects.");
                 Console.ReadKey();
             }
         }

@@ -47,17 +47,25 @@ namespace Essential.Diagnostics
     /// <value>Ignored.</value>
     /// </item>
     /// <item>
+    /// <term>bodyTemplate</term>
+    /// <value>Template used to construct the email body.</value>
+    /// </item>
+    /// <item>
+    /// <term>fromAddress</term>
+    /// <value>Optional alternate from address, instead of the one configured in system.net mailSettings.</value>
+    /// </item>
+    /// <item>
     /// <term>maxConnections</term>
-    /// <value>Maximum SMTP client connections in pool. Default 2 connections.</value>
+    /// <value>Maximum concurrent SMTP connections. Default is 2 connections.</value>
+    /// </item>
+    /// <item>
+    /// <term>maxTracesPerHour</term>
+    /// <value>Maximum number of emails per hour that will be sent, to prevent flooding. Default is 50.</value>
     /// </item>
     /// <item>
     /// <term>subjectTemplate</term>
-    /// <value>Template to use to format the email subject.
+    /// <value>Template used to construct the email subject.
     /// For more information on the template tokens available, <see cref="TraceFormatter"/>.</value>
-    /// </item>
-    /// <item>
-    /// <term>bodyTemplate</term>
-    /// <value>Template to use to format the email subject.</value>
     /// </item>
     /// </list>
     /// </para>
@@ -85,7 +93,7 @@ namespace Essential.Diagnostics
         const string DefaultSubjectTemplate = "{EventType} {Id}: {MessagePrefix}; {MachineName}; {User}; {ProcessName}";
         const string DefaultBodyTemplate = @"Source: {Source}
 Date (UTC): {DateTime:u}
-Date (Local): {LocalDateTime:yyyy'-'MM'-'dd HH':'mm':'ss (K)}
+Date (Local): {LocalDateTime:yyyy'-'MM'-'dd HH':'mm':'ss zzz}
 Event ID: {Id}
 Level: {EventType}
 Activity: {ActivityId}

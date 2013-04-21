@@ -428,8 +428,8 @@ function Update-Examples($solutionPath, $configuration, $version) {
 	Write-Host "Update reference to '$referenceReplace' and path to '$pathReplace'"
 
 	$exampleProjects = @( "AbstractionDependency", "BufferedEmailExample", "EmailExample",
-		"FilteringExample", "HelloLogging", "HelloMvc3", "MonitorConfig", "ScopeExample",
-		"TemplateArguments" )
+		"EventRetentionExample", "FilteringExample", "HelloLogging", "HelloMvc3", "MonitorConfig", 
+		"ScopeExample", "TemplateArguments" )
 	
 	foreach ($project in $exampleProjects) {
 		$projectPath = Join-Path $solutionPath "Examples\$project\$project.csproj"

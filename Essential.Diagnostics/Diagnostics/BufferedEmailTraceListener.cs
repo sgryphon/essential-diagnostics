@@ -20,7 +20,7 @@ namespace Essential.Diagnostics
     {
         const string DefaultSubjectTemplate = "{Listener} {DateTime:u}; {MachineName}; {User}; {ProcessName}";
         const string DefaultHeaderTemplate = @"Date (UTC): {DateTime:u}
-Date (Local): {LocalDateTime:yyyy'-'MM'-'dd HH':'mm':'ss (K)}
+Date (Local): {LocalDateTime:yyyy'-'MM'-'dd HH':'mm':'ss zzz}
 
 Application Information:
  Computer: {MachineName}
