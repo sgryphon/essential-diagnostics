@@ -99,6 +99,7 @@ namespace Essential.Net.Mail
             GC.SuppressFinalize(this);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Want API to be instance method.")]
         public void EndSend(IAsyncResult asyncResult)
         {
             var smtpResult = asyncResult as SmtpWorkerAsyncResult;
@@ -152,6 +153,7 @@ namespace Essential.Net.Mail
             ProcessQueue(smtpClient);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Exception is reported in IAsyncResult for client to handle.")]
         private void ProcessQueue(SmtpClient clientToUse)
         {
             SmtpWorkerAsyncResult asyncResultToProcess = null;

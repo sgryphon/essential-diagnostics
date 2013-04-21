@@ -259,7 +259,6 @@ namespace Essential.Diagnostics.Tests
         [TestMethod]
         public void BaseHandlesWriteCategoryEmptyString()
         {
-            string s = null;
             GivenTrace()
                 .WhenTraceAction(source => Trace.Write("", "c1"))
                 .ThenVerifyTraceInfo(null, TraceEventType.Verbose, 0, "c1: ", null, null);

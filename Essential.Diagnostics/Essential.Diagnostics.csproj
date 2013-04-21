@@ -42,7 +42,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
     <CodeAnalysisRuleSet>..\EssentialDiagnostics.ruleset</CodeAnalysisRuleSet>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
     <DocumentationFile>bin\Debug\Essential.Diagnostics.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -108,7 +108,7 @@
     <Compile Include="Diagnostics\TraceFormatter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringTemplate.cs" />
-    <Compile Include="Web\HttpContextAdapter.cs" />
+    <Compile Include="Web\HttpContextCurrentAdapter.cs" />
     <Compile Include="Web\IHttpTraceContext.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -148,7 +148,7 @@
   </Target>
   -->
   <PropertyGroup>
-    <TFSBaseBuildYear>2010</TFSBaseBuildYear>
+    <TFSBaseBuildYear>2013</TFSBaseBuildYear>
   </PropertyGroup>
   <Import Project="..\TFSBuildNumber.targets" />
   <Target Name="BeforeBuild" DependsOnTargets="GetMajorMinorFromCSharpAssemblyInfoFile;&#xD;&#xA;					  WriteProjectTextAssemblyVersionFile;UpdateCSharpAssemblyInfoFile">
@@ -156,8 +156,8 @@
   <Target Name="AfterBuild" DependsOnTargets="ResetCSharpAssemblyInfoFile">
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>robocopy "$(TargetDir)" "$(SolutionDir)Packaging\$(ConfigurationName)\lib" *.dll *.xml
-robocopy "$(SolutionDir)" "$(SolutionDir)Packaging\$(ConfigurationName)" ReadMe.txt License.txt
+    <PostBuildEvent>robocopy "$(TargetDir)\" "$(SolutionDir)Packaging\$(ConfigurationName)\lib" *.dll *.xml
+robocopy "$(SolutionDir)\" "$(SolutionDir)Packaging\$(ConfigurationName)" ReadMe.txt License.txt
 exit 0</PostBuildEvent>
   </PropertyGroup>
 </Project>

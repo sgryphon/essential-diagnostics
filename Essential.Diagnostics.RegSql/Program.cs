@@ -65,7 +65,7 @@ namespace Essential.Diagnostics.RegSql
             bool install = named.ContainsKey("-AD");
             bool uninstall = named.ContainsKey("-RD");
 
-            if (VerifyOptions(install, uninstall, connectionString, server, trusted, username, password, database, exportFile))
+            if (VerifyOptions(install, uninstall, connectionString, server, trusted, username, password))
             {
                 if (!string.IsNullOrEmpty(username) && string.IsNullOrEmpty(password))
                 {
@@ -96,7 +96,7 @@ namespace Essential.Diagnostics.RegSql
             return 0;
         }
 
-        private static bool VerifyOptions(bool install, bool uninstall, string connectionString, string server, bool trusted, string username, string password, string database, string exportFile)
+        private static bool VerifyOptions(bool install, bool uninstall, string connectionString, string server, bool trusted, string username, string password)
         {
             if (install && uninstall)
             {
@@ -197,7 +197,7 @@ namespace Essential.Diagnostics.RegSql
             string argValue = null;
             foreach (var arg in args)
             {
-                if (arg.StartsWith("-"))
+                if (arg.StartsWith("-", StringComparison.OrdinalIgnoreCase))
                 {
                     if (argName != null)
                     {
@@ -270,7 +270,7 @@ namespace Essential.Diagnostics.RegSql
                 while (line != null)
                 {
                     line = reader.ReadLine();
-                    if (line == null || line.Trim().ToUpper() == "GO")
+                    if (line == null || string.Equals(line.Trim(), "GO", StringComparison.OrdinalIgnoreCase))
                     {
                         if (section.Length > 0)
                         {

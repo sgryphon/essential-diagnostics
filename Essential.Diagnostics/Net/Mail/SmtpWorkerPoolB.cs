@@ -95,6 +95,7 @@ namespace Essential.Net.Mail
             GC.SuppressFinalize(this);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification="Want API to be instance method.")]
         public void EndSend(IAsyncResult asyncResult)
         {
             var smtpResult = asyncResult as SmtpWorkerAsyncResult;
@@ -190,6 +191,7 @@ namespace Essential.Net.Mail
                 get { return isIdle; }
             }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification="Exception is reported in IAsyncResult for client to handle. Any thread exceptions are also caught and printed to debug, as this is the top of the stack.")]
             private void ThreadStart()
             {
                 Debug.WriteLine(string.Format("{0:mm':'ss.ffffff}: ThreadStart, pool count = {1}, queue length = {2}", DateTimeOffset.Now, pool.smtpWorkerPool.Count, pool.messageQueue.Count));

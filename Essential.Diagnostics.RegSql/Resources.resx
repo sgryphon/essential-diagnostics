@@ -130,7 +130,7 @@ Options:
 -C &lt;connection string&gt;     Connection string. Instead of specifying a user name, password, and server name, specify a
                            SQL Server connection string. The string must not contain a database name unless otherwise
                            specified.
--sqlexportonly &lt;filename&gt;  Generate the SQL script file for adding or removing the specified features and do not carry
+-sqlexportonly &lt;file name&gt; Generate the SQL script file for adding or removing the specified features and do not carry
                            out the actual operation. Can be used with the following options: -AD, -RD.
 -AD                        Add support for diagnostics.
 -RD                        Remove support for diagnostics.

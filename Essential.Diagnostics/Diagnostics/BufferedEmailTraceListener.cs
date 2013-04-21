@@ -109,6 +109,7 @@ Trace Events:";
         /// the first trace received, so should be used for information that will 
         /// be consistent or meaningful for all traces.
         /// </para>
+        /// <para>
         /// The rest of the body of the email then contains the buffered messages 
         /// using TraceTemplate (including the buffered first message in the 
         /// TraceTemplate format).

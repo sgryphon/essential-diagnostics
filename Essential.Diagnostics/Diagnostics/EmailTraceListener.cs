@@ -340,7 +340,6 @@ Data:
         static TimeSpan floodLimitWindow = TimeSpan.FromHours(1);
         DateTimeOffset floodLimitReset;
         int floodNumberOfTraces;
-        int floodLimitStatus;
 
         /// <summary>
         /// Write trace event with data.
@@ -384,11 +383,10 @@ Data:
                 // Use hidden/undocumented attribute to switch versions (for testing)
                 if (Attributes["poolVersion"] == "B")
                 {
-                    var asyncResultB = SmtpWorkerPoolB.BeginSend(FromAddress, ToAddress, subject, body, null, null);
+                    SmtpWorkerPoolB.BeginSend(FromAddress, ToAddress, subject, body, null, null);
                     return;
                 }
-                var asyncResultC = SmtpWorkerPoolC.BeginSend(FromAddress, ToAddress, subject, body, null, null);
-
+                SmtpWorkerPoolC.BeginSend(FromAddress, ToAddress, subject, body, null, null);
             }
             else
             {
