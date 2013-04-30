@@ -22,3 +22,4 @@ Documentation/Examples/Thumbs.db
 Examples/HelloMvc3/App_Data/*
 Packaging/EssentialConfig/*
 Packaging/SystemConfig/*
+Tests/Essential.Diagnostics.Integration.Tests.VisualState.xml
