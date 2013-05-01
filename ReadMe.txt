@@ -19,7 +19,7 @@ System.Diagnostics trace listeners, filters, and other utilities.
 Version History
 ---------------
 
-v1.2.Next (April 2013)
+v1.2.Next (May 2013)
 
 * Add Essential.Diagnostics.Config package that inserts sample .config 
   sections, with a dependency on the main Essential.Diagnostics.

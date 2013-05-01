@@ -95,6 +95,7 @@ namespace Essential.Diagnostics
         /// "{Source} {EventType}: {Id} : {Message}".
         /// </para>
         /// </remarks>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework", MessageId = "System.DateTimeOffset", Justification = "Deliberate dependency, .NET 2.0 SP1 required.")]
         public string Format(string template, TraceListener listener, TraceEventCache eventCache, 
             string source, TraceEventType eventType, int id, string message, 
             Guid? relatedActivityId, object[] data)
@@ -429,6 +430,7 @@ namespace Essential.Diagnostics
             return value;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework", MessageId = "System.DateTimeOffset", Justification = "Deliberate dependency, .NET 2.0 SP1 required.")]
         internal static DateTimeOffset FormatUniversalTime(TraceEventCache eventCache)
         {
             DateTimeOffset value;
@@ -445,6 +447,7 @@ namespace Essential.Diagnostics
             return value;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework", MessageId = "System.DateTimeOffset", Justification = "Deliberate dependency, .NET 2.0 SP1 required.")]
         internal static object FormatLocalTime(TraceEventCache eventCache)
         {
             object value;

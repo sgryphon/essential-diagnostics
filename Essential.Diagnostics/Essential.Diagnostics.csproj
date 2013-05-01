@@ -53,6 +53,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
     <CodeAnalysisRuleSet>..\EssentialDiagnostics.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
     <DocumentationFile>bin\Release\Essential.Diagnostics.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>

@@ -116,6 +116,7 @@ namespace Essential.Diagnostics
             return path.Insert(path.Length - extension.Length, "-" + num.ToString(CultureInfo.InvariantCulture));
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework", MessageId = "System.DateTimeOffset", Justification = "Deliberate dependency, .NET 2.0 SP1 required.")]
         private string GetCurrentFilePath(TraceEventCache eventCache)
         {
             var result = StringTemplate.Format(CultureInfo.CurrentCulture, FilePathTemplate,

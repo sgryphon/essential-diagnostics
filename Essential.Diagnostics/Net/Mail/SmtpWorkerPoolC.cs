@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Net.Mail;
 using System.Text;
 using System.Threading;
@@ -126,6 +127,7 @@ namespace Essential.Net.Mail
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework", MessageId = "System.DateTimeOffset", Justification = "Deliberate dependency, .NET 2.0 SP1 required.")]
         private SmtpClient CheckNewWorker()
         {
             SmtpClient newWorker = null;
@@ -134,7 +136,7 @@ namespace Essential.Net.Mail
                 newWorker = new SmtpClient();
                 activeSmtpClients.Add(newWorker);
                 newWorker.SendCompleted += SendCompleted;
-                Debug.WriteLine(string.Format("{0:mm':'ss.ffffff}: CheckNewWorker, active count = {1}, queue length = {2}", DateTimeOffset.Now, activeSmtpClients.Count, messageQueue.Count));
+                Debug.WriteLine(string.Format(CultureInfo.InvariantCulture, "{0:mm':'ss.ffffff}: CheckNewWorker, active count = {1}, queue length = {2}", DateTimeOffset.Now, activeSmtpClients.Count, messageQueue.Count));
             }
             return newWorker;
         }
@@ -144,7 +146,7 @@ namespace Essential.Net.Mail
             SmtpWorkerAsyncResult completedAsyncResult = (SmtpWorkerAsyncResult)e.UserState;
             if (e.Error != null)
             {
-                Debug.WriteLine(string.Format("SendCompleted Exception: {0}", e.Error));
+                Debug.WriteLine(string.Format(CultureInfo.InvariantCulture, "SendCompleted Exception: {0}", e.Error));
             }
             completedAsyncResult.Complete(e.Error, false);
             completedAsyncResult.Dispose();
@@ -154,6 +156,7 @@ namespace Essential.Net.Mail
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Exception is reported in IAsyncResult for client to handle.")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework", MessageId = "System.DateTimeOffset", Justification = "Deliberate dependency, .NET 2.0 SP1 required.")]
         private void ProcessQueue(SmtpClient clientToUse)
         {
             SmtpWorkerAsyncResult asyncResultToProcess = null;
@@ -163,7 +166,7 @@ namespace Essential.Net.Mail
                 if (messageQueue.Count > 0)
                 {
                     asyncResultToProcess = messageQueue.Dequeue();
-                    Debug.WriteLine(string.Format("{0:mm':'ss.ffffff}: ProcessQueue, active count = {1}, queue length = {2}", DateTimeOffset.Now, activeSmtpClients.Count, messageQueue.Count));
+                    Debug.WriteLine(string.Format(CultureInfo.InvariantCulture, "{0:mm':'ss.ffffff}: ProcessQueue, active count = {1}, queue length = {2}", DateTimeOffset.Now, activeSmtpClients.Count, messageQueue.Count));
                 }
                 else
                 {
@@ -173,7 +176,7 @@ namespace Essential.Net.Mail
             };
             if (asyncResultToProcess != null)
             {
-                Debug.WriteLine(string.Format("{0:mm':'ss.ffffff}: Before SendAsync, active count = {1}, queue length = {2}", DateTimeOffset.Now, activeSmtpClients.Count, messageQueue.Count));
+                Debug.WriteLine(string.Format(CultureInfo.InvariantCulture, "{0:mm':'ss.ffffff}: Before SendAsync, active count = {1}, queue length = {2}", DateTimeOffset.Now, activeSmtpClients.Count, messageQueue.Count));
                 Exception exception = null;
                 try
                 {
@@ -182,9 +185,9 @@ namespace Essential.Net.Mail
                 catch (Exception ex)
                 {
                     exception = ex;
-                    Debug.WriteLine(string.Format("SendAsync Exception: {0}", exception));
+                    Debug.WriteLine(string.Format(CultureInfo.InvariantCulture, "SendAsync Exception: {0}", exception));
                 }
-                Debug.WriteLine(string.Format("{0:mm':'ss.ffffff}: After SendAsync, active count = {1}, queue length = {2}", DateTimeOffset.Now, activeSmtpClients.Count, messageQueue.Count));
+                Debug.WriteLine(string.Format(CultureInfo.InvariantCulture, "{0:mm':'ss.ffffff}: After SendAsync, active count = {1}, queue length = {2}", DateTimeOffset.Now, activeSmtpClients.Count, messageQueue.Count));
                 if (exception != null)
                 {
                     asyncResultToProcess.Complete(exception, true);
@@ -196,9 +199,10 @@ namespace Essential.Net.Mail
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework", MessageId = "System.DateTimeOffset", Justification = "Deliberate dependency, .NET 2.0 SP1 required.")]
         private void TryDisposeSmtpClient(SmtpClient smtpClient)
         {
-            Debug.WriteLine(string.Format("{0:mm':'ss.ffffff}: TryDisposeSmtpClient, active count = {1}, queue length = {2}", DateTimeOffset.Now, activeSmtpClients.Count, messageQueue.Count));
+            Debug.WriteLine(string.Format(CultureInfo.InvariantCulture, "{0:mm':'ss.ffffff}: TryDisposeSmtpClient, active count = {1}, queue length = {2}", DateTimeOffset.Now, activeSmtpClients.Count, messageQueue.Count));
             if (typeof(SmtpClient).GetInterface("IDisposable") != null)//In .NET 4, SmtpClient has IDisposable.
             {
                 IDisposable disposable = smtpClient as IDisposable;
@@ -211,16 +215,17 @@ namespace Essential.Net.Mail
             SendAllBeforeExit();
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework", MessageId = "System.DateTimeOffset", Justification = "Deliberate dependency, .NET 2.0 SP1 required.")]
         void SendAllBeforeExit()
         {
-            Debug.WriteLine(string.Format("{0:mm':'ss.ffffff}: SendAllBeforeExit, active count = {1}, queue length = {2}", DateTimeOffset.Now, activeSmtpClients.Count, messageQueue.Count));
+            Debug.WriteLine(string.Format(CultureInfo.InvariantCulture, "{0:mm':'ss.ffffff}: SendAllBeforeExit, active count = {1}, queue length = {2}", DateTimeOffset.Now, activeSmtpClients.Count, messageQueue.Count));
             int totalWaitTime = 0;
             while (activeSmtpClients.Count > 0 && totalWaitTime < maxExitWaitMilliseconds)
             {
                 Thread.Sleep(exitCheckIntervalMilliseconds);
                 totalWaitTime += exitCheckIntervalMilliseconds;
             }
-            Debug.WriteLine(string.Format("{0:mm':'ss.ffffff}: DONE SendAllBeforeExit, active count = {1}, queue length = {2}", DateTimeOffset.Now, activeSmtpClients.Count, messageQueue.Count));
+            Debug.WriteLine(string.Format(CultureInfo.InvariantCulture, "{0:mm':'ss.ffffff}: DONE SendAllBeforeExit, active count = {1}, queue length = {2}", DateTimeOffset.Now, activeSmtpClients.Count, messageQueue.Count));
         }
 
 

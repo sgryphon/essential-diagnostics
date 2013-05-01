@@ -95,6 +95,7 @@ namespace Essential.Diagnostics
         /// Records the trace event in the in-memory buffer, converting mutable properties to string arrays to preserve their value at the time of the trace.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework", MessageId = "System.DateTimeOffset", Justification = "Deliberate dependency, .NET 2.0 SP1 required.")]
         protected override void WriteTrace(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message, Guid? relatedActivityId, object[] data)
         {
             lock (_eventsLock)
@@ -151,6 +152,7 @@ namespace Essential.Diagnostics
             string[] data;
             string[] logicalOperationStack;
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework", MessageId = "System.DateTimeOffset", Justification = "Deliberate dependency, .NET 2.0 SP1 required.")]
             internal TraceDetails(DateTimeOffset traceTime, string source, Guid activityId, TraceEventType eventType, int id, string message, Guid? relatedActivityId, string[] logicalOperationStack, string[] data)
             {
                 DateTime = traceTime;
@@ -167,6 +169,7 @@ namespace Essential.Diagnostics
             /// <summary>
             /// Gets the point in time the trace event was recorded.
             /// </summary>
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework", MessageId = "System.DateTimeOffset", Justification = "Deliberate dependency, .NET 2.0 SP1 required.")]
             public DateTimeOffset DateTime { get; private set; }
 
             /// <summary>

@@ -71,35 +71,14 @@ namespace Essential.Diagnostics.Tests
         {
         }
 
-        // 2013-04-16 SG: Accessor missing
-        //[TestMethod]
-        //public void TestExtractSubject()
-        //{
-        //    const string content = "Something to say";
-        //    const string theRest = ". the rest of the trace.";
-        //    string s = MailMessageHelper_Accessor.ExtractSubject(content);
-        //    Assert.IsTrue(s.StartsWith(content));
-
-        //    s = MailMessageHelper_Accessor.ExtractSubject("2012-03-02 12:48 " + content);
-        //    Assert.IsTrue(s.StartsWith(content));
-
-        //    s = MailMessageHelper_Accessor.ExtractSubject("2012-03-02 12:48 " + content + theRest);
-        //    Assert.IsTrue(s.StartsWith(content));
-
-        //    s = MailMessageHelper_Accessor.ExtractSubject("2012-03-02 12:48:22 abcde.fg:" + content);
-        //    Assert.IsTrue(s.StartsWith("abcde.fg:" + content));
-
-        //    s = MailMessageHelper_Accessor.ExtractSubject("abcde.fg:" + content);
-        //    Assert.IsTrue(s.StartsWith("abcde.fg:" + content));
-        //}
-
-
-        //////////////////////// Integration tests for Email functions should not be executed often.
-        ///*During integration tests, it is good to have a local SMTP server installed. Windows 7 does not have one, so you may use hMailServer. External SMTP server might be subject to spam control and network issue.
-
         void AssertMessagesSent(int expected)
         {
-            Assert.AreEqual(expected, Directory.GetFiles(pickupDirectory).Count());
+            AssertMessagesSent(expected, null);
+        }
+
+        void AssertMessagesSent(int expected, string message)
+        {
+            Assert.AreEqual(expected, Directory.GetFiles(pickupDirectory).Count(), message);
         }
 
         [TestMethod]
@@ -133,7 +112,7 @@ namespace Essential.Diagnostics.Tests
 
         [TestMethod]
         [TestCategory("MailIntegration")]
-        public void EmailSendMany()
+        public void EmailSendManyMaxUnlimited()
         {
             TraceSource source = new TraceSource("emailSource");
 
@@ -145,12 +124,12 @@ namespace Essential.Diagnostics.Tests
 
             System.Threading.Thread.Sleep(5000);//need to wait, otherwise the test host is terminated resulting in thread abort.
 
-            AssertMessagesSent(2000);
+            AssertMessagesSent(2000, "All messages should be sent as max is unlimited.");
         }
 
         [TestMethod]
         [TestCategory("MailIntegration")]
-        public void EmailSendManyThreads()
+        public void EmailSendManyThreadsMaxUnlimited()
         {
             TraceSource source = new TraceSource("emailSource");
 
@@ -176,12 +155,12 @@ namespace Essential.Diagnostics.Tests
             // Need to wait, otherwise messages haven't been sent and Assert throws exception
             System.Threading.Thread.Sleep(3000);
 
-            AssertMessagesSent(2000);
+            AssertMessagesSent(2000, "All messages should be sent as max is unlimited.");
         }
 
         [TestMethod]
         [TestCategory("MailIntegration")]
-        public void EmailFloodTest()
+        public void EmailFloodTestMaxDefault50()
         {
             TraceSource source = new TraceSource("emailFloodSource");
 
@@ -193,12 +172,12 @@ namespace Essential.Diagnostics.Tests
 
             System.Threading.Thread.Sleep(10000);//need to wait, otherwise the test host is terminated resulting in thread abort.
 
-            AssertMessagesSent(50);
+            AssertMessagesSent(50, "Should be limited by default max traces of 50.");
         }
 
         [TestMethod]
         [TestCategory("MailIntegration")]
-        public void EmailFloodManyThreads()
+        public void EmailFloodManyThreadsMax100()
         {
             TraceSource source = new TraceSource("emailFlood2Source");
 
@@ -224,7 +203,7 @@ namespace Essential.Diagnostics.Tests
             // Need to wait, otherwise messages haven't been sent and Assert throws exception
             System.Threading.Thread.Sleep(3000);
 
-            AssertMessagesSent(50);
+            AssertMessagesSent(100, "Should be limited by max traces of 100.");
         }
 
         [TestMethod]

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Net.Mail;
 using System.Text;
 using System.Threading;
@@ -127,6 +128,7 @@ namespace Essential.Net.Mail
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework", MessageId = "System.DateTimeOffset", Justification = "Deliberate dependency, .NET 2.0 SP1 required.")]
         private void EnsureWorker()
         {
             if (smtpWorkerPool.Count < maxConnections)
@@ -144,7 +146,7 @@ namespace Essential.Net.Mail
                 {
                     var newWorker = new SmtpWorker(this);
                     smtpWorkerPool.Add(newWorker);
-                    Debug.WriteLine(string.Format("{0:mm':'ss.ffffff}: EnsureWorker, pool count = {1}, queue length = {2}", DateTimeOffset.Now, smtpWorkerPool.Count, messageQueue.Count));
+                    Debug.WriteLine(string.Format(CultureInfo.InvariantCulture, "{0:mm':'ss.ffffff}: EnsureWorker, pool count = {1}, queue length = {2}", DateTimeOffset.Now, smtpWorkerPool.Count, messageQueue.Count));
                     newWorker.Start();
                 }
             }
@@ -155,16 +157,17 @@ namespace Essential.Net.Mail
             SendAllBeforeExit();
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework", MessageId = "System.DateTimeOffset", Justification = "Deliberate dependency, .NET 2.0 SP1 required.")]
         void SendAllBeforeExit()
         {
-            Debug.WriteLine(string.Format("{0:mm':'ss.ffffff}: SendAllBeforeExit, pool count = {1}, queue length = {2}", DateTimeOffset.Now, this.smtpWorkerPool.Count, this.messageQueue.Count));
+            Debug.WriteLine(string.Format(CultureInfo.InvariantCulture, "{0:mm':'ss.ffffff}: SendAllBeforeExit, pool count = {1}, queue length = {2}", DateTimeOffset.Now, this.smtpWorkerPool.Count, this.messageQueue.Count));
             int totalWaitTime = 0;
             while (smtpWorkerPool.Count > 0 && totalWaitTime < maxExitWaitMilliseconds)
             {
                 Thread.Sleep(exitCheckIntervalMilliseconds);
                 totalWaitTime += exitCheckIntervalMilliseconds;
             }
-            Debug.WriteLine(string.Format("{0:mm':'ss.ffffff}: DONE SendAllBeforeExit, pool count = {1}, queue length = {2}", DateTimeOffset.Now, this.smtpWorkerPool.Count, this.messageQueue.Count));
+            Debug.WriteLine(string.Format(CultureInfo.InvariantCulture, "{0:mm':'ss.ffffff}: DONE SendAllBeforeExit, pool count = {1}, queue length = {2}", DateTimeOffset.Now, this.smtpWorkerPool.Count, this.messageQueue.Count));
         }
 
         private class SmtpWorker
@@ -192,9 +195,10 @@ namespace Essential.Net.Mail
             }
 
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification="Exception is reported in IAsyncResult for client to handle. Any thread exceptions are also caught and printed to debug, as this is the top of the stack.")]
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework", MessageId = "System.DateTimeOffset", Justification = "Deliberate dependency, .NET 2.0 SP1 required.")]
             private void ThreadStart()
             {
-                Debug.WriteLine(string.Format("{0:mm':'ss.ffffff}: ThreadStart, pool count = {1}, queue length = {2}", DateTimeOffset.Now, pool.smtpWorkerPool.Count, pool.messageQueue.Count));
+                Debug.WriteLine(string.Format(CultureInfo.InvariantCulture, "{0:mm':'ss.ffffff}: ThreadStart, pool count = {1}, queue length = {2}", DateTimeOffset.Now, pool.smtpWorkerPool.Count, pool.messageQueue.Count));
                 SmtpClient smtpClient = null;
                 try
                 {
@@ -233,14 +237,14 @@ namespace Essential.Net.Mail
                             Exception exception = null;
                             try
                             {
-                                Debug.WriteLine(string.Format("{0:mm':'ss.ffffff}: Before Send, pool count = {1}, queue length = {2}", DateTimeOffset.Now, pool.smtpWorkerPool.Count, pool.messageQueue.Count));
+                                Debug.WriteLine(string.Format(CultureInfo.InvariantCulture, "{0:mm':'ss.ffffff}: Before Send, pool count = {1}, queue length = {2}", DateTimeOffset.Now, pool.smtpWorkerPool.Count, pool.messageQueue.Count));
                                 smtpClient.Send(message);
-                                Debug.WriteLine(string.Format("{0:mm':'ss.ffffff}: After Send, pool count = {1}, queue length = {2}", DateTimeOffset.Now, pool.smtpWorkerPool.Count, pool.messageQueue.Count));
+                                Debug.WriteLine(string.Format(CultureInfo.InvariantCulture, "{0:mm':'ss.ffffff}: After Send, pool count = {1}, queue length = {2}", DateTimeOffset.Now, pool.smtpWorkerPool.Count, pool.messageQueue.Count));
                             }
                             catch (Exception ex)
                             {
                                 exception = ex;
-                                Debug.WriteLine(string.Format("Error sending: {0}", exception));
+                                Debug.WriteLine(string.Format(CultureInfo.InvariantCulture, "Error sending: {0}", exception));
                             }
                             asyncResultToProcess.Complete(exception, false);
                         }
@@ -257,7 +261,7 @@ namespace Essential.Net.Mail
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine(string.Format("{0:mm':'ss.ffffff}: Exception: {1}", DateTimeOffset.Now, ex));
+                    Debug.WriteLine(string.Format(CultureInfo.InvariantCulture, "{0:mm':'ss.ffffff}: Exception: {1}", DateTimeOffset.Now, ex));
                 }
                 finally
                 {
@@ -267,7 +271,7 @@ namespace Essential.Net.Mail
                     }
                 }
 
-                Debug.WriteLine(string.Format("{0:mm':'ss.ffffff}: ThreadEnding, pool count = {1}, queue length = {2}", DateTimeOffset.Now, pool.smtpWorkerPool.Count, pool.messageQueue.Count));
+                Debug.WriteLine(string.Format(CultureInfo.InvariantCulture, "{0:mm':'ss.ffffff}: ThreadEnding, pool count = {1}, queue length = {2}", DateTimeOffset.Now, pool.smtpWorkerPool.Count, pool.messageQueue.Count));
             }
         }
     }

@@ -6,6 +6,7 @@ using System.CodeDom.Compiler;
 using Microsoft.CSharp;
 using System.Reflection;
 using System.ComponentModel;
+using System.Globalization;
 
 namespace Essential.Diagnostics
 {
@@ -22,7 +23,8 @@ namespace Essential.Diagnostics
     /// </para>
     /// <para>
     /// You can also use an C# expression, including accessing environment
-    /// details.
+    /// details. Note that expressions are case sensitive; the parameter names
+    /// above must be cased correctly.
     /// </para>
     /// <para>
     /// Note that Format is the format template or message (if there are no
@@ -48,11 +50,14 @@ namespace Essential.Diagnostics
         /// <summary>
         /// Determines whether the event should be traced by the listener or not.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework", MessageId = "System.DateTimeOffset", Justification = "Deliberate dependency, .NET 2.0 SP1 required.")]
         public override bool ShouldTrace(TraceEventCache cache, string source, TraceEventType eventType, int id, string formatOrMessage, object[] args, object data1, object[] data)
         {
             var eventCache = cache ?? new TraceEventCache();
             var dateTimeOffset = (DateTimeOffset)eventCache.DateTime;
-            return compiledExpression.ShouldTrace(eventCache, source, eventType, id, formatOrMessage, eventCache.Callstack, dateTimeOffset, eventCache.LogicalOperationStack, eventCache.ProcessId, eventCache.ThreadId, eventCache.Timestamp);
+            // Note: eventCache is *not* in the publically documented API
+            return compiledExpression.ShouldTrace(eventCache, source, eventType, id, formatOrMessage, eventCache.Callstack, 
+                dateTimeOffset, eventCache.LogicalOperationStack, eventCache.ProcessId, eventCache.ThreadId, eventCache.Timestamp);
         }
 
         static ExpressionBase CompileExpression(string expression)
@@ -65,7 +70,7 @@ namespace Essential.Diagnostics
             source.AppendLine("using System.Text.RegularExpressions;");
             source.AppendLine("namespace Essential.Diagnostics.Dynamic {");
             source.AppendLine("  public class " + className + " : Essential.Diagnostics.ExpressionFilter.ExpressionBase {");
-            source.AppendLine("    protected override bool ShouldTrace(TraceEventCache Event, string Source, TraceEventType EventType, int Id, string Format, string Callstack, DateTimeOffset DateTime, System.Collections.Stack LogicalOperationStack, int ProcessId, string ThreadId, long Timestamp) {");
+            source.AppendLine("    protected override bool ShouldTrace(TraceEventCache EventCache, string Source, TraceEventType EventType, int Id, string Format, string Callstack, DateTimeOffset DateTime, System.Collections.Stack LogicalOperationStack, int ProcessId, string ThreadId, long Timestamp) {");
             source.AppendLine("      return " + expression + ";");
             source.AppendLine("    }"); // End of method
             source.AppendLine("  }"); // End of class
@@ -87,7 +92,7 @@ namespace Essential.Diagnostics
             if (results.Errors.Count > 0)
             {
                 var message = new StringBuilder();
-                message.AppendLine(string.Format("Failed to compile filter expression [{0}].", expression));
+                message.AppendLine(string.Format(CultureInfo.CurrentCulture, "Failed to compile filter expression [{0}].", expression));
                 foreach (var error in results.Errors)
                 {
                     message.AppendLine(error.ToString());
@@ -111,7 +116,10 @@ namespace Essential.Diagnostics
             /// <summary>
             /// Evaluates the filter expression to determine if an event should be traced.
             /// </summary>
-            protected internal abstract bool ShouldTrace(TraceEventCache Event, string Source, TraceEventType EventType, int Id, string Format, string Callstack, DateTimeOffset DateTime, System.Collections.Stack LogicalOperationStack, int ProcessId, string ThreadId, long Timestamp);
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Callstack", Justification = "Consistency with TraceEventCache.Callstack parameter casing.")]
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework", MessageId = "System.DateTimeOffset", Justification = "Deliberate dependency, .NET 2.0 SP1 required.")]
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Deliberate so that title casing is used in the filter expression.")]
+            protected internal abstract bool ShouldTrace(TraceEventCache EventCache, string Source, TraceEventType EventType, int Id, string Format, string Callstack, DateTimeOffset DateTime, System.Collections.Stack LogicalOperationStack, int ProcessId, string ThreadId, long Timestamp);
         }
     }
 }

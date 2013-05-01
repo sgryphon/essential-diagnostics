@@ -346,12 +346,14 @@ Data:
 
         object floodLimitLock = new object();
         static TimeSpan floodLimitWindow = TimeSpan.FromHours(1);
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework", MessageId = "System.DateTimeOffset", Justification="Deliberate dependency, .NET 2.0 SP1 required.")]
         DateTimeOffset floodLimitReset;
         int floodNumberOfTraces;
 
         /// <summary>
         /// Write trace event with data.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework", MessageId = "System.DateTimeOffset", Justification = "Deliberate dependency, .NET 2.0 SP1 required.")]
         protected override void WriteTrace(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message, Guid? relatedActivityId, object[] data)
         {
             var traceTime = TraceFormatter.FormatUniversalTime(eventCache);
