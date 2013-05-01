@@ -902,6 +902,19 @@
             <summary>
             Gets or sets the token format string to use to display trace output.
             </summary>
+            <remarks>
+            <para>
+            See TraceFormatter for details of the supported formats.
+            </para>
+            <para>
+            The default value is "{Source} {EventType}: {Id} : {Message}", which matches ConsoleTraceListener.
+            </para>
+            <para>
+            It is recommended, however, to include the time and thread values, for example by
+            using something similar to the format of RollingFileTraceListener:
+            "{DateTime:HH':'mm':'ssZ} [{Thread}] {EventType} {Source} {Id}: {Message}{Data}".
+            </para>
+            </remarks>
         </member>
         <member name="P:Essential.Diagnostics.ColoredConsoleTraceListener.UseErrorStream">
             <summary>
@@ -983,31 +996,160 @@
             a separate thread. If there is a flood of messages exceeding the queue size then
             messages will be dropped.
             </para>
+            <para>
+            The SMTP host settings are defined in MailSettings of app.config, as documented 
+            at http://msdn.microsoft.com/en-us/library/w355a94k.aspx.  
+            </para>
+            <para>
+            The following attributes can be set when adding the trace listener
+            entry in the configuration file.
+            </para>
+            <para>
+            <list type="table">
+            <listheader>
+                <term>Attribute</term>
+                <value>Description</value>
+            </listheader>
+            <item>
+            <term>initializeData</term>
+            <value>Email address of the recipient. Multiple recipients may be separated by commas.</value>
+            </item>
+            <item>
+            <term>traceOutputOptions</term>
+            <value>Ignored.</value>
+            </item>
+            <item>
+            <term>bodyTemplate</term>
+            <value>Template used to construct the email body.</value>
+            </item>
+            <item>
+            <term>fromAddress</term>
+            <value>Optional alternate from address, instead of the one configured in system.net mailSettings.</value>
+            </item>
+            <item>
+            <term>maxConnections</term>
+            <value>Maximum concurrent SMTP connections. Default is 2 connections.</value>
+            </item>
+            <item>
+            <term>maxTracesPerHour</term>
+            <value>Maximum number of emails per hour that will be sent, to prevent flooding. Default is 50.</value>
+            </item>
+            <item>
+            <term>subjectTemplate</term>
+            <value>Template used to construct the email subject.
+            For more information on the template tokens available, <see cref="T:Essential.Diagnostics.TraceFormatter"/>.</value>
+            </item>
+            </list>
+            </para>
             </remarks>
         </member>
-        <member name="T:Essential.Diagnostics.EmailTraceListenerBase">
-            <remarks>
-            Output trace messages of warning and error only as Email messages via SMTP. Every messages sent will go through a MailMessage queue which will send 
-            messages through multiple SmtpClient connections in a connection pool.
-            
-            The subject line of the Email message will be the text before ':', ';', ',', '.', '-' in the trace message, along with the identity of the application.
-            The body of the Email will be the trace message.
-            
-            The SMTP host settings are defined in MailSettings of app.config, as documented at http://msdn.microsoft.com/en-us/library/w355a94k.aspx. 
-            
-            It supports the following custom attributes used in config:
-            * maxConnections: Maximum SmtpClient connections in pool. The default is 2.
-            
-            Because the Email messages will be sent in multiple threads, the send time of Email messages may not be in the exact order and the exact time of the creation of the message, tehrefore,
-            it is recommended that the Email subject or body should log the datetime of the trace message.
-            </remarks>
-        </member>
-        <member name="M:Essential.Diagnostics.EmailTraceListenerBase.SendEmail(System.String,System.String,System.Boolean)">
+        <member name="M:Essential.Diagnostics.EmailTraceListener.#ctor(System.String)">
             <summary>
-            Send Email via a SmtpClient in pool.
+            Constructor. Sends each trace event in an email to the specified address.
             </summary>
         </member>
-        <member name="P:Essential.Diagnostics.EmailTraceListenerBase.ToAddress">
+        <member name="M:Essential.Diagnostics.EmailTraceListener.GetSupportedAttributes">
+            <summary>
+            Allowed attributes for this trace listener.
+            </summary>
+        </member>
+        <member name="M:Essential.Diagnostics.EmailTraceListener.WriteTrace(System.Diagnostics.TraceEventCache,System.String,System.Diagnostics.TraceEventType,System.Int32,System.String,System.Nullable{System.Guid},System.Object[])">
+            <summary>
+            Write trace event with data.
+            </summary>
+        </member>
+        <member name="P:Essential.Diagnostics.EmailTraceListener.BodyTemplate">
+            <summary>
+            Gets or sets the template used to construct the email body.
+            </summary>
+            <remarks>
+            <para>
+            See TraceFormatter for details of the supported formats.
+            </para>
+            <para>
+            The default template includes the Source, Date (UTC and Local), Event ID, Level, 
+            Activity, User, Computer, AppDomain, Process ID, Process Name, Thread ID, 
+            Message (full) and Data.
+            </para>
+            <para>
+            Note if configuring in XML to use the entity escape sequence to encode new
+            lines, "&#xD;&#xA;" (if setting in code, encode new lines with '\n' as normal).
+            </para>
+            </remarks>
+        </member>
+        <member name="P:Essential.Diagnostics.EmailTraceListener.FromAddress">
+            <summary>
+            Gets or sets an alternate from address, instead of the one configured in system.net mailSettings.
+            </summary>
+            <remarks>
+            <para>
+            Generally the value set in system.net mailSettings is used as the From address field in any email
+            sent, however this attribute may be set to override the value.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:Essential.Diagnostics.EmailTraceListener.IsThreadSafe">
+            <summary>
+            Gets a value indicating the trace listener is thread safe.
+            </summary>
+            <value>true</value>
+        </member>
+        <member name="P:Essential.Diagnostics.EmailTraceListener.MaxConnections">
+            <summary>
+            Gets or sets the maximum concurrent SMTP connections.
+            </summary>
+            <remarks>
+            <para>
+            The default value is 2.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:Essential.Diagnostics.EmailTraceListener.MaxTracesPerHour">
+            <summary>
+            Gets or sets the maximum number of emails per hour that will be sent, to prevent flooding.
+            </summary>
+            <remarks>
+            <para>
+            The default value is 50.
+            </para>
+            <para>
+            To prevent flooding with emails this listener has a maximum number of email messages it
+            will send per hour. Normally the frequency of emails should be controlled by adding
+            an appropriate filter, for example add an EventTypeFilter that only send messages of
+            Warning level and above.
+            </para>
+            <para>
+            However there could still be an issue that causes repeated error events to be generated,
+            which would result in a flood of emails. To prevent this the component drops any further
+            traces once the limit is reached.
+            </para>
+            <para>
+            Note that restarting the process clears the counter and will send additional messages.
+            </para>
+            <para>
+            Setting the value to "0" will put no limit on the number of messages sent.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:Essential.Diagnostics.EmailTraceListener.SubjectTemplate">
+            <summary>
+            Gets or sets the template used to construct the email subject.
+            </summary>
+            <remarks>
+            <para>
+            See TraceFormatter for details of the supported formats.
+            </para>
+            <para>
+            The default value is "{EventType} {Id}: {MessagePrefix}; {MachineName}; {User}; {Process}".
+            </para>
+            <para>
+            Note that the {MessagePrefix} inserts the trace message up to the first punctuation
+            character with a maximum length of 40 characters. This keeps the email subject header
+            short; the full message is included in the email body.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:Essential.Diagnostics.EmailTraceListener.ToAddress">
             <summary>
             Gets the email address the trace messages will be sent to.
             </summary>
@@ -1019,54 +1161,22 @@
             </para>
             </remarks>
         </member>
-        <member name="P:Essential.Diagnostics.EmailTraceListenerBase.MaxConnections">
-            <summary>
-            Gets or sets the maximum concurrent connections in the SmtpClient pool.
-            </summary>
-            <remarks>
-            <para>
-            The is deffined by the custom attribute maxConnections. The default value is 2.
-            </para>
-            </remarks>
-        </member>
-        <member name="P:Essential.Diagnostics.EmailTraceListenerBase.SubjectTemplate">
-            <summary>
-            Gets or sets the template used to construct the email subject.
-            </summary>
-        </member>
-        <member name="P:Essential.Diagnostics.EmailTraceListenerBase.BodyTemplate">
-            <summary>
-            Gets or sets the template used to construct the email body.
-            </summary>
-        </member>
-        <member name="M:Essential.Diagnostics.EmailTraceListener.WriteTrace(System.Diagnostics.TraceEventCache,System.String,System.Diagnostics.TraceEventType,System.Int32,System.String,System.Nullable{System.Guid},System.Object[])">
-            <summary>
-            Write trace event with data.
-            </summary>
-        </member>
-        <member name="P:Essential.Diagnostics.EmailTraceListener.IsThreadSafe">
-            <summary>
-            Gets a value indicating whether the trace listener is thread safe.
-            </summary>
-        </member>
         <member name="T:Essential.Diagnostics.BufferedEmailTraceListener">
             <summary>
             Adds formatted trace messages to a buffer and sends an email when the process exits, or on request.
             </summary>
             <remarks>
             <para>
-            Intended to be used in console apps which will send all warning/error traces via email at the end of the process.
-            </para>
-            <para>
-            The listener will put error and warning trace messages into a buffer. 
+            Intended to be used in console apps which will send all warning/error traces via email at the end 
+            of the process.
             </para>
             </remarks>
         </member>
         <member name="M:Essential.Diagnostics.BufferedEmailTraceListener.#ctor(System.String)">
             <summary>
-            
+            Constructor. Adds each trace to a buffer and then sends an email to the specified 
+            address with all buffered messages when the process exits, or on request.
             </summary>
-            <param name="toAddress"></param>
         </member>
         <member name="M:Essential.Diagnostics.BufferedEmailTraceListener.Clear">
             <summary>
@@ -1100,9 +1210,9 @@
             </summary>
             <remarks>
             <para>
-            While the listener will send an email message at the end of the hosting process. This function allow your 
-            application code to send the email message earlier. For example, you might want to send one message at the 
-            end of each loop. 
+            While the listener will send an email message at the end of the hosting process, this function 
+            will allow your application code to send the email message earlier. For example, you might want 
+            to send one message at the end of each loop. 
             </para>
             <para>
             Note that this does not clear listeners that are only attached to a TraceSource,
@@ -1110,15 +1220,108 @@
             </para>
             </remarks>
         </member>
+        <member name="M:Essential.Diagnostics.BufferedEmailTraceListener.GetSupportedAttributes">
+            <summary>
+            Allowed attributes for this trace listener.
+            </summary>
+        </member>
+        <member name="M:Essential.Diagnostics.BufferedEmailTraceListener.WriteTrace(System.Diagnostics.TraceEventCache,System.String,System.Diagnostics.TraceEventType,System.Int32,System.String,System.Nullable{System.Guid},System.Object[])">
+            <summary>
+            Write trace event with data.
+            </summary>
+        </member>
+        <member name="P:Essential.Diagnostics.BufferedEmailTraceListener.FromAddress">
+            <summary>
+            Gets or sets an alternate from address, instead of the one configured in system.net mailSettings.
+            </summary>
+            <remarks>
+            <para>
+            Generally the value set in system.net mailSettings is used as the From address field in any email
+            sent, however this attribute may be set to override the value.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:Essential.Diagnostics.BufferedEmailTraceListener.HeaderTemplate">
+            <summary>
+            Gets or sets the template used to construct the header of the email body.
+            </summary>
+            <remarks>
+            <para>
+            See TraceFormatter for details of the supported formats.
+            </para>
+            <para>
+            The default template includes the Date (UTC and Local), User, Computer, 
+            AppDomain, Process ID, and Process Name. The details used are based on
+            the first trace received, so should be used for information that will 
+            be consistent or meaningful for all traces.
+            </para>
+            <para>
+            The rest of the body of the email then contains the buffered messages 
+            using TraceTemplate (including the buffered first message in the 
+            TraceTemplate format).
+            </para>
+            <para>
+            Note if configuring in XML to use the entity escape sequence to encode new
+            lines, "&#xD;&#xA;" (if setting in code, encode new lines with '\n' as normal).
+            </para>
+            </remarks>
+        </member>
         <member name="P:Essential.Diagnostics.BufferedEmailTraceListener.IsThreadSafe">
             <summary>
-            Gets a value indicating whether the trace listener is thread safe. BufferedEmailTraceListener is not threadsafe.
+            Gets a value indicating the trace listener is thread safe. 
             </summary>
+            <value>true</value>
+        </member>
+        <member name="P:Essential.Diagnostics.BufferedEmailTraceListener.MaxConnections">
+            <summary>
+            Gets or sets the maximum concurrent SMTP connections.
+            </summary>
+            <remarks>
+            <para>
+            The default value is 2.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:Essential.Diagnostics.BufferedEmailTraceListener.SubjectTemplate">
+            <summary>
+            Gets or sets the template used to construct the email subject.
+            </summary>
+            <remarks>
+            <para>
+            See TraceFormatter for details of the supported formats.
+            </para>
+            <para>
+            The default value is "{Listener} {DateTime:u}; {MachineName}; {User}; {Process}", 
+            and uses details from the first trace received, so should contain information that will 
+            be consistent or meaningful for all traces.        
+            </para>
+            </remarks>
+        </member>
+        <member name="P:Essential.Diagnostics.BufferedEmailTraceListener.ToAddress">
+            <summary>
+            Gets the email address the trace messages will be sent to.
+            </summary>
+            <remarks>
+            <para>
+            This value is part of initializeData; if the value changes the
+            listener is recreated. See the constructor parameter for details
+            of the supported formats.
+            </para>
+            </remarks>
         </member>
         <member name="P:Essential.Diagnostics.BufferedEmailTraceListener.TraceTemplate">
             <summary>
-            Gets or sets the template for a a single trace message.
+            Gets or sets the template for a single trace message.
             </summary>
+            <remarks>
+            <para>
+            See TraceFormatter for details of the supported formats.
+            </para>
+            <para>
+            The default value is "{DateTime:u} [{Thread}] {EventType} {Source} {Id}: {Message}{Data}",
+            which is also the format used in RollingFileTraceListener.
+            </para>
+            </remarks>
         </member>
         <member name="T:Essential.Diagnostics.ExpressionFilter">
             <summary>
@@ -1134,7 +1337,8 @@
             </para>
             <para>
             You can also use an C# expression, including accessing environment
-            details.
+            details. Note that expressions are case sensitive; the parameter names
+            above must be cased correctly.
             </para>
             <para>
             Note that Format is the format template or message (if there are no
@@ -1856,7 +2060,7 @@
             Data, Data0, EventType, Id, Message, ActivityId, RelatedActivityId, Source, 
             Callstack, DateTime (or UtcDateTime), LocalDateTime, LogicalOperationStack, 
             ProcessId, ThreadId, Timestamp, MachineName, ProcessName, ThreadName,
-            ApplicationName.
+            ApplicationName, MessagePrefix, AppDomain.
             </para>
             <para>
             An example template that generates the same output as the ConsoleListener is:
@@ -1865,6 +2069,17 @@
             </remarks>
         </member>
         <member name="M:Essential.Diagnostics.TraceFormatter.Format(System.String,System.Diagnostics.TraceEventCache,System.String,System.Diagnostics.TraceEventType,System.Int32,System.String,System.Nullable{System.Guid},System.Object[])">
+            <summary>
+            Formats a trace event, inserted the provided values into the provided template.
+            </summary>
+            <returns>A string containing the values formatted using the provided template.</returns>
+            <remarks>
+            <para>
+            Obsolete. Should use the overload that includes listener instead.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Essential.Diagnostics.TraceFormatter.Format(System.String,System.Diagnostics.TraceListener,System.Diagnostics.TraceEventCache,System.String,System.Diagnostics.TraceEventType,System.Int32,System.String,System.Nullable{System.Guid},System.Object[])">
             <summary>
             Formats a trace event, inserted the provided values into the provided template.
             </summary>
@@ -2021,7 +2236,7 @@
             <param name="value">Value of the argument, if it exists.</param>
             <returns>true if the argument name is valid, i.e. the value can be supplied; false if the argument name is invalid (usually treated as an error)</returns>
         </member>
-        <member name="T:Essential.Web.HttpContextAdapter">
+        <member name="T:Essential.Web.HttpContextCurrentAdapter">
             <summary>
             Adapter that wraps HttpContext.Current.
             </summary>
@@ -2051,27 +2266,22 @@
             Gets the IP host address of the remote client, if in the context of a web request. 
             </summary>
         </member>
-        <member name="M:Essential.Web.HttpContextAdapter.#ctor(System.Web.HttpContext)">
-            <summary>
-            Constructor.
-            </summary>
-        </member>
-        <member name="P:Essential.Web.HttpContextAdapter.AppDataPath">
+        <member name="P:Essential.Web.HttpContextCurrentAdapter.AppDataPath">
             <summary>
             Gets the physical file path that corresponds to the App_Data directory, if in the context of a web request.
             </summary>
         </member>
-        <member name="P:Essential.Web.HttpContextAdapter.RequestPath">
+        <member name="P:Essential.Web.HttpContextCurrentAdapter.RequestPath">
             <summary>
             Gets the virtual path of the current request, if in the context of a web request. 
             </summary>
         </member>
-        <member name="P:Essential.Web.HttpContextAdapter.RequestUrl">
+        <member name="P:Essential.Web.HttpContextCurrentAdapter.RequestUrl">
             <summary>
             Gets information about the URL of the current request, if in the context of a web request. 
             </summary>
         </member>
-        <member name="P:Essential.Web.HttpContextAdapter.UserHostAddress">
+        <member name="P:Essential.Web.HttpContextCurrentAdapter.UserHostAddress">
             <summary>
             Gets the IP host address of the remote client, if in the context of a web request. 
             </summary>

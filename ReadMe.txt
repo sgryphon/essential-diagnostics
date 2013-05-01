@@ -19,14 +19,15 @@ System.Diagnostics trace listeners, filters, and other utilities.
 Version History
 ---------------
 
-v1.2.Next (May 2013)
+v1.2.501.0 (May 2013)
 
+* Feature #16: Added EmailTraceListener, BufferedEmailTraceListener,
+  with examples and documentation.
 * Add Essential.Diagnostics.Config package that inserts sample .config 
   sections, with a dependency on the main Essential.Diagnostics.
   This is now the preferred way to add a reference (i.e. with the config)
 * Add System.Diagnostics Configuration package with sample .config
   sections for Framework listeners.
-* Feature #16: Added EmailTraceListener, BufferedEmailTraceListener
 * Added TraceFormatter parameters: AppDomain, Listener, MessagePrefix.
 * Issue #14: Inverted condition in TraceListenerBase.TraceWriteAsEvent
 * Issue #21: RollingFileTraceListener should be flushed when it's closed.

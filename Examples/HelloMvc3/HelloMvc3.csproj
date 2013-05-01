@@ -42,7 +42,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Essential.Diagnostics">
-      <HintPath>..\packages\Essential.Diagnostics.1.1.30418.0\lib\Essential.Diagnostics.dll</HintPath>
+      <HintPath>..\packages\Essential.Diagnostics.1.2.501.0\lib\Essential.Diagnostics.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.Entity" />
     <Reference Include="Microsoft.CSharp" />
