@@ -1,16 +1,14 @@
 ﻿! EmailTraceListener Class
 
-(under development)
 This listener will write each trace message via an Email message which will be sent by a pool of SmtpClient connections asynchronously. By default, the EventTypeFilter is set to Warning. And you may adjust through adding an EventTypeFilter in the config.
 
 !! Remarks
 
-The initializeData for the listener should contain a to Email address, which is mandatory. And you may define multiple addresses separated by comma in initialzeData. 
+The initializeData for the listener should contain a TO Email address, which is mandatory. And you may define multiple addresses separated by comma in initializeData. 
 
 The subject line of the Email message will be the text before ':', ';', ',', '.', '-' in the trace message, along with the identity of the application defined by attribute “subjectTemplate”.
 
-The identity of the application consists of the following information:
-
+The identity of the application consists of the following information defined by the default value of "subjectTemplate":
 # Machine name
 # User name including the domain name
 # Process name including arguments
@@ -18,7 +16,7 @@ The identity of the application consists of the following information:
 
 The event and context information can be formatted using a custom format string containing argument tokens in curly braces. Standard .NET formatting can be applied to these values, e.g. "{DateTime:yyyy-MM-dd}" outputs the year, month and day. For more information on the template tokens available, [TraceFormatter].
 
-The following parameters are available in the template string: Data, Data0, EventType, Id, Message, ActivityId, RelatedActivityId, Source, Callstack, DateTime (or UtcDateTime), LocalDateTime, LogicalOperationStack, ProcessId, ThreadId, Timestamp, MachineName, ProcessName, ThreadName, ApplicationName.
+The following parameters are available in the template string: Data, Data0, EventType, Id, Message, ActivityId, RelatedActivityId, Source, Callstack, DateTime (or UtcDateTime), LocalDateTime, LogicalOperationStack, ProcessId, ThreadId, Timestamp, MachineName, ProcessName, ThreadName, ApplicationName and AppDomain.
 
 Each message is sent in an asynchronous call. When the host process exits gracefully, all mail messages left in queue will be sent out, within a grace period of up to 2 seconds.
 
@@ -70,13 +68,13 @@ Each message is sent in an asynchronous call. When the host process exits gracef
 
 !! Notes
 
-Because of the latency of Email, performance and the limitation of Email relay, a critical error in the service app might trigger tens of thousands of warning/error trace messages piled up in the MailMessage queue, resulting in memory blow and network overload.  Alternatively, to avoid memory blow because of a large message queue, you may consider to make SmtpClient deliver messages to a directory through defining SmtpDeliveryMethod=SpecifiedPickupDirectory or PickupDirectoryFromIis, so the other application may pickup and send, even after the host process is terminated.
+Because of the latency of Email, performance and the limitation of Email relay, a critical error in a service app might trigger tens of thousands of warning/error trace messages piled up in the MailMessage queue, resulting in memory blow and network overload.  Alternatively, to avoid memory blow because of a large message queue, you may consider to make SmtpClient deliver messages to a directory through defining SmtpDeliveryMethod=SpecifiedPickupDirectory or PickupDirectoryFromIis, so the other application may pickup and send, even after the host process is terminated.
 
 Firewall, anti-virus software and the mail server spam policy may also have impact on this listener, so system administrators have to be involved to ensure the smooth operation of this listener.
 
 If you define SmtpDeliveryMethod as SpecifiedPickupDirectory to make SmtpClient write messages to a pickup directory, please make sure the total number of client connections is no more than 2, because concurrent access to a file system on hard drives is almost certain to slow down the overall performance unless you have RAID.
 
-For the best performance, you need to run some integration tests  to get the optimized number of maxConnections for a RAID system or a SMTP system. Essential Diagnostics includes a NUnit test project called EssentialDiagnosticsIntegrationTests for such purpose. To carryout such tests:
+For the best performance, you need to run some integration tests  to get the optimized number of maxConnections for a RAID system or a SMTP system. Essential Diagnostics includes a NUnit test project called EssentialDiagnosticsIntegrationTests for such purpose. To carry out such tests:
 
 # Install NUnit on the host machine.
 # Copy the test assembly along with its dependencies to the host machine.
