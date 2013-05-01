@@ -54,6 +54,7 @@ namespace TestEmailTraceListener
 
             //the listener will wait the end of the process anyway.
             System.Threading.Thread.Sleep(5000);//just to wait all threads finished.
+            // Note: Max traces is unlimited, so all messages should appear.
             Console.WriteLine(String.Format("Check if there are {0} mail messages in pickup directory at {1}.", count * 2, pickupDirectory));
             Console.ReadLine();
         }

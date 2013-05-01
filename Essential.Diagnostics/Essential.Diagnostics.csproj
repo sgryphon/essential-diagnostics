@@ -157,7 +157,7 @@
   <Target Name="AfterBuild" DependsOnTargets="ResetCSharpAssemblyInfoFile">
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>robocopy "$(TargetDir)\" "$(SolutionDir)Packaging\$(ConfigurationName)\lib" *.dll *.xml
+    <PostBuildEvent>robocopy "$(TargetDir)\" "$(SolutionDir)Packaging\$(ConfigurationName)\lib" $(TargetName).dll $(TargetName).xml
 robocopy "$(SolutionDir)\" "$(SolutionDir)Packaging\$(ConfigurationName)" ReadMe.txt License.txt
 exit 0</PostBuildEvent>
   </PropertyGroup>
