@@ -36,7 +36,6 @@ namespace ConsoleExample
             Task.WaitAll(tasks.ToArray(), System.Threading.Timeout.Infinite);//so now we have a long mail message queue.
             Console.WriteLine("{0:s} After wait all.", DateTimeOffset.Now);
             Debug.WriteLine(string.Format("{0:s} After wait all.", DateTimeOffset.Now));
-            Console.WriteLine(DateTimeOffset.Now);
             Console.ReadLine();
         }
     }

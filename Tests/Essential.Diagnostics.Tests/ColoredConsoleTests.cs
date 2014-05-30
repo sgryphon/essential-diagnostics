@@ -38,7 +38,7 @@ namespace Essential.Diagnostics.Tests
 
             listener.TraceEvent(null, "source", TraceEventType.Error, 1);
 
-            Assert.AreEqual(ConsoleColor.DarkRed, mockConsole.ForegroundColorSet[0]);
+            Assert.AreEqual(ConsoleColor.Red, mockConsole.ForegroundColorSet[0]);
             Assert.AreEqual(1, mockConsole.ResetColorCount);
         }
 
@@ -101,19 +101,14 @@ namespace Essential.Diagnostics.Tests
             var listener = source.Listeners.OfType<ColoredConsoleTraceListener>().First();
 
             Assert.AreEqual("colored1", listener.Name);
-  //          Assert.AreEqual("{DateTime} {EventType}: {Message}", listener.Template); this get interference from other tests along with delay write of OS.
+            Assert.AreEqual("{DateTime} {EventType}: {Message}", listener.Template);
             Assert.AreEqual(ConsoleColor.DarkBlue, listener.GetConsoleColor(TraceEventType.Critical));
             Assert.AreEqual(ConsoleColor.DarkGreen, listener.GetConsoleColor(TraceEventType.Error));
             Assert.AreEqual(ConsoleColor.DarkCyan, listener.GetConsoleColor(TraceEventType.Warning));
             Assert.AreEqual(ConsoleColor.DarkRed, listener.GetConsoleColor(TraceEventType.Information));
             Assert.AreEqual(ConsoleColor.Gray, listener.GetConsoleColor(TraceEventType.Verbose));
             Assert.AreEqual(ConsoleColor.DarkGray, listener.GetConsoleColor(TraceEventType.Start));
-            Assert.AreEqual(ConsoleColor.DarkGray, listener.GetConsoleColor(TraceEventType.Transfer));
-            /*
-             if (((int)eventType & (int)SourceLevels.ActivityTracing) > 0
-                && Attributes.ContainsKey("activityTracingColor"))
-             is true, so transfer color in config should be ignored
-             */
+            Assert.AreEqual(ConsoleColor.Blue, listener.GetConsoleColor(TraceEventType.Transfer));
         }
 
 
@@ -161,6 +156,7 @@ namespace Essential.Diagnostics.Tests
                 listenerConfig.SetAttributeValue("convertWriteToEvent", true);
 
                 doc.Save(configPath);
+
                 Trace.Refresh();
 
                 source = new TraceSource("colored1Source");
@@ -169,6 +165,7 @@ namespace Essential.Diagnostics.Tests
                 Assert.AreEqual(ConsoleColor.Cyan, listener2.GetConsoleColor(TraceEventType.Critical));
                 Assert.IsTrue(listener2.ConvertWriteToEvent);
             }
+
         }
 
         [TestMethod]

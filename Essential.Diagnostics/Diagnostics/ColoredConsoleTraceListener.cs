@@ -124,7 +124,7 @@ namespace Essential.Diagnostics
         // Use red for errors (including fatal) and yellow for warning, 
         // and standard gray for most other normal messages, including activity tracing.
         // Verbose messages use a darker shade.
-        private static Dictionary<TraceEventType, ConsoleColor> _defaultColorByEventType = new Dictionary<TraceEventType, ConsoleColor>()
+        private Dictionary<TraceEventType, ConsoleColor> _defaultColorByEventType = new Dictionary<TraceEventType, ConsoleColor>()
         {
             { TraceEventType.Critical, ConsoleColor.Red },
             { TraceEventType.Error, ConsoleColor.Red },
@@ -133,7 +133,7 @@ namespace Essential.Diagnostics
         };
         private const ConsoleColor _defaultColorOther = ConsoleColor.Gray;
         private const string _defaultTemplate = "{Source} {EventType}: {Id} : {Message}";
-        private static string[] _supportedAttributes = new string[] 
+        private static readonly string[] _supportedAttributes = new string[] 
             { 
                 "template", "Template", "convertWriteToEvent", "ConvertWriteToEvent",
                 "criticalColor", "CriticalColor", "criticalcolor", 
@@ -235,38 +235,6 @@ namespace Essential.Diagnostics
             get { return true; }
         }
 
-        void LoadCustomColorsOfEventTypes()
-        {
-            LoadCustomColorOfEventType(TraceEventType.Warning, "warningColor");
-            LoadCustomColorOfEventType(TraceEventType.Error, "errorColor");
-            LoadCustomColorOfEventType(TraceEventType.Critical, "criticalColor");
-            LoadCustomColorOfEventType(TraceEventType.Information, "informationColor");
-            LoadCustomColorOfEventType(TraceEventType.Verbose, "verboseColor");
-            LoadCustomColorOfEventType(TraceEventType.Start, "startColor");
-            LoadCustomColorOfEventType(TraceEventType.Transfer, "transferColor");
-            LoadCustomColorOfEventType(TraceEventType.Resume, "resumeColor");
-            LoadCustomColorOfEventType(TraceEventType.Suspend, "suspendColor");
-
-        }
-
-        void LoadCustomColorOfEventType(TraceEventType eventType, string attributeName)
-        {
-            string colorName = Attributes[attributeName];
-            if (String.IsNullOrEmpty(colorName))
-                return;
-
-            try
-            {
-                var customColor = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), colorName, true);
-                _defaultColorByEventType[eventType] = customColor;
-            }
-            catch (ArgumentException)//the message thrown by RT is not clear enough.
-            {
-                throw new ArgumentException(String.Format("Color name {0} declared in {1} is not included in System.ConsoleColor. You must use ConsoleColor.", colorName, attributeName), "attributeName");
-                //throwing exception is consistent with the intent of SetConsoleColor(), though this function will never throw exception because Enum.IsDefined here always return true.
-            }
-
-        }
 
         /// <summary>
         /// Gets or sets the token format string to use to display trace output.
@@ -329,22 +297,13 @@ namespace Essential.Diagnostics
         /// <returns>The ConsoleColor used to display the specified TraceEventType.</returns>
         public ConsoleColor GetConsoleColor(TraceEventType eventType)
         {
-            //var key = eventType.ToString() + "Color";
-            //if (Attributes.ContainsKey(key))
-            //{
-            //    var setting = Attributes[key];
-            //    if (Enum.IsDefined(typeof (ConsoleColor), setting))
-            //    {
-            //        return (ConsoleColor) Enum.Parse(typeof (ConsoleColor), setting);
-            //    }
-            //}
-
-            lock (_consoleLock)
+            var key = eventType.ToString() + "Color";
+            if (Attributes.ContainsKey(key))
             {
-                if (!customColorsLoaded)
+                var setting = Attributes[key];
+                if (Enum.IsDefined(typeof(ConsoleColor), setting))
                 {
-                    LoadCustomColorsOfEventTypes();
-                    customColorsLoaded = true;
+                    return (ConsoleColor)Enum.Parse(typeof(ConsoleColor), setting);
                 }
             }
 
@@ -469,7 +428,7 @@ namespace Essential.Diagnostics
         // //////////////////////////////////////////////////////////
         // Private
 
-        private static ConsoleColor GetDefaultColor(TraceEventType eventType)
+        ConsoleColor GetDefaultColor(TraceEventType eventType)
         {
             if (_defaultColorByEventType.ContainsKey(eventType))
             {
