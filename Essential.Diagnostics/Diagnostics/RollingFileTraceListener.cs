@@ -85,9 +85,11 @@ namespace Essential.Diagnostics
             }
             else
             {
-                rollingTextWriter = new RollingTextWriter(filePathTemplate);
+                rollingTextWriter = RollingTextWriter.Create(filePathTemplate);
             }
         }
+
+        
 
         /// <summary>
         /// Gets or sets whether calls to the Trace class static Write and WriteLine methods should be converted to Verbose events,

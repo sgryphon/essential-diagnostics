@@ -22,6 +22,40 @@ namespace Essential.Diagnostics
             _filePathTemplate = filePathTemplate;
         }
 
+        /// <summary>
+        /// Create RollingTextWriter with filePathTemplate which might contain 1 environment variable in front.
+        /// </summary>
+        /// <param name="filePathTemplate"></param>
+        /// <returns></returns>
+        public static RollingTextWriter Create(string filePathTemplate)
+        {
+            var segments = filePathTemplate.Split('%');
+            if (segments.Length > 3)
+            {
+                throw new ArgumentException("InitializeData should contain maximum 1 environment variable.", "filePathTemplate");
+            }
+            else if (segments.Length == 3)
+            {
+                var variableName = segments[1];
+                var rootFolder = Environment.GetEnvironmentVariable(variableName);
+                if (String.IsNullOrEmpty(rootFolder))
+                {
+                    throw new ArgumentException("Environment variable is not recognized in InitializeData.", "filePathTemplate");
+                }
+                var filePath = rootFolder + segments[2];
+                var dir = Path.GetDirectoryName(filePath);
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
+
+                return new RollingTextWriter(filePath);
+
+            }
+            else
+            {
+                return new RollingTextWriter(filePathTemplate);
+            }
+        }
+
         public string FilePathTemplate
         {
             get { return _filePathTemplate; }
@@ -145,6 +179,12 @@ namespace Essential.Diagnostics
                             break;
                         case "APPDATA":
                             value = traceFormatter.HttpTraceContext.AppDataPath;
+                            break;
+                        case "APPDOMAIN":
+                            value = AppDomain.CurrentDomain.FriendlyName;
+                            break;
+                        case "USER":
+                            value = Environment.UserDomainName + "-" + Environment.UserName;
                             break;
                         default:
                             value = "{" + name + "}";

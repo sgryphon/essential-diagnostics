@@ -87,7 +87,7 @@ namespace Essential.Diagnostics
             }
             else
             {
-                rollingTextWriter = new RollingTextWriter(filePathTemplate);
+                rollingTextWriter = RollingTextWriter.Create(filePathTemplate);
             }
         }
 

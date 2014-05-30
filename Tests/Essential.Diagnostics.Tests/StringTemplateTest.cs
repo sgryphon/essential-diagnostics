@@ -5,9 +5,9 @@ using System;
 using System.Collections.Generic;
 
 namespace Essential.Diagnostics.Tests
-{ 
-    
-    
+{
+
+
     /// <summary>
     ///This is a test class for StringTemplateTest and is intended
     ///to contain all StringTemplateTest Unit Tests
@@ -133,12 +133,12 @@ namespace Essential.Diagnostics.Tests
             string lastName = null;
             var actual = StringTemplate.Format(template,
                                                delegate(string name, out object value)
-                                                   {
-                                                       count++;
-                                                       lastName = name;
-                                                       value = "A";
-                                                       return true;
-                                                   });
+                                               {
+                                                   count++;
+                                                   lastName = name;
+                                                   value = "A";
+                                                   return true;
+                                               });
 
             Assert.AreEqual("A", actual);
             Assert.AreEqual(1, count);
@@ -186,7 +186,7 @@ namespace Essential.Diagnostics.Tests
         {
             var template = "x";
 
-            var actual = StringTemplate.Format(template, (IDictionary<string,object>)null);
+            var actual = StringTemplate.Format(template, (IDictionary<string, object>)null);
 
             Assert.Fail("Should have thrown exception.");
         }
@@ -200,6 +200,36 @@ namespace Essential.Diagnostics.Tests
             var actual = StringTemplate.Format(template, (StringTemplate.GetValue)null);
 
             Assert.Fail("Should have thrown exception.");
+        }
+
+        [TestMethod]
+        public void DateTimeOffsetWithCurrentCulture()
+        {
+            var dOffset1 = new DateTimeOffset(2014, 3, 8, 3, 0, 0, TimeSpan.FromHours(10));// AEST +10 time zone
+
+
+            var result = dOffset1.ToString("yyyyMMdd", CultureInfo.CurrentCulture);
+            Assert.AreEqual("20140308", result);
+
+            var d2 = new DateTime(2014, 3, 7, 22, 0, 0, DateTimeKind.Utc);//In Australia, it is already 2014-03-08 8am 
+            var dOffset2 = ((DateTimeOffset)d2).ToLocalTime();
+            var result2 = dOffset2.ToString("yyyyMMdd", CultureInfo.CurrentCulture);
+            Assert.AreEqual("20140308", result2);
+
+            var formatter = (ICustomFormatter)CultureInfo.CurrentCulture.GetFormat(typeof(ICustomFormatter));
+
+            object arg = dOffset2;
+            string argumentValue=null;
+            if (arg is IFormattable)
+            {
+                argumentValue = ((IFormattable)arg).ToString("yyyyMMdd", CultureInfo.CurrentCulture);
+            }
+            else if (arg != null)
+            {
+                argumentValue = arg.ToString();
+            }
+
+            Assert.AreEqual("20140308", argumentValue);
         }
     }
 }
