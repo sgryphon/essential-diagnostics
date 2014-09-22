@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="EmailTraceListenersTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RollingFileTraceListenerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
