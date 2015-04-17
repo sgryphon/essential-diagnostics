@@ -272,5 +272,17 @@ namespace Essential.Diagnostics
             rollingTextWriter.WriteLine(eventCache, output);
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (rollingTextWriter != null)
+                {
+                    rollingTextWriter.Dispose();
+                }
+            }
+            base.Dispose(disposing);
+        }
+
 	}
 }
