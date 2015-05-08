@@ -391,7 +391,6 @@ namespace Essential.Diagnostics
             }
         }
 
-        bool customColorsLoaded;
         /// <summary>
         /// Write trace event with data.
         /// </summary>

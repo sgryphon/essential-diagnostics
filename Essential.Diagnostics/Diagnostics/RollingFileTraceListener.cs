@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.IO;
-using System.Runtime.InteropServices;
 using Essential.IO;
-using System.Threading;
 
 namespace Essential.Diagnostics
 {
@@ -270,6 +266,16 @@ namespace Essential.Diagnostics
                 data
                 );
             rollingTextWriter.WriteLine(eventCache, output);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (rollingTextWriter!=null)
+            {
+                rollingTextWriter.Dispose();
+            }
+
+            base.Dispose(disposing);
         }
 
 	}
