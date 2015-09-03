@@ -40,7 +40,14 @@ namespace Essential.Diagnostics
                 var rootFolder = Environment.GetEnvironmentVariable(variableName);
                 if (String.IsNullOrEmpty(rootFolder))
                 {
-                    throw new ArgumentException("Environment variable is not recognized in InitializeData.", "filePathTemplate");
+                    if (variableName.Equals("ProgramData", StringComparison.CurrentCultureIgnoreCase) && (Environment.OSVersion.Version.Major <= 5))//XP or below: https://msdn.microsoft.com/en-us/library/windows/desktop/ms724832%28v=vs.85%29.aspx
+                    {//So the host program could run well in XP and Windows 7 without changing the config file.
+                        rootFolder = Path.Combine(Environment.GetEnvironmentVariable("AllUsersProfile"), "Application Data");
+                    }
+                    else
+                    {
+                        throw new ArgumentException("Environment variable is not recognized in InitializeData.", "filePathTemplate");
+                    }
                 }
                 var filePath = rootFolder + segments[2];
                 var dir = Path.GetDirectoryName(filePath);
