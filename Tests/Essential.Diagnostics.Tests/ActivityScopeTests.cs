@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Linq;
 
 namespace Essential.Diagnostics.Tests
 {
@@ -81,6 +82,52 @@ namespace Essential.Diagnostics.Tests
 
             Assert.AreEqual(3, events[6].Id);
             Assert.AreEqual(Guid.Empty, events[6].ActivityId);
+        }
+
+        [TestMethod]
+        public void AdditionalMessages()
+        {
+
+            TraceSource source = new TraceSource("serviceSource");
+
+            var listener = source.Listeners.OfType<InMemoryTraceListener>().First();
+
+            string transferIn = "TransferIn";
+            string start = "Starting...";
+            string transferOut = "TransferOut";
+            string stop = "Stopping...";
+
+            using (var scope = new ActivityScope(source, 11, 12, 13, 14, transferIn, start, transferOut, stop))
+            {
+                source.TraceEvent(TraceEventType.Warning, 2, "B");
+            }
+
+            var events = listener.GetEvents();
+ 
+            Assert.IsTrue(events[0].Message.StartsWith(transferIn));
+            Assert.AreEqual(start, events[1].Message);
+
+            Assert.IsTrue(events[3].Message.StartsWith(transferOut));
+            Assert.AreEqual(stop, events[4].Message);
+
+        }
+
+        [TestMethod]
+        public void ActivityNameForXmlListeners()
+        {
+
+            TraceSource source = new TraceSource("serviceSource");
+
+            string transferIn = "TransferIn";
+            string start = "Starting...";
+            string transferOut = "TransferOut";
+            string stop = "Stopping...";
+
+            using (var scope = new ActivityScope(source, 11, 12, 13, 14, transferIn, start, transferOut, stop, "MyActivityName"))
+            {
+                source.TraceEvent(TraceEventType.Warning, 2, "B");
+            }
+
         }
 
     }
