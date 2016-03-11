@@ -1,6 +1,20 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Express 2012 for Web
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3A947E8F-0D68-4312-900B-ADC4DC4052B0}"
+	ProjectSection(SolutionItems) = preProject
+		Examples_ReadMe.txt = Examples_ReadMe.txt
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{F6BF986D-2E6F-4629-86F5-1021023E26C6}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloLogging", "HelloLogging\HelloLogging.csproj", "{1B94311E-4CD8-405F-8B3A-ECF9527241CE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonitorConfig", "MonitorConfig\MonitorConfig.csproj", "{4BD5C76B-93F8-4A8F-A01F-F10883357C4A}"
@@ -19,19 +33,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailExample", "EmailExampl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BufferedEmailExample", "BufferedEmailExample\BufferedEmailExample.csproj", "{A75C5048-F9D7-44DF-94C0-AE42FB0DB061}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3A947E8F-0D68-4312-900B-ADC4DC4052B0}"
-	ProjectSection(SolutionItems) = preProject
-		Examples_ReadMe.txt = Examples_ReadMe.txt
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventRetentionExample", "EventRetentionExample\EventRetentionExample.csproj", "{2CCFF701-3797-4C04-85E6-3396044D74F0}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{F6BF986D-2E6F-4629-86F5-1021023E26C6}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

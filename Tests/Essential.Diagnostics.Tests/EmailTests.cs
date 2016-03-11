@@ -153,7 +153,7 @@ namespace Essential.Diagnostics.Tests
             }
 
             // Need to wait, otherwise messages haven't been sent and Assert throws exception
-            System.Threading.Thread.Sleep(3000);
+            System.Threading.Thread.Sleep(10000);
 
             AssertMessagesSent(2000, "All messages should be sent as max is unlimited.");
         }
