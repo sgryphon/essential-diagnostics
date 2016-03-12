@@ -4,6 +4,7 @@ using System.Text;
 using System.Diagnostics;
 using System.Collections.Specialized;
 
+// TODO: Should probably really be in Essential.Diagnotics namespace, but that would be a breaking change
 namespace Essential.Diagnostics.Abstractions
 {
     /// <summary>
@@ -25,7 +26,8 @@ namespace Essential.Diagnostics.Abstractions
     /// get an ITraceSource based on their assembly name.
     /// </para>
     /// </remarks>
-    public class AssemblyTraceSource<T> : ITraceSource<T>
+    /// <typeparam name="TTarget">Target type, whose assembly name is used as the the trace source name.</typeparam>
+    public class AssemblyTraceSource<TTarget> : ITraceSource<TTarget>
     {
         TraceSource traceSource;
 
@@ -42,7 +44,7 @@ namespace Essential.Diagnostics.Abstractions
         /// <param name="defaultLevel"></param>
         public AssemblyTraceSource(SourceLevels defaultLevel)
         {
-            var name = typeof(T).Assembly.GetName().Name;
+            var name = typeof(TTarget).Assembly.GetName().Name;
             traceSource = new TraceSource(name, defaultLevel);
         }
 

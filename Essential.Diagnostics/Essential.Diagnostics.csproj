@@ -73,9 +73,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\DbProviderFactoryExtensions.cs" />
-    <Compile Include="Diagnostics\Abstractions\AssemblyTraceSourceT.cs" />
+    <Compile Include="Diagnostics\Abstractions\AssemblyTraceLog-TEvendId,TTarget.cs" />
+    <Compile Include="Diagnostics\Abstractions\GenericTraceLog.cs" />
+    <Compile Include="Diagnostics\Abstractions\TraceLog-TEventId.cs" />
+    <Compile Include="Diagnostics\Abstractions\AssemblyTraceSource-TTarget.cs" />
+    <Compile Include="Diagnostics\Abstractions\GenericEventId.cs" />
+    <Compile Include="Diagnostics\Abstractions\ITraceLog-TEventId.cs" />
     <Compile Include="Diagnostics\Abstractions\ITraceSource.cs" />
-    <Compile Include="Diagnostics\Abstractions\ITraceSourceT.cs" />
+    <Compile Include="Diagnostics\Abstractions\ITraceSource-TTarget.cs" />
     <Compile Include="Diagnostics\Abstractions\TraceSourceWrapper.cs" />
     <Compile Include="Diagnostics\ActivityScope.cs" />
     <Compile Include="Diagnostics\ColoredConsoleTraceListener.cs" />

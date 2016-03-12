@@ -130,7 +130,7 @@
     <value>Console color specified is invalid.</value>
   </data>
   <data name="RollingTextWriter_ExhaustedLogfileNames" xml:space="preserve">
-    <value>"Exhausted possible logfile names"</value>
+    <value>Exhausted possible logfile names.</value>
   </data>
   <data name="StringTemplate_ArgumentNotFound" xml:space="preserve">
     <value>Invalid argument name used.</value>
@@ -140,5 +140,14 @@
   </data>
   <data name="TraceListenerBase_TraceMessageFormat" xml:space="preserve">
     <value>{0}, relatedActivityId={1}</value>
+  </data>
+  <data name="TraceLog_AppendedExceptionFormat" xml:space="preserve">
+    <value>Exception: {0}</value>
+  </data>
+  <data name="TraceLog_ExceptionFormatSeparator" xml:space="preserve">
+    <value>|</value>
+  </data>
+  <data name="TraceLog_InvalidTEventId" xml:space="preserve">
+    <value>Type argument TEventId is not an enum or int: {0}</value>
   </data>
 </root>

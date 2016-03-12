@@ -19,8 +19,9 @@ namespace Essential.Diagnostics.Abstractions
     /// assembly the class is from see AssemblyTraceSource.
     /// </para>
     /// </remarks>
+    /// <typeparam name="TTarget">Target type to base the trace source on.</typeparam>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1040:AvoidEmptyInterfaces")]
-    public interface ITraceSource<T> : ITraceSource
+    public interface ITraceSource<TTarget> : ITraceSource
     {
     }
 }
