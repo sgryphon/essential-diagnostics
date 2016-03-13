@@ -215,7 +215,7 @@ namespace Essential.Diagnostics.Abstractions
         /// <param name="message">The trace message to write.</param>
         public void Verbose(string message)
         {
-            _traceSource.TraceEvent(TraceEventType.Error, 0, message);
+            _traceSource.TraceEvent(TraceEventType.Verbose, 0, message);
         }
 
         /// <summary>
@@ -225,7 +225,7 @@ namespace Essential.Diagnostics.Abstractions
         /// <param name="args">An object array containing zero or more objects to format.</param>
         public void Verbose(string format, params object[] args)
         {
-            _traceSource.TraceEvent(TraceEventType.Error, 0, format, args);
+            _traceSource.TraceEvent(TraceEventType.Verbose, 0, format, args);
         }
 
         /// <summary>
@@ -235,7 +235,7 @@ namespace Essential.Diagnostics.Abstractions
         /// <param name="message">The trace message to write.</param>
         public void Verbose(TEventId id, string message)
         {
-            _traceSource.TraceEvent(TraceEventType.Error, id.ToInt32(CultureInfo.InvariantCulture), message);
+            _traceSource.TraceEvent(TraceEventType.Verbose, id.ToInt32(CultureInfo.InvariantCulture), message);
         }
 
         /// <summary>
@@ -246,7 +246,7 @@ namespace Essential.Diagnostics.Abstractions
         /// <param name="args">An object array containing zero or more objects to format.</param>
         public void Verbose(TEventId id, string format, params object[] args)
         {
-            _traceSource.TraceEvent(TraceEventType.Error, id.ToInt32(CultureInfo.InvariantCulture), format, args);
+            _traceSource.TraceEvent(TraceEventType.Verbose, id.ToInt32(CultureInfo.InvariantCulture), format, args);
         }
 
         // Warning
@@ -314,7 +314,7 @@ namespace Essential.Diagnostics.Abstractions
                     + Resource.TraceLog_ExceptionFormatSeparator 
                     + Resource.TraceLog_AppendedExceptionFormat;
 
-            _traceSource.TraceEvent(eventType, id, formatWithException, new object[] { ex });
+            _traceSource.TraceEvent(eventType, id, formatWithException, ex);
         }
 
         private void TraceException(TraceEventType eventType, int id, Exception ex, string format, params object[] args)
@@ -331,7 +331,7 @@ namespace Essential.Diagnostics.Abstractions
                     + Resource.TraceLog_ExceptionFormatSeparator
                     + Resource.TraceLog_AppendedExceptionFormat.Replace("{0}", "{" + nextIndex.ToString() + "}");
 
-            _traceSource.TraceEvent(eventType, id, format, args);
+            _traceSource.TraceEvent(eventType, id, formatWithException, argsWithException);
         }
 
     }

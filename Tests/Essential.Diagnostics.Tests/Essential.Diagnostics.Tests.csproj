@@ -62,6 +62,10 @@
     <Compile Include="ColoredConsoleTests.cs" />
     <Compile Include="ConfigurationMonitorTests.cs" />
     <Compile Include="BufferedEmailTests.cs" />
+    <Compile Include="AssemblyTraceLogTests.cs" />
+    <Compile Include="AssemblyTraceSourceTests.cs" />
+    <Compile Include="GenericTraceLogTests.cs" />
+    <Compile Include="TraceLogTests.cs" />
     <Compile Include="EmailTests.cs" />
     <Compile Include="RollingXmlTests.cs" />
     <Compile Include="RollingFileTests.cs" />
