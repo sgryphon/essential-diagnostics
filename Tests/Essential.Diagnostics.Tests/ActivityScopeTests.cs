@@ -5,6 +5,9 @@ using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
+using Essential.Diagnostics.Tests.Utility;
+using System.Xml;
+using System.Xml.XPath;
 
 namespace Essential.Diagnostics.Tests
 {
@@ -87,11 +90,9 @@ namespace Essential.Diagnostics.Tests
         [TestMethod]
         public void AdditionalMessages()
         {
-
-            TraceSource source = new TraceSource("serviceSource");
-
-            var listener = source.Listeners.OfType<InMemoryTraceListener>().First();
-
+            TraceSource source = new TraceSource("testScopeSource");
+            var listener = source.Listeners.OfType<TestTraceListener>().First();
+            listener.MethodCallInformation.Clear();
             string transferIn = "TransferIn";
             string start = "Starting...";
             string transferOut = "TransferOut";
@@ -102,32 +103,39 @@ namespace Essential.Diagnostics.Tests
                 source.TraceEvent(TraceEventType.Warning, 2, "B");
             }
 
-            var events = listener.GetEvents();
- 
-            Assert.IsTrue(events[0].Message.StartsWith(transferIn));
+            var events = listener.MethodCallInformation; 
+            StringAssert.StartsWith(events[0].Message, transferIn);
             Assert.AreEqual(start, events[1].Message);
-
-            Assert.IsTrue(events[3].Message.StartsWith(transferOut));
+            StringAssert.StartsWith(events[3].Message, transferOut);
             Assert.AreEqual(stop, events[4].Message);
-
         }
 
         [TestMethod]
         public void ActivityNameForXmlListeners()
         {
-
-            TraceSource source = new TraceSource("serviceSource");
-
+            TraceSource source = new TraceSource("testScopeSource");
+            var listener = source.Listeners.OfType<TestTraceListener>().First();
+            listener.MethodCallInformation.Clear();
             string transferIn = "TransferIn";
             string start = "Starting...";
             string transferOut = "TransferOut";
             string stop = "Stopping...";
+            var activityName = "MyActivityName";
 
-            using (var scope = new ActivityScope(source, 11, 12, 13, 14, transferIn, start, transferOut, stop, "MyActivityName"))
+            using (var scope = new ActivityScope(source, 11, 12, 13, 14, transferIn, start, transferOut, stop, activityName))
             {
                 source.TraceEvent(TraceEventType.Warning, 2, "B");
             }
 
+            var events = listener.MethodCallInformation;
+            StringAssert.StartsWith(events[0].Message, transferIn);
+            Console.WriteLine(string.Join(",", events[1].Data));
+            Assert.AreEqual(1, events[1].Data.Length);
+            Assert.IsInstanceOfType(events[1].Data[0], typeof(XPathNavigator));
+            StringAssert.Contains(events[1].Data[0].ToString(), activityName);
+            StringAssert.Contains(events[1].Data[0].ToString(), start);
+            StringAssert.StartsWith(events[3].Message, transferOut);
+            Assert.AreEqual(stop, events[4].Message);
         }
 
     }
