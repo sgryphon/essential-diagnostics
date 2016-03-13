@@ -18,6 +18,9 @@ namespace Essential.Diagnostics.Tests
         [TestMethod]
         public void ScopeShouldChangeActivityId()
         {
+            var initialActivityId = Trace.CorrelationManager.ActivityId;
+            Console.WriteLine("Starting ID: {0}", initialActivityId);
+
             TraceSource source = new TraceSource("inmemory1Source");
             var listener = source.Listeners.OfType<InMemoryTraceListener>().First();
             listener.Clear();
@@ -32,18 +35,21 @@ namespace Essential.Diagnostics.Tests
             var events = listener.GetEvents();
 
             Assert.AreEqual(1, events[0].Id);
-            Assert.AreEqual(Guid.Empty, events[0].ActivityId);
+            Assert.AreEqual(initialActivityId, events[0].ActivityId);
 
             Assert.AreEqual(2, events[1].Id);
-            Assert.AreNotEqual(Guid.Empty, events[1].ActivityId);
+            Assert.AreNotEqual(initialActivityId, events[1].ActivityId, "Should be different activity ID");
 
             Assert.AreEqual(3, events[2].Id);
-            Assert.AreEqual(Guid.Empty, events[2].ActivityId);
+            Assert.AreEqual(initialActivityId, events[2].ActivityId, "Should be back to original activity ID");
         }
 
         [TestMethod]
         public void ScopeShouldWriteActivities()
         {
+            var initialActivityId = Trace.CorrelationManager.ActivityId;
+            Console.WriteLine("Starting ID: {0}", initialActivityId);
+
             TraceSource source = new TraceSource("inmemory1Source");
             var listener = source.Listeners.OfType<InMemoryTraceListener>().First();
             listener.Clear();
@@ -57,13 +63,14 @@ namespace Essential.Diagnostics.Tests
 
             var events = listener.GetEvents();
             var innerActivityId = events[3].ActivityId;
+            Assert.AreNotEqual(initialActivityId, innerActivityId, "Should be different activity ID");
 
             Assert.AreEqual(1, events[0].Id);
-            Assert.AreEqual(Guid.Empty, events[0].ActivityId);
+            Assert.AreEqual(initialActivityId, events[0].ActivityId);
 
             Assert.AreEqual(11, events[1].Id);
             Assert.AreEqual(TraceEventType.Transfer, events[1].EventType);
-            Assert.AreEqual(Guid.Empty, events[1].ActivityId);
+            Assert.AreEqual(initialActivityId, events[1].ActivityId);
             Assert.AreEqual(innerActivityId, events[1].RelatedActivityId);
 
             Assert.AreEqual(12, events[2].Id);
@@ -72,19 +79,20 @@ namespace Essential.Diagnostics.Tests
 
             Assert.AreEqual(2, events[3].Id);
             Assert.AreEqual(TraceEventType.Warning, events[3].EventType);
-            Assert.AreNotEqual(Guid.Empty, events[3].ActivityId);
+            // Checked above
+            //Assert.AreNotEqual(initialActivityId, events[3].ActivityId, "Should be different activity ID");
 
             Assert.AreEqual(13, events[4].Id);
             Assert.AreEqual(TraceEventType.Transfer, events[4].EventType);
             Assert.AreEqual(innerActivityId, events[4].ActivityId);
-            Assert.AreEqual(Guid.Empty, events[4].RelatedActivityId);
+            Assert.AreEqual(initialActivityId, events[4].RelatedActivityId, "Should be transfer back to original ID");
 
             Assert.AreEqual(14, events[5].Id);
             Assert.AreEqual(TraceEventType.Stop, events[5].EventType);
             Assert.AreEqual(innerActivityId, events[5].ActivityId);
 
             Assert.AreEqual(3, events[6].Id);
-            Assert.AreEqual(Guid.Empty, events[6].ActivityId);
+            Assert.AreEqual(initialActivityId, events[6].ActivityId, "Should be back to original activity ID");
         }
 
         [TestMethod]

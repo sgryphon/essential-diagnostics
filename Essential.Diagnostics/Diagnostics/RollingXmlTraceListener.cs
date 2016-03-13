@@ -24,7 +24,8 @@ namespace Essential.Diagnostics
     /// </para>
     /// <para>
     /// Available tokens are DateTime (a UTC DateTimeOffset) and LocalDateTime (a local DateTimeOffset), 
-    /// as well as ApplicationName, ProcessId, ProcessName and MachineName. These use standard .NET 
+    /// as well as ActivityId, AppData, AppDomain, ApplicationName, MachineName, 
+    /// ProcessId, ProcessName, and User. These use standard .NET 
     /// format strings, e.g. "Trace{DateTime:yyyyMMddTHH}.svclog" would generate a different log name
     /// each hour.
     /// </para>

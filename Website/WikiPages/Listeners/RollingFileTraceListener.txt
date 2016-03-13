@@ -23,13 +23,16 @@ Log messages can be formatted by using the template property. The available argu
 !! Path Template Parameters
 
 || Parameter || Description ||
+| {ActivityId} | GUID of the current correlation activity context, from Trace.Correlation.ActivityId. |
 | {AppData} | Resolves the mapped path equivalent to "~/App_Data", for the current HttpContext. |
+| {AppDomain} | Name of the application, from AppDomain.CurrentDomain.FriendlyName. |
 | {ApplicationName} | Name of the current executable, without the extension. |
 | {DateTime} | DateTimeOffset of the log event, in the UTC (+0) timezone. |
 | {LocalDateTime} | DateTimeOffset of the log event, in the local timezone. |
 | {MachineName} | Local computer name, from Environment.MachineName. |
 | {ProcessId} | Id of the current process, from Process.GetCurrentProcess(). |
 | {ProcessName} | Name of the current process, from Process.GetCurrentProcess(). |
+| {User} | Current enviroment user domain and name. |
 
 !! Example Config
 
