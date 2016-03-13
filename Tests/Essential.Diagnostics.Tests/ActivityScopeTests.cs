@@ -8,6 +8,7 @@ using System.Linq;
 using Essential.Diagnostics.Tests.Utility;
 using System.Xml;
 using System.Xml.XPath;
+using Essential.Diagnostics.Abstractions;
 
 namespace Essential.Diagnostics.Tests
 {
@@ -110,6 +111,29 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod]
+        public void AdditionalMessagesIScope()
+        {
+            ITraceSource source = new AssemblyTraceSource<ActivityScopeTests>();
+            var listener = source.Listeners.OfType<TestTraceListener>().First();
+            listener.MethodCallInformation.Clear();
+            string transferIn = "TransferIn";
+            string start = "Starting...";
+            string transferOut = "TransferOut";
+            string stop = "Stopping...";
+
+            using (var scope = new ActivityScope(source, 11, 12, 13, 14, transferIn, start, transferOut, stop))
+            {
+                source.TraceEvent(TraceEventType.Warning, 2, "B");
+            }
+
+            var events = listener.MethodCallInformation;
+            StringAssert.StartsWith(events[0].Message, transferIn);
+            Assert.AreEqual(start, events[1].Message);
+            StringAssert.StartsWith(events[3].Message, transferOut);
+            Assert.AreEqual(stop, events[4].Message);
+        }
+
+        [TestMethod]
         public void ActivityNameForXmlListeners()
         {
             TraceSource source = new TraceSource("testScopeSource");
@@ -130,12 +154,55 @@ namespace Essential.Diagnostics.Tests
             StringAssert.StartsWith(events[0].Message, transferIn);
             Console.WriteLine(string.Join(",", events[1].Data));
             Assert.AreEqual(1, events[1].Data.Length);
+
             Assert.IsInstanceOfType(events[1].Data[0], typeof(XPathNavigator));
-            StringAssert.Contains(events[1].Data[0].ToString(), activityName);
-            StringAssert.Contains(events[1].Data[0].ToString(), start);
+            var navigator = (XPathNavigator)events[1].Data[0];
+            var resolver = new XmlNamespaceManager(navigator.NameTable);
+            resolver.AddNamespace("ns1", "http://schemas.microsoft.com/2004/10/E2ETraceEvent/TraceRecord");
+            resolver.AddNamespace("ns2", "http://schemas.microsoft.com/2006/08/ServiceModel/DictionaryTraceRecord");
+            Assert.AreEqual(start, navigator.SelectSingleNode("/ns1:TraceRecord/ns1:Description", resolver).Value);
+            Assert.AreEqual(activityName, navigator.SelectSingleNode("/ns1:TraceRecord/ns2:ExtendedData/ns2:ActivityName", resolver).Value);
+            //StringAssert.Contains(events[1].Data[0].ToString(), activityName);
+            //StringAssert.Contains(events[1].Data[0].ToString(), start);
+
             StringAssert.StartsWith(events[3].Message, transferOut);
             Assert.AreEqual(stop, events[4].Message);
         }
 
+        [TestMethod]
+        public void ActivityNameForXmlListenersStrangeCharacters()
+        {
+            TraceSource source = new TraceSource("testScopeSource");
+            var listener = source.Listeners.OfType<TestTraceListener>().First();
+            listener.MethodCallInformation.Clear();
+            string transferIn = "TransferIn";
+            string start = "<";
+            string transferOut = "TransferOut";
+            string stop = "Stopping...";
+            var activityName = "<";
+
+            using (var scope = new ActivityScope(source, 11, 12, 13, 14, transferIn, start, transferOut, stop, activityName))
+            {
+                source.TraceEvent(TraceEventType.Warning, 2, "B");
+            }
+
+            var events = listener.MethodCallInformation;
+            StringAssert.StartsWith(events[0].Message, transferIn);
+
+            Console.WriteLine(string.Join(",", events[1].Data));
+            Assert.AreEqual(1, events[1].Data.Length);
+            Assert.IsInstanceOfType(events[1].Data[0], typeof(XPathNavigator));
+            var navigator = (XPathNavigator)events[1].Data[0];
+            var resolver = new XmlNamespaceManager(navigator.NameTable);
+            resolver.AddNamespace("ns1", "http://schemas.microsoft.com/2004/10/E2ETraceEvent/TraceRecord");
+            resolver.AddNamespace("ns2", "http://schemas.microsoft.com/2006/08/ServiceModel/DictionaryTraceRecord");
+            Assert.AreEqual(start, navigator.SelectSingleNode("/ns1:TraceRecord/ns1:Description", resolver).Value);
+            Assert.AreEqual(activityName, navigator.SelectSingleNode("/ns1:TraceRecord/ns2:ExtendedData/ns2:ActivityName", resolver).Value);
+            //StringAssert.Contains(events[1].Data[0].ToString(), activityName);
+            //StringAssert.Contains(events[1].Data[0].ToString(), start);
+
+            StringAssert.StartsWith(events[3].Message, transferOut);
+            Assert.AreEqual(stop, events[4].Message);
+        }
     }
 }

@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using Essential.Diagnostics.Abstractions;
 using System.Xml;
+using System.Security;
 
 namespace Essential.Diagnostics
 {
@@ -238,13 +239,17 @@ namespace Essential.Diagnostics
                 }
                 else
                 {
-                    var xml = string.Format(TraceRecordXmlTemplate,
-                        _startMessage,
-                        AppDomain.CurrentDomain.FriendlyName,
-                        _activityName
-                    );
+                    //var xml = string.Format(TraceRecordXmlTemplate,
+                    //    SecurityElement.Escape(_startMessage),
+                    //    SecurityElement.Escape(AppDomain.CurrentDomain.FriendlyName),
+                    //    SecurityElement.Escape(_activityName)
+                    //);
+                    var xml = TraceRecordXmlTemplate;
                     var doc = new XmlDocument();
                     doc.LoadXml(xml);
+                    doc.ChildNodes[0].ChildNodes[1].InnerText = _startMessage;
+                    doc.ChildNodes[0].ChildNodes[2].InnerText = AppDomain.CurrentDomain.FriendlyName;
+                    doc.ChildNodes[0].ChildNodes[3].ChildNodes[0].InnerText = _activityName;
                     _source.TraceData(TraceEventType.Start, _startId, doc.CreateNavigator());
                 }
             }
