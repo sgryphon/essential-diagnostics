@@ -119,6 +119,9 @@ namespace Essential.Diagnostics
                 if (_currentWriter != null)
                 {
                     _currentWriter.Close();
+                    _currentWriter.Dispose();
+                    _currentWriter = null;
+                    _currentPath = null;
                 }
 
                 var num = 0;
@@ -165,6 +168,9 @@ namespace Essential.Diagnostics
                 {
                     switch (name.ToUpperInvariant())
                     {
+                        case "ACTIVITYID":
+                            value = Trace.CorrelationManager.ActivityId;
+                            break;
                         case "APPLICATIONNAME":
                             value = traceFormatter.FormatApplicationName();
                             break;

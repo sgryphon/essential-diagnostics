@@ -277,6 +277,5 @@ namespace Essential.Diagnostics
 
             base.Dispose(disposing);
         }
-
 	}
 }

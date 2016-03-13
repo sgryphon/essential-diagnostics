@@ -65,6 +65,7 @@
     <Compile Include="AssemblyTraceLogTests.cs" />
     <Compile Include="AssemblyTraceSourceTests.cs" />
     <Compile Include="GenericTraceLogTests.cs" />
+    <Compile Include="RollingFileTraceListenerTests.cs" />
     <Compile Include="TraceLogTests.cs" />
     <Compile Include="EmailTests.cs" />
     <Compile Include="RollingXmlTests.cs" />
