@@ -171,6 +171,12 @@ namespace Essential.Diagnostics
                         case "ACTIVITYID":
                             value = Trace.CorrelationManager.ActivityId;
                             break;
+                        case "APPDATA":
+                            value = traceFormatter.HttpTraceContext.AppDataPath;
+                            break;
+                        case "APPDOMAIN":
+                            value = AppDomain.CurrentDomain.FriendlyName;
+                            break;
                         case "APPLICATIONNAME":
                             value = traceFormatter.FormatApplicationName();
                             break;
@@ -189,12 +195,6 @@ namespace Essential.Diagnostics
                             break;
                         case "PROCESSNAME":
                             value = traceFormatter.FormatProcessName();
-                            break;
-                        case "APPDATA":
-                            value = traceFormatter.HttpTraceContext.AppDataPath;
-                            break;
-                        case "APPDOMAIN":
-                            value = AppDomain.CurrentDomain.FriendlyName;
                             break;
                         case "USER":
                             value = Environment.UserDomainName + "-" + Environment.UserName;

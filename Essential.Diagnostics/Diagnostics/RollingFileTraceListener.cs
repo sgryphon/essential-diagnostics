@@ -6,9 +6,9 @@ using Essential.IO;
 
 namespace Essential.Diagnostics
 {
-	/// <summary>
-	/// Trace listener that writes to a text file, rolling to a new file based on a filename template (usually including the date).
-	/// </summary>
+    /// <summary>
+    /// Trace listener that writes to a text file, rolling to a new file based on a filename template (usually including the date).
+    /// </summary>
     /// <remarks>
     /// <para>
     /// A rolling log file is achieved by including the date in the filename, so that when the date changes
@@ -16,7 +16,8 @@ namespace Essential.Diagnostics
     /// </para>
     /// <para>
     /// Available tokens are DateTime (a UTC DateTimeOffset) and LocalDateTime (a local DateTimeOffset), 
-    /// as well as ApplicationName, ProcessId, ProcessName and MachineName. These use standard .NET 
+    /// as well as ActivityId, AppData, AppDomain, ApplicationName, MachineName, 
+    /// ProcessId, ProcessName, and User. These use standard .NET 
     /// format strings, e.g. "Trace{DateTime:yyyyMMddTHH}.log" would generate a different log name
     /// each hour.
     /// </para>
