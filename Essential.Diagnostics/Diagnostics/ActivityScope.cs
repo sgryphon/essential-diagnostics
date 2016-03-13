@@ -38,150 +38,146 @@ namespace Essential.Diagnostics
 
         // WCF sets an ActivityId for you, but with other contexts it may not be set.
 
+        const string TraceRecordXmlTemplate = @"<TraceRecord Severity='Start' xmlns='http://schemas.microsoft.com/2004/10/E2ETraceEvent/TraceRecord'>
+    <TraceIdentifier></TraceIdentifier>
+    <Description>{0}</Description>
+    <AppDomain>{1}</AppDomain>
+    <ExtendedData xmlns='http://schemas.microsoft.com/2006/08/ServiceModel/DictionaryTraceRecord'>
+        <ActivityName>{2}</ActivityName>
+        <ActivityType>Construct</ActivityType>
+    </ExtendedData>
+</TraceRecord>";
+
+        string _activityName;
         Guid _previousActivityId;
         ITraceSource _source;
         int _startId;
+        string _startMessage;
         int _stopId;
+        string _stopMessage;
         int _transferInId;
+        string _transferInMessage;
         int _transferOutId;
-        string _transferInMessage = null;
-        string _startMessage = null;
-        string _transferOutMessage = null;
-        string _stopMessage = null;
+        string _transferOutMessage;
 
         /// <summary>
         /// Constructor. Sets the ActivityId for the life of the object without logging any events.
         /// </summary>
         public ActivityScope()
-            : this((ITraceSource)null, 0, 0, 0, 0)
+            : this((ITraceSource)null, 0, 0, 0, 0, null, null, null, null, null)
         {
         }
 
         /// <summary>
-        /// Constructor. Sets the ActivityId for the life of the object, logging events but without specific event ID's.
+        /// Constructor. Sets the ActivityId for the life of the object, logging events but without specific event IDs.
         /// </summary>
         public ActivityScope(TraceSource source)
-            : this(new TraceSourceWrapper(source), 0, 0, 0, 0)
+            : this(new TraceSourceWrapper(source), 0, 0, 0, 0, null, null, null, null, null)
         {
         }
 
         /// <summary>
-        /// Constructor. Sets the ActivityId for the life of the object, logging events with the specified event ID's.
+        /// Constructor. Sets the ActivityId for the life of the object, logging events with the specified event IDs.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         public ActivityScope(TraceSource source, int transferInId, int startId, int transferOutId, int stopId)
-            : this(new TraceSourceWrapper(source), transferInId, startId, transferOutId, stopId)
+            : this(new TraceSourceWrapper(source), transferInId, startId, transferOutId, stopId,
+                  null, null, null, null, null)
         {
         }
 
         /// <summary>
-        /// Constructor. Sets the ActivityId for the life of the object, logging events but without specific event ID's.
+        /// Constructor. Sets the ActivityId for the life of the object, logging events with the specified event IDs and messages.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Custom messages may be set for transfer-in, start, transfer-out and stop. Empty strings will be honored; 
+        /// if null values, the default messages will be used instead.
+        /// </para>
+        /// </remarks>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
+        public ActivityScope(TraceSource source, int transferInId, int startId, int transferOutId, int stopId,
+            string transferInMessage, string startMessage, string transferOutMessage, string stopMessage)
+            : this(new TraceSourceWrapper(source), transferInId, startId, transferOutId, stopId,
+                  transferInMessage, startMessage, transferOutMessage, stopMessage, null)
+        {
+        }
+
+        /// <summary>
+        /// Constructor. Sets the ActivityId for the life of the object, logging events with the specified event IDs, messages, and activity name (when using XML listeners). 
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Note that when activityName is specified, the Start event is logged as a Data event, with specially formatted
+        /// XML containing the activity name and start message. This is used by XmlWriterTraceListener and the XML Trace Viewer
+        /// application, but may not work in other listeners.
+        /// </para>
+        /// <para>
+        /// Custom messages may be set for transfer-in, start, transfer-out and stop. Empty strings will be honored; 
+        /// if null values, the default messages will be used instead.
+        /// </para>
+        /// </remarks>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
+        public ActivityScope(TraceSource source, int transferInId, int startId, int transferOutId, int stopId,
+            string transferInMessage, string startMessage, string transferOutMessage, string stopMessage, string activityName)
+            : this(new TraceSourceWrapper(source), transferInId, startId, transferOutId, stopId, 
+                  transferInMessage, startMessage, transferOutMessage, stopMessage, activityName)
+        {
+        }
+
+        /// <summary>
+        /// Constructor. Sets the ActivityId for the life of the object, logging events but without specific event IDs.
         /// </summary>
         public ActivityScope(ITraceSource source)
-            : this(source, 0, 0, 0, 0)
+            : this(source, 0, 0, 0, 0, null, null, null, null, null)
         {
         }
 
         /// <summary>
-        /// Constructor. Sets the ActivityId for the life of the object, logging events with the specified event ID's.
+        /// Constructor. Sets the ActivityId for the life of the object, logging events with the specified event IDs.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         public ActivityScope(ITraceSource source, int transferInId, int startId, int transferOutId, int stopId)
+            : this(source, transferInId, startId, transferOutId, stopId,
+                  null, null, null, null, null)
         {
-            _source = source;
-            _startId = startId;
-            _stopId = stopId;
-            _transferInId = transferInId;
-            _transferOutId = transferOutId;
-
-            _previousActivityId = Trace.CorrelationManager.ActivityId;
-
-            // Log Transfer In
-            Guid newActivity = Guid.NewGuid();
-            if (_source != null)
-            {
-                _source.TraceTransfer(_transferInId, Resource.ActivityScope_Transfer, newActivity);
-            }
-            Trace.CorrelationManager.ActivityId = newActivity;
-
-            // Log Start Message
-            if (_source != null)
-            {
-                _source.TraceEvent(TraceEventType.Start, _startId, Resource.ActivityScope_Start);
-            }
         }
 
         /// <summary>
-        /// Constructor. Sets the ActivityId for the life of the object, logging events with the specified event ID's. 
-        /// Additionally set custom messages for transfer-in, start, transfer-out and stop messages. Empty messages will be honored; if null values, the default messages will be used instead.
+        /// Constructor. Sets the ActivityId for the life of the object, logging events with the specified event IDs and messages.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
-        public ActivityScope(TraceSource source, int transferInId, int startId, int transferOutId, int stopId,
- string transferInMessage, string startMessage, string transferOutMessage, string stopMessage)
-            : this(new TraceSourceWrapper(source), transferInId, startId, transferOutId, stopId, transferInMessage, startMessage, transferOutMessage, stopMessage)
-        {
-
-        }
-        /// <summary>
-        /// Constructor. Sets the ActivityId for the life of the object, logging events with the specified event ID's. 
-        /// Additionally set custom messages for transfer-in, start, transfer-out and stop messages. Empty messages will be honored; if null values, the default messages will be used instead.
-        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Custom messages may be set for transfer-in, start, transfer-out and stop. Empty strings will be honored; 
+        /// if null values, the default messages will be used instead.
+        /// </para>
+        /// </remarks>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         public ActivityScope(ITraceSource source, int transferInId, int startId, int transferOutId, int stopId,
- string transferInMessage, string startMessage, string transferOutMessage, string stopMessage)
-        {
-
-            _source = source;
-            _startId = startId;
-            _stopId = stopId;
-            _transferInId = transferInId;
-            _transferOutId = transferOutId;
-
-            _previousActivityId = Trace.CorrelationManager.ActivityId;
-
-            _transferInMessage = transferInMessage;
-            _startMessage = startMessage;
-            _transferOutMessage = transferOutMessage;
-            _stopMessage = stopMessage;
-
-            // Log Transfer In
-            Guid newActivity = Guid.NewGuid();
-            if (_source != null)
-            {
-                _source.TraceTransfer(_transferInId, _transferInMessage ?? Resource.ActivityScope_Transfer, newActivity);
-            }
-            Trace.CorrelationManager.ActivityId = newActivity;
-
-            // Log Start Message
-            if (_source != null)
-            {
-                _source.TraceEvent(TraceEventType.Start, _startId, _startMessage ?? Resource.ActivityScope_Start);
-            }
-        }
-
-        /// <summary>
-        /// Constructor. Sets the ActivityId for the life of the object, logging events with the specified event ID's. 
-        /// Additionally set custom messages for transfer-in, start, transfer-out and stop messages. Empty messages will be honored; if null values, the default messages will be used instead.
-        /// Use this overload when using Xml Listeners
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
-        public ActivityScope(TraceSource source, int transferInId, int startId, int transferOutId, int stopId,
- string transferInMessage, string startMessage, string transferOutMessage, string stopMessage, string activityName)
-            : this(new TraceSourceWrapper(source), transferInId, startId, transferOutId, stopId, transferInMessage, startMessage, transferOutMessage, stopMessage, activityName)
-
+            string transferInMessage, string startMessage, string transferOutMessage, string stopMessage)
+            : this(source, transferInId, startId, transferOutId, stopId,
+                  transferInMessage, startMessage, transferOutMessage, stopMessage, null)
         {
         }
 
         /// <summary>
-        /// Constructor. Sets the ActivityId for the life of the object, logging events with the specified event ID's. 
-        /// Additionally set custom messages for transfer-in, start, transfer-out and stop messages. Empty messages will be honored; if null values, the default messages will be used instead.
-        /// Use this overload when using XmlWriterTraceListener. Activity name only applies for XmlWriterTraceListener.
+        /// Constructor. Sets the ActivityId for the life of the object, logging events with the specified event IDs, messages, and activity name (when using XML listeners). 
         /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Note that when activityName is specified, the Start event is logged as a Data event, with specially formatted
+        /// XML containing the activity name and start message. This is used by XmlWriterTraceListener and the XML Trace Viewer
+        /// application, but may not work in other listeners.
+        /// </para>
+        /// <para>
+        /// Custom messages may be set for transfer-in, start, transfer-out and stop. Empty strings will be honored; 
+        /// if null values, the default messages will be used instead.
+        /// </para>
+        /// </remarks>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         public ActivityScope(ITraceSource source, int transferInId, int startId, int transferOutId, int stopId,
- string transferInMessage, string startMessage, string transferOutMessage, string stopMessage, string activityName)
+            string transferInMessage, string startMessage, string transferOutMessage, string stopMessage, string activityName)
         {
-
             _source = source;
             _startId = startId;
             _stopId = stopId;
@@ -190,44 +186,16 @@ namespace Essential.Diagnostics
 
             _previousActivityId = Trace.CorrelationManager.ActivityId;
 
-            _transferInMessage = transferInMessage;
-            _startMessage = startMessage;
-            _transferOutMessage = transferOutMessage;
-            _stopMessage = stopMessage;
+            _transferInMessage = transferInMessage ?? Resource.ActivityScope_Transfer;
+            _startMessage = startMessage ?? Resource.ActivityScope_Start;
+            _transferOutMessage = transferOutMessage ?? Resource.ActivityScope_Transfer;
+            _stopMessage = stopMessage ?? Resource.ActivityScope_Stop;
 
-            // Log Transfer In
-            Guid newActivity = Guid.NewGuid();
-            if (_source != null)
-            {
-                _source.TraceTransfer(_transferInId, _transferInMessage ?? Resource.ActivityScope_Transfer, newActivity);
-            }
-            Trace.CorrelationManager.ActivityId = newActivity;
+            _activityName = activityName;
 
-            // Log Start Message
-            if (_source != null)
-            {
-                var xml = string.Format(@"<TraceRecord Severity='Start' xmlns='http://schemas.microsoft.com/2004/10/E2ETraceEvent/TraceRecord'>
-                     <TraceIdentifier></TraceIdentifier>
-                     <Description>{0}</Description>
-                     <AppDomain>{1}</AppDomain>
-                     <ExtendedData xmlns='http://schemas.microsoft.com/2006/08/ServiceModel/DictionaryTraceRecord'>
-                         <ActivityName>{2}</ActivityName>
-                         <ActivityType>Construct</ActivityType>
-                     </ExtendedData>
-                 </TraceRecord>",
-                 _startMessage ?? Resource.ActivityScope_Start,
-                AppDomain.CurrentDomain.FriendlyName,
-                activityName ?? _startMessage ?? Resource.ActivityScope_Start
-                );
-
-                var doc = new XmlDocument();
-
-                doc.LoadXml(xml);
-
-                _source.TraceData(TraceEventType.Start, _startId, doc.CreateNavigator());
-
-            }
+            StartScope();
         }
+
         /// <summary>
         /// Disposes of the object, resetting the ActivityId.
         /// </summary>
@@ -245,19 +213,60 @@ namespace Essential.Diagnostics
         {
             if (disposing)
             {
-                // Log Transfer Out
-                if (_source != null)
-                {
-                    _source.TraceTransfer(_transferOutId, _transferOutMessage ?? Resource.ActivityScope_Transfer, _previousActivityId);
-                }
-
-                // Log Stop Message
-                if (_source != null)
-                {
-                    _source.TraceEvent(TraceEventType.Stop, _stopId, _stopMessage ?? Resource.ActivityScope_Stop);
-                }
-                Trace.CorrelationManager.ActivityId = _previousActivityId;
+                StopScope();
             }
         }
+
+        private void StartScope()
+        {
+            // Log Transfer In (on original activity)
+            Guid newActivity = Guid.NewGuid();
+            if (_source != null)
+            {
+                _source.TraceTransfer(_transferInId, _transferInMessage, newActivity);
+            }
+
+            // Change to scope ActivityId
+            Trace.CorrelationManager.ActivityId = newActivity;
+
+            // Log Start Message (first message on scope activity)
+            if (_source != null)
+            {
+                if (_activityName == null)
+                {
+                    _source.TraceEvent(TraceEventType.Start, _startId, _startMessage);
+                }
+                else
+                {
+                    var xml = string.Format(TraceRecordXmlTemplate,
+                        _startMessage,
+                        AppDomain.CurrentDomain.FriendlyName,
+                        _activityName
+                    );
+                    var doc = new XmlDocument();
+                    doc.LoadXml(xml);
+                    _source.TraceData(TraceEventType.Start, _startId, doc.CreateNavigator());
+                }
+            }
+        }
+
+        private void StopScope()
+        {
+            // Log Transfer Out (on scope activity, back to original)
+            if (_source != null)
+            {
+                _source.TraceTransfer(_transferOutId, _transferOutMessage, _previousActivityId);
+            }
+
+            // Log Stop Message (this is the last message on the scope activity)
+            if (_source != null)
+            {
+                _source.TraceEvent(TraceEventType.Stop, _stopId, _stopMessage);
+            }
+
+            // Change back to original ActivityId
+            Trace.CorrelationManager.ActivityId = _previousActivityId;
+        }
+
     }
 }

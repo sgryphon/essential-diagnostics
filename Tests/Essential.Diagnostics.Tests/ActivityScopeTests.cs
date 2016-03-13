@@ -54,7 +54,6 @@ namespace Essential.Diagnostics.Tests
             }
             source.TraceEvent(TraceEventType.Warning, 3, "C");
 
-
             var events = listener.GetEvents();
             var innerActivityId = events[3].ActivityId;
 
