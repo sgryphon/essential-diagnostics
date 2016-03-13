@@ -271,12 +271,15 @@ namespace Essential.Diagnostics
 
         protected override void Dispose(bool disposing)
         {
-            if (rollingTextWriter!=null)
+            if (disposing)
             {
-                rollingTextWriter.Dispose();
+                if (rollingTextWriter != null)
+                {
+                    rollingTextWriter.Dispose();
+                }
             }
-
             base.Dispose(disposing);
         }
+
 	}
 }
