@@ -25,6 +25,8 @@ namespace Essential.Diagnostics.Abstractions
     public class TraceLog<TEventId> : ITraceLog<TEventId>
         where TEventId : struct, IConvertible
     {
+        string _exceptionFormat;
+        string _exceptionSeparator;
         ITraceSource _traceSource;
 
         // Check on TEventId type constraints
@@ -62,6 +64,8 @@ namespace Essential.Diagnostics.Abstractions
         public TraceLog(ITraceSource traceSource)
         {
             _traceSource = traceSource;
+            _exceptionFormat = Resource.TraceLog_AppendedExceptionFormat;
+            _exceptionSeparator = Resource.TraceLog_ExceptionFormatSeparator;
         }
 
         /// <summary>
@@ -70,6 +74,26 @@ namespace Essential.Diagnostics.Abstractions
         public ITraceSource TraceSource
         {
             get { return _traceSource; }
+        }
+
+        /// <summary>
+        /// Gets or sets the separator to use between the message and the exception; 
+        /// the default is "|", but it can be changed, e.g. to a blank space.
+        /// </summary>
+        public string ExceptionSeparator
+        {
+            get { return _exceptionSeparator; }
+            set { _exceptionSeparator = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the format string used to include the exception in the trace message;
+        /// it must have placeholder "{0}"; the default is "Exception: {0}".
+        /// </summary>
+        public string ExceptionFormat
+        {
+            get { return _exceptionFormat; }
+            set { _exceptionFormat = value; }
         }
 
         // Critical
@@ -309,10 +333,10 @@ namespace Essential.Diagnostics.Abstractions
         private void TraceException(TraceEventType eventType, int id, Exception ex, string message)
         {
             var formatWithException = string.IsNullOrEmpty(message) 
-                ? Resource.TraceLog_AppendedExceptionFormat
+                ? _exceptionFormat
                 : message.Replace("{", "{{").Replace("}", "}}") 
-                    + Resource.TraceLog_ExceptionFormatSeparator 
-                    + Resource.TraceLog_AppendedExceptionFormat;
+                    + _exceptionSeparator
+                    + _exceptionFormat;
 
             _traceSource.TraceEvent(eventType, id, formatWithException, ex);
         }
@@ -326,10 +350,10 @@ namespace Essential.Diagnostics.Abstractions
             argsWithException[nextIndex] = ex;
 
             var formatWithException = string.IsNullOrEmpty(format) 
-                ? Resource.TraceLog_AppendedExceptionFormat.Replace("{0}", "{" + nextIndex.ToString() + "}") 
+                ? _exceptionFormat.Replace("{0}", "{" + nextIndex.ToString() + "}") 
                 : format
-                    + Resource.TraceLog_ExceptionFormatSeparator
-                    + Resource.TraceLog_AppendedExceptionFormat.Replace("{0}", "{" + nextIndex.ToString() + "}");
+                    + _exceptionSeparator
+                    + _exceptionFormat.Replace("{0}", "{" + nextIndex.ToString() + "}");
 
             _traceSource.TraceEvent(eventType, id, formatWithException, argsWithException);
         }

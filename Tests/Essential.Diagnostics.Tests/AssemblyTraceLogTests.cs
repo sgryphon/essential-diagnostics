@@ -48,5 +48,31 @@ namespace Essential.Diagnostics.Abstractions.Tests
             MyApplicationStart = 1100,
             MyApplicationError = 5100
         }
+
+        [TestMethod()]
+        public void AlternateExceptionFormatting()
+        {
+            var log = new AssemblyTraceLog<MyEventId, AssemblyTraceLogTests>();
+            log.ExceptionSeparator = " ";
+            log.ExceptionFormat = "Exception={{{0}}}";
+            var listener = log.TraceSource.Listeners.OfType<TestTraceListener>().First();
+            listener.MethodCallInformation.Clear();
+
+            try
+            {
+                throw new ApplicationException("b1");
+            }
+            catch (Exception ex)
+            {
+
+                log.Error(MyEventId.MyApplicationError, ex, "a{0}", 2);
+            }
+
+            var events = listener.MethodCallInformation;
+            Assert.AreEqual(5100, events[0].Id);
+            Assert.AreEqual(TraceEventType.Error, events[0].EventType);
+            Console.WriteLine(events[0].Message);
+            StringAssert.StartsWith(events[0].Message, "a2 Exception={System.ApplicationException: b1");
+        }
     }
 }
