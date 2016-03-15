@@ -16,6 +16,15 @@ System.Diagnostics.
 The Essential.Diagnostics.dll contains extensions to the .NET Framework 
 System.Diagnostics trace listeners, filters, and other utilities.
 
+Available via Nuget:
+
+  Install-Package Essential.Diagnostics.Config
+
+  Install-Package System.Diagnostics.Config
+
+  Install-Package Essential.Diagnostics
+
+
 Version History
 ---------------
 
