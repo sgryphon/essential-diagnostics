@@ -246,3 +246,11 @@ paket-files/
 # JetBrains Rider
 .idea/
 *.sln.iml
+
+# Custom
+# ------
+
+Packaging/Output
+
+
+
