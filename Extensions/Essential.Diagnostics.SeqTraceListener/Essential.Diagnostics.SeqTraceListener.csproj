@@ -32,7 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Essential.Diagnostics, Version=1.2.0.0, Culture=neutral, PublicKeyToken=9d041bca93991466, processorArchitecture=MSIL">
-      <HintPath>packages\Essential.Diagnostics.1.2.30315.0\lib\Essential.Diagnostics.dll</HintPath>
+      <HintPath>packages\Essential.Diagnostics.1.2.30319.0\lib\Essential.Diagnostics.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
