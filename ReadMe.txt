@@ -2,7 +2,7 @@ Essential.Diagnostics
 =====================
 
 Copyright 2010 Sly Gryphon. This library distributed under the 
-Microsoft Public License (Ms-PL).
+Microsoft Reciprocal License (Ms-RL).
 
 http://essentialdiagnostics.codeplex.com/
 
