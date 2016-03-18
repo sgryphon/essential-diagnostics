@@ -114,7 +114,7 @@ namespace Essential.Diagnostics
         /// <summary>
         /// Writes the event to the listener, formatting the message with the provided arguments, 
         /// but only if allowed by the configured filter.
-        /// The event is forwarded to the WriteTrace template method.
+        /// The event is forwarded to the WriteTraceFormat template method if it has args, or WriteTrace without.
         /// </summary>
         /// <remarks>
         /// <para>
@@ -139,8 +139,7 @@ namespace Essential.Diagnostics
                 }
                 else
                 {
-                    var message = string.Format(CultureInfo.CurrentCulture, format, args);
-                    WriteTrace(eventCache, source, eventType, id, message, null, null);
+                    WriteTraceFormat(eventCache, source, eventType, id, format, args);
                 }
             }
         }
@@ -321,6 +320,29 @@ namespace Essential.Diagnostics
         protected virtual void WriteLine(string category, string message, object data)
         {
             TraceWriteAsEvent(category, message, data);
+        }
+
+        /// <summary>
+        /// Virtual method that can be overridden by listeners who want to handle the format strings
+        /// before the args are resolved.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// The default implementation of this message uses string.Format() to resolve the args, and
+        /// then passes the result to WriteTrace.
+        /// </para>
+        /// <para>
+        /// If listeners want to intercept the message, after it has been filtered, but before the args
+        /// have been resolved, then they can override this method and provide an alternative implementation.
+        /// For example, Seq records the original format separate from the args, so that it can filter on
+        /// the message 'type' (based on a hash of the fixed format, ignoring the variable args) and separately
+        /// also filter on the separate arg values.
+        /// </para>
+        /// </remarks>
+        protected virtual void WriteTraceFormat(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string format, params object[] args)
+        {
+            var message = string.Format(CultureInfo.CurrentCulture, format, args);
+            WriteTrace(eventCache, source, eventType, id, message, null, null);
         }
 
         /// <summary>
