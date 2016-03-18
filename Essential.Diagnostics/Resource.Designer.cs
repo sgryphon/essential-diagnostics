@@ -97,6 +97,24 @@ namespace Essential {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Start operation.
+        /// </summary>
+        internal static string LogicalOperationScope_Start {
+            get {
+                return ResourceManager.GetString("LogicalOperationScope_Start", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stop operation.
+        /// </summary>
+        internal static string LogicalOperationScope_Stop {
+            get {
+                return ResourceManager.GetString("LogicalOperationScope_Stop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Exhausted possible logfile names..
         /// </summary>
         internal static string RollingTextWriter_ExhaustedLogfileNames {

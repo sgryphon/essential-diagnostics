@@ -17,16 +17,19 @@ namespace Essential.Diagnostics
     /// </remarks>
     public class LogicalOperationScope : IDisposable
     {
+        object _operationId;
         ITraceSource _source;
         int _startId;
+        string _startMessage;
         int _stopId;
+        string _stopMessage;
 
         /// <summary>
         /// Constructor. 
         /// Encompases an unnamed logical operation.
         /// </summary>
         public LogicalOperationScope()
-            : this((ITraceSource)null, null, 0, 0)
+            : this((ITraceSource)null, null, 0, 0, null, null)
         {
         }
 
@@ -34,7 +37,8 @@ namespace Essential.Diagnostics
         /// Constructor. 
         /// Encompases a logical operation using the specified object.
         /// </summary>
-        public LogicalOperationScope(object operationId) : this((ITraceSource)null, operationId, 0, 0)
+        public LogicalOperationScope(object operationId) 
+            : this((ITraceSource)null, operationId, 0, 0, null, null)
         {
         }
 
@@ -43,7 +47,8 @@ namespace Essential.Diagnostics
         /// Encompass a logical operation using the specified object, 
         /// and writing start and stop events to the specified source.
         /// </summary>
-        public LogicalOperationScope(TraceSource source, object operationId) : this(new TraceSourceWrapper(source) ,operationId, 0, 0)
+        public LogicalOperationScope(TraceSource source, object operationId) 
+            : this(new TraceSourceWrapper(source), operationId, 0, 0, null, null)
         {
         }
 
@@ -55,7 +60,19 @@ namespace Essential.Diagnostics
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         public LogicalOperationScope(TraceSource source, object operationId, int startId, int stopId)
-            : this(new TraceSourceWrapper(source), operationId, startId, stopId)
+            : this(new TraceSourceWrapper(source), operationId, startId, stopId, null, null)
+        {
+        }
+
+        /// <summary>
+        /// Constructor. 
+        /// Encompases a logical operation using the specified object,
+        /// and writing start and stop events to the specified source,
+        /// with the specified event IDs and messages.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
+        public LogicalOperationScope(TraceSource source, object operationId, int startId, int stopId, string startMessage, string stopMessage)
+            : this(new TraceSourceWrapper(source), operationId, startId, stopId, startMessage, stopMessage)
         {
         }
 
@@ -64,7 +81,8 @@ namespace Essential.Diagnostics
         /// Encompass a logical operation using the specified object, 
         /// and writing start and stop events to the specified source.
         /// </summary>
-        public LogicalOperationScope(ITraceSource source, object operationId) : this(source ,operationId, 0, 0)
+        public LogicalOperationScope(ITraceSource source, object operationId) 
+            : this(source, operationId, 0, 0, null, null)
         {
         }
 
@@ -76,25 +94,41 @@ namespace Essential.Diagnostics
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
         public LogicalOperationScope(ITraceSource source, object operationId, int startId, int stopId)
+            : this(source, operationId, startId, stopId, null, null)
+        {
+        }
+
+        /// <summary>
+        /// Constructor. 
+        /// Encompases a logical operation using the specified object,
+        /// and writing start and stop events to the specified source,
+        /// with the specified event IDs and messages.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands")]
+        public LogicalOperationScope(ITraceSource source, object operationId, int startId, int stopId, string startMessage, string stopMessage)
         {
             _source = source;
             _startId = startId;
             _stopId = stopId;
+            _operationId = operationId;
+
+            _startMessage = startMessage ?? Resource.LogicalOperationScope_Start;
+            _stopMessage = stopMessage ?? Resource.LogicalOperationScope_Stop;
 
             // Start Logical Operation
-            if (operationId == null)
+            if (_operationId == null)
             {
                 Trace.CorrelationManager.StartLogicalOperation();
             }
             else
             {
-                Trace.CorrelationManager.StartLogicalOperation(operationId);
+                Trace.CorrelationManager.StartLogicalOperation(_operationId);
             }
 
             // Log Start Message
             if (_source != null)
             {
-                _source.TraceEvent(TraceEventType.Start, _startId);
+                _source.TraceEvent(TraceEventType.Start, _startId, _startMessage);
             }
         }
 
@@ -120,7 +154,7 @@ namespace Essential.Diagnostics
                 // Log Stop Message
                 if (_source != null)
                 {
-                    _source.TraceEvent(TraceEventType.Stop, _stopId);
+                    _source.TraceEvent(TraceEventType.Stop, _stopId, _stopMessage);
                 }
 
                 // Stop Logical Operation

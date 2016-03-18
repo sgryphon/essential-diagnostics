@@ -129,6 +129,12 @@
   <data name="InvalidConsoleColor" xml:space="preserve">
     <value>Console color specified is invalid.</value>
   </data>
+  <data name="LogicalOperationScope_Start" xml:space="preserve">
+    <value>Start operation</value>
+  </data>
+  <data name="LogicalOperationScope_Stop" xml:space="preserve">
+    <value>Stop operation</value>
+  </data>
   <data name="RollingTextWriter_ExhaustedLogfileNames" xml:space="preserve">
     <value>Exhausted possible logfile names.</value>
   </data>
