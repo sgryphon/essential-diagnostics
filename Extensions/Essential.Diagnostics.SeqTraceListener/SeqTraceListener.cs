@@ -73,35 +73,100 @@ namespace Essential.Diagnostics
             return _supportedAttributes;
         }
 
+        protected override void WriteTraceFormat(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string format, params object[] args)
+        {
+            var traceData = CreateTraceData(eventCache, source, eventType, id, format, args, null, null);
+            PostBatch(new[] { traceData });
+        }
+
         protected override void WriteTrace(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message, Guid? relatedActivityId, object[] data)
         {
-            var payload = new SeqPayload();
-            payload.Source = source;
-            payload.EventType = eventType;
-            payload.EventId = id;
+            var traceData = CreateTraceData(eventCache, source, eventType, id, message, null, relatedActivityId, data);
+            PostBatch(new[] { traceData });
+        }
 
-            payload.MessageTemplate = message;
-
-            payload.RelatedActivityId = relatedActivityId;
-            payload.Data = data;
+        private TraceData CreateTraceData(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string messageFormat, object[] messageArgs, Guid? relatedActivityId, object[] data)
+        {
+            // Standard properies (always record)
 
             // TraceOptions.DateTime
-            // TraceOptions.Timestamp
+            var traceTime = default(DateTimeOffset);
             if (eventCache != null)
             {
-                payload.EventTime = new DateTimeOffset(eventCache.DateTime);
+                traceTime = new DateTimeOffset(eventCache.DateTime);
             }
             else
             {
-                payload.EventTime = DateTimeOffset.UtcNow;
+                traceTime = DateTimeOffset.UtcNow;
             }
+
+            // Record Message Args
+            var recordedArgs = default(List<object>);
+            var exception = default(Exception);
+            if (messageArgs != null)
+            {
+                recordedArgs = new List<object>();
+                foreach (var arg in messageArgs)
+                {
+                    if (arg is bool || arg is char || arg is byte || arg is sbyte
+                        || arg is short || arg is ushort || arg is int || arg is uint
+                        || arg is long || arg is ulong || arg is float || arg is double
+                        || arg is decimal || arg is DateTime || arg is DateTimeOffset
+                        || arg is string)
+                    {
+                        recordedArgs.Add(arg);
+                    }
+                    else if (arg is Exception)
+                    {
+                        exception = (Exception)arg;
+                        recordedArgs.Add(arg.ToString());
+                    }
+                    else
+                    {
+                        // TODO: Should really take into account the format specifier in the formatString
+                        // (before serializing)
+                        recordedArgs.Add(arg.ToString());
+                    }
+                }
+            }
+
+            // Record Data
+            var recordedData = default(List<object>);
+            if (data != null)
+            {
+                recordedData = new List<object>();
+                foreach (var dataItem in data)
+                {
+                    if (dataItem is bool || dataItem is char || dataItem is byte || dataItem is sbyte
+                        || dataItem is short || dataItem is ushort || dataItem is int || dataItem is uint
+                        || dataItem is long || dataItem is ulong || dataItem is float || dataItem is double
+                        || dataItem is decimal || dataItem is DateTime || dataItem is DateTimeOffset
+                        || dataItem is string)
+                    {
+                        recordedData.Add(dataItem);
+                    }
+                    else
+                    {
+                        recordedData.Add(dataItem.ToString());
+                    }
+                }
+            }
+
+            // Activity ID
+            var activityId = Trace.CorrelationManager.ActivityId;
+
+
+            // Optional properties (based on TraceOptions, etc)
+            var properties = new Dictionary<string, object>();
+
+            // TraceOptions.Timestamp
 
             // Callstack
             if ((TraceOutputOptions & TraceOptions.Callstack) == TraceOptions.Callstack)
             {
                 if (eventCache != null)
                 {
-                    payload.Properties.Add("Callstack", eventCache.Callstack);
+                    properties.Add("Callstack", eventCache.Callstack);
                 }
             }
 
@@ -113,52 +178,47 @@ namespace Essential.Diagnostics
                 var logicalOperationStack = new List<object>();
                 if (stack != null && stack.Count > 0)
                 {
-                    foreach (object o in stack)
+                    foreach (object stackItem in stack)
                     {
-                        logicalOperationStack.Add(o);
+                        if (stackItem is bool || stackItem is char || stackItem is byte || stackItem is sbyte
+                            || stackItem is short || stackItem is ushort || stackItem is int || stackItem is uint
+                            || stackItem is long || stackItem is ulong || stackItem is float || stackItem is double
+                            || stackItem is decimal || stackItem is DateTime || stackItem is DateTimeOffset
+                            || stackItem is string)
+                        {
+                            logicalOperationStack.Add(stackItem);
+                        }
+                        else
+                        {
+                            logicalOperationStack.Add(stackItem.ToString());
+                        }
                     }
-                    payload.Properties.Add("LogicalOperationStack", logicalOperationStack.ToArray());
+                    properties.Add("LogicalOperationStack", logicalOperationStack.ToArray());
                 }
             }
 
             if ((TraceOutputOptions & TraceOptions.ProcessId) == TraceOptions.ProcessId)
             {
                 var processId = eventCache != null ? eventCache.ProcessId : 0;
-                payload.Properties.Add("ProcessId", processId);
+                properties.Add("ProcessId", processId);
             }
 
             if ((TraceOutputOptions & TraceOptions.ThreadId) == TraceOptions.ThreadId)
             {
                 var threadId = eventCache != null ? eventCache.ThreadId : Thread.CurrentThread.ManagedThreadId.ToString();
-                payload.Properties.Add("ThreadId", threadId);
+                properties.Add("ThreadId", threadId);
             }
-
-            payload.ActivityId = Trace.CorrelationManager.ActivityId;
 
             //var thread = Thread.CurrentThread.Name ?? threadId;
 
-
             //payload.Properties.Add("Thing", new Thing("Foo"));
 
-            PostBatch(new[] { payload });
+            var traceData = new TraceData(traceTime, source, activityId, eventType, id, messageFormat, 
+                recordedArgs?.ToArray(), exception, relatedActivityId, recordedData?.ToArray(), properties);
+            return traceData;
         }
 
-        //class Thing
-        //{
-        //    string value;
-
-        //    public Thing(string value)
-        //    {
-        //        this.value = value;
-        //    }
-
-        //    public override string ToString()
-        //    {
-        //        return this.value;
-        //    }
-        //}
-
-        void PostBatch(IEnumerable<SeqPayload> events)
+        private void PostBatch(IEnumerable<TraceData> events)
         {
             if (ServerUrl == null)
                 return;

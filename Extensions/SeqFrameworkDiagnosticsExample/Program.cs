@@ -46,7 +46,7 @@ namespace SeqFrameworkDiagnosticsExample
                 using (var activityScope = new ActivityScope(source, 11, 12, 13, 14,
                         "in", "start", "out", "stop"))
                 {
-                    source.TraceEvent(TraceEventType.Critical, 33, "Message critical {0}: {1}", 5, Thread.CurrentPrincipal);
+                    source.TraceEvent(TraceEventType.Critical, 33, "Message critical {0}: {1}", 5, Thread.CurrentPrincipal.Identity);
 
                     try
                     {

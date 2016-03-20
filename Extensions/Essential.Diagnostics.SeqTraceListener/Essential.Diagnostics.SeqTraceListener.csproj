@@ -40,7 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SeqPayload.cs" />
+    <Compile Include="ReadOnlyDictionary-TKey,TValue.cs" />
+    <Compile Include="TraceData.cs" />
     <Compile Include="SeqPayloadFormatter.cs" />
     <Compile Include="SeqTraceListener.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

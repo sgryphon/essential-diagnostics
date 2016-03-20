@@ -51,7 +51,7 @@ namespace Essential.Diagnostics
             { TraceEventType.Suspend, "Verbose" },
         };
 
-        public static void ToJson(IEnumerable<SeqPayload> events, TextWriter payload)
+        public static void ToJson(IEnumerable<TraceData> events, TextWriter payload)
         {
             var currentOffset = DateTimeOffset.Now.Offset;
 
@@ -64,10 +64,10 @@ namespace Essential.Diagnostics
             }
         }
 
-        static void ToJson(SeqPayload loggingEvent, TimeSpan currentOffset, TextWriter payload)
+        static void ToJson(TraceData traceData, TimeSpan currentOffset, TextWriter payload)
         {
             string level;
-            if (!LevelMap.TryGetValue(loggingEvent.EventType, out level))
+            if (!LevelMap.TryGetValue(traceData.EventType, out level))
             {
                 level = "Verbose";
             }
@@ -75,42 +75,40 @@ namespace Essential.Diagnostics
             payload.Write("{");
 
             var delim = "";
-            DateTimeOffset offsetTimestamp = loggingEvent.EventTime;
-            //if (loggingEvent.TimeStamp.Kind == DateTimeKind.Utc)
-            //    offsetTimestamp = new DateTimeOffset(loggingEvent.TimeStamp, TimeSpan.Zero);
-            //else
-            //    offsetTimestamp = new DateTimeOffset(loggingEvent.TimeStamp, currentOffset);
 
-            WriteJsonProperty("Timestamp", offsetTimestamp, ref delim, payload);
+            WriteJsonProperty("Timestamp", traceData.DateTime, ref delim, payload);
             WriteJsonProperty("Level", level, ref delim, payload);
 
-            WriteJsonProperty("MessageTemplate", loggingEvent.MessageTemplate ?? string.Empty, ref delim, payload);
+            WriteJsonProperty("MessageTemplate", traceData.MessageFormat ?? string.Empty, ref delim, payload);
 
-            //if (loggingEvent.Exception != null)
-            //    WriteJsonProperty("Exception", loggingEvent.Exception, ref delim, payload);
+            // First (if any) Exception found in the message args
+            if (traceData.Exception != null)
+            {
+                WriteJsonProperty("Exception", traceData.Exception, ref delim, payload);
+            }
 
             payload.Write(",\"Properties\":{");
 
             var pdelim = "";
 
-            if (loggingEvent.Source != null)
+            WriteJsonProperty("EventType", traceData.EventType, ref pdelim, payload);
+
+            if (traceData.Source != null)
             {
-                WriteJsonProperty("Source", loggingEvent.Source, ref pdelim, payload);
-                WriteJsonProperty("EventId", loggingEvent.EventId, ref pdelim, payload);
+                WriteJsonProperty("Source", traceData.Source, ref pdelim, payload);
+                WriteJsonProperty("EventId", traceData.Id, ref pdelim, payload);
             }
 
-            WriteJsonProperty("EventType", loggingEvent.EventType, ref pdelim, payload);
+            WriteJsonProperty("ActivityId", traceData.ActivityId, ref pdelim, payload);
 
-            WriteJsonProperty("ActivityId", loggingEvent.ActivityId, ref pdelim, payload);
-
-            if (loggingEvent.RelatedActivityId.HasValue)
+            if (traceData.RelatedActivityId.HasValue)
             {
-                WriteJsonProperty("RelatedActivityId", loggingEvent.RelatedActivityId, ref pdelim, payload);
+                WriteJsonProperty("RelatedActivityId", traceData.RelatedActivityId, ref pdelim, payload);
             }
 
-            if (loggingEvent.Data != null && loggingEvent.Data.Length > 0)
+            if (traceData.Data != null && traceData.Data.Count > 0)
             {
-                WriteJsonProperty("Data", loggingEvent.Data, ref pdelim, payload);
+                WriteJsonProperty("Data", traceData.Data, ref pdelim, payload);
             }
 
             //foreach (var property in properties)
@@ -129,19 +127,19 @@ namespace Essential.Diagnostics
             //    WriteJsonProperty(property.Name, stringValue, ref pdelim, payload);
             //}
 
-            //if (loggingEvent.Parameters != null)
-            //{
-            //    for (var i = 0; i < loggingEvent.Parameters.Length; ++i)
-            //    {
-            //        WriteJsonProperty(i.ToString(CultureInfo.InvariantCulture), loggingEvent.Parameters[i], ref pdelim, payload);
-            //    }
-            //}
+            if (traceData.MessageArgs != null)
+            {
+                for (var i = 0; i < traceData.MessageArgs.Count; ++i)
+                {
+                    WriteJsonProperty(i.ToString(CultureInfo.InvariantCulture), traceData.MessageArgs[i], ref pdelim, payload);
+                }
+            }
 
-            if (loggingEvent.Properties != null)
+            if (traceData.Properties != null)
             {
                 //var seenKeys = new HashSet<string>();
                 var seenKeys = new List<string>();
-                foreach (var property in loggingEvent.Properties)
+                foreach (var property in traceData.Properties)
                 {
                     var sanitizedKey = SanitizeKey(property.Key.ToString());
                     if (seenKeys.Contains(sanitizedKey))
@@ -191,10 +189,10 @@ namespace Essential.Diagnostics
             output.Write("\":");
         }
 
-        static void WriteArray(object[] array, TextWriter output)
+        static void WriteArray(IList<object> array, TextWriter output)
         {
             output.Write("[");
-            for (var index = 0; index < array.Length; index++)
+            for (var index = 0; index < array.Count; index++)
             {
                 if (index > 0)
                 {
@@ -214,9 +212,9 @@ namespace Essential.Diagnostics
                 return;
             }
 
-            if (value is Array)
+            if (value is IList<object>)
             {
-                WriteArray((object[])value, output);
+                WriteArray((IList<object>)value, output);
                 return;
             }
 
