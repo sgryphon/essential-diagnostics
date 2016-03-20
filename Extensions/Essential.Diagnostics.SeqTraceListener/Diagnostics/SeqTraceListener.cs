@@ -147,6 +147,8 @@ namespace Essential.Diagnostics
         /// </summary>
         protected override void WriteTrace(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message, Guid? relatedActivityId, object[] data)
         {
+            // TODO: Consider buffering / async send.
+
             var traceData = CreateTraceData(eventCache, source, eventType, id, message, null, relatedActivityId, data);
             PostBatch(new[] { traceData });
         }
