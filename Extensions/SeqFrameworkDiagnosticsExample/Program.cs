@@ -60,6 +60,7 @@ namespace SeqFrameworkDiagnosticsExample
             }
 
             Console.ReadKey();
+
         }
     }
 }

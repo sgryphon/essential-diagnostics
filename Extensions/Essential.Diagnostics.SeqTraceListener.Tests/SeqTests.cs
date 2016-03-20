@@ -84,6 +84,31 @@ namespace Essential.Diagnostics.Tests
             Assert.AreEqual(TraceOptions.ThreadId, listener.TraceOutputOptions & TraceOptions.ThreadId);
         }
 
+        [TestMethod]
+        public void SeqTraceOptionsAndAdditionalProperties()
+        {
+            var mockRequestFactory = new MockHttpWebRequestFactory();
+            mockRequestFactory.ResponseQueue.Enqueue(
+                new MockHttpWebResponse(HttpStatusCode.OK, null)
+                );
+
+            TraceSource source = new TraceSource("seq3Source");
+            var listener = source.Listeners.OfType<SeqTraceListener>().First();
+            listener.HttpWebRequestFactory = mockRequestFactory;
+
+            source.TraceEvent(TraceEventType.Information, 1, "TestMessage");
+
+            Assert.AreEqual(1, mockRequestFactory.RequestsCreated.Count);
+
+            var request = mockRequestFactory.RequestsCreated[0];
+
+            var requestBody = request.RequestBody;
+            Console.WriteLine(requestBody);
+            StringAssert.Contains(requestBody, "ThreadId");
+            StringAssert.Contains(requestBody, "ProcessId");
+            StringAssert.Contains(requestBody, "MachineName");
+        }
+
         // TODO: Test to check _all_ parameters work.
 
         // TODO: Test to check max message length trimming works.

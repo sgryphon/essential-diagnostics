@@ -15,11 +15,22 @@ namespace Essential.Diagnostics
         const string ApiKeyHeaderName = "X-Seq-ApiKey";
 
         IHttpWebRequestFactory _httpWebRequestFactory = new WebRequestAdapter();
+        List<string> _additionalPropertyNames = null;
         string _serverUrl;
+
+        bool _propertiesParsed;
+        bool _propertyCallstack;
+        bool _propertyLogicalOperationStack;
+        bool _propertyMachineName;
+        bool _propertyPrincipalName;
+        bool _propertyProcessId;
+        bool _propertyThreadId;
+        bool _propertyUser;
 
         private static string[] _supportedAttributes = new string[]
         {
             "apiKey", "ApiKey", "apikey",
+            "additionalProperties", "AdditionalProperties", "additionalproperties"
         };
 
         /// <summary>
@@ -62,7 +73,38 @@ namespace Essential.Diagnostics
         }
 
         /// <summary>
-        /// A Seq <i>API key</i> that authenticates the client to the Seq server.
+        /// Gets or sets the comma separated names of additional properties that should be sent to Seq.
+        /// </summary>
+        public string[] AdditionalProperties
+        {
+            get
+            {
+                if (_additionalPropertyNames == null)
+                {
+                    _additionalPropertyNames = new List<string>();
+                    if (Attributes.ContainsKey("additionalproperties"))
+                    {
+                        var propertyNamesAttribute = Attributes["additionalproperties"];
+                        var propertyNames = propertyNamesAttribute.Split(',');
+                        foreach (var propertyName in propertyNames)
+                        {
+                            _additionalPropertyNames.Add(propertyName.Trim());
+                        }
+                    }
+                }
+                return _additionalPropertyNames.ToArray();
+            }
+            set
+            {
+                _additionalPropertyNames = new List<string>();
+                _additionalPropertyNames.AddRange(value);
+                var propertyNamesAttributes = string.Join(",", value);
+                Attributes["additionalproperties"] = propertyNamesAttributes;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the Seq <i>API key</i> that authenticates the client to the Seq server.
         /// </summary>
         public string ApiKey {
             get
@@ -90,12 +132,19 @@ namespace Essential.Diagnostics
             return _supportedAttributes;
         }
 
+        /// <summary>
+        /// Handle the format strings
+        /// before the args are resolved.
+        /// </summary>
         protected override void WriteTraceFormat(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string format, params object[] args)
         {
             var traceData = CreateTraceData(eventCache, source, eventType, id, format, args, null, null);
             PostBatch(new[] { traceData });
         }
 
+        /// <summary>
+        /// Write the trace to the listener output.
+        /// </summary>
         protected override void WriteTrace(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message, Guid? relatedActivityId, object[] data)
         {
             var traceData = CreateTraceData(eventCache, source, eventType, id, message, null, relatedActivityId, data);
@@ -172,14 +221,45 @@ namespace Essential.Diagnostics
             // Activity ID
             var activityId = Trace.CorrelationManager.ActivityId;
 
-
             // Optional properties (based on TraceOptions, etc)
             var properties = new Dictionary<string, object>();
+
+            if (!_propertiesParsed)
+            {
+                foreach (var propertyName in AdditionalProperties)
+                {
+                    switch (propertyName.ToUpperInvariant())
+                    {
+                        case "CALLSTACK":
+                            _propertyCallstack = true;
+                            break;
+                        case "LOGICALOPERATIONSTACK":
+                            _propertyLogicalOperationStack = true;
+                            break;
+                        case "MACHINENAME":
+                            _propertyMachineName = true;
+                            break;
+                        case "PRINCIPALNAME":
+                            _propertyPrincipalName = true;
+                            break;
+                        case "PROCESSID":
+                            _propertyProcessId = true;
+                            break;
+                        case "THREADID":
+                            _propertyThreadId = true;
+                            break;
+                        case "USER":
+                            _propertyUser = true;
+                            break;
+                    }
+                }
+                _propertiesParsed = true;
+            }
 
             // TraceOptions.Timestamp
 
             // Callstack
-            if ((TraceOutputOptions & TraceOptions.Callstack) == TraceOptions.Callstack)
+            if (_propertyCallstack || (TraceOutputOptions & TraceOptions.Callstack) == TraceOptions.Callstack)
             {
                 if (eventCache != null)
                 {
@@ -188,7 +268,7 @@ namespace Essential.Diagnostics
             }
 
             // Convert stack to string for serialization
-            if ((TraceOutputOptions & TraceOptions.LogicalOperationStack) == TraceOptions.LogicalOperationStack)
+            if (_propertyLogicalOperationStack || (TraceOutputOptions & TraceOptions.LogicalOperationStack) == TraceOptions.LogicalOperationStack)
             {
                 var stack = (eventCache?.LogicalOperationStack) ?? Trace.CorrelationManager.LogicalOperationStack;
 
@@ -214,16 +294,31 @@ namespace Essential.Diagnostics
                 }
             }
 
-            if ((TraceOutputOptions & TraceOptions.ProcessId) == TraceOptions.ProcessId)
+            if (_propertyProcessId || (TraceOutputOptions & TraceOptions.ProcessId) == TraceOptions.ProcessId)
             {
                 var processId = eventCache != null ? eventCache.ProcessId : 0;
                 properties.Add("ProcessId", processId);
             }
 
-            if ((TraceOutputOptions & TraceOptions.ThreadId) == TraceOptions.ThreadId)
+            if (_propertyThreadId || (TraceOutputOptions & TraceOptions.ThreadId) == TraceOptions.ThreadId)
             {
                 var threadId = eventCache != null ? eventCache.ThreadId : Thread.CurrentThread.ManagedThreadId.ToString();
                 properties.Add("ThreadId", threadId);
+            }
+
+            if (_propertyMachineName)
+            {
+                properties.Add("MachineName", Environment.MachineName);
+            }
+
+            if (_propertyUser)
+            {
+                properties.Add("User", Environment.UserDomainName + "\\" + Environment.UserName);
+            }
+
+            if (_propertyPrincipalName)
+            {
+                properties.Add("PrincipalName", Thread.CurrentPrincipal?.Identity?.Name);
             }
 
             //var thread = Thread.CurrentThread.Name ?? threadId;
