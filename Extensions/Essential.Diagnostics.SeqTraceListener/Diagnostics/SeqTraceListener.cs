@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Essential.Net;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -13,6 +14,7 @@ namespace Essential.Diagnostics
         const string BulkUploadResource = "api/events/raw";
         const string ApiKeyHeaderName = "X-Seq-ApiKey";
 
+        IHttpWebRequestFactory _httpWebRequestFactory = new WebRequestAdapter();
         string _serverUrl;
 
         private static string[] _supportedAttributes = new string[]
@@ -27,6 +29,21 @@ namespace Essential.Diagnostics
         public SeqTraceListener(string serverUrl)
         {
             _serverUrl = serverUrl;
+        }
+
+        /// <summary>
+        /// Gets or sets the HttpWebRequestFactory to use; this defaults to an adapter for System.Net.WebRequest.
+        /// </summary>
+        internal IHttpWebRequestFactory HttpWebRequestFactory
+        {
+            get
+            {
+                return _httpWebRequestFactory;
+            }
+            set
+            {
+                _httpWebRequestFactory = value;
+            }
         }
 
         /// <summary>
@@ -228,13 +245,15 @@ namespace Essential.Diagnostics
                 uri += "/";
             uri += BulkUploadResource;
 
-            var request = (HttpWebRequest)WebRequest.Create(uri);
+            //var request = (HttpWebRequest)WebRequest.Create(uri);
+            var request = HttpWebRequestFactory.Create(uri);
             request.Method = "POST";
             request.ContentType = "application/json; charset=utf-8";
             //if (!string.IsNullOrWhiteSpace(ApiKey))
             if (!string.IsNullOrEmpty(ApiKey))
             {
-                request.Headers.Add(ApiKeyHeaderName, ApiKey);
+                //request.Headers.Add(ApiKeyHeaderName, ApiKey);
+                request.AddHeader(ApiKeyHeaderName, ApiKey);
             }
 
             //var test = new StringWriter();
@@ -251,7 +270,8 @@ namespace Essential.Diagnostics
                 payload.Write("]}");
             }
 
-            using (var response = (HttpWebResponse)request.GetResponse())
+            //using (var response = (HttpWebResponse)request.GetResponse())
+            using (var response = request.GetResponse())
             {
                 var responseStream = response.GetResponseStream();
                 if (responseStream == null)

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Essential.Diagnostics
+namespace Essential.Collections
 {
     internal class ReadOnlyDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {

@@ -7,7 +7,7 @@
     <ProjectGuid>{F889D4AB-1E93-4A5D-AA53-100CC9278D34}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Essential.Diagnostics</RootNamespace>
+    <RootNamespace>Essential</RootNamespace>
     <AssemblyName>Essential.Diagnostics.SeqTraceListener</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -40,15 +40,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ReadOnlyDictionary-TKey,TValue.cs" />
-    <Compile Include="TraceData.cs" />
-    <Compile Include="SeqPayloadFormatter.cs" />
-    <Compile Include="SeqTraceListener.cs" />
+    <Compile Include="Collections\ReadOnlyDictionary-TKey,TValue.cs" />
+    <Compile Include="Diagnostics\TraceData.cs" />
+    <Compile Include="Diagnostics\SeqPayloadFormatter.cs" />
+    <Compile Include="Diagnostics\SeqTraceListener.cs" />
+    <Compile Include="Net\WebRequestAdapter.cs" />
+    <Compile Include="Net\HttpWebRequestWrapper.cs" />
+    <Compile Include="Net\HttpWebResponseWrapper.cs" />
+    <Compile Include="Net\IHttpWebRequest.cs" />
+    <Compile Include="Net\IHttpWebResponse.cs" />
+    <Compile Include="Net\IHttpWebRequestFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
