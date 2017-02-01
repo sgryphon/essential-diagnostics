@@ -218,6 +218,10 @@ namespace Essential.Diagnostics
                         recordedData.Add(dataItem.ToString());
                     }
                 }
+                if (messageFormat == null)
+                {
+                    messageFormat = "{Data}";
+                }
             }
 
             // Activity ID

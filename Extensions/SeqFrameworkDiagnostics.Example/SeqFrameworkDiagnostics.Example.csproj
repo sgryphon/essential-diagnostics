@@ -7,8 +7,8 @@
     <ProjectGuid>{EEC23E9D-930F-4B33-9BF1-30F6C0A6A088}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SeqFrameworkDiagnosticsExample</RootNamespace>
-    <AssemblyName>SeqFrameworkDiagnosticsExample</AssemblyName>
+    <RootNamespace>SeqFrameworkDiagnostics.Example</RootNamespace>
+    <AssemblyName>SeqFrameworkDiagnostics.Example</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
