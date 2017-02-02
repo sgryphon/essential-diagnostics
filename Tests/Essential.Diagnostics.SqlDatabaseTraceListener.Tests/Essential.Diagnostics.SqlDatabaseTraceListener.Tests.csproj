@@ -72,10 +72,6 @@
       <Project>{0b31de6f-91de-47a3-b447-c5dc57186e92}</Project>
       <Name>Essential.Diagnostics.SqlDatabaseTraceListener</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Essential.Diagnostics.Tests.Utility\Essential.Diagnostics.Tests.Utility.csproj">
-      <Project>{258a12f9-3c28-41dd-83fb-acc7b3070731}</Project>
-      <Name>Essential.Diagnostics.Tests.Utility</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

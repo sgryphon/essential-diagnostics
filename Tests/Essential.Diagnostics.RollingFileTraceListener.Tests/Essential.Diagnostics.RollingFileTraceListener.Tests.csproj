@@ -65,10 +65,6 @@
       <Project>{6cbce882-3ef2-454e-a27d-ece16efd7098}</Project>
       <Name>Essential.Diagnostics.RollingFileTraceListener</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Essential.Diagnostics.Tests.Utility\Essential.Diagnostics.Tests.Utility.csproj">
-      <Project>{258a12f9-3c28-41dd-83fb-acc7b3070731}</Project>
-      <Name>Essential.Diagnostics.Tests.Utility</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

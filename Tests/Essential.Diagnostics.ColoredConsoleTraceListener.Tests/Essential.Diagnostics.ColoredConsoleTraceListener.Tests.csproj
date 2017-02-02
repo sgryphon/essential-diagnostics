@@ -67,7 +67,7 @@
       <Name>Essential.Diagnostics.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\Essential.Diagnostics.Tests.Utility\Essential.Diagnostics.Tests.Utility.csproj">
-      <Project>{258a12f9-3c28-41dd-83fb-acc7b3070731}</Project>
+      <Project>{8509f6b4-fb5e-49ef-b2b1-94ac150719eb}</Project>
       <Name>Essential.Diagnostics.Tests.Utility</Name>
     </ProjectReference>
   </ItemGroup>
