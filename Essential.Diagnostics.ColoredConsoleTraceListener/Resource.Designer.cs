@@ -61,29 +61,11 @@ namespace Essential {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid argument name used..
+        ///   Looks up a localized string similar to Console color specified is invalid..
         /// </summary>
-        internal static string StringTemplate_ArgumentNotFound {
+        internal static string InvalidConsoleColor {
             get {
-                return ResourceManager.GetString("StringTemplate_ArgumentNotFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Input string was not a correct template..
-        /// </summary>
-        internal static string StringTemplate_InvalidString {
-            get {
-                return ResourceManager.GetString("StringTemplate_InvalidString", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0}, relatedActivityId={1}.
-        /// </summary>
-        internal static string TraceListenerBase_TraceMessageFormat {
-            get {
-                return ResourceManager.GetString("TraceListenerBase_TraceMessageFormat", resourceCulture);
+                return ResourceManager.GetString("InvalidConsoleColor", resourceCulture);
             }
         }
     }

@@ -88,15 +88,6 @@ namespace Essential {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Console color specified is invalid..
-        /// </summary>
-        internal static string InvalidConsoleColor {
-            get {
-                return ResourceManager.GetString("InvalidConsoleColor", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Start operation.
         /// </summary>
         internal static string LogicalOperationScope_Start {
@@ -120,33 +111,6 @@ namespace Essential {
         internal static string RollingTextWriter_ExhaustedLogfileNames {
             get {
                 return ResourceManager.GetString("RollingTextWriter_ExhaustedLogfileNames", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Invalid argument name used..
-        /// </summary>
-        internal static string StringTemplate_ArgumentNotFound {
-            get {
-                return ResourceManager.GetString("StringTemplate_ArgumentNotFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Input string was not a correct template..
-        /// </summary>
-        internal static string StringTemplate_InvalidString {
-            get {
-                return ResourceManager.GetString("StringTemplate_InvalidString", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0}, relatedActivityId={1}.
-        /// </summary>
-        internal static string TraceListenerBase_TraceMessageFormat {
-            get {
-                return ResourceManager.GetString("TraceListenerBase_TraceMessageFormat", resourceCulture);
             }
         }
         

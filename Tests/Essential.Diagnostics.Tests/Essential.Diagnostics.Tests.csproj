@@ -59,7 +59,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActivityScopeTests.cs" />
-    <Compile Include="ColoredConsoleTests.cs" />
     <Compile Include="ConfigurationMonitorTests.cs" />
     <Compile Include="BufferedEmailTests.cs" />
     <Compile Include="AssemblyTraceLogTests.cs" />

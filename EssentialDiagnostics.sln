@@ -71,6 +71,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Diagnostics.InMem
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Diagnostics.Tests.Utility", "Tests\Essential.Diagnostics.Tests.Utility\Essential.Diagnostics.Tests.Utility.csproj", "{258A12F9-3C28-41DD-83FB-ACC7B3070731}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Diagnostics.ColoredConsoleTraceListener.Tests", "Tests\Essential.Diagnostics.ColoredConsoleTraceListener.Tests\Essential.Diagnostics.ColoredConsoleTraceListener.Tests.csproj", "{0542BD2D-12D0-4784-A4E6-756670827647}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -253,6 +255,18 @@ Global
 		{258A12F9-3C28-41DD-83FB-ACC7B3070731}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{258A12F9-3C28-41DD-83FB-ACC7B3070731}.Release|x86.ActiveCfg = Release|Any CPU
 		{258A12F9-3C28-41DD-83FB-ACC7B3070731}.Release|x86.Build.0 = Release|Any CPU
+		{0542BD2D-12D0-4784-A4E6-756670827647}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0542BD2D-12D0-4784-A4E6-756670827647}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0542BD2D-12D0-4784-A4E6-756670827647}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{0542BD2D-12D0-4784-A4E6-756670827647}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{0542BD2D-12D0-4784-A4E6-756670827647}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0542BD2D-12D0-4784-A4E6-756670827647}.Debug|x86.Build.0 = Debug|Any CPU
+		{0542BD2D-12D0-4784-A4E6-756670827647}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0542BD2D-12D0-4784-A4E6-756670827647}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0542BD2D-12D0-4784-A4E6-756670827647}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{0542BD2D-12D0-4784-A4E6-756670827647}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{0542BD2D-12D0-4784-A4E6-756670827647}.Release|x86.ActiveCfg = Release|Any CPU
+		{0542BD2D-12D0-4784-A4E6-756670827647}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -263,6 +277,7 @@ Global
 		{BD381576-ACFC-4098-AD56-9902B36F30C7} = {A7E69AF9-D207-44DF-8294-823024B90590}
 		{0E0D3D26-0DA3-4E5E-97EA-387C0F2DE2BB} = {A7E69AF9-D207-44DF-8294-823024B90590}
 		{258A12F9-3C28-41DD-83FB-ACC7B3070731} = {A7E69AF9-D207-44DF-8294-823024B90590}
+		{0542BD2D-12D0-4784-A4E6-756670827647} = {A7E69AF9-D207-44DF-8294-823024B90590}
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = EssentialDiagnostics.vsmdi

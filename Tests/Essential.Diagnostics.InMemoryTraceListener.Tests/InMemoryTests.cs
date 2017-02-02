@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections;
+﻿using Essential.Diagnostics.Tests.Utility;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Diagnostics;
-using System.IO;
-using System.Text;
-using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using Essential.Diagnostics.Tests.Utility;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Essential.Diagnostics.Tests
 {

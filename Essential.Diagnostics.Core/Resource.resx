@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="StringTemplate_ArgumentNotFound" xml:space="preserve">
+    <value>Invalid argument name used.</value>
+  </data>
+  <data name="StringTemplate_InvalidString" xml:space="preserve">
+    <value>Input string was not a correct template.</value>
+  </data>
   <data name="TraceListenerBase_TraceMessageFormat" xml:space="preserve">
     <value>{0}, relatedActivityId={1}</value>
   </data>

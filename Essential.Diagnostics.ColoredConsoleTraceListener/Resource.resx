@@ -117,31 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ActivityScope_Start" xml:space="preserve">
-    <value>Start</value>
-  </data>
-  <data name="ActivityScope_Stop" xml:space="preserve">
-    <value>Stop</value>
-  </data>
-  <data name="ActivityScope_Transfer" xml:space="preserve">
-    <value>Transfer</value>
-  </data>
-  <data name="LogicalOperationScope_Start" xml:space="preserve">
-    <value>Start operation</value>
-  </data>
-  <data name="LogicalOperationScope_Stop" xml:space="preserve">
-    <value>Stop operation</value>
-  </data>
-  <data name="RollingTextWriter_ExhaustedLogfileNames" xml:space="preserve">
-    <value>Exhausted possible logfile names.</value>
-  </data>
-  <data name="TraceLog_AppendedExceptionFormat" xml:space="preserve">
-    <value>Exception: {0}</value>
-  </data>
-  <data name="TraceLog_ExceptionFormatSeparator" xml:space="preserve">
-    <value>|</value>
-  </data>
-  <data name="TraceLog_InvalidTEventId" xml:space="preserve">
-    <value>Type argument TEventId is not an enum or int: {0}</value>
+  <data name="InvalidConsoleColor" xml:space="preserve">
+    <value>Console color specified is invalid.</value>
   </data>
 </root>

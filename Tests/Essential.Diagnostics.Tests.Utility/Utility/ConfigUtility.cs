@@ -11,20 +11,21 @@ namespace Essential.Diagnostics.Tests.Utility
     {
         public static string GetConfigDirFromTestRunDirectory(string testDir)
         {
-//            var configDir = testDir.Substring(0, testDir.IndexOf("TestResults"));
-//#if DEBUG
-//            var expectedTargetDir = @"bin\Debug";
-//#else
-//            var expectedTargetDir = @"bin\Release";
-//#endif
+            //            var configDir = testDir.Substring(0, testDir.IndexOf("TestResults"));
+            //#if DEBUG
+            //            var expectedTargetDir = @"bin\Debug";
+            //#else
+            //            var expectedTargetDir = @"bin\Release";
+            //#endif
 
-//            if (!configDir.Contains(expectedTargetDir))
-//            {
-//                configDir = Path.Combine(configDir, @"Essential.Diagnostics.Tests\" + expectedTargetDir);
-//            }
-//            var configPath = Path.Combine(configDir, "Essential.Diagnostics.Tests.dll.config");
+            //            if (!configDir.Contains(expectedTargetDir))
+            //            {
+            //                configDir = Path.Combine(configDir, @"Essential.Diagnostics.Tests\" + expectedTargetDir);
+            //            }
+            //            var configPath = Path.Combine(configDir, "Essential.Diagnostics.Tests.dll.config");
             //return Path.Combine( testDir + "\\Out", "Essential.Diagnostics.Tests.dll.config");
-            return Assembly.GetExecutingAssembly().Location + ".config";
+            //return Assembly.GetExecutingAssembly().Location + ".config";
+            return Assembly.GetCallingAssembly().Location + ".config";
         }
 
     }
