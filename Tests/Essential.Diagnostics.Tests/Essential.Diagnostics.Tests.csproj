@@ -59,13 +59,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActivityScopeTests.cs" />
-    <Compile Include="ConfigurationMonitorTests.cs" />
     <Compile Include="AssemblyTraceLogTests.cs" />
     <Compile Include="AssemblyTraceSourceTests.cs" />
     <Compile Include="GenericTraceLogTests.cs" />
     <Compile Include="TraceLogTests.cs" />
-    <Compile Include="ExpressionFilterTests.cs" />
-    <Compile Include="PropertyFilterTests.cs" />
     <Compile Include="LogicalOperationScopeTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

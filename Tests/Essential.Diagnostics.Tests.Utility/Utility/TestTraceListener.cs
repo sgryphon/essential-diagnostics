@@ -8,7 +8,17 @@ namespace Essential.Diagnostics.Tests.Utility
 {
     public class TestTraceListener : TraceListenerBase
     {
+        public string InitializeData = null;
         public List<TraceInfo> MethodCallInformation = new List<TraceInfo>();
+
+        public TestTraceListener()
+        {
+        }
+
+        public TestTraceListener(string initializeData)
+        {
+            InitializeData = initializeData;
+        }
 
         protected override void WriteTrace(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message, Guid? relatedActivityId, object[] data)
         {

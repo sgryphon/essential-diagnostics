@@ -51,6 +51,8 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="ConfigurationMonitorTests.cs" />
+    <Compile Include="ExpressionFilterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringTemplateTest.cs" />
     <Compile Include="TraceFormatterTest.cs" />

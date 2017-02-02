@@ -82,10 +82,7 @@
     <Compile Include="Diagnostics\Abstractions\ITraceSource-TTarget.cs" />
     <Compile Include="Diagnostics\Abstractions\TraceSourceWrapper.cs" />
     <Compile Include="Diagnostics\ActivityScope.cs" />
-    <Compile Include="Diagnostics\ExpressionFilter.cs" />
     <Compile Include="Diagnostics\GlobalSuppressions.cs" />
-    <Compile Include="Diagnostics\PropertyFilter.cs" />
-    <Compile Include="Diagnostics\TraceConfigurationMonitor.cs" />
     <Compile Include="Diagnostics\LogicalOperationScope.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Resource.Designer.cs">

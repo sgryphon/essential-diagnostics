@@ -17,6 +17,7 @@ using System.Diagnostics;
 
 namespace Essential.Diagnostics.IntegrationTests
 {
+    [Explicit("Email integration - requires email server")]
     [TestFixture]
     [Description("Test with a local SMTP server that may handle domain example.com.")]
     public class EmailTraceListenersTests
