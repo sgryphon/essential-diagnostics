@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Essential.Diagnostics.Abstractions;
+using Essential.Diagnostics.Tests.Utility;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Linq;
-using Essential.Diagnostics.Tests.Utility;
 using System.Xml;
 using System.Xml.XPath;
-using Essential.Diagnostics.Abstractions;
 
 namespace Essential.Diagnostics.Tests
 {
@@ -21,9 +18,9 @@ namespace Essential.Diagnostics.Tests
             var initialActivityId = Trace.CorrelationManager.ActivityId;
             Console.WriteLine("Starting ID: {0}", initialActivityId);
 
-            TraceSource source = new TraceSource("inmemory1Source");
-            var listener = source.Listeners.OfType<InMemoryTraceListener>().First();
-            listener.Clear();
+            TraceSource source = new TraceSource("testScope1Source");
+            var listener = source.Listeners.OfType<TestTraceListener>().First();
+            listener.MethodCallInformation.Clear();
 
             source.TraceEvent(TraceEventType.Warning, 1, "A");
             using (var scope = new ActivityScope())
@@ -32,7 +29,7 @@ namespace Essential.Diagnostics.Tests
             }
             source.TraceEvent(TraceEventType.Warning, 3, "C");
 
-            var events = listener.GetEvents();
+            var events = listener.MethodCallInformation;
 
             Assert.AreEqual(1, events[0].Id);
             Assert.AreEqual(initialActivityId, events[0].ActivityId);
@@ -50,9 +47,9 @@ namespace Essential.Diagnostics.Tests
             var initialActivityId = Trace.CorrelationManager.ActivityId;
             Console.WriteLine("Starting ID: {0}", initialActivityId);
 
-            TraceSource source = new TraceSource("inmemory1Source");
-            var listener = source.Listeners.OfType<InMemoryTraceListener>().First();
-            listener.Clear();
+            TraceSource source = new TraceSource("testScope1Source");
+            var listener = source.Listeners.OfType<TestTraceListener>().First();
+            listener.MethodCallInformation.Clear();
 
             source.TraceEvent(TraceEventType.Warning, 1, "A");
             using (var scope = new ActivityScope(source, 11, 12, 13, 14))
@@ -61,7 +58,7 @@ namespace Essential.Diagnostics.Tests
             }
             source.TraceEvent(TraceEventType.Warning, 3, "C");
 
-            var events = listener.GetEvents();
+            var events = listener.MethodCallInformation;
             var innerActivityId = events[3].ActivityId;
             Assert.AreNotEqual(initialActivityId, innerActivityId, "Should be different activity ID");
 
@@ -98,7 +95,7 @@ namespace Essential.Diagnostics.Tests
         [TestMethod]
         public void AdditionalMessages()
         {
-            TraceSource source = new TraceSource("testScopeSource");
+            TraceSource source = new TraceSource("testScope2Source");
             var listener = source.Listeners.OfType<TestTraceListener>().First();
             listener.MethodCallInformation.Clear();
             string transferIn = "TransferIn";
@@ -144,7 +141,7 @@ namespace Essential.Diagnostics.Tests
         [TestMethod]
         public void ActivityNameForXmlListeners()
         {
-            TraceSource source = new TraceSource("testScopeSource");
+            TraceSource source = new TraceSource("testScope2Source");
             var listener = source.Listeners.OfType<TestTraceListener>().First();
             listener.MethodCallInformation.Clear();
             string transferIn = "TransferIn";
@@ -180,7 +177,7 @@ namespace Essential.Diagnostics.Tests
         [TestMethod]
         public void ActivityNameForXmlListenersStrangeCharacters()
         {
-            TraceSource source = new TraceSource("testScopeSource");
+            TraceSource source = new TraceSource("testScope2Source");
             var listener = source.Listeners.OfType<TestTraceListener>().First();
             listener.MethodCallInformation.Clear();
             string transferIn = "TransferIn";

@@ -39,7 +39,7 @@ namespace Essential.Diagnostics.Abstractions.Tests
 
             var log = new TraceLog<GenericEventId>(source);
 
-            Assert.AreEqual("Essential.Diagnostics.Tests", log.TraceSource.Name);
+            Assert.AreEqual("Essential.Diagnostics.Fluent.Tests", log.TraceSource.Name);
         }
 
         [TestMethod()]

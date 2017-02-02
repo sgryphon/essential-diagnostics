@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Essential.Diagnostics.FluentTracing")]
+[assembly: AssemblyTitle("Essential.Diagnostics.Fluent.Tests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Essential.Diagnostics.FluentTracing")]
+[assembly: AssemblyProduct("Essential.Diagnostics.Fluent.Tests")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("5d47f711-1230-4078-990b-c7fb5f155791")]
+[assembly: Guid("d4da3d9e-30fd-4bcc-9ca7-accee2712da8")]
 
 // Version information for an assembly consists of the following four values:
 //

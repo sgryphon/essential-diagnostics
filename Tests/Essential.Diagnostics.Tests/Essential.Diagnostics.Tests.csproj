@@ -58,12 +58,6 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ActivityScopeTests.cs" />
-    <Compile Include="AssemblyTraceLogTests.cs" />
-    <Compile Include="AssemblyTraceSourceTests.cs" />
-    <Compile Include="GenericTraceLogTests.cs" />
-    <Compile Include="TraceLogTests.cs" />
-    <Compile Include="LogicalOperationScopeTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -75,10 +69,6 @@
       <Project>{0ca876d8-7fed-4bd8-bf03-f72703c1b793}</Project>
       <Name>Essential.Diagnostics.InMemoryTraceListener</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Essential.Diagnostics\Essential.Diagnostics.csproj">
-      <Project>{7A59AA9B-D2C3-4682-A4D7-CE37B98F5905}</Project>
-      <Name>Essential.Diagnostics</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Essential.Diagnostics.Tests.Utility\Essential.Diagnostics.Tests.Utility.csproj">
       <Project>{8509f6b4-fb5e-49ef-b2b1-94ac150719eb}</Project>
       <Name>Essential.Diagnostics.Tests.Utility</Name>
@@ -88,9 +78,10 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <Shadow Include="Test References\Essential.Diagnostics.accessor" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Test References\" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

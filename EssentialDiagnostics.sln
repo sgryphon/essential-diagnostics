@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Diagnostics", "Essential.Diagnostics\Essential.Diagnostics.csproj", "{7A59AA9B-D2C3-4682-A4D7-CE37B98F5905}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{790A6ADB-4332-4E36-A86E-95373F44BCE6}"
 	ProjectSection(SolutionItems) = preProject
 		EssentialDiagnostics.msbuild = EssentialDiagnostics.msbuild
@@ -63,8 +61,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Diagnostics.Rolli
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Diagnostics.SqlDatabaseTraceListener", "Essential.Diagnostics.SqlDatabaseTraceListener\Essential.Diagnostics.SqlDatabaseTraceListener.csproj", "{0B31DE6F-91DE-47A3-B447-C5DC57186E92}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Diagnostics.FluentTracing", "Essential.Diagnostics.FluentTracing\Essential.Diagnostics.FluentTracing.csproj", "{5D47F711-1230-4078-990B-C7FB5F155791}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Diagnostics.InMemoryTraceListener.Tests", "Tests\Essential.Diagnostics.InMemoryTraceListener.Tests\Essential.Diagnostics.InMemoryTraceListener.Tests.csproj", "{0E0D3D26-0DA3-4E5E-97EA-387C0F2DE2BB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Diagnostics.ColoredConsoleTraceListener.Tests", "Tests\Essential.Diagnostics.ColoredConsoleTraceListener.Tests\Essential.Diagnostics.ColoredConsoleTraceListener.Tests.csproj", "{0542BD2D-12D0-4784-A4E6-756670827647}"
@@ -89,6 +85,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Diagnostics.Core.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Diagnostics.Tests.Utility", "Tests\Essential.Diagnostics.Tests.Utility\Essential.Diagnostics.Tests.Utility.csproj", "{8509F6B4-FB5E-49EF-B2B1-94AC150719EB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Diagnostics.Fluent", "Essential.Diagnostics.Fluent\Essential.Diagnostics.Fluent.csproj", "{92AD6961-931E-4277-8004-E4ABB31C7E59}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Diagnostics.Fluent.Tests", "Tests\Essential.Diagnostics.Fluent.Tests\Essential.Diagnostics.Fluent.Tests.csproj", "{D4DA3D9E-30FD-4BCC-9CA7-ACCEE2712DA8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -99,16 +99,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7A59AA9B-D2C3-4682-A4D7-CE37B98F5905}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7A59AA9B-D2C3-4682-A4D7-CE37B98F5905}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7A59AA9B-D2C3-4682-A4D7-CE37B98F5905}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{7A59AA9B-D2C3-4682-A4D7-CE37B98F5905}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{7A59AA9B-D2C3-4682-A4D7-CE37B98F5905}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{7A59AA9B-D2C3-4682-A4D7-CE37B98F5905}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7A59AA9B-D2C3-4682-A4D7-CE37B98F5905}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7A59AA9B-D2C3-4682-A4D7-CE37B98F5905}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{7A59AA9B-D2C3-4682-A4D7-CE37B98F5905}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{7A59AA9B-D2C3-4682-A4D7-CE37B98F5905}.Release|x86.ActiveCfg = Release|Any CPU
 		{252DDE2C-C596-4F3B-96E3-87CB9F7ED839}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{252DDE2C-C596-4F3B-96E3-87CB9F7ED839}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{252DDE2C-C596-4F3B-96E3-87CB9F7ED839}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -225,18 +215,6 @@ Global
 		{0B31DE6F-91DE-47A3-B447-C5DC57186E92}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{0B31DE6F-91DE-47A3-B447-C5DC57186E92}.Release|x86.ActiveCfg = Release|Any CPU
 		{0B31DE6F-91DE-47A3-B447-C5DC57186E92}.Release|x86.Build.0 = Release|Any CPU
-		{5D47F711-1230-4078-990B-C7FB5F155791}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5D47F711-1230-4078-990B-C7FB5F155791}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5D47F711-1230-4078-990B-C7FB5F155791}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{5D47F711-1230-4078-990B-C7FB5F155791}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{5D47F711-1230-4078-990B-C7FB5F155791}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{5D47F711-1230-4078-990B-C7FB5F155791}.Debug|x86.Build.0 = Debug|Any CPU
-		{5D47F711-1230-4078-990B-C7FB5F155791}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5D47F711-1230-4078-990B-C7FB5F155791}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5D47F711-1230-4078-990B-C7FB5F155791}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{5D47F711-1230-4078-990B-C7FB5F155791}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{5D47F711-1230-4078-990B-C7FB5F155791}.Release|x86.ActiveCfg = Release|Any CPU
-		{5D47F711-1230-4078-990B-C7FB5F155791}.Release|x86.Build.0 = Release|Any CPU
 		{0E0D3D26-0DA3-4E5E-97EA-387C0F2DE2BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0E0D3D26-0DA3-4E5E-97EA-387C0F2DE2BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0E0D3D26-0DA3-4E5E-97EA-387C0F2DE2BB}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -369,6 +347,30 @@ Global
 		{8509F6B4-FB5E-49EF-B2B1-94AC150719EB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{8509F6B4-FB5E-49EF-B2B1-94AC150719EB}.Release|x86.ActiveCfg = Release|Any CPU
 		{8509F6B4-FB5E-49EF-B2B1-94AC150719EB}.Release|x86.Build.0 = Release|Any CPU
+		{92AD6961-931E-4277-8004-E4ABB31C7E59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92AD6961-931E-4277-8004-E4ABB31C7E59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92AD6961-931E-4277-8004-E4ABB31C7E59}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{92AD6961-931E-4277-8004-E4ABB31C7E59}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{92AD6961-931E-4277-8004-E4ABB31C7E59}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{92AD6961-931E-4277-8004-E4ABB31C7E59}.Debug|x86.Build.0 = Debug|Any CPU
+		{92AD6961-931E-4277-8004-E4ABB31C7E59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92AD6961-931E-4277-8004-E4ABB31C7E59}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92AD6961-931E-4277-8004-E4ABB31C7E59}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{92AD6961-931E-4277-8004-E4ABB31C7E59}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{92AD6961-931E-4277-8004-E4ABB31C7E59}.Release|x86.ActiveCfg = Release|Any CPU
+		{92AD6961-931E-4277-8004-E4ABB31C7E59}.Release|x86.Build.0 = Release|Any CPU
+		{D4DA3D9E-30FD-4BCC-9CA7-ACCEE2712DA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4DA3D9E-30FD-4BCC-9CA7-ACCEE2712DA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4DA3D9E-30FD-4BCC-9CA7-ACCEE2712DA8}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{D4DA3D9E-30FD-4BCC-9CA7-ACCEE2712DA8}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{D4DA3D9E-30FD-4BCC-9CA7-ACCEE2712DA8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D4DA3D9E-30FD-4BCC-9CA7-ACCEE2712DA8}.Debug|x86.Build.0 = Debug|Any CPU
+		{D4DA3D9E-30FD-4BCC-9CA7-ACCEE2712DA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4DA3D9E-30FD-4BCC-9CA7-ACCEE2712DA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4DA3D9E-30FD-4BCC-9CA7-ACCEE2712DA8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{D4DA3D9E-30FD-4BCC-9CA7-ACCEE2712DA8}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{D4DA3D9E-30FD-4BCC-9CA7-ACCEE2712DA8}.Release|x86.ActiveCfg = Release|Any CPU
+		{D4DA3D9E-30FD-4BCC-9CA7-ACCEE2712DA8}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -386,6 +388,7 @@ Global
 		{8D453047-3FA5-4B62-A7DB-04B5A582B830} = {F731A2B8-F55C-4D7A-B30E-050C96006342}
 		{767E22D0-F2DD-4780-9428-561322173A9E} = {A7E69AF9-D207-44DF-8294-823024B90590}
 		{8509F6B4-FB5E-49EF-B2B1-94AC150719EB} = {A7E69AF9-D207-44DF-8294-823024B90590}
+		{D4DA3D9E-30FD-4BCC-9CA7-ACCEE2712DA8} = {A7E69AF9-D207-44DF-8294-823024B90590}
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = EssentialDiagnostics.vsmdi

@@ -25,6 +25,12 @@ namespace Essential.Diagnostics.Tests.Utility
             // Note: References stored, so info could be mutable, 
             // however (unlike InMemoryTraceListener) this class is only for testing,
             // so should not be an issue.
+
+            // Do copy the stack
+            var currentStack = (eventCache == null)
+                            ? Trace.CorrelationManager.LogicalOperationStack
+                            : eventCache.LogicalOperationStack;
+
             var traceInfo = new TraceInfo()
             {
                 EventCache = eventCache,
@@ -33,8 +39,10 @@ namespace Essential.Diagnostics.Tests.Utility
                 Id = id,
                 Message = message,
                 RelatedActivityId = relatedActivityId,
-                Data = data
-            };
+                Data = data,
+                ActivityId = Trace.CorrelationManager.ActivityId,
+                LogicalOperationStack = currentStack.OfType<string>().ToArray()
+        };
             MethodCallInformation.Add(traceInfo);
         }
 
@@ -47,6 +55,8 @@ namespace Essential.Diagnostics.Tests.Utility
             public string Message { get; set; }
             public Guid? RelatedActivityId { get; set; }
             public object[] Data { get; set; }
+            public Guid ActivityId { get; set; }
+            public string[] LogicalOperationStack { get; set; }
         }
     }
 }
