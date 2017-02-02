@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace Essential.Diagnostics.Tests.Utility
 {
-    class UserResetScope : IDisposable
+    public class UserResetScope : IDisposable
     {
         private IPrincipal originalUser;
 

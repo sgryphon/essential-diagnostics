@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Essential.Diagnostics.Tests.Utility
 {
-    class MockConsole : IConsole
+    public class MockConsole : IConsole
     {
         public MockConsole()
         {

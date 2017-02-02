@@ -7,7 +7,7 @@ using Essential.IO;
 
 namespace Essential.Diagnostics.Tests.Utility
 {
-    class MockFileSystem : IFileSystem
+    public class MockFileSystem : IFileSystem
     {
         public IList<Tuple<string,MemoryStream>> OpenedItems = new List<Tuple<string,MemoryStream>>();
 

@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Essential.Diagnostics.EmailTraceListener")]
+[assembly: AssemblyTitle("Essential.Diagnostics.InMemoryTraceListener.Tests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Essential.Diagnostics.EmailTraceListener")]
+[assembly: AssemblyProduct("Essential.Diagnostics.InMemoryTraceListener.Tests")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("d7842465-b6b0-43cd-b4aa-311255fd229c")]
+[assembly: Guid("0e0d3d26-0da3-4e5e-97ea-387c0f2de2bb")]
 
 // Version information for an assembly consists of the following four values:
 //

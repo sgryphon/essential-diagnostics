@@ -6,7 +6,7 @@ using Essential.Web;
 
 namespace Essential.Diagnostics.Tests.Utility
 {
-    class MockHttpTraceContext : IHttpTraceContext
+    public class MockHttpTraceContext : IHttpTraceContext
     {
         public Uri RequestUrl
         {

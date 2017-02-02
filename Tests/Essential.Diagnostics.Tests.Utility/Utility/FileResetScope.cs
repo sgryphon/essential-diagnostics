@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Essential.Diagnostics.Tests.Utility
 {
-    class FileResetScope : IDisposable
+    public class FileResetScope : IDisposable
     {
         private string originalText;
         private string path;

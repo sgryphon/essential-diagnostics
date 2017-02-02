@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace Essential.Diagnostics.Tests.Utility
 {
-    static class ConfigUtility
+    static public class ConfigUtility
     {
         public static string GetConfigDirFromTestRunDirectory(string testDir)
         {

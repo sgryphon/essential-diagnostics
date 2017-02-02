@@ -8,7 +8,7 @@ namespace Essential.Diagnostics.Tests.Utility
 {
     public class TestTraceListener : TraceListenerBase
     {
-        internal List<TraceInfo> MethodCallInformation = new List<TraceInfo>();
+        public List<TraceInfo> MethodCallInformation = new List<TraceInfo>();
 
         protected override void WriteTrace(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message, Guid? relatedActivityId, object[] data)
         {
@@ -28,7 +28,7 @@ namespace Essential.Diagnostics.Tests.Utility
             MethodCallInformation.Add(traceInfo);
         }
 
-        internal class TraceInfo
+        public class TraceInfo
         {
             public TraceEventCache EventCache { get; set; }
             public string Source { get; set; }
