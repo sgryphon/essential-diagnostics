@@ -3,11 +3,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{7718C125-D235-4C8E-8F48-6AFDA14CBE4F}</ProjectGuid>
+    <ProjectGuid>{767E22D0-F2DD-4780-9428-561322173A9E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Essential.Diagnostics.Tests</RootNamespace>
-    <AssemblyName>Essential.Diagnostics.EmailTraceListener.Tests</AssemblyName>
+    <AssemblyName>Essential.Diagnostics.Core.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -37,7 +37,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.configuration" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -52,18 +51,19 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="EmailTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SmtpWorkerPoolTests.cs" />
+    <Compile Include="StringTemplateTest.cs" />
+    <Compile Include="TraceFormatterTest.cs" />
+    <Compile Include="TraceListenerBaseTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Essential.Diagnostics.Core\Essential.Diagnostics.Core.csproj">
       <Project>{aae26c8f-ae78-4458-ba5d-00876105a4b7}</Project>
       <Name>Essential.Diagnostics.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Essential.Diagnostics.EmailTraceListener\Essential.Diagnostics.EmailTraceListener.csproj">
-      <Project>{d7842465-b6b0-43cd-b4aa-311255fd229c}</Project>
-      <Name>Essential.Diagnostics.EmailTraceListener</Name>
+    <ProjectReference Include="..\Essential.Diagnostics.Tests.Utility\Essential.Diagnostics.Tests.Utility.csproj">
+      <Project>{258a12f9-3c28-41dd-83fb-acc7b3070731}</Project>
+      <Name>Essential.Diagnostics.Tests.Utility</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

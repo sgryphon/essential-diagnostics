@@ -66,12 +66,8 @@
     <Compile Include="TraceLogTests.cs" />
     <Compile Include="ExpressionFilterTests.cs" />
     <Compile Include="PropertyFilterTests.cs" />
-    <Compile Include="SmtpWorkerPoolTests.cs" />
-    <Compile Include="TraceFormatterTest.cs" />
-    <Compile Include="TraceListenerBaseTests.cs" />
     <Compile Include="LogicalOperationScopeTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StringTemplateTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Essential.Diagnostics.Core\Essential.Diagnostics.Core.csproj">
