@@ -283,10 +283,11 @@ namespace Essential.Diagnostics.Tests
         [TestMethod]
         public void BaseHandlesTraceTraceInformation()
         {
-            var sourceName = "PROGRAM";
+            //var sourceNameForStaticTrace = "PROGRAM";
+            var sourceNameForStaticTrace = "vstest.executionengine.x86.exe";
             GivenTrace()
                 .WhenTraceAction(source => Trace.TraceInformation("a{0}b", 1))
-                .ThenVerifyTraceInfo(sourceName, TraceEventType.Information, 0, "a1b", null, null);
+                .ThenVerifyTraceInfo(sourceNameForStaticTrace, TraceEventType.Information, 0, "a1b", null, null);
         }
 
         private TestSourceContext GivenTestSource()

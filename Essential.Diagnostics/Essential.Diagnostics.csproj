@@ -87,14 +87,9 @@
     <Compile Include="Diagnostics\ExpressionFilter.cs" />
     <Compile Include="Diagnostics\GlobalSuppressions.cs" />
     <Compile Include="Diagnostics\PropertyFilter.cs" />
-    <Compile Include="Diagnostics\RollingFileTraceListener.cs" />
-    <Compile Include="Diagnostics\RollingTextWriter.cs" />
-    <Compile Include="Diagnostics\RollingXmlTraceListener.cs" />
     <Compile Include="Diagnostics\TraceConfigurationMonitor.cs" />
     <Compile Include="Diagnostics\LogicalOperationScope.cs" />
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="IO\FileSystem.cs" />
-    <Compile Include="IO\IFileSystem.cs" />
     <Compile Include="Net\Mail\SmtpWorkerPoolB.cs" />
     <Compile Include="Net\Mail\SmtpWorkerAsyncResult.cs" />
     <Compile Include="Net\Mail\SmtpWorkerPoolC.cs" />

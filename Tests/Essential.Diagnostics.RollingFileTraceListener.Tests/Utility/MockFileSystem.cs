@@ -1,9 +1,7 @@
-﻿using System;
+﻿using Essential.IO;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using Essential.IO;
 
 namespace Essential.Diagnostics.Tests.Utility
 {

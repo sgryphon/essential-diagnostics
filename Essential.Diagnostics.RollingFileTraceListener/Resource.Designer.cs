@@ -61,74 +61,11 @@ namespace Essential {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Start.
+        ///   Looks up a localized string similar to Exhausted possible logfile names..
         /// </summary>
-        internal static string ActivityScope_Start {
+        internal static string RollingTextWriter_ExhaustedLogfileNames {
             get {
-                return ResourceManager.GetString("ActivityScope_Start", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Stop.
-        /// </summary>
-        internal static string ActivityScope_Stop {
-            get {
-                return ResourceManager.GetString("ActivityScope_Stop", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Transfer.
-        /// </summary>
-        internal static string ActivityScope_Transfer {
-            get {
-                return ResourceManager.GetString("ActivityScope_Transfer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Start operation.
-        /// </summary>
-        internal static string LogicalOperationScope_Start {
-            get {
-                return ResourceManager.GetString("LogicalOperationScope_Start", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Stop operation.
-        /// </summary>
-        internal static string LogicalOperationScope_Stop {
-            get {
-                return ResourceManager.GetString("LogicalOperationScope_Stop", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Exception: {0}.
-        /// </summary>
-        internal static string TraceLog_AppendedExceptionFormat {
-            get {
-                return ResourceManager.GetString("TraceLog_AppendedExceptionFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to |.
-        /// </summary>
-        internal static string TraceLog_ExceptionFormatSeparator {
-            get {
-                return ResourceManager.GetString("TraceLog_ExceptionFormatSeparator", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Type argument TEventId is not an enum or int: {0}.
-        /// </summary>
-        internal static string TraceLog_InvalidTEventId {
-            get {
-                return ResourceManager.GetString("TraceLog_InvalidTEventId", resourceCulture);
+                return ResourceManager.GetString("RollingTextWriter_ExhaustedLogfileNames", resourceCulture);
             }
         }
     }
