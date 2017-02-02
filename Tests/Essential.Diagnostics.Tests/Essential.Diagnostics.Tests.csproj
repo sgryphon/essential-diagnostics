@@ -60,12 +60,10 @@
   <ItemGroup>
     <Compile Include="ActivityScopeTests.cs" />
     <Compile Include="ConfigurationMonitorTests.cs" />
-    <Compile Include="BufferedEmailTests.cs" />
     <Compile Include="AssemblyTraceLogTests.cs" />
     <Compile Include="AssemblyTraceSourceTests.cs" />
     <Compile Include="GenericTraceLogTests.cs" />
     <Compile Include="TraceLogTests.cs" />
-    <Compile Include="EmailTests.cs" />
     <Compile Include="ExpressionFilterTests.cs" />
     <Compile Include="PropertyFilterTests.cs" />
     <Compile Include="SmtpWorkerPoolTests.cs" />

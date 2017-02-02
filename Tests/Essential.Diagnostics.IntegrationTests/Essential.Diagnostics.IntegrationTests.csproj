@@ -55,13 +55,17 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Essential.Diagnostics.BufferedEmailTraceListener\Essential.Diagnostics.BufferedEmailTraceListener.csproj">
+      <Project>{ba5b94b3-43cc-4e6c-95b1-495189f3cadc}</Project>
+      <Name>Essential.Diagnostics.BufferedEmailTraceListener</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Essential.Diagnostics.Core\Essential.Diagnostics.Core.csproj">
       <Project>{aae26c8f-ae78-4458-ba5d-00876105a4b7}</Project>
       <Name>Essential.Diagnostics.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Essential.Diagnostics\Essential.Diagnostics.csproj">
-      <Project>{7a59aa9b-d2c3-4682-a4d7-ce37b98f5905}</Project>
-      <Name>Essential.Diagnostics</Name>
+    <ProjectReference Include="..\..\Essential.Diagnostics.EmailTraceListener\Essential.Diagnostics.EmailTraceListener.csproj">
+      <Project>{d7842465-b6b0-43cd-b4aa-311255fd229c}</Project>
+      <Name>Essential.Diagnostics.EmailTraceListener</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

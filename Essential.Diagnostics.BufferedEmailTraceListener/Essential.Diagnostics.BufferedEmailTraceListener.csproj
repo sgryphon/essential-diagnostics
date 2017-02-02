@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D7842465-B6B0-43CD-B4AA-311255FD229C}</ProjectGuid>
+    <ProjectGuid>{BA5B94B3-43CC-4E6C-95B1-495189F3CADC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Essential</RootNamespace>
-    <AssemblyName>Essential.Diagnostics.EmailTraceListener</AssemblyName>
+    <AssemblyName>Essential.Diagnostics.BufferedEmailTraceListener</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -37,16 +37,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Diagnostics\EmailTraceListener.cs" />
-    <Compile Include="Net\Mail\SmtpWorkerAsyncResult.cs" />
-    <Compile Include="Net\Mail\SmtpWorkerPoolB.cs" />
-    <Compile Include="Net\Mail\SmtpWorkerPoolC.cs" />
+    <Compile Include="Diagnostics\BufferedEmailTraceListener.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Essential.Diagnostics.Core\Essential.Diagnostics.Core.csproj">
       <Project>{aae26c8f-ae78-4458-ba5d-00876105a4b7}</Project>
       <Name>Essential.Diagnostics.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Essential.Diagnostics.EmailTraceListener\Essential.Diagnostics.EmailTraceListener.csproj">
+      <Project>{d7842465-b6b0-43cd-b4aa-311255fd229c}</Project>
+      <Name>Essential.Diagnostics.EmailTraceListener</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

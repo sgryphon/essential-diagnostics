@@ -82,17 +82,12 @@
     <Compile Include="Diagnostics\Abstractions\ITraceSource-TTarget.cs" />
     <Compile Include="Diagnostics\Abstractions\TraceSourceWrapper.cs" />
     <Compile Include="Diagnostics\ActivityScope.cs" />
-    <Compile Include="Diagnostics\EmailTraceListener.cs" />
-    <Compile Include="Diagnostics\BufferedEmailTraceListener.cs" />
     <Compile Include="Diagnostics\ExpressionFilter.cs" />
     <Compile Include="Diagnostics\GlobalSuppressions.cs" />
     <Compile Include="Diagnostics\PropertyFilter.cs" />
     <Compile Include="Diagnostics\TraceConfigurationMonitor.cs" />
     <Compile Include="Diagnostics\LogicalOperationScope.cs" />
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Net\Mail\SmtpWorkerPoolB.cs" />
-    <Compile Include="Net\Mail\SmtpWorkerAsyncResult.cs" />
-    <Compile Include="Net\Mail\SmtpWorkerPoolC.cs" />
     <Compile Include="Resource.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
