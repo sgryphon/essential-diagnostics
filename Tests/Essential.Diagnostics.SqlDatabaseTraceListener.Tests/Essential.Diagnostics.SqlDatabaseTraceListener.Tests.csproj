@@ -3,11 +3,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{258A12F9-3C28-41DD-83FB-ACC7B3070731}</ProjectGuid>
+    <ProjectGuid>{F18E151E-737E-42EE-A0A3-B9D8E2F0F056}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Essential.Diagnostics.Tests</RootNamespace>
-    <AssemblyName>Essential.Diagnostics.Tests.Utility</AssemblyName>
+    <AssemblyName>Essential.Diagnostics.SqlDatabaseTraceListener.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -52,23 +52,35 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="SqlDatabaseTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utility\ConfigUtility.cs" />
-    <Compile Include="Utility\FileResetScope.cs" />
-    <Compile Include="Utility\MockFileSystem.cs" />
-    <Compile Include="Utility\MockHttpTraceContext.cs" />
-    <Compile Include="Utility\TestTraceListener.cs" />
-    <Compile Include="Utility\UserResetScope.cs" />
+    <Compile Include="Utility\MockCommand.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Utility\MockConnection.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Utility\MockDbFactory.cs" />
+    <Compile Include="Utility\MockParameter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Essential.Diagnostics.Core\Essential.Diagnostics.Core.csproj">
       <Project>{aae26c8f-ae78-4458-ba5d-00876105a4b7}</Project>
       <Name>Essential.Diagnostics.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Essential.Diagnostics\Essential.Diagnostics.csproj">
-      <Project>{7a59aa9b-d2c3-4682-a4d7-ce37b98f5905}</Project>
-      <Name>Essential.Diagnostics</Name>
+    <ProjectReference Include="..\..\Essential.Diagnostics.SqlDatabaseTraceListener\Essential.Diagnostics.SqlDatabaseTraceListener.csproj">
+      <Project>{0b31de6f-91de-47a3-b447-c5dc57186e92}</Project>
+      <Name>Essential.Diagnostics.SqlDatabaseTraceListener</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Essential.Diagnostics.Tests.Utility\Essential.Diagnostics.Tests.Utility.csproj">
+      <Project>{258a12f9-3c28-41dd-83fb-acc7b3070731}</Project>
+      <Name>Essential.Diagnostics.Tests.Utility</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

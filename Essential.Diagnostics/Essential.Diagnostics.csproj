@@ -72,7 +72,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\DbProviderFactoryExtensions.cs" />
     <Compile Include="Diagnostics\Abstractions\AssemblyTraceLog-TEvendId,TTarget.cs" />
     <Compile Include="Diagnostics\Abstractions\GenericTraceLog.cs" />
     <Compile Include="Diagnostics\Abstractions\TraceLog-TEventId.cs" />
@@ -104,7 +103,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resource.resx</DependentUpon>
     </Compile>
-    <Compile Include="Diagnostics\SqlDatabaseTraceListener.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
