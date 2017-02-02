@@ -8,8 +8,8 @@
     <ProjectGuid>{8D453047-3FA5-4B62-A7DB-04B5A582B830}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EssentialDiagnosticsIntegrationTests</RootNamespace>
-    <AssemblyName>EssentialDiagnosticsIntegrationTests</AssemblyName>
+    <RootNamespace>Essential.Diagnostics.IntegrationTests</RootNamespace>
+    <AssemblyName>Essential.Diagnostics.EmailIntegrationTests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

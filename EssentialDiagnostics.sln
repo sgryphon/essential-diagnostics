@@ -42,8 +42,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{A7E69AF9
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Diagnostics.Tests", "Tests\Essential.Diagnostics.Tests\Essential.Diagnostics.Tests.csproj", "{CBE26D49-CC4A-469F-ADE7-4BC08F3A8168}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Diagnostics.IntegrationTests", "Tests\Essential.Diagnostics.IntegrationTests\Essential.Diagnostics.IntegrationTests.csproj", "{8D453047-3FA5-4B62-A7DB-04B5A582B830}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{DE2114DB-D5BE-4C70-A3C3-191E6CABFC48}"
 	ProjectSection(SolutionItems) = preProject
 		.nuget\packages.config = .nuget\packages.config
@@ -84,6 +82,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Diagnostics.EmailTraceListener.Tests", "Tests\Essential.Diagnostics.EmailTraceListener.Tests\Essential.Diagnostics.EmailTraceListener.Tests.csproj", "{7718C125-D235-4C8E-8F48-6AFDA14CBE4F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Diagnostics.BufferedEmailTraceListener", "Essential.Diagnostics.BufferedEmailTraceListener\Essential.Diagnostics.BufferedEmailTraceListener.csproj", "{BA5B94B3-43CC-4E6C-95B1-495189F3CADC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IntegrationTests", "IntegrationTests", "{F731A2B8-F55C-4D7A-B30E-050C96006342}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Diagnostics.EmailIntegrationTests", "IntegrationTests\Essential.Diagnostics.EmailIntegrationTests\Essential.Diagnostics.EmailIntegrationTests.csproj", "{8D453047-3FA5-4B62-A7DB-04B5A582B830}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -127,16 +129,6 @@ Global
 		{CBE26D49-CC4A-469F-ADE7-4BC08F3A8168}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{CBE26D49-CC4A-469F-ADE7-4BC08F3A8168}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{CBE26D49-CC4A-469F-ADE7-4BC08F3A8168}.Release|x86.ActiveCfg = Release|Any CPU
-		{8D453047-3FA5-4B62-A7DB-04B5A582B830}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8D453047-3FA5-4B62-A7DB-04B5A582B830}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8D453047-3FA5-4B62-A7DB-04B5A582B830}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{8D453047-3FA5-4B62-A7DB-04B5A582B830}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{8D453047-3FA5-4B62-A7DB-04B5A582B830}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{8D453047-3FA5-4B62-A7DB-04B5A582B830}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8D453047-3FA5-4B62-A7DB-04B5A582B830}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8D453047-3FA5-4B62-A7DB-04B5A582B830}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{8D453047-3FA5-4B62-A7DB-04B5A582B830}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{8D453047-3FA5-4B62-A7DB-04B5A582B830}.Release|x86.ActiveCfg = Release|Any CPU
 		{BD381576-ACFC-4098-AD56-9902B36F30C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BD381576-ACFC-4098-AD56-9902B36F30C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BD381576-ACFC-4098-AD56-9902B36F30C7}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -351,13 +343,24 @@ Global
 		{BA5B94B3-43CC-4E6C-95B1-495189F3CADC}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{BA5B94B3-43CC-4E6C-95B1-495189F3CADC}.Release|x86.ActiveCfg = Release|Any CPU
 		{BA5B94B3-43CC-4E6C-95B1-495189F3CADC}.Release|x86.Build.0 = Release|Any CPU
+		{8D453047-3FA5-4B62-A7DB-04B5A582B830}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D453047-3FA5-4B62-A7DB-04B5A582B830}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D453047-3FA5-4B62-A7DB-04B5A582B830}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{8D453047-3FA5-4B62-A7DB-04B5A582B830}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{8D453047-3FA5-4B62-A7DB-04B5A582B830}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8D453047-3FA5-4B62-A7DB-04B5A582B830}.Debug|x86.Build.0 = Debug|Any CPU
+		{8D453047-3FA5-4B62-A7DB-04B5A582B830}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D453047-3FA5-4B62-A7DB-04B5A582B830}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D453047-3FA5-4B62-A7DB-04B5A582B830}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{8D453047-3FA5-4B62-A7DB-04B5A582B830}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{8D453047-3FA5-4B62-A7DB-04B5A582B830}.Release|x86.ActiveCfg = Release|Any CPU
+		{8D453047-3FA5-4B62-A7DB-04B5A582B830}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{CBE26D49-CC4A-469F-ADE7-4BC08F3A8168} = {A7E69AF9-D207-44DF-8294-823024B90590}
-		{8D453047-3FA5-4B62-A7DB-04B5A582B830} = {A7E69AF9-D207-44DF-8294-823024B90590}
 		{BD381576-ACFC-4098-AD56-9902B36F30C7} = {A7E69AF9-D207-44DF-8294-823024B90590}
 		{0E0D3D26-0DA3-4E5E-97EA-387C0F2DE2BB} = {A7E69AF9-D207-44DF-8294-823024B90590}
 		{258A12F9-3C28-41DD-83FB-ACC7B3070731} = {A7E69AF9-D207-44DF-8294-823024B90590}
@@ -367,6 +370,7 @@ Global
 		{6089917B-CDF9-4C5A-A28C-94527A3362B2} = {A7E69AF9-D207-44DF-8294-823024B90590}
 		{A47BFF74-FAF7-4552-8918-814E8BA3545A} = {A7E69AF9-D207-44DF-8294-823024B90590}
 		{7718C125-D235-4C8E-8F48-6AFDA14CBE4F} = {A7E69AF9-D207-44DF-8294-823024B90590}
+		{8D453047-3FA5-4B62-A7DB-04B5A582B830} = {F731A2B8-F55C-4D7A-B30E-050C96006342}
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = EssentialDiagnostics.vsmdi
