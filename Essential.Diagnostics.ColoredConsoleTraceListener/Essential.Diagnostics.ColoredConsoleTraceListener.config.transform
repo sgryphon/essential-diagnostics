@@ -3,7 +3,7 @@
   <system.diagnostics>
     <sharedListeners>
       <add name="coloredconsole"
-        type="Essential.Diagnostics.ColoredConsoleTraceListener, Essential.Diagnostics"
+        type="Essential.Diagnostics.ColoredConsoleTraceListener, Essential.Diagnostics.ColoredConsoleTraceListener"
         template="{DateTime:HH':'mm':'ssZ} [{Thread}] {EventType} {Source} {Id}: {Message}{Data}"
         convertWriteToEvent="true" >
         <!--
