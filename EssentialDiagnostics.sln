@@ -21,8 +21,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Diagnostics.RegSq
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Packaging", "Packaging", "{AA216E78-7C19-4349-ADAF-419480C7FD8C}"
 	ProjectSection(SolutionItems) = preProject
-		Packaging\Essential.Diagnostics.Config.nuspec = Packaging\Essential.Diagnostics.Config.nuspec
-		Packaging\Essential.Diagnostics.nuspec = Packaging\Essential.Diagnostics.nuspec
 		Packaging\Ionic.Zip.dll = Packaging\Ionic.Zip.dll
 		Packaging\NuGet.exe = Packaging\NuGet.exe
 		Packaging\Package.cmd = Packaging\Package.cmd

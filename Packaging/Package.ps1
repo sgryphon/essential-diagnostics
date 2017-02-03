@@ -362,6 +362,8 @@ function Package-NuPackAll($solutionPath, $configuration, $version) {
 	Write-Host "# Creating NuGet packages..."
 
 	Package-NuPackProject $solutionpath $configuration $version "Essential.Diagnostics.Core"
+
+	Package-NuPackProject $solutionpath $configuration $version "Essential.Diagnostics.ColoredConsoleTraceListener"
 	Package-NuPackProject $solutionpath $configuration $version "Essential.Diagnostics.InMemoryTraceListener"
 }
 
