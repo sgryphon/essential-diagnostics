@@ -367,6 +367,8 @@ function Package-NuPackAll($solutionPath, $configuration, $version) {
 	Package-NuPackProject $solutionpath $configuration $version "Essential.Diagnostics.ColoredConsoleTraceListener"
 	Package-NuPackProject $solutionpath $configuration $version "Essential.Diagnostics.EmailTraceListener"
 	Package-NuPackProject $solutionpath $configuration $version "Essential.Diagnostics.InMemoryTraceListener"
+	Package-NuPackProject $solutionpath $configuration $version "Essential.Diagnostics.RollingFileTraceListener"
+	Package-NuPackProject $solutionpath $configuration $version "Essential.Diagnostics.RollingXmlTraceListener"
 
 	Package-NuPackProject $solutionpath $configuration $version "Essential.Diagnostics.Fluent"
 }

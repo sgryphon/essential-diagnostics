@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <system.diagnostics>
+    <sharedListeners>
+      <add name="rollingxml"
+        type="Essential.Diagnostics.RollingXmlTraceListener, Essential.Diagnostics.RollingXmlTraceListener"
+        initializeData="C:\Temp\Logs\{ApplicationName}-{DateTime:yyyyMMdd}.svclog" >
+        <!--
+          Writes E2ETraceEvent XML fragments to a text file, rolling to a new 
+          file based on a filename template (usually including the date).
+          The E2ETraceEvent XML fragment format can be read by the Service Trace Viewer tool.
+          
+          Options:
+            initializeData="{ApplicationName}-{DateTime:yyyy-MM-dd}.svclog"
+  
+          Children:
+            <filter 
+              type="Essential.Diagnostics.ExpressionFilter, Essential.Diagnostics.Core"
+              initializeData=' Id >= 8000 ' />
+        -->
+      </add>
+    </sharedListeners>
+    <sources>
+      <source name="Example.RollingXml.Source" switchValue="All">
+        <!--
+          Add listener to source. Use named switches for multiple sources; switch values can be names, decimal, or hexadecimal.
+        -->
+        <listeners>
+          <clear />
+          <add name="rollingxml" />
+        </listeners>
+      </source>
+    </sources>
+    <trace autoflush="true" indentsize="0" >
+      <listeners>
+        <!--
+          Also add listener for legacy Trace.Write() statements (not using a TraceSource).
+          For performance also clear the default listener, and turn indent off to avoid confusion for multithreaded traces.
+        -->
+        <clear />
+        <add name="rollingxml" />
+      </listeners>
+    </trace>
+  </system.diagnostics>
+</configuration>
