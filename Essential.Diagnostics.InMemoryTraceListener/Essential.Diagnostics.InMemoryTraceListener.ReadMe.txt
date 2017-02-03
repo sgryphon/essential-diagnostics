@@ -8,8 +8,9 @@ http://essentialdiagnostics.codeplex.com/
 
 Using and extending System.Diagnostics trace logging. 
 
-In memory trace listener (useful for testing) extension 
-for System.Diagnostics, along with required config sections.
+In memory trace listener extension for System.Diagnostics, 
+along with required config sections. This listener is useful 
+for unit testing that logging has occurred.
 
 Other Essential.Diagnostics packages extend the .NET Framework 
 System.Diagnostics trace logging with additional trace listeners. 

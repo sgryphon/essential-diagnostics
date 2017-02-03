@@ -10,7 +10,7 @@
     <iconUrl>http://i3.codeplex.com/download?ProjectName=essentialdiagnostics&amp;DownloadId=150104</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>
-      In memory trace listener (useful for testing) extension for System.Diagnostics, along with required config sections.
+      In memory trace listener extension for System.Diagnostics, along with required config sections. This listener is useful for unit testing that logging has occurred.
 
       Other Essential.Diagnostics packages extend the .NET Framework System.Diagnostics trace logging with additional trace listeners. Included are colored console (that allows custom formats), SQL database (including a tool to create tables), rolling file (with custom formats), rolling XML, email (per trace or batched), and an in-memory trace listener.
 

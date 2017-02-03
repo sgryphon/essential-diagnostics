@@ -21,26 +21,23 @@
     </sharedListeners>
     <sources>
       <source name="Example.InMemory.Source" switchValue="All">
+        <!--
+          Add listener to source. Use named switches for multiple sources; switch values can be names, decimal, or hexadecimal.
+        -->
         <listeners>
           <clear />
           <add name="inmemory" />
         </listeners>
       </source>
     </sources>
-    <switches>
-      <add name="Example.InMemory.Switch" value="Critical,12,0x8000"><!--
-          Use named switches for multiple sources. 
-          Values can be names, decimal, or hexadecimal.
-        --></add>
-    </switches>
     <trace autoflush="true" indentsize="0" >
       <listeners>
         <!--
-          Legacy Trace.Write() statements (not using a TraceSource).
-          Turn indent off to avoid confusion for multithreaded traces,
-          and clear the default listener for performance.
+          Also add listener for legacy Trace.Write() statements (not using a TraceSource).
+          For performance also clear the default listener, and turn indent off to avoid confusion for multithreaded traces.
         -->
         <clear />
+        <add name="inmemory" />
       </listeners>
     </trace>
   </system.diagnostics>
