@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <system.diagnostics>
+    <sharedListeners>
+      <add name="email"
+        type="Essential.Diagnostics.EmailTraceListener, Essential.Diagnostics.EmailTraceListener"
+        initializeData="user1@example.org,user2@example.org">
+        <!--
+	        Sends each trace message received in an email, using the specified subject and 
+          body templates.
+          
+          Note: Set a filter to avoid flooding (don't rely on trace source switch value).
+          
+          Options (showing default or example values):
+            initalizeData="user1@example.org,user2@example.org"
+            bodyTemplate="Source: {Source}
+Date (UTC): {DateTime:u}
+Date (Local): {LocalDateTime:yyyy'-'MM'-'dd HH':'mm':'ss zzz}
+Event ID: {Id}
+Level: {EventType}
+Activity: {ActivityId}
+
+Application Information:
+ Computer: {MachineName}
+ Application Name: {ApplicationName}
+ Application Domain: {AppDomain}
+
+Process Information:
+ Process ID: {ProcessId}
+ Process Name: {ProcessName}
+ Process: {Process}
+ User: {User}
+
+Thread Information:
+ Thread ID: [{ThreadId}]
+ Thread Name: {ThreadName}
+ Thread Principal: {PrincipalName}
+
+Message:
+{Message}
+
+Data:
+{Data}"
+              fromAddress=""
+              maxConnections="2"
+              maxTracesPerHour="50"
+              subjectTemplate="{EventType} {Id}: {MessagePrefix}; {MachineName}; {User}; {ProcessName}"
+        -->
+        <filter type="System.Diagnostics.EventTypeFilter"
+                initializeData="Warning" />
+      </add>
+    </sharedListeners>
+    <sources>
+      <source name="Example.Email.Source" switchValue="All">
+        <!--
+          Add listener to source. Use named switches for multiple sources; switch values can be names, decimal, or hexadecimal.
+        -->
+        <listeners>
+          <clear />
+          <add name="email" />
+        </listeners>
+      </source>
+    </sources>
+    <trace autoflush="true" indentsize="0" >
+      <listeners>
+        <!--
+          Also add listener for legacy Trace.Write() statements (not using a TraceSource).
+          For performance also clear the default listener, and turn indent off to avoid confusion for multithreaded traces.
+        -->
+        <clear />
+        <add name="email" />
+      </listeners>
+    </trace>
+  </system.diagnostics>
+  <system.net>
+    <mailSettings>
+      <smtp deliveryMethod="SpecifiedPickupDirectory" from="diagnostics@example.org">
+        <!--
+          Used by email trace listeners. For production, or if using a test SMTP server 
+          such as smtp4dev, change to deliveryMethod="Network" and specify your mail host.
+        -->
+        <network
+          host="localhost"
+          defaultCredentials="true" />
+        <specifiedPickupDirectory pickupDirectoryLocation="C:\Temp\MailPickup" />
+      </smtp>
+    </mailSettings>
+  </system.net>
+</configuration>
