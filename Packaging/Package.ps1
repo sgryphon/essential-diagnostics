@@ -370,10 +370,12 @@ function Package-NuPackAll($solutionPath, $configuration, $version) {
 	Package-NuPackProject $solutionpath $configuration $version "Essential.Diagnostics.RollingFileTraceListener"
 	Package-NuPackProject $solutionpath $configuration $version "Essential.Diagnostics.RollingXmlTraceListener"
 
+	Package-NuPackProject $solutionpath $configuration $version "Essential.Diagnostics.SqlDatabaseTraceListener" $true
+
 	Package-NuPackProject $solutionpath $configuration $version "Essential.Diagnostics.Fluent"
 }
 
-function Package-NuPackProject($solutionPath, $configuration, $version, $project) {
+function Package-NuPackProject($solutionPath, $configuration, $version, $project, $includeSqlTool = $false) {
 	Write-Host ""
 	Write-Host "# Creating NuGet package $project..."
     
@@ -421,6 +423,18 @@ function Package-NuPackProject($solutionPath, $configuration, $version, $project
 	    Ensure-Directory (Join-Path $stagingPath "content")
         Copy-Item $configTransformPath "$stagingPath\content\app.config.transform"
         Copy-Item $configTransformPath "$stagingPath\content\web.config.transform"
+      }
+	}
+
+	if ($includeSqlTool) {
+	  Write-Host "$($pre)Including SQL tool in package"
+	  if (-not $WhatIf) {
+	    Ensure-Directory (Join-Path $stagingPath "tools")
+		$sqlToolSourcePath = (Join-Path $solutionPath "Essential.Diagnostics.RegSql\bin\$configuration")
+        Copy-Item "$sqlToolSourcePath\diagnostics_regsql.exe" "$stagingPath\tools\diagnostics_regsql.exe"
+        Copy-Item "$sqlToolSourcePath\diagnostics_regsql.exe.config" "$stagingPath\tools\diagnostics_regsql.exe.config"
+        Copy-Item "$sqlToolSourcePath\InstallTrace.sql" "$stagingPath\tools\InstallTrace.sql"
+        Copy-Item "$sqlToolSourcePath\UninstallTrace.sql" "$stagingPath\tools\UninstallTrace.sql"
       }
 	}
     

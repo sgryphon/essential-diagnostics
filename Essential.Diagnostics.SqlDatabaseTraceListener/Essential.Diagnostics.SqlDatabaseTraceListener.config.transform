@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <connectionStrings>    
+    <add name="diagnosticsdb"
+      providerName="System.Data.SqlClient"
+      connectionString="server=.;database=diagnosticsdb;Integrated Security=SSPI">
+      <!--
+        For SqlDatabaseTraceListener use the tool installed in the tools directory by Nuget 
+        to install the default database on the local SQL instance, using Windows credentials:
+        .\diagnostics_regsql.exe -E -AD
+      -->
+    </add>
+  </connectionStrings>
+  <system.diagnostics>
+    <sharedListeners>
+      <add name="sqldatabase"
+        type="Essential.Diagnostics.SqlDatabaseTraceListener, Essential.Diagnostics.SqlDatabaseTraceListener"
+        initializeData="diagnosticsdb"
+        applicationName="Diagnostics.Sample" >
+        <!--
+          Trace listener that writes to the database connection specified into a
+          table created by the diagnostics_regsql.exe tool (in the package tools directory).
+
+          Options:
+            initializeData="connection string name"
+            applicationName="application name"
+            commandText="SQL command"
+            maxMessageLength="1500"
+  
+          Children:
+            <filter 
+              type="Essential.Diagnostics.ExpressionFilter, Essential.Diagnostics.Core"
+              initializeData=' Id >= 8000 ' />
+         -->
+      </add>
+    </sharedListeners>
+    <sources>
+      <source name="Example.SqlDatabase.Source" switchValue="All">
+        <!--
+          Add listener to source. Use named switches for multiple sources; switch values can be names, decimal, or hexadecimal.
+        -->
+        <listeners>
+          <clear />
+          <add name="sqldatabase" />
+        </listeners>
+      </source>
+    </sources>
+    <trace autoflush="true" indentsize="0" >
+      <listeners>
+        <!--
+          Also add listener for legacy Trace.Write() statements (not using a TraceSource).
+          For performance also clear the default listener, and turn indent off to avoid confusion for multithreaded traces.
+        -->
+        <clear />
+        <add name="sqldatabase" />
+      </listeners>
+    </trace>
+  </system.diagnostics>
+</configuration>
