@@ -37,6 +37,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Essential.Diagnostics.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=9d041bca93991466, processorArchitecture=MSIL">
+      <HintPath>..\packages\Essential.Diagnostics.Core.2.0.203\lib\Essential.Diagnostics.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Essential.Diagnostics.InMemoryTraceListener, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Essential.Diagnostics.InMemoryTraceListener.2.0.203\lib\Essential.Diagnostics.InMemoryTraceListener.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -80,6 +88,7 @@
     <None Include="InMemory\HelloLogging.exe.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="packages.config" />
     <None Include="RollingFile\HelloLogging.exe.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
