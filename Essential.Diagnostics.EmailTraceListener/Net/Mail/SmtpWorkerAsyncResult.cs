@@ -10,7 +10,7 @@ namespace Essential.Net.Mail
     // http://msdn.microsoft.com/en-us/magazine/cc163467.aspx
     // http://blogs.msdn.com/b/nikos/archive/2011/03/14/how-to-implement-iasyncresult-in-another-way.aspx
 
-    public class SmtpWorkerAsyncResult : IAsyncResult, IDisposable
+    class SmtpWorkerAsyncResult : IAsyncResult, IDisposable
     {
         private const int c_StatePending = 0;
         private const int c_StateCompletedSynchronously = 1;

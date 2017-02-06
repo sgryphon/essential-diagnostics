@@ -45,7 +45,7 @@ namespace Essential.Net.Mail
 
     // TODO: Do we really want this public?? -- it is used for testing.
 
-    public class SmtpWorkerPoolC : IDisposable
+    class SmtpWorkerPoolC : IDisposable
     {
         const int maxExitWaitMilliseconds = 2000;
         const int exitCheckIntervalMilliseconds = 100;

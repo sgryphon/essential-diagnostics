@@ -206,7 +206,7 @@ namespace Essential.Diagnostics
             return result;
         }
 
-        public object FormatApplicationName()
+        internal object FormatApplicationName()
         {
             object value;
             EnsureApplicationName();
@@ -215,7 +215,7 @@ namespace Essential.Diagnostics
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework", MessageId = "System.DateTimeOffset", Justification = "Deliberate dependency, .NET 2.0 SP1 required.")]
-        public static object FormatLocalTime(TraceEventCache eventCache)
+        internal static object FormatLocalTime(TraceEventCache eventCache)
         {
             object value;
             if (eventCache == null)
@@ -231,7 +231,7 @@ namespace Essential.Diagnostics
             return value;
         }
 
-        public object FormatProcessId(TraceEventCache eventCache)
+        internal object FormatProcessId(TraceEventCache eventCache)
         {
             object value;
             if (eventCache == null)
@@ -246,7 +246,7 @@ namespace Essential.Diagnostics
             return value;
         }
 
-        public object FormatProcessName()
+        internal object FormatProcessName()
         {
             object value;
             EnsureProcessInfo();
@@ -255,7 +255,7 @@ namespace Essential.Diagnostics
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework", MessageId = "System.DateTimeOffset", Justification = "Deliberate dependency, .NET 2.0 SP1 required.")]
-        public static DateTimeOffset FormatUniversalTime(TraceEventCache eventCache)
+        internal static DateTimeOffset FormatUniversalTime(TraceEventCache eventCache)
         {
             DateTimeOffset value;
             if (eventCache == null)

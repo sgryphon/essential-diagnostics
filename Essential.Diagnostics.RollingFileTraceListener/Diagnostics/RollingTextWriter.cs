@@ -6,7 +6,7 @@ using Essential.IO;
 
 namespace Essential.Diagnostics
 {
-    public class RollingTextWriter : IDisposable
+    class RollingTextWriter : IDisposable
     {
         const int _maxStreamRetries = 5;
 
