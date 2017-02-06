@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
-using Essential.Diagnostics.Abstractions;
 using System.Threading;
 using System.Security.Principal;
 
@@ -11,7 +10,7 @@ namespace TemplateArguments
 {
     public class Program
     {
-        static ITraceSource trace = new AssemblyTraceSource<Program>();
+        static TraceSource trace = new TraceSource("TemplateArguments");
 
         public static void Main(string[] args)
         {
