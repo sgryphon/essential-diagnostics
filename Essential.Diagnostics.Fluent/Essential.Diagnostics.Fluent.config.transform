@@ -2,7 +2,7 @@
 <configuration>
   <system.diagnostics>
     <sharedListeners>
-      <add name="filelog"
+      <add name="example-filelog"
         type="Microsoft.VisualBasic.Logging.FileLogTraceListener, Microsoft.VisualBasic, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
         traceOutputOptions="DateTime,ThreadId,LogicalOperationStack"
         autoFlush="true"
@@ -23,18 +23,16 @@
         -->
         <listeners>
           <clear />
-          <add name="filelog" />
+          <add name="example-filelog" />
         </listeners>
       </source>
     </sources>
     <trace autoflush="true" indentsize="0" >
       <listeners>
         <!--
-          Also add listener for legacy Trace.Write() statements (not using a TraceSource).
           For performance also clear the default listener, and turn indent off to avoid confusion for multithreaded traces.
         -->
         <clear />
-        <add name="filelog" />
       </listeners>
     </trace>
   </system.diagnostics>

@@ -7,7 +7,7 @@
     <owners>sgryphon</owners>
     <licenseUrl>http://essentialdiagnostics.codeplex.com/license</licenseUrl>
     <projectUrl>http://essentialdiagnostics.codeplex.com/</projectUrl>
-    <iconUrl>http://i3.codeplex.com/download?ProjectName=essentialdiagnostics&amp;DownloadId=150104</iconUrl>
+    <iconUrl>https://download-codeplex.sec.s-msft.com/Download?ProjectName=essentialdiagnostics&amp;DownloadId=1634951&amp;Build=21031</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>
       SQL database trace listener extension for System.Diagnostics, along with required config sections. Trace listener that writes to the database connection specified into a table created by the included diagnostics_regsql.exe tool (in the package tools directory).

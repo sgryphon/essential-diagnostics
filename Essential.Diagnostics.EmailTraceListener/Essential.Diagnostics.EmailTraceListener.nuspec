@@ -7,7 +7,7 @@
     <owners>sgryphon</owners>
     <licenseUrl>http://essentialdiagnostics.codeplex.com/license</licenseUrl>
     <projectUrl>http://essentialdiagnostics.codeplex.com/</projectUrl>
-    <iconUrl>http://i3.codeplex.com/download?ProjectName=essentialdiagnostics&amp;DownloadId=150104</iconUrl>
+    <iconUrl>https://download-codeplex.sec.s-msft.com/Download?ProjectName=essentialdiagnostics&amp;DownloadId=1634951&amp;Build=21031</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>
       Email trace listener extension for System.Diagnostics, along with required config sections. Sends each trace message received in an email, using the specified subject and body templates. Note: Set a filter to avoid flooding (don't rely on trace source switch value).

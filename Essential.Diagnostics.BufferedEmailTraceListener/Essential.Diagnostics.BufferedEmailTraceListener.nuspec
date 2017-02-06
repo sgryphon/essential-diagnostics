@@ -7,7 +7,7 @@
     <owners>sgryphon</owners>
     <licenseUrl>http://essentialdiagnostics.codeplex.com/license</licenseUrl>
     <projectUrl>http://essentialdiagnostics.codeplex.com/</projectUrl>
-    <iconUrl>http://i3.codeplex.com/download?ProjectName=essentialdiagnostics&amp;DownloadId=150104</iconUrl>
+    <iconUrl>https://download-codeplex.sec.s-msft.com/Download?ProjectName=essentialdiagnostics&amp;DownloadId=1634951&amp;Build=21031</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>
       Buffered email trace listener extension for System.Diagnostics, along with required config sections. Adds formatted trace messages to a buffer and sends an email when the process exits, or on request.
