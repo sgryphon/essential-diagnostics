@@ -19,7 +19,7 @@ namespace EventSourceExample
         }
 
         [Event(2, Level = EventLevel.Error, Message = "Event 2 message: {0}, exception: {1}")]
-        public void ExampleEvent2(string comment, string exceptionMessage, string exceptionDetail)
+        void ExampleEvent2(string comment, string exceptionMessage, string exceptionDetail)
         {
             this.WriteEvent(2, comment, exceptionMessage, exceptionDetail);
         }
