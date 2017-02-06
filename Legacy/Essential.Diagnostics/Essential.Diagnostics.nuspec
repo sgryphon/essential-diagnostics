@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Essential.Diagnostics</id>
+    <version>1.99</version>
+    <title>(Obsolete) Essential.Diagnostics</title>
+    <authors>Sly Gryphon</authors>
+    <description>This project has been replaced by version 2, which uses separate packages for each trace listener. If you install this update, then it will include references to all the new projects: Essential.Diagnostics.Core, .BufferedEmailTraceListener, .ColoredConsoleTraceListener, .EmailTraceListener, .InMemoryTraceListener, .RollingFileTraceListener, .RollingXmlTraceListener, .SqlDatabaseTraceListener, and Essential.Diagnostics.Fluent, but will not be updated going forward. It is recommended to remove this project and add references to the specific listeners and features you need.</description>
+    <projectUrl>http://essentialdiagnostics.codeplex.com/</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <tags></tags>
+    <dependencies>
+      <dependency id="Essential.Diagnostics.Core" version="2.0.206.0" />
+      <dependency id="Essential.Diagnostics.BufferedEmailTraceListener" version="2.0.206.0" />
+      <dependency id="Essential.Diagnostics.ColoredConsoleTraceListener" version="2.0.206.0" />
+      <dependency id="Essential.Diagnostics.EmailTraceListener" version="2.0.206.0" />
+      <dependency id="Essential.Diagnostics.InMemoryTraceListener" version="2.0.206.0" />
+      <dependency id="Essential.Diagnostics.RollingFileTraceListener" version="2.0.206.0" />
+      <dependency id="Essential.Diagnostics.RollingXmlTraceListener" version="2.0.206.0" />
+      <dependency id="Essential.Diagnostics.SqlDatabaseTraceListener" version="2.0.206.0" />
+      <dependency id="Essential.Diagnostics.Fluent" version="2.0.206.0" />
+    </dependencies>
+  </metadata>
+</package>
