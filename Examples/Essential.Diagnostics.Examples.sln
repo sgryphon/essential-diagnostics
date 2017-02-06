@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3A947E8F-0D68-4312-900B-ADC4DC4052B0}"
 	ProjectSection(SolutionItems) = preProject
@@ -34,6 +34,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BufferedEmailExample", "BufferedEmailExample\BufferedEmailExample.csproj", "{A75C5048-F9D7-44DF-94C0-AE42FB0DB061}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventRetentionExample", "EventRetentionExample\EventRetentionExample.csproj", "{2CCFF701-3797-4C04-85E6-3396044D74F0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloNet20", "HelloNet20\HelloNet20.csproj", "{C45EEE44-BD6F-45E0-B6E8-7BEA638D0F47}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -149,6 +151,18 @@ Global
 		{2CCFF701-3797-4C04-85E6-3396044D74F0}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{2CCFF701-3797-4C04-85E6-3396044D74F0}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{2CCFF701-3797-4C04-85E6-3396044D74F0}.Release|x86.ActiveCfg = Release|Any CPU
+		{C45EEE44-BD6F-45E0-B6E8-7BEA638D0F47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C45EEE44-BD6F-45E0-B6E8-7BEA638D0F47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C45EEE44-BD6F-45E0-B6E8-7BEA638D0F47}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{C45EEE44-BD6F-45E0-B6E8-7BEA638D0F47}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{C45EEE44-BD6F-45E0-B6E8-7BEA638D0F47}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C45EEE44-BD6F-45E0-B6E8-7BEA638D0F47}.Debug|x86.Build.0 = Debug|Any CPU
+		{C45EEE44-BD6F-45E0-B6E8-7BEA638D0F47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C45EEE44-BD6F-45E0-B6E8-7BEA638D0F47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C45EEE44-BD6F-45E0-B6E8-7BEA638D0F47}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{C45EEE44-BD6F-45E0-B6E8-7BEA638D0F47}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{C45EEE44-BD6F-45E0-B6E8-7BEA638D0F47}.Release|x86.ActiveCfg = Release|Any CPU
+		{C45EEE44-BD6F-45E0-B6E8-7BEA638D0F47}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
