@@ -61,6 +61,10 @@
     <Compile Include="TraceLogTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Essential.Diagnostics.Core\Essential.Diagnostics.Core.csproj">
+      <Project>{aae26c8f-ae78-4458-ba5d-00876105a4b7}</Project>
+      <Name>Essential.Diagnostics.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Essential.Diagnostics.Fluent\Essential.Diagnostics.Fluent.csproj">
       <Project>{92ad6961-931e-4277-8004-e4abb31c7e59}</Project>
       <Name>Essential.Diagnostics.Fluent</Name>
