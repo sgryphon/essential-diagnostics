@@ -112,8 +112,8 @@ namespace Essential.Diagnostics
             _stopId = stopId;
             _operationId = operationId;
 
-            _startMessage = startMessage ?? Resource.LogicalOperationScope_Start;
-            _stopMessage = stopMessage ?? Resource.LogicalOperationScope_Stop;
+            _startMessage = startMessage ?? Resource_Fluent.LogicalOperationScope_Start;
+            _stopMessage = stopMessage ?? Resource_Fluent.LogicalOperationScope_Stop;
 
             // Start Logical Operation
             if (_operationId == null)

@@ -150,7 +150,7 @@ namespace Essential.Diagnostics
                     num++;
                 }
 
-                throw new InvalidOperationException(Resource.RollingTextWriter_ExhaustedLogfileNames);
+                throw new InvalidOperationException(Resource_RollingFile.RollingTextWriter_ExhaustedLogfileNames);
             }
         }
 

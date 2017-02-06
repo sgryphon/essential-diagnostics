@@ -22,14 +22,14 @@ namespace Essential {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resource {
+    internal class Resource_Core {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resource() {
+        internal Resource_Core() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace Essential {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Essential.Resource", typeof(Resource).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Essential.Resource.Core", typeof(Resource_Core).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,11 +61,29 @@ namespace Essential {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Console color specified is invalid..
+        ///   Looks up a localized string similar to Invalid argument name used..
         /// </summary>
-        internal static string InvalidConsoleColor {
+        internal static string StringTemplate_ArgumentNotFound {
             get {
-                return ResourceManager.GetString("InvalidConsoleColor", resourceCulture);
+                return ResourceManager.GetString("StringTemplate_ArgumentNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Input string was not a correct template..
+        /// </summary>
+        internal static string StringTemplate_InvalidString {
+            get {
+                return ResourceManager.GetString("StringTemplate_InvalidString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}, relatedActivityId={1}.
+        /// </summary>
+        internal static string TraceListenerBase_TraceMessageFormat {
+            get {
+                return ResourceManager.GetString("TraceListenerBase_TraceMessageFormat", resourceCulture);
             }
         }
     }

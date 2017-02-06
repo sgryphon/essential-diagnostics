@@ -152,7 +152,7 @@ namespace Essential.Diagnostics
         {
             if ((base.Filter == null) || base.Filter.ShouldTrace(eventCache, source, TraceEventType.Transfer, id, message, null, null, null))
             {
-                var traceMessage = string.Format(CultureInfo.CurrentCulture, Resource.TraceListenerBase_TraceMessageFormat, message, relatedActivityId);
+                var traceMessage = string.Format(CultureInfo.CurrentCulture, Resource_Core.TraceListenerBase_TraceMessageFormat, message, relatedActivityId);
                 WriteTrace(eventCache, source, TraceEventType.Transfer, id, traceMessage, relatedActivityId, null);
             }
         }

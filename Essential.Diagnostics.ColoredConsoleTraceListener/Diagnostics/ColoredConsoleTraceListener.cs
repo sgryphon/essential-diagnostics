@@ -337,7 +337,7 @@ namespace Essential.Diagnostics
             {
                 if (!Enum.IsDefined(typeof (ConsoleColor), color))
                 {
-                    throw new ArgumentOutOfRangeException("color", Resource.InvalidConsoleColor);
+                    throw new ArgumentOutOfRangeException("color", Resource_ColoredConsole.InvalidConsoleColor);
                 }
 
                 var key = eventType.ToString() + "Color";

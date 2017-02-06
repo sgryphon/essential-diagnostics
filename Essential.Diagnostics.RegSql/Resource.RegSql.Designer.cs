@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Essential {
+namespace Essential.Diagnostics.RegSql {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace Essential {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resource {
+    internal class Resource_RegSql {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resource() {
+        internal Resource_RegSql() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace Essential {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Essential.Resource", typeof(Resource).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Essential.Diagnostics.RegSql.Resource.RegSql", typeof(Resource_RegSql).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,11 +61,19 @@ namespace Essential {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Exhausted possible logfile names..
+        ///   Looks up a localized string similar to Administrative utility to install and uninstall diagnostics features on a SQL server.
+        ///Copyright (C) Stephen Gryphon
+        ///
+        ///Options:
+        ///-?                         Display this help text.
+        ///-S &lt;server&gt;                SQL Server instance (SQL Server 7.0 and above) to work with.
+        ///-U &lt;login id&gt;              SQL Server user name to authenticate with; requires -P option.
+        ///-P &lt;password&gt;              SQL Server password to authenticate with; requires -U option.
+        ///-E                         Authenticate with current Windows [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string RollingTextWriter_ExhaustedLogfileNames {
+        internal static string HelpText {
             get {
-                return ResourceManager.GetString("RollingTextWriter_ExhaustedLogfileNames", resourceCulture);
+                return ResourceManager.GetString("HelpText", resourceCulture);
             }
         }
     }

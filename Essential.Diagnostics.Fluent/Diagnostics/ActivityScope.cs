@@ -187,10 +187,10 @@ namespace Essential.Diagnostics
 
             _previousActivityId = Trace.CorrelationManager.ActivityId;
 
-            _transferInMessage = transferInMessage ?? Resource.ActivityScope_Transfer;
-            _startMessage = startMessage ?? Resource.ActivityScope_Start;
-            _transferOutMessage = transferOutMessage ?? Resource.ActivityScope_Transfer;
-            _stopMessage = stopMessage ?? Resource.ActivityScope_Stop;
+            _transferInMessage = transferInMessage ?? Resource_Fluent.ActivityScope_Transfer;
+            _startMessage = startMessage ?? Resource_Fluent.ActivityScope_Start;
+            _transferOutMessage = transferOutMessage ?? Resource_Fluent.ActivityScope_Transfer;
+            _stopMessage = stopMessage ?? Resource_Fluent.ActivityScope_Stop;
 
             _activityName = activityName;
 

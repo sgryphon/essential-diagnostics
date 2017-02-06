@@ -35,7 +35,7 @@ namespace Essential.Diagnostics.Abstractions
             var eventIdType = typeof(TEventId);           
             if (!eventIdType.Equals(typeof(int)) && !eventIdType.IsSubclassOf(typeof(Enum)))
             {
-                throw new ArgumentException(string.Format(Resource.TraceLog_InvalidTEventId, typeof(TEventId).Name));
+                throw new ArgumentException(string.Format(Resource_Fluent.TraceLog_InvalidTEventId, typeof(TEventId).Name));
             }
         }
 
@@ -64,8 +64,8 @@ namespace Essential.Diagnostics.Abstractions
         public TraceLog(ITraceSource traceSource)
         {
             _traceSource = traceSource;
-            _exceptionFormat = Resource.TraceLog_AppendedExceptionFormat;
-            _exceptionSeparator = Resource.TraceLog_ExceptionFormatSeparator;
+            _exceptionFormat = Resource_Fluent.TraceLog_AppendedExceptionFormat;
+            _exceptionSeparator = Resource_Fluent.TraceLog_ExceptionFormatSeparator;
         }
 
         /// <summary>
