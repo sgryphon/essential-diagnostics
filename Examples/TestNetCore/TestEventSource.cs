@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Diagnostics.Tracing;
 
-namespace HelloNetCore
+namespace TestNetCore
 {
     public class TestEventSource
     {
