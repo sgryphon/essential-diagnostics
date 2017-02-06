@@ -37,16 +37,36 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Essential.Diagnostics.BufferedEmailTraceListener, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Essential.Diagnostics.BufferedEmailTraceListener.2.0.206\lib\Essential.Diagnostics.BufferedEmailTraceListener.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Essential.Diagnostics.ColoredConsoleTraceListener, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Essential.Diagnostics.ColoredConsoleTraceListener.2.0.203\lib\Essential.Diagnostics.ColoredConsoleTraceListener.dll</HintPath>
+      <HintPath>..\packages\Essential.Diagnostics.ColoredConsoleTraceListener.2.0.206\lib\Essential.Diagnostics.ColoredConsoleTraceListener.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Essential.Diagnostics.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=9d041bca93991466, processorArchitecture=MSIL">
-      <HintPath>..\packages\Essential.Diagnostics.Core.2.0.203\lib\Essential.Diagnostics.Core.dll</HintPath>
+      <HintPath>..\packages\Essential.Diagnostics.Core.2.0.206\lib\Essential.Diagnostics.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Essential.Diagnostics.EmailTraceListener, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Essential.Diagnostics.EmailTraceListener.2.0.206\lib\Essential.Diagnostics.EmailTraceListener.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Essential.Diagnostics.InMemoryTraceListener, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Essential.Diagnostics.InMemoryTraceListener.2.0.203\lib\Essential.Diagnostics.InMemoryTraceListener.dll</HintPath>
+      <HintPath>..\packages\Essential.Diagnostics.InMemoryTraceListener.2.0.206\lib\Essential.Diagnostics.InMemoryTraceListener.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Essential.Diagnostics.RollingFileTraceListener, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Essential.Diagnostics.RollingFileTraceListener.2.0.206\lib\Essential.Diagnostics.RollingFileTraceListener.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Essential.Diagnostics.RollingXmlTraceListener, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Essential.Diagnostics.RollingXmlTraceListener.2.0.206\lib\Essential.Diagnostics.RollingXmlTraceListener.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Essential.Diagnostics.SqlDatabaseTraceListener, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Essential.Diagnostics.SqlDatabaseTraceListener.2.0.206\lib\Essential.Diagnostics.SqlDatabaseTraceListener.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
