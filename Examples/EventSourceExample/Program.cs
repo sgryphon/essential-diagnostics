@@ -19,7 +19,7 @@ namespace EventSourceExample
             }
             catch (Exception ex)
             {
-                ExampleEventSource.Log.ExampleEvent2("Exception occurred", ex.ToString());
+                ExampleEventSource.Log.WriteException("Exception occurred", ex);
             }
             Console.WriteLine("Done");
         }
