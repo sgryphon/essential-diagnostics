@@ -41,6 +41,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogRetentionExample", "LogR
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventSourceExample", "EventSourceExample\EventSourceExample.csproj", "{88388050-196D-4BA9-BE80-579AEFA46DAF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Minimal", "Minimal", "{CCE66487-51A7-44B2-8089-C95D2063CC4A}"
+	ProjectSection(SolutionItems) = preProject
+		Minimal\ETWHello.cs = Minimal\ETWHello.cs
+		Minimal\Hello.cs = Minimal\Hello.cs
+		Minimal\Hello.exe.config = Minimal\Hello.exe.config
+		Minimal\MinimalExamples_ReadMe.txt = Minimal\MinimalExamples_ReadMe.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
