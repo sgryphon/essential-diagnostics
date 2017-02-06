@@ -7,7 +7,7 @@
     <owners>sgryphon</owners>
     <licenseUrl>http://essentialdiagnostics.codeplex.com/license</licenseUrl>
     <projectUrl>http://essentialdiagnostics.codeplex.com/</projectUrl>
-    <iconUrl>http://i3.codeplex.com/download?ProjectName=essentialdiagnostics&amp;DownloadId=150104</iconUrl>
+    <iconUrl>http://download-codeplex.sec.s-msft.com/Download?ProjectName=essentialdiagnostics&amp;DownloadId=1634633</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>
       Core library for Essential.Diagnostics, with a common base class for trace listeners. It also includes a generic formatter, a generic expression-based trace filter, and a file watcher for configuration changes.

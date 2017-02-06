@@ -7,7 +7,7 @@
     <owners>sgryphon</owners>
     <licenseUrl>http://essentialdiagnostics.codeplex.com/license</licenseUrl>
     <projectUrl>http://essentialdiagnostics.codeplex.com/</projectUrl>
-    <iconUrl>http://i3.codeplex.com/download?ProjectName=essentialdiagnostics&amp;DownloadId=150104</iconUrl>
+    <iconUrl>http://download-codeplex.sec.s-msft.com/Download?ProjectName=essentialdiagnostics&amp;DownloadId=1634633</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>
       Templated classes and abstractions to simplify System.Diagnostics. Provides easy encapsulation of activity and logical operation scopes, as well as simple support for dependency injection frameworks. This package also includes a starting sample configuration for System.Diagnostics.
