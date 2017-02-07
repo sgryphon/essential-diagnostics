@@ -1,13 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 
-namespace NetCoreLoggingExample
+namespace ExtensionsLoggingNet451
 {
-    public class Program
+    class Program
     {
-        public static void Main(string[] args)
+        static void Main(string[] args)
         {
-            Console.WriteLine(".NET Core Logging (Microsoft.Extensions.Logging)");
+            Console.WriteLine("Microsoft.Extensions.Logging (.NET 4.5.1)");
 
             ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddConsole();
