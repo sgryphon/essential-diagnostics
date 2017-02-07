@@ -28,9 +28,14 @@ namespace ExtensionsLoggingNet451
             ILogger logger3 = loggerFactory.CreateLogger("ExtensionsLoggingNet451.Foo.Waz");
 
             logger2.LogInformation(3001, "Information to Foo.Bar - should not display");
-            logger2.LogWarning(4001, "Warning to Foo.Bar");
+
+            using (var scope = logger3.BeginScope<string>("Test Scope"))
+            {
+                logger2.LogWarning(4001, "Warning to Foo.Bar");
+                logger3.LogWarning(4002, "Warning to Foo.Waz");
+            }
+
             logger3.LogInformation(3002, "Information to Foo.Waz");
-            logger3.LogWarning(4002, "Warning to Foo.Waz");
 
             Console.ReadLine();
         }
