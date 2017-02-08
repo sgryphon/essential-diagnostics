@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -11,12 +12,21 @@ namespace Essential.Diagnostics
 {
     public class SeqTraceListener : TraceListenerBase
     {
+        private const int DefaultBatchSize = 50;
+        private static TimeSpan DefaultBatchTimeOut = TimeSpan.FromMilliseconds(1000);
+
         const string BulkUploadResource = "api/events/raw";
         const string ApiKeyHeaderName = "X-Seq-ApiKey";
 
         IHttpWebRequestFactory _httpWebRequestFactory = new WebRequestAdapter();
         List<string> _additionalPropertyNames = null;
         string _serverUrl;
+
+        int _batchSize;
+        bool _batchSizeParsed;
+
+        TimeSpan _batchTimeout;
+        bool _batchTimeoutParsed;
 
         bool _propertiesParsed;
         bool _propertyCallstack;
@@ -30,7 +40,9 @@ namespace Essential.Diagnostics
         private static string[] _supportedAttributes = new string[]
         {
             "apiKey", "ApiKey", "apikey",
-            "additionalProperties", "AdditionalProperties", "additionalproperties"
+            "additionalProperties", "AdditionalProperties", "additionalproperties",
+            "batchSize", "BatchSize", "batchsize",
+            "batchTimeout", "BatchTimeout", "batchtimeout", "batchTimeOut", "BatchTimeOut"
         };
 
         /// <summary>
@@ -124,6 +136,75 @@ namespace Essential.Diagnostics
             }
         }
 
+        public int BatchSize
+        {
+            get
+            {
+                if (!_batchSizeParsed)
+                {
+                    if (Attributes.ContainsKey("batchSize"))
+                    {
+                        int batchSize;
+                        if (int.TryParse(Attributes["batchSize"], NumberStyles.Any,
+                            CultureInfo.InvariantCulture, out batchSize))
+                        {
+                            _batchSize = batchSize;
+                        }
+                        else
+                        {
+                            _batchSize = DefaultBatchSize;
+                        }
+                    }
+                    else
+                    {
+                        _batchSize = DefaultBatchSize;
+                    }
+                    _batchSizeParsed = true;
+                }
+                return _batchSize;
+            }
+            set
+            {
+                _batchSize = value;
+                _batchSizeParsed = true;
+                Attributes["batchSize"] = value.ToString(CultureInfo.InvariantCulture);
+            }
+        }
+
+        public TimeSpan BatchTimeout
+        {
+            get
+            {
+                if (!_batchTimeoutParsed)
+                {
+                    if (Attributes.ContainsKey("batchSize"))
+                    {
+                        TimeSpan batchTimeout;
+                        if (TimeSpan.TryParse(Attributes["batchTimeout"], out batchTimeout))
+                        {
+                            _batchTimeout = batchTimeout;
+                        }
+                        else
+                        {
+                            _batchTimeout = DefaultBatchTimeOut;
+                        }
+                    }
+                    else
+                    {
+                        _batchTimeout = DefaultBatchTimeOut;
+                    }
+                    _batchTimeoutParsed = true;
+                }
+                return _batchTimeout;
+            }
+            set
+            {
+                _batchTimeout = value;
+                _batchTimeoutParsed = true;
+                Attributes["batchTimeout"] = value.ToString();
+            }
+        }
+
         /// <summary>
         /// Allowed attributes for this trace listener.
         /// </summary>
@@ -139,7 +220,15 @@ namespace Essential.Diagnostics
         protected override void WriteTraceFormat(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string format, params object[] args)
         {
             var traceData = CreateTraceData(eventCache, source, eventType, id, format, args, null, null);
-            PostBatch(new[] { traceData });
+            // Batch size 0 sends immediately (synchronous); batch size 1 sends one at a time, but async.
+            if (BatchSize > 0)
+            {
+                EnqueueTraceData(traceData);
+            }
+            else
+            {
+                PostBatch(new[] { traceData });
+            }
         }
 
         /// <summary>
@@ -147,10 +236,15 @@ namespace Essential.Diagnostics
         /// </summary>
         protected override void WriteTrace(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message, Guid? relatedActivityId, object[] data)
         {
-            // TODO: Consider buffering / async send.
-
             var traceData = CreateTraceData(eventCache, source, eventType, id, message, null, relatedActivityId, data);
-            PostBatch(new[] { traceData });
+            if (BatchSize > 0)
+            {
+                EnqueueTraceData(traceData);
+            }
+            else
+            {
+                PostBatch(new[] { traceData });
+            }
         }
 
         private TraceData CreateTraceData(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string messageFormat, object[] messageArgs, Guid? relatedActivityId, object[] data)
@@ -334,6 +428,72 @@ namespace Essential.Diagnostics
             var traceData = new TraceData(traceTime, source, activityId, eventType, id, messageFormat, 
                 recordedArgs?.ToArray(), exception, relatedActivityId, recordedData?.ToArray(), properties);
             return traceData;
+        }
+
+        bool isProcessing = false;
+        Queue<TraceData> queue = new Queue<TraceData>();
+        AutoResetEvent sendTrigger = new AutoResetEvent(false);
+        object stateLock = new object();
+
+        // State: process running or not 
+        //    vs has items in queue or not
+
+        private void EnqueueTraceData(TraceData traceData)
+        {
+            lock (stateLock)
+            {
+                queue.Enqueue(traceData);
+                if (isProcessing)
+                {
+                    if (queue.Count >= BatchSize)
+                    {
+                        sendTrigger.Set();
+                    }
+                }
+                else
+                {
+                    isProcessing = true;
+                    // Trigger to send immediately
+                    sendTrigger.Set();
+                    var queued = ThreadPool.QueueUserWorkItem(delegate
+                    {
+                        Process();
+                    });
+                }
+            }
+        }
+
+        private void Process()
+        {
+            bool finished = false;
+            while (!finished)
+            {
+                // Wait for next check (unless triggered early)
+                var triggered = sendTrigger.WaitOne(BatchTimeout);
+
+                IEnumerable<TraceData> eventsToSend = null;
+                lock (stateLock)
+                {
+                    if (queue.Count > 0)
+                    {
+                        // Copy and then clear queue
+                        eventsToSend = queue.ToArray();
+                        queue.Clear();
+                    }
+                    else
+                    {
+                        // Nothing to process, so finish
+                        isProcessing = false;
+                        finished = true;
+                    }
+                }
+
+                // Actually send the batch outside the lock
+                if (eventsToSend != null)
+                {
+                    PostBatch(eventsToSend);
+                }
+            }
         }
 
         private void PostBatch(IEnumerable<TraceData> events)

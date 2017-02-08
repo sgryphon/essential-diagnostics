@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using Essential.Diagnostics.Tests.Utility;
 using System.Net;
+using System.Threading;
 
 namespace Essential.Diagnostics.Tests
 {
@@ -25,6 +26,7 @@ namespace Essential.Diagnostics.Tests
                 );
 
             var listener = new SeqTraceListener("http://testuri");
+            listener.BatchSize = 0;
             listener.HttpWebRequestFactory = mockRequestFactory;
 
             listener.TraceEvent(null, "TestSource", TraceEventType.Warning, 1, "Test Message");
@@ -80,6 +82,8 @@ namespace Essential.Diagnostics.Tests
             Assert.AreEqual("seq2", listener.Name);
             Assert.AreEqual("http://localhost:5341", listener.ServerUrl);
             Assert.AreEqual("12345", listener.ApiKey);
+            Assert.AreEqual(6789, listener.BatchSize);
+            Assert.AreEqual(2345, listener.BatchTimeout.TotalMilliseconds);
 
             Assert.AreEqual(TraceOptions.ThreadId, listener.TraceOutputOptions & TraceOptions.ThreadId);
         }
@@ -112,5 +116,75 @@ namespace Essential.Diagnostics.Tests
         // TODO: Test to check _all_ parameters work.
 
         // TODO: Test to check max message length trimming works.
+
+
+        [TestMethod]
+        public void SeqBatchFirstMessageSentImmediately()
+        {
+            var mockRequestFactory = new MockHttpWebRequestFactory();
+            mockRequestFactory.ResponseQueue.Enqueue(
+                new MockHttpWebResponse(HttpStatusCode.OK, null)
+                );
+
+            var listener = new SeqTraceListener("http://testuri");
+            listener.BatchSize = 5;
+            listener.BatchTimeout = TimeSpan.FromMilliseconds(500);
+            listener.HttpWebRequestFactory = mockRequestFactory;
+
+            listener.TraceEvent(null, "TestSource", TraceEventType.Warning, 1, "Test Message");
+            // Although immediate, it is still async, so need to sleep thread
+            Thread.Sleep(10);
+
+            Assert.AreEqual(1, mockRequestFactory.RequestsCreated.Count);
+
+            // Let background thread finish
+            Thread.Sleep(1000);
+        }
+
+        [TestMethod]
+        public void SeqBatchSecondMessageDelayedByBatchTimeout()
+        {
+            var mockRequestFactory = new MockHttpWebRequestFactory();
+            mockRequestFactory.ResponseQueue.Enqueue(
+                new MockHttpWebResponse(HttpStatusCode.OK, null)
+                );
+            mockRequestFactory.ResponseQueue.Enqueue(
+                new MockHttpWebResponse(HttpStatusCode.OK, null)
+                );
+
+            var listener = new SeqTraceListener("http://testuri");
+            listener.BatchSize = 5;
+            listener.BatchTimeout = TimeSpan.FromMilliseconds(500);
+            listener.HttpWebRequestFactory = mockRequestFactory;
+
+            listener.TraceEvent(null, "TestSource", TraceEventType.Warning, 1, "Test Message 1");
+            Thread.Sleep(10);
+            listener.TraceEvent(null, "TestSource", TraceEventType.Information, 2, "Test Message 2");
+            Thread.Sleep(10);
+            listener.TraceEvent(null, "TestSource", TraceEventType.Information, 3, "Test Message 3");
+            Thread.Sleep(10);
+
+            // Before batch timeout, should have only received one
+            Thread.Sleep(400);
+            Assert.AreEqual(1, mockRequestFactory.RequestsCreated.Count);
+
+            // After batch timeout, should have received two requests
+            Thread.Sleep(200);
+            Assert.AreEqual(2, mockRequestFactory.RequestsCreated.Count);
+
+            var request0Body = mockRequestFactory.RequestsCreated[0].RequestBody;
+            Console.WriteLine(request0Body);
+            StringAssert.Contains(request0Body, "Test Message 1");
+
+            var request1Body = mockRequestFactory.RequestsCreated[1].RequestBody;
+            Console.WriteLine(request1Body);
+            StringAssert.Contains(request1Body, "Test Message 2");
+            StringAssert.Contains(request1Body, "Test Message 3");
+
+            // Let background thread finish
+            Thread.Sleep(1000);
+        }
+
+
     }
 }
