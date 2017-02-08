@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <system.diagnostics>
+    <sharedListeners>
+      <add name="example-filelog"
+        type="Microsoft.VisualBasic.Logging.FileLogTraceListener, Microsoft.VisualBasic, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
+        traceOutputOptions="DateTime,ThreadId,LogicalOperationStack"
+        autoFlush="true"
+        customLocation="C:\Temp\Logs"
+        location="Custom"
+        logFileCreationSchedule="Daily"
+        maxFileSize="5000000"
+        reserveDiskSpace="10000000" >
+        <!--
+          Writes to a rolling text file. You need to specify the version of the library corresponding to the .NET Framework you have installed, and make sure the customLocation exists.
+        -->
+      </add>
+    </sharedListeners>
+    <sources>
+      <source name="Example.Program" switchValue="All">
+        <!--
+          Add listener to source. Use named switches for multiple sources; switch values can be names, decimal, or hexadecimal.
+        -->
+        <listeners>
+          <clear />
+          <add name="example-filelog" />
+        </listeners>
+      </source>
+    </sources>
+    <trace autoflush="true" indentsize="0" >
+      <listeners>
+        <!--
+          For performance also clear the default listener, and turn indent off to avoid confusion for multithreaded traces.
+        -->
+        <clear />
+      </listeners>
+    </trace>
+  </system.diagnostics>
+</configuration>

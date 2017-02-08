@@ -230,7 +230,7 @@ namespace Essential.Diagnostics.RegSql
 
         static void WriteUsage()
         {
-            Console.WriteLine(Resources.HelpText);
+            Console.WriteLine(Resource_RegSql.HelpText);
         }
 
         static void RunScriptWithOptions(string script, string connectionString, string server, bool trusted, string user, string password, string database, string exportFile)

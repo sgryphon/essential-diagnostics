@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <system.diagnostics>
+    <sharedListeners>
+      <add name="coloredconsole"
+        type="Essential.Diagnostics.ColoredConsoleTraceListener, Essential.Diagnostics.ColoredConsoleTraceListener"
+        template="{DateTime:HH':'mm':'ssZ} [{Thread}] {EventType} {Source} {Id}: {Message}{Data}"
+        convertWriteToEvent="true" >
+        <!--
+          Writes to the console output or error stream, using color to highlight 
+          event types and allowing a customised output format.
+          
+          Options:
+            initalizeData="false to use Console.Out|true to use Console.Error"
+            traceOutputOptions="template (see below) is generally better, but supported for legacy compatibility"
+            activityTracingColor="Gray|other console color"
+            convertWriteToEvent="false|true"
+            criticalColor="Red|other console color"
+            errorColor="DarkRed|other console color"
+            informationColor="Gray|other console color"
+            resumeColor="console color"
+            startColor="console color"
+            stopColor="console color"
+            suspendColor="console color"
+            template="format template, default: {Source} {EventType}: {Id} : {Message}"
+            transferColor="console color" 
+            verboseColor="DarkCyan|other console color"
+            warningColor="Yellow|other console color" 
+  
+          Children:
+            <filter 
+              type="Essential.Diagnostics.ExpressionFilter, Essential.Diagnostics.Core"
+              initializeData=' Id >= 8000 ' />
+        -->
+      </add>
+    </sharedListeners>
+    <sources>
+      <source name="Example.ColoredConsole.Source" switchValue="All">
+        <!--
+          Add listener to source. Use named switches for multiple sources; switch values can be names, decimal, or hexadecimal.
+        -->
+        <listeners>
+          <clear />
+          <add name="coloredconsole" />
+        </listeners>
+      </source>
+    </sources>
+    <trace autoflush="true" indentsize="0" >
+      <listeners>
+        <!--
+          Also add listener for legacy Trace.Write() statements (not using a TraceSource).
+          For performance also clear the default listener, and turn indent off to avoid confusion for multithreaded traces.
+        -->
+        <clear />
+        <add name="coloredconsole" />
+      </listeners>
+    </trace>
+  </system.diagnostics>
+</configuration>

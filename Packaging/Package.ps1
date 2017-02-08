@@ -14,10 +14,6 @@
 #                              Need to -Build or -Package first to copy the latest version to 
 #                              the Examples package folder.
 #  
-# ./Package.ps1 -PackageConfig : Create nuget package for Essential.Diagnostics.Config
-#                              and System.Diagnostics.Config, containing config transform
-#                              with sample config settings.
-#  
 # To skip the binaries ZIP, nuget package or example update, you can turn off the following flags:
 #   -PackageBin:$false
 #   -nuPack:$false
@@ -45,6 +41,7 @@ param (
     [switch]$PackageFull = $false,
 	[switch]$PackageConfig = $false,	
 	$Version,
+	$Configuration = 'Release',
     [switch]$WhatIf = $false
 )
 if ($WhatIf) {
@@ -102,7 +99,7 @@ function Ensure-Directory($path) {
     if (!(Test-Path $path -PathType container)) {
     	Write-Host "$($pre)Creating path '$path'"
     	if (-not $WhatIf) {
-    		New-Item $path -Type directory
+    		$newDir = New-Item $path -Type directory
     	}
     }
 }
@@ -360,30 +357,91 @@ function Package-Essential-Config($solutionPath, $version) {
     }
 }
 
-function Package-NuPack($solutionPath, $configuration, $version) {
+function Package-NuPackAll($solutionPath, $configuration, $version) {
 	Write-Host ""
-	Write-Host "# Creating NuGet package..."
-    
-	$path = (Join-Path $solutionPath "Packaging\$configuration")
+	Write-Host "# Creating NuGet packages..."
 
-  	$nuspecTemplatePath = (Join-Path $solutionPath "Packaging\Essential.Diagnostics.nuspec")
-    $nuspec = [xml](Get-Content -Path $nuspecTemplatePath)
-    $nuspec.package.metadata.version = "$version"
-    #$now = [System.DateTimeOffset]::UtcNow
-    #$nuspec.package.metadata.created = $now.ToString("s")
-    #$nuspec.package.metadata.modified = $now.ToString("s")
-    #$now.SelectSingleNode("/")
-        
-    $outputNuspecPath = (Join-Path $path "Essential.Diagnostics.nuspec")
-	Write-Host "$($pre)Creating nuspec file '$outputNuspecPath'"
-	if (-not $WhatIf) {
-      $nuspec.Save($outputNuspecPath)
-    }
+	Package-NuPackProject $solutionpath $configuration $version "Essential.Diagnostics.Core"
+
+	Package-NuPackProject $solutionpath $configuration $version "Essential.Diagnostics.BufferedEmailTraceListener"
+	Package-NuPackProject $solutionpath $configuration $version "Essential.Diagnostics.ColoredConsoleTraceListener"
+	Package-NuPackProject $solutionpath $configuration $version "Essential.Diagnostics.EmailTraceListener"
+	Package-NuPackProject $solutionpath $configuration $version "Essential.Diagnostics.InMemoryTraceListener"
+	Package-NuPackProject $solutionpath $configuration $version "Essential.Diagnostics.RollingFileTraceListener"
+	Package-NuPackProject $solutionpath $configuration $version "Essential.Diagnostics.RollingXmlTraceListener"
+
+	Package-NuPackProject $solutionpath $configuration $version "Essential.Diagnostics.SqlDatabaseTraceListener" $true
+
+	Package-NuPackProject $solutionpath $configuration $version "Essential.Diagnostics.Fluent"
+}
+
+function Package-NuPackProject($solutionPath, $configuration, $version, $project, $includeSqlTool = $false) {
+	Write-Host ""
+	Write-Host "# Creating NuGet package $project..."
     
-    $packagePath = (Join-Path $solutionPath "Packaging\Output")
-	Write-Host "$($pre)Running: nupack ""$outputNuspecPath"" ""$packagePath"""
+	$sourcePath = (Join-Path $solutionPath "$project\bin\$configuration")
+	$stagingPath = (Join-Path $solutionPath "Packaging\$configuration\$project.$version")
+
+	if (Test-Path $stagingPath) {
+		Write-Host "$($pre)Cleaning staging directory '$stagingPath'"
+		if (-not $WhatIf) {
+			Remove-Item $stagingPath -Force -Recurse -Confirm:$false
+		}
+	}
+
+	Write-Host "$($pre)Creating staging directory '$stagingPath'"
 	if (-not $WhatIf) {
-        & $NuGet pack "$outputNuspecPath" -OutputDirectory "$packagePath"
+		Ensure-Directory $stagingPath
+    }
+
+  	$sourceNuspecPath = (Join-Path $sourcePath "$project.nuspec")
+    $nuspec = [xml](Get-Content -Path $sourceNuspecPath)
+    $nuspec.package.metadata.version = "$version"
+	if ($nuspec.package.metadata.dependencies.dependency) {
+	  Write-Host "Also setting dependency version $version"
+      $nuspec.package.metadata.dependencies.dependency.version = "$version"
+	}
+    $stagingNuspecPath = (Join-Path $stagingPath "$project.nuspec")
+	Write-Host "$($pre)Creating nuspec file '$stagingNuspecPath'"
+	if (-not $WhatIf) {
+      $nuspec.Save($stagingNuspecPath)
+    }
+
+	Write-Host "$($pre)Copying licence, readme, and library to '$stagingPath'"
+	if (-not $WhatIf) {
+      Copy-Item "$solutionPath\License.txt" "$stagingPath\License.txt"
+      Copy-Item "$sourcePath\$project.ReadMe.txt" "$stagingPath\ReadMe.txt"
+	  Ensure-Directory (Join-Path $stagingPath "lib")
+      Copy-Item "$sourcePath\$project.dll" "$stagingPath\lib\$project.dll"
+      Copy-Item "$sourcePath\$project.pdb" "$stagingPath\lib\$project.pdb"
+	}
+
+	$configTransformPath = "$sourcePath\$project.config.transform"
+	if (Test-Path $configTransformPath) {
+	  Write-Host "$($pre)Copying config transform from $configTransformPath"
+	  if (-not $WhatIf) {
+	    Ensure-Directory (Join-Path $stagingPath "content")
+        Copy-Item $configTransformPath "$stagingPath\content\app.config.transform"
+        Copy-Item $configTransformPath "$stagingPath\content\web.config.transform"
+      }
+	}
+
+	if ($includeSqlTool) {
+	  Write-Host "$($pre)Including SQL tool in package"
+	  if (-not $WhatIf) {
+	    Ensure-Directory (Join-Path $stagingPath "tools")
+		$sqlToolSourcePath = (Join-Path $solutionPath "Essential.Diagnostics.RegSql\bin\$configuration")
+        Copy-Item "$sqlToolSourcePath\diagnostics_regsql.exe" "$stagingPath\tools\diagnostics_regsql.exe"
+        Copy-Item "$sqlToolSourcePath\diagnostics_regsql.exe.config" "$stagingPath\tools\diagnostics_regsql.exe.config"
+        Copy-Item "$sqlToolSourcePath\InstallTrace.sql" "$stagingPath\tools\InstallTrace.sql"
+        Copy-Item "$sqlToolSourcePath\UninstallTrace.sql" "$stagingPath\tools\UninstallTrace.sql"
+      }
+	}
+    
+    $outputPath = (Join-Path $solutionPath "Packaging\Output")
+	Write-Host "$($pre)Running: nupack ""$stagingNuspecPath"" ""$outputPath"""
+	if (-not $WhatIf) {
+        & $NuGet pack "$stagingNuspecPath" -OutputDirectory "$outputPath"
     }
 }
 
@@ -491,26 +549,30 @@ if ($PackageFull) {
 	} else {
 		if ($Package -or $Build) {
 			if ($Build) {
-				Build-Solution $solutionPath "Release"
+				Build-Solution $solutionPath $Configuration
 			}
 			# Get version number after compile
 			if (-not $Version) {
-				$Version = (Get-Content (Join-Path $solutionPath "Essential.Diagnostics\Version.txt"))
+				$Version = (Get-Content (Join-Path $solutionPath "Essential.Diagnostics.Core\Version.txt"))
 			}
 			Write-Host ""
 			Write-Host "# Packaging version $version to '$outputPath'"
 
+			<#
 			if ($PackageBin) {
-				Package-ApplicationBinaries $solutionPath "Release" $version
+				Package-ApplicationBinaries $solutionPath $Configuration $version
 			}
+			#>
 
 			if ($nuPack) {
-				Package-NuPack $solutionPath "Release" $version
+				Package-NuPackAll $solutionPath $Configuration $version
 			}
 				
+			<#
 			if ($UpdateExamples) {
-				Update-Examples $solutionPath "Release" $version
+				Update-Examples $solutionPath $Configuration $version
 			}
+			#>
 		}
 		else
 		{

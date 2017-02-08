@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <system.diagnostics>
+    <sharedListeners>
+      <add name="inmemory"
+        type="Essential.Diagnostics.InMemoryTraceListener, Essential.Diagnostics.InMemoryTraceListener"
+        initializeData="100" >
+        <!--
+          Records an immutable copy of trace events in memory, within a circular buffer of the specified size.
+          
+          Options:
+            initalizeData="size of buffer, default: 20"
+            traceOutputOptions="ignored"
+
+          Children:
+            <filter 
+              type="Essential.Diagnostics.ExpressionFilter, Essential.Diagnostics.Core"
+              initializeData=' Id >= 8000 ' />
+  	    -->
+      </add>
+    </sharedListeners>
+    <sources>
+      <source name="Example.InMemory.Source" switchValue="All">
+        <!--
+          Add listener to source. Use named switches for multiple sources; switch values can be names, decimal, or hexadecimal.
+        -->
+        <listeners>
+          <clear />
+          <add name="inmemory" />
+        </listeners>
+      </source>
+    </sources>
+    <trace autoflush="true" indentsize="0" >
+      <listeners>
+        <!--
+          Also add listener for legacy Trace.Write() statements (not using a TraceSource).
+          For performance also clear the default listener, and turn indent off to avoid confusion for multithreaded traces.
+        -->
+        <clear />
+        <add name="inmemory" />
+      </listeners>
+    </trace>
+  </system.diagnostics>
+</configuration>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="400"
+   height="400"
+   viewBox="0 0 400 400.00001"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="Essential-Diagnostics.svg"
+   inkscape:export-filename="C:\Temp\ED\Essential-Diagnostics-64.png"
+   inkscape:export-xdpi="14.4"
+   inkscape:export-ydpi="14.4">
+  <defs
+     id="defs4">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient4140">
+      <stop
+         style="stop-color:#daf7c1;stop-opacity:1"
+         offset="0"
+         id="stop4142" />
+      <stop
+         style="stop-color:#55a113;stop-opacity:1"
+         offset="1"
+         id="stop4144" />
+    </linearGradient>
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4140"
+       id="radialGradient4146"
+       cx="200"
+       cy="852.31628"
+       fx="200"
+       fy="852.31628"
+       r="190"
+       gradientTransform="matrix(1,0,0,0.86602543,0,114.18871)"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35"
+     inkscape:cx="35.747769"
+     inkscape:cy="196.85565"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     units="px"
+     inkscape:window-width="1368"
+     inkscape:window-height="849"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-652.36216)">
+    <path
+       sodipodi:type="star"
+       style="opacity:1;fill:url(#radialGradient4146);fill-opacity:1;stroke:#30590b;stroke-width:2.5;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path4138"
+       sodipodi:sides="6"
+       sodipodi:cx="200"
+       sodipodi:cy="852.31631"
+       sodipodi:r1="190"
+       sodipodi:r2="164.54482"
+       sodipodi:arg1="1.0471976"
+       sodipodi:arg2="1.5707963"
+       inkscape:flatsided="true"
+       inkscape:rounded="0"
+       inkscape:randomized="0"
+       d="m 294.99999,1016.8611 -190,0 L 10,852.31627 l 95.00001,-164.54482 190,1e-5 L 390,852.31629 Z" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:75.42894745px;line-height:139.99999762%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI, Bold';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="221.13899"
+       y="729.76776"
+       id="text4148"
+       sodipodi:linespacing="140%"
+       transform="scale(0.89575563,1.1163759)"><tspan
+         sodipodi:role="line"
+         id="tspan4150"
+         x="221.13899"
+         y="729.76776"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:75.42894745px;line-height:139.99999762%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI, Bold';text-align:center;writing-mode:lr-tb;text-anchor:middle">Essential</tspan><tspan
+         sodipodi:role="line"
+         x="221.13899"
+         y="835.36829"
+         id="tspan4152"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:75.42894745px;line-height:139.99999762%;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI, Bold';text-align:center;writing-mode:lr-tb;text-anchor:middle">Diagnostics</tspan></text>
+  </g>
+</svg>

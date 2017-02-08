@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <system.diagnostics>
+    <sharedListeners>
+      <add name="bufferedEmail"
+        type="Essential.Diagnostics.BufferedEmailTraceListener, Essential.Diagnostics.BufferedEmailTraceListener"
+        initializeData="user1@example.org,user2@example.org">
+        <!--
+          Adds formatted trace messages to a buffer and sends an email when the process 
+          exits, or on request.
+
+          Options:
+            initalizeData=""
+            fromAddress=""
+            headerTemplate="Date (UTC): {DateTime:u}
+Date (Local): {LocalDateTime:yyyy'-'MM'-'dd HH':'mm':'ss zzz}
+
+Application Information:
+ Computer: {MachineName}
+ Application Name: {ApplicationName}
+ Application Domain: {AppDomain}
+
+Process Information:
+ Process ID: {ProcessId}
+ Process Name: {ProcessName}
+ Process: {Process}
+ User: {User}
+
+Trace Events:"
+            maxConnections="2"
+            traceTemplate="{DateTime:u} [{Thread}] {EventType} {Source} {Id}: {Message}{Data}"
+            subjectTemplate="{Listener} {DateTime:u}; {MachineName}; {User}; {ProcessName}"
+-->
+        <filter type="System.Diagnostics.EventTypeFilter"
+                initializeData="Information" />
+      </add>
+    </sharedListeners>
+    <sources>
+      <source name="Example.Email.Source" switchValue="All">
+        <!--
+          Add listener to source. Use named switches for multiple sources; switch values can be names, decimal, or hexadecimal.
+        -->
+        <listeners>
+          <clear />
+          <add name="bufferedEmail" />
+        </listeners>
+      </source>
+    </sources>
+    <trace autoflush="true" indentsize="0" >
+      <listeners>
+        <!--
+          Note: The buffered email trace listener needs to be configured here to use the static SendAll() method.
+        
+          Also add listener for legacy Trace.Write() statements (not using a TraceSource).
+          For performance also clear the default listener, and turn indent off to avoid confusion for multithreaded traces.
+        -->
+        <clear />
+        <add name="bufferedEmail" />
+      </listeners>
+    </trace>
+  </system.diagnostics>
+  <system.net>
+    <mailSettings>
+      <smtp deliveryMethod="SpecifiedPickupDirectory" from="diagnostics@example.org">
+        <!--
+          Used by email trace listeners. For production, or if using a test SMTP server 
+          such as smtp4dev, change to deliveryMethod="Network" and specify your mail host.
+        -->
+        <network
+          host="localhost"
+          defaultCredentials="true" />
+        <specifiedPickupDirectory pickupDirectoryLocation="C:\Temp\MailPickup" />
+      </smtp>
+    </mailSettings>
+  </system.net>
+</configuration>

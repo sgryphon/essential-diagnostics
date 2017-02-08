@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Essential.Diagnostics.RollingFileTraceListener</id>
+    <version>2.0.0.0</version>
+    <authors>Sly Gryphon</authors>
+    <owners>sgryphon</owners>
+    <licenseUrl>http://essentialdiagnostics.codeplex.com/license</licenseUrl>
+    <projectUrl>http://essentialdiagnostics.codeplex.com/</projectUrl>
+    <iconUrl>https://download-codeplex.sec.s-msft.com/Download?ProjectName=essentialdiagnostics&amp;DownloadId=1634951&amp;Build=21031</iconUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>
+      Rolling file trace listener extension for System.Diagnostics, along with required config sections. Writes to a text file, rolling to a new file based on a filename template (usually including the date).
+
+      Other Essential.Diagnostics packages extend the .NET Framework System.Diagnostics trace logging with additional trace listeners. Included are colored console (that allows custom formats), SQL database (including a tool to create tables), rolling file (with custom formats), rolling XML, email (per trace or batched), and an in-memory trace listener.
+
+      The Essential.Diagnostics project also publishes a fluent client library that includes easy encapsulation of activity and logical operation scopes, as well as abstractions and templated classes for a simpler logging API and support for dependency injection frameworks.
+
+      See the project site on CodePlex for examples and documentation.
+    </description>
+    <releaseNotes>
+      Version 2.0: Major re-organisation of project into separate packages for each trace listener. This allows projects to add just the listeners they need.
+    </releaseNotes>
+    <copyright>Copyright © Gryphon Technology Pty Ltd 2017</copyright>
+    <tags>Logging Tracing Diagnostics Log Trace TraceListener Rolling File</tags>
+    <dependencies>
+      <dependency id="Essential.Diagnostics.Core" version="2.0.0.0" />
+    </dependencies>
+  </metadata>
+</package>

@@ -16,9 +16,6 @@ Filter Details
 File1 - Uses .NET Framework EventTypeFilter to only log the Warning and higher
 events. It does not log the Information events.
 
-File2 - Uses Essential.Diagnostics.PropertyFilter to log events that have a property
-with a specific value (Id = 1001).
-
-File3 - Uses Essential.Diagnostics.ExpressionFilter to log using an C# expression,
+File2 - Uses Essential.Diagnostics.ExpressionFilter to log using an C# expression,
 calculated from the event properties (e.g. Id >= 8000) and/or environmental
 information (e.g. the current user name).
