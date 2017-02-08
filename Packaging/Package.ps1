@@ -23,6 +23,10 @@
 # to reset the version used in Examples and avoid triggering commit changes.
 #   -Version <version>
 #
+# Use a different version for references (useful if updating a trace listener package, but not
+# the core package).
+#   -DependencyVersion <version>
+#
 # To show output only (i.e. don't actually do anthing), use:             
 #   -WhatIf
 #
@@ -41,6 +45,7 @@ param (
     [switch]$PackageFull = $false,
 	[switch]$PackageConfig = $false,	
 	$Version,
+	$DependencyVersion,
 	$Configuration = 'Release',
     [switch]$WhatIf = $false
 )
@@ -357,25 +362,26 @@ function Package-Essential-Config($solutionPath, $version) {
     }
 }
 
-function Package-NuPackAll($solutionPath, $configuration, $version) {
+function Package-NuPackAll($solutionPath, $configuration, $version, $dependencyVersion) {
 	Write-Host ""
 	Write-Host "# Creating NuGet packages..."
 
-	Package-NuPackProject $solutionpath $configuration $version "Essential.Diagnostics.Core"
+	Package-NuPackProject $solutionpath $configuration $version $dependencyVersion "Essential.Diagnostics.Core"
 
-	Package-NuPackProject $solutionpath $configuration $version "Essential.Diagnostics.BufferedEmailTraceListener"
-	Package-NuPackProject $solutionpath $configuration $version "Essential.Diagnostics.ColoredConsoleTraceListener"
-	Package-NuPackProject $solutionpath $configuration $version "Essential.Diagnostics.EmailTraceListener"
-	Package-NuPackProject $solutionpath $configuration $version "Essential.Diagnostics.InMemoryTraceListener"
-	Package-NuPackProject $solutionpath $configuration $version "Essential.Diagnostics.RollingFileTraceListener"
-	Package-NuPackProject $solutionpath $configuration $version "Essential.Diagnostics.RollingXmlTraceListener"
+	Package-NuPackProject $solutionpath $configuration $version $dependencyVersion "Essential.Diagnostics.BufferedEmailTraceListener"
+	Package-NuPackProject $solutionpath $configuration $version $dependencyVersion "Essential.Diagnostics.ColoredConsoleTraceListener"
+	Package-NuPackProject $solutionpath $configuration $version $dependencyVersion "Essential.Diagnostics.EmailTraceListener"
+	Package-NuPackProject $solutionpath $configuration $version $dependencyVersion "Essential.Diagnostics.InMemoryTraceListener"
+	Package-NuPackProject $solutionpath $configuration $version $dependencyVersion "Essential.Diagnostics.RollingFileTraceListener"
+	Package-NuPackProject $solutionpath $configuration $version $dependencyVersion "Essential.Diagnostics.RollingXmlTraceListener"
+	Package-NuPackProject $solutionpath $configuration $version $dependencyVersion "Essential.Diagnostics.SeqTraceListener"
 
-	Package-NuPackProject $solutionpath $configuration $version "Essential.Diagnostics.SqlDatabaseTraceListener" $true
+	Package-NuPackProject $solutionpath $configuration $version $dependencyVersion "Essential.Diagnostics.SqlDatabaseTraceListener" $true
 
-	Package-NuPackProject $solutionpath $configuration $version "Essential.Diagnostics.Fluent"
+	Package-NuPackProject $solutionpath $configuration $version $dependencyVersion "Essential.Diagnostics.Fluent"
 }
 
-function Package-NuPackProject($solutionPath, $configuration, $version, $project, $includeSqlTool = $false) {
+function Package-NuPackProject($solutionPath, $configuration, $version, $dependencyVersion, $project, $includeSqlTool = $false) {
 	Write-Host ""
 	Write-Host "# Creating NuGet package $project..."
     
@@ -398,8 +404,8 @@ function Package-NuPackProject($solutionPath, $configuration, $version, $project
     $nuspec = [xml](Get-Content -Path $sourceNuspecPath)
     $nuspec.package.metadata.version = "$version"
 	if ($nuspec.package.metadata.dependencies.dependency) {
-	  Write-Host "Also setting dependency version $version"
-      $nuspec.package.metadata.dependencies.dependency.version = "$version"
+	  Write-Host "Also setting dependency version $dependencyVersion"
+      $nuspec.package.metadata.dependencies.dependency.version = "$dependencyVersion"
 	}
     $stagingNuspecPath = (Join-Path $stagingPath "$project.nuspec")
 	Write-Host "$($pre)Creating nuspec file '$stagingNuspecPath'"
@@ -528,7 +534,7 @@ Ensure-Directory $outputPath
 
 if ($PackageFull) {
 	if (-not $Version) {
-		$Version = (Get-Content (Join-Path $solutionPath "Essential.Diagnostics\Version.txt"))
+		$Version = (Get-Content (Join-Path $solutionPath "Essential.Diagnostics.Core\Version.txt"))
 	}
 	
 	Write-Host ""
@@ -538,10 +544,10 @@ if ($PackageFull) {
 } else {
 	if ($PackageConfig) {
 		if (-not $Version) {
-			$Version = (Get-Content (Join-Path $solutionPath "Essential.Diagnostics\Version.txt"))
+			$Version = (Get-Content (Join-Path $solutionPath "Essential.Diagnostics.Core\Version.txt"))
 		}
 		
-		Write-Host ""
+		Write-Host ""													   s
 		Write-Host "# Packaging config for version $version to '$outputPath'"
 		
 		Package-System-Config $solutionPath $version
@@ -555,8 +561,11 @@ if ($PackageFull) {
 			if (-not $Version) {
 				$Version = (Get-Content (Join-Path $solutionPath "Essential.Diagnostics.Core\Version.txt"))
 			}
+			if (-not $DependencyVersion) {
+				$DependencyVersion = $Version
+			}
 			Write-Host ""
-			Write-Host "# Packaging version $version to '$outputPath'"
+			Write-Host "# Packaging version $version to '$outputPath' (dependency $DependencyVersion)"
 
 			<#
 			if ($PackageBin) {
@@ -565,7 +574,7 @@ if ($PackageFull) {
 			#>
 
 			if ($nuPack) {
-				Package-NuPackAll $solutionPath $Configuration $version
+				Package-NuPackAll $solutionPath $Configuration $version $dependencyVersion
 			}
 				
 			<#
