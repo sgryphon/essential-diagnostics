@@ -1,7 +1,7 @@
 Essential.Diagnostics
 =====================
 
-Copyright 2010 Sly Gryphon. This library distributed under the 
+Copyright 2010-2017 Sly Gryphon. This library distributed under the 
 Microsoft Reciprocal License (Ms-RL).
 
 http://essentialdiagnostics.codeplex.com/
@@ -16,17 +16,55 @@ System.Diagnostics.
 The Essential.Diagnostics.dll contains extensions to the .NET Framework 
 System.Diagnostics trace listeners, filters, and other utilities.
 
-Available via Nuget:
 
-  Install-Package Essential.Diagnostics.Config
+Trace listeners available via Nuget. These install the listener, as well
+as a sample configuration (and the SqlDatabaseTraceListener also installs
+a tool for creating the database).
 
-  Install-Package System.Diagnostics.Config
+  PM> Install-Package Essential.Diagnostics.BufferedEmailTraceListener
 
-  Install-Package Essential.Diagnostics
+  PM> Install-Package Essential.Diagnostics.ColoredConsoleTraceListener
 
+  PM> Install-Package Essential.Diagnostics.EmailTraceListener
+
+  PM> Install-Package Essential.Diagnostics.InMemoryTraceListener
+
+  PM> Install-Package Essential.Diagnostics.RollingFileTraceListener
+
+  PM> Install-Package Essential.Diagnostics.RollingXmlTraceListener
+
+  PM> Install-Package Essential.Diagnostics.SeqTraceListener
+
+  PM> Install-Package Essential.Diagnostics.SqlDatabaseTraceListener
+
+  
+The trace listener packages depend on the Core package, which has a base 
+listener class, as well as the expression filter and file configuration 
+watcher. Usually it is installed automatically with one of the above 
+listeners, but it can also be installed separately if needed.  
+  
+  PM> Install-Package Essential.Diagnostics.Core
+
+There is also a separate package that has the scope utility classes, 
+abstractions, and templated classes for easy use with dependency injection. 
+  
+  PM> Install-Package Essential.Diagnostics.Fluent
+  
+  
 
 Version History
 ---------------
+
+v2.0.208.0 (Feb 2017)
+
+* Only includes Essential.Diagnostics.SeqTraceListener, a trace listener that
+  writes to Seq (no other components released).
+
+v2.0.206.0 (Feb 2017)
+
+* Reorganisation of the project into separate packages for each of the
+  trace listeners, to make usage via NuGet easier. No actual change to
+  the implementation.
 
 v1.2.501.0 (May 2013)
 
