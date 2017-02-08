@@ -50,7 +50,7 @@ namespace SeqFrameworkDiagnostics.Example
                 log.Error(ExampleEventId.DivideException, ex, "Ooops!");
             }
             stopwatch.Stop();
-            log.Verbose("Time {0:'P''T'hh'H'mm'M'ss.fff'S'}", stopwatch.Elapsed);
+            log.Verbose("Time {0:'P''T'hh'H'mm'M'ss'.'fff'S'}", stopwatch.Elapsed);
             log.Information(ExampleEventId.EndExample, "Done");
 
             Console.WriteLine("Done");
