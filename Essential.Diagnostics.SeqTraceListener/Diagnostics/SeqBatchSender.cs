@@ -151,7 +151,15 @@ namespace Essential.Diagnostics
                 // Actually send the batch outside the lock
                 if (!finished)
                 {
-                    var success = PostBatch(currentBatch, false);
+                    var success = false;
+                    try
+                    {
+                        success = PostBatch(currentBatch, false);
+                    }
+                    catch (Exception ex)
+                    {
+                        if (Console.Error != null) Console.Error.WriteLine(string.Format("SeqBatchSender exception sending batch: {0}", ex.Message));
+                    }
                     // Retry when batch fails
                     if (success)
                     {
