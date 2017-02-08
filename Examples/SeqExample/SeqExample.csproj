@@ -33,8 +33,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Essential.Diagnostics, Version=1.2.0.0, Culture=neutral, PublicKeyToken=9d041bca93991466, processorArchitecture=MSIL">
-      <HintPath>..\Essential.Diagnostics.SeqTraceListener\packages\Essential.Diagnostics.1.2.30319.0\lib\Essential.Diagnostics.dll</HintPath>
+    <Reference Include="Essential.Diagnostics.Fluent, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Essential.Diagnostics.Fluent.2.0.206\lib\Essential.Diagnostics.Fluent.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -53,12 +53,6 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Essential.Diagnostics.SeqTraceListener\Essential.Diagnostics.SeqTraceListener.csproj">
-      <Project>{f889d4ab-1e93-4a5d-aa53-100cc9278d34}</Project>
-      <Name>Essential.Diagnostics.SeqTraceListener</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

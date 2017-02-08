@@ -6,7 +6,7 @@
     <ProjectGuid>{00DF3CAA-461F-422F-A739-52770436ED80}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Essential.Diagnostics.SeqTraceListener.Tests</RootNamespace>
+    <RootNamespace>Essential.Diagnostics.Tests</RootNamespace>
     <AssemblyName>Essential.Diagnostics.SeqTraceListener.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -35,10 +35,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Essential.Diagnostics, Version=1.2.0.0, Culture=neutral, PublicKeyToken=9d041bca93991466, processorArchitecture=MSIL">
-      <HintPath>..\Essential.Diagnostics.SeqTraceListener\packages\Essential.Diagnostics.1.2.30319.0\lib\Essential.Diagnostics.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <Choose>
@@ -61,14 +57,17 @@
     <Compile Include="Utility\MockHttpWebResponse.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Essential.Diagnostics.SeqTraceListener\Essential.Diagnostics.SeqTraceListener.csproj">
+    <ProjectReference Include="..\..\Essential.Diagnostics.Core\Essential.Diagnostics.Core.csproj">
+      <Project>{aae26c8f-ae78-4458-ba5d-00876105a4b7}</Project>
+      <Name>Essential.Diagnostics.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Essential.Diagnostics.SeqTraceListener\Essential.Diagnostics.SeqTraceListener.csproj">
       <Project>{F889D4AB-1E93-4A5D-AA53-100CC9278D34}</Project>
       <Name>Essential.Diagnostics.SeqTraceListener</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="packages.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
