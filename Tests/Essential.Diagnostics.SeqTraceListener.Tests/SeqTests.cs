@@ -27,7 +27,7 @@ namespace Essential.Diagnostics.Tests
 
             var listener = new SeqTraceListener("http://testuri");
             listener.BatchSize = 0;
-            listener.HttpWebRequestFactory = mockRequestFactory;
+            listener.BatchSender.HttpWebRequestFactory = mockRequestFactory;
 
             listener.TraceEvent(null, "TestSource", TraceEventType.Warning, 1, "Test Message");
 
@@ -55,7 +55,7 @@ namespace Essential.Diagnostics.Tests
 
             TraceSource source = new TraceSource("seq1Source");
             var listener = source.Listeners.OfType<SeqTraceListener>().First();
-            listener.HttpWebRequestFactory = mockRequestFactory;
+            listener.BatchSender.HttpWebRequestFactory = mockRequestFactory;
 
             source.TraceEvent(TraceEventType.Warning, 2, "{0}-{1}", 3, "B");
 
@@ -98,7 +98,7 @@ namespace Essential.Diagnostics.Tests
 
             TraceSource source = new TraceSource("seq3Source");
             var listener = source.Listeners.OfType<SeqTraceListener>().First();
-            listener.HttpWebRequestFactory = mockRequestFactory;
+            listener.BatchSender.HttpWebRequestFactory = mockRequestFactory;
 
             source.TraceEvent(TraceEventType.Information, 1, "TestMessage");
 
@@ -129,7 +129,7 @@ namespace Essential.Diagnostics.Tests
             var listener = new SeqTraceListener("http://testuri");
             listener.BatchSize = 5;
             listener.BatchTimeout = TimeSpan.FromMilliseconds(500);
-            listener.HttpWebRequestFactory = mockRequestFactory;
+            listener.BatchSender.HttpWebRequestFactory = mockRequestFactory;
 
             listener.TraceEvent(null, "TestSource", TraceEventType.Warning, 1, "Test Message");
             // Although immediate, it is still async, so need to sleep thread
@@ -155,7 +155,7 @@ namespace Essential.Diagnostics.Tests
             var listener = new SeqTraceListener("http://testuri");
             listener.BatchSize = 5;
             listener.BatchTimeout = TimeSpan.FromMilliseconds(500);
-            listener.HttpWebRequestFactory = mockRequestFactory;
+            listener.BatchSender.HttpWebRequestFactory = mockRequestFactory;
 
             listener.TraceEvent(null, "TestSource", TraceEventType.Warning, 1, "Test Message 1");
             Thread.Sleep(10);
@@ -202,7 +202,7 @@ namespace Essential.Diagnostics.Tests
             var listener = new SeqTraceListener("http://testuri");
             listener.BatchSize = 5;
             listener.BatchTimeout = TimeSpan.FromMilliseconds(500);
-            listener.HttpWebRequestFactory = mockRequestFactory;
+            listener.BatchSender.HttpWebRequestFactory = mockRequestFactory;
 
             listener.TraceEvent(null, "TestSource", TraceEventType.Warning, 1, "Test Message 1");
             Thread.Sleep(10);

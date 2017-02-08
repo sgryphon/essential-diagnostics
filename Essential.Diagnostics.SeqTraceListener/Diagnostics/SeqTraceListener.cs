@@ -15,19 +15,12 @@ namespace Essential.Diagnostics
         private const int DefaultBatchSize = 50;
         private static TimeSpan DefaultBatchTimeOut = TimeSpan.FromMilliseconds(1000);
 
-        const string BulkUploadResource = "api/events/raw";
-        const string ApiKeyHeaderName = "X-Seq-ApiKey";
-
-        IHttpWebRequestFactory _httpWebRequestFactory = new WebRequestAdapter();
         List<string> _additionalPropertyNames = null;
-        string _serverUrl;
-
+        SeqBatchSender _batchSender;
         int _batchSize;
         bool _batchSizeParsed;
-
         TimeSpan _batchTimeout;
         bool _batchTimeoutParsed;
-
         bool _propertiesParsed;
         bool _propertyCallstack;
         bool _propertyLogicalOperationStack;
@@ -36,6 +29,7 @@ namespace Essential.Diagnostics
         bool _propertyProcessId;
         bool _propertyThreadId;
         bool _propertyUser;
+        string _serverUrl;
 
         private static string[] _supportedAttributes = new string[]
         {
@@ -52,21 +46,7 @@ namespace Essential.Diagnostics
         public SeqTraceListener(string serverUrl)
         {
             _serverUrl = serverUrl;
-        }
-
-        /// <summary>
-        /// Gets or sets the HttpWebRequestFactory to use; this defaults to an adapter for System.Net.WebRequest.
-        /// </summary>
-        internal IHttpWebRequestFactory HttpWebRequestFactory
-        {
-            get
-            {
-                return _httpWebRequestFactory;
-            }
-            set
-            {
-                _httpWebRequestFactory = value;
-            }
+            _batchSender = new SeqBatchSender(this, new WebRequestAdapter());
         }
 
         /// <summary>
@@ -212,6 +192,11 @@ namespace Essential.Diagnostics
         {
             return _supportedAttributes;
         }
+        internal SeqBatchSender BatchSender
+        {
+            get { return _batchSender; }
+            set { _batchSender = value; }
+        }
 
         /// <summary>
         /// Handle the format strings
@@ -220,15 +205,7 @@ namespace Essential.Diagnostics
         protected override void WriteTraceFormat(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string format, params object[] args)
         {
             var traceData = CreateTraceData(eventCache, source, eventType, id, format, args, null, null);
-            // Batch size 0 sends immediately (synchronous); batch size 1 sends one at a time, but async.
-            if (BatchSize > 0)
-            {
-                EnqueueTraceData(traceData);
-            }
-            else
-            {
-                PostBatch(new[] { traceData });
-            }
+            _batchSender.Enqueue(traceData);
         }
 
         /// <summary>
@@ -237,14 +214,7 @@ namespace Essential.Diagnostics
         protected override void WriteTrace(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message, Guid? relatedActivityId, object[] data)
         {
             var traceData = CreateTraceData(eventCache, source, eventType, id, message, null, relatedActivityId, data);
-            if (BatchSize > 0)
-            {
-                EnqueueTraceData(traceData);
-            }
-            else
-            {
-                PostBatch(new[] { traceData });
-            }
+            _batchSender.Enqueue(traceData);
         }
 
         private TraceData CreateTraceData(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string messageFormat, object[] messageArgs, Guid? relatedActivityId, object[] data)
@@ -430,124 +400,6 @@ namespace Essential.Diagnostics
             return traceData;
         }
 
-        bool isProcessing = false;
-        Queue<TraceData> queue = new Queue<TraceData>();
-        AutoResetEvent sendTrigger = new AutoResetEvent(false);
-        object stateLock = new object();
-
-        // State: process running or not 
-        //    vs has items in queue or not
-
-        private void EnqueueTraceData(TraceData traceData)
-        {
-            lock (stateLock)
-            {
-                queue.Enqueue(traceData);
-                if (isProcessing)
-                {
-                    if (queue.Count >= BatchSize)
-                    {
-                        sendTrigger.Set();
-                    }
-                }
-                else
-                {
-                    isProcessing = true;
-                    // Trigger to send immediately
-                    sendTrigger.Set();
-                    var queued = ThreadPool.QueueUserWorkItem(delegate
-                    {
-                        Process();
-                    });
-                }
-            }
-        }
-
-        private void Process()
-        {
-            bool finished = false;
-            while (!finished)
-            {
-                // Wait for next check (unless triggered early)
-                var triggered = sendTrigger.WaitOne(BatchTimeout);
-
-                IEnumerable<TraceData> eventsToSend = null;
-                lock (stateLock)
-                {
-                    if (queue.Count > 0)
-                    {
-                        // Copy and then clear queue
-                        eventsToSend = queue.ToArray();
-                        queue.Clear();
-                    }
-                    else
-                    {
-                        // Nothing to process, so finish
-                        isProcessing = false;
-                        finished = true;
-                    }
-                }
-
-                // Actually send the batch outside the lock
-                if (eventsToSend != null)
-                {
-                    PostBatch(eventsToSend);
-                }
-            }
-        }
-
-        private void PostBatch(IEnumerable<TraceData> events)
-        {
-            if (ServerUrl == null)
-                return;
-
-            var uri = ServerUrl;
-            if (!uri.EndsWith("/"))
-                uri += "/";
-            uri += BulkUploadResource;
-
-            //var request = (HttpWebRequest)WebRequest.Create(uri);
-            var request = HttpWebRequestFactory.Create(uri);
-            request.Method = "POST";
-            request.ContentType = "application/json; charset=utf-8";
-            //if (!string.IsNullOrWhiteSpace(ApiKey))
-            if (!string.IsNullOrEmpty(ApiKey))
-            {
-                //request.Headers.Add(ApiKeyHeaderName, ApiKey);
-                request.AddHeader(ApiKeyHeaderName, ApiKey);
-            }
-
-            //var test = new StringWriter();
-            //test.Write("{\"events\":[");
-            //SeqPayloadFormatter.ToJson(events, test);
-            //test.Write("]}");
-            //var output = test.ToString();
-
-            using (var requestStream = request.GetRequestStream())
-            using (var payload = new StreamWriter(requestStream))
-            {
-                payload.Write("{\"events\":[");
-                SeqPayloadFormatter.ToJson(events, payload);
-                payload.Write("]}");
-            }
-
-            //using (var response = (HttpWebResponse)request.GetResponse())
-            using (var response = request.GetResponse())
-            {
-                var responseStream = response.GetResponseStream();
-                if (responseStream == null)
-                    throw new WebException("No response was received from the Seq server");
-
-                using (var reader = new StreamReader(responseStream))
-                {
-                    var data = reader.ReadToEnd();
-                    if ((int)response.StatusCode > 299)
-                        throw new WebException(string.Format("Received failed response {0} from Seq server: {1}",
-                            response.StatusCode,
-                            data));
-                }
-            }
-        }
 
     }
 }
