@@ -28,9 +28,6 @@ namespace Essential.Diagnostics
             _httpWebRequestFactory = httpWebRequestFactory;
         }
 
-        // TODO: Max queued
-        // TODO: Max retries (poison message)
-
         public void Enqueue(TraceData traceData)
         {
             // Batch size 0 sends immediately (synchronous), with no error handling. 
@@ -65,7 +62,7 @@ namespace Essential.Diagnostics
 
         private void EnqueueTraceData(TraceData traceData)
         {
-Console.WriteLine(string.Format("Enqueue {0}", traceData.Id));
+//Console.WriteLine(string.Format("Enqueue {0}", traceData.Id));
 
             lock (stateLock)
             {
@@ -97,7 +94,7 @@ Console.WriteLine(string.Format("Enqueue {0}", traceData.Id));
 
         private void Process()
         {
-Console.WriteLine("Process started");
+//Console.WriteLine("Process started");
 
             bool finished = false;
             List<TraceData> currentBatch = new List<TraceData>();
@@ -108,13 +105,13 @@ Console.WriteLine("Process started");
             {
                 if (currentBatch.Count > 0)
                 {
-Console.WriteLine("Wait retry timeout");
+//Console.WriteLine("Wait retry timeout");
                     // Wait retry timeout.
                     Thread.Sleep(retryTimeout);
                 }
                 else
                 {
-Console.WriteLine("Wait next check or trigger");
+//Console.WriteLine("Wait next check or trigger");
                     // Wait for next check (unless triggered early)
                     var triggered = sendTrigger.WaitOne(_associatedTraceListener.BatchTimeout);
                 }
@@ -122,7 +119,7 @@ Console.WriteLine("Wait next check or trigger");
                 // If we don't already have a batch, try and get one
                 if (currentBatch.Count == 0)
                 {
-Console.WriteLine("Getting batch from queue");
+//Console.WriteLine("Getting batch from queue");
                     lock (stateLock)
                     {
                         if (queue.Count > 0)
@@ -141,7 +138,7 @@ Console.WriteLine("Getting batch from queue");
                         }
                         else
                         {
-Console.WriteLine("Finish");
+//Console.WriteLine("Finish");
                             // Tried to get batch, but nothing there:
                             // So finish (local variable to this thread)
                             finished = true;
@@ -158,7 +155,7 @@ Console.WriteLine("Finish");
                     // Retry when batch fails
                     if (success)
                     {
-Console.WriteLine("Post batch success");
+//Console.WriteLine("Post batch success");
                         currentBatch.Clear();
                         retryCount = 0;
                         retryTimeout = TimeSpan.Zero;
