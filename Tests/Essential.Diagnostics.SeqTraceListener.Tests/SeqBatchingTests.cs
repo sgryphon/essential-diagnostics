@@ -1,12 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Essential.Diagnostics;
+﻿using Essential.Diagnostics.Tests.Utility;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Diagnostics;
-using Essential.Diagnostics.Tests.Utility;
 using System.Net;
 using System.Threading;
 
@@ -28,11 +23,12 @@ namespace Essential.Diagnostics.Tests
             var listener = new SeqTraceListener("http://testuri");
             listener.BatchSize = 5;
             listener.BatchTimeout = TimeSpan.FromMilliseconds(500);
+            listener.MaxRetries = 5;
             listener.BatchSender.HttpWebRequestFactory = mockRequestFactory;
 
             listener.TraceEvent(null, "TestSource", TraceEventType.Warning, 1, "Test Message");
             // Although immediate, it is still async, so need to sleep thread
-            Thread.Sleep(10);
+            Thread.Sleep(200);
 
             Assert.AreEqual(1, mockRequestFactory.RequestsCreated.Count);
 
@@ -54,17 +50,18 @@ namespace Essential.Diagnostics.Tests
             var listener = new SeqTraceListener("http://testuri");
             listener.BatchSize = 5;
             listener.BatchTimeout = TimeSpan.FromMilliseconds(500);
+            listener.MaxRetries = 5;
             listener.BatchSender.HttpWebRequestFactory = mockRequestFactory;
 
             listener.TraceEvent(null, "TestSource", TraceEventType.Warning, 1, "Test Message 1");
-            Thread.Sleep(10);
+            Thread.Sleep(100);
             listener.TraceEvent(null, "TestSource", TraceEventType.Information, 2, "Test Message 2");
-            Thread.Sleep(10);
+            Thread.Sleep(50);
             listener.TraceEvent(null, "TestSource", TraceEventType.Information, 3, "Test Message 3");
-            Thread.Sleep(10);
+            Thread.Sleep(50);
 
             // Before batch timeout, should have only received one
-            Thread.Sleep(400);
+            Thread.Sleep(200);
             Assert.AreEqual(1, mockRequestFactory.RequestsCreated.Count);
 
             // After batch timeout, should have received two requests
@@ -85,7 +82,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod]
-        public void SeqBatchBatchSizeShouldSendImmediately()
+        public void SeqBatchSizeShouldSendImmediately()
         {
             var mockRequestFactory = new MockHttpWebRequestFactory();
             mockRequestFactory.ResponseQueue.Enqueue(
@@ -101,24 +98,25 @@ namespace Essential.Diagnostics.Tests
             var listener = new SeqTraceListener("http://testuri");
             listener.BatchSize = 5;
             listener.BatchTimeout = TimeSpan.FromMilliseconds(500);
+            listener.MaxRetries = 5;
             listener.BatchSender.HttpWebRequestFactory = mockRequestFactory;
 
             listener.TraceEvent(null, "TestSource", TraceEventType.Warning, 1, "Test Message 1");
-            Thread.Sleep(10);
+            Thread.Sleep(100);
 
             listener.TraceEvent(null, "TestSource", TraceEventType.Information, 2, "Test Message 2");
-            Thread.Sleep(10);
+            Thread.Sleep(50);
             listener.TraceEvent(null, "TestSource", TraceEventType.Information, 3, "Test Message 3");
-            Thread.Sleep(10);
+            Thread.Sleep(50);
             listener.TraceEvent(null, "TestSource", TraceEventType.Information, 4, "Test Message 4");
-            Thread.Sleep(10);
+            Thread.Sleep(50);
             listener.TraceEvent(null, "TestSource", TraceEventType.Information, 5, "Test Message 5");
-            Thread.Sleep(10);
+            Thread.Sleep(50);
             listener.TraceEvent(null, "TestSource", TraceEventType.Information, 6, "Test Message 6");
-            Thread.Sleep(10);
+            Thread.Sleep(50);
 
             listener.TraceEvent(null, "TestSource", TraceEventType.Information, 7, "Test Message 7");
-            Thread.Sleep(10);
+            Thread.Sleep(50);
 
             // Before batch timeout, should have only received two
             Assert.AreEqual(2, mockRequestFactory.RequestsCreated.Count);

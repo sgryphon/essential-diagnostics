@@ -12,8 +12,10 @@ namespace Essential.Diagnostics
 {
     public class SeqTraceListener : TraceListenerBase
     {
-        private const int DefaultBatchSize = 50;
+        private const int DefaultBatchSize = 100;
         private static TimeSpan DefaultBatchTimeOut = TimeSpan.FromMilliseconds(1000);
+        private const int DefaultMaxQueueSize = 1000;
+        private const int DefaultMaxRetries = 10; // 2^10 = 1,024 secs = 17 mins 
 
         List<string> _additionalPropertyNames = null;
         SeqBatchSender _batchSender;
@@ -21,6 +23,10 @@ namespace Essential.Diagnostics
         bool _batchSizeParsed;
         TimeSpan _batchTimeout;
         bool _batchTimeoutParsed;
+        int _maxQueueSize;
+        bool _maxQueueSizeParsed;
+        int _maxRetries;
+        bool _maxRetriesParsed;
         bool _propertiesParsed;
         bool _propertyCallstack;
         bool _propertyLogicalOperationStack;
@@ -36,7 +42,9 @@ namespace Essential.Diagnostics
             "apiKey", "ApiKey", "apikey",
             "additionalProperties", "AdditionalProperties", "additionalproperties",
             "batchSize", "BatchSize", "batchsize",
-            "batchTimeout", "BatchTimeout", "batchtimeout", "batchTimeOut", "BatchTimeOut"
+            "batchTimeout", "BatchTimeout", "batchtimeout", "batchTimeOut", "BatchTimeOut",
+            "maxQueueSize", "MaxQueueSize", "maxqueuesize",
+            "maxRetries", "MaxRetries", "maxretries",
         };
 
         /// <summary>
@@ -182,6 +190,76 @@ namespace Essential.Diagnostics
                 _batchTimeout = value;
                 _batchTimeoutParsed = true;
                 Attributes["batchTimeout"] = value.ToString();
+            }
+        }
+
+        public int MaxQueueSize
+        {
+            get
+            {
+                if (!_maxQueueSizeParsed)
+                {
+                    if (Attributes.ContainsKey("maxBatchSize"))
+                    {
+                        int maxQueueSize;
+                        if (int.TryParse(Attributes["maxBatchSize"], NumberStyles.Any,
+                            CultureInfo.InvariantCulture, out maxQueueSize))
+                        {
+                            _maxQueueSize = maxQueueSize;
+                        }
+                        else
+                        {
+                            _maxQueueSize = DefaultMaxQueueSize;
+                        }
+                    }
+                    else
+                    {
+                        _maxQueueSize = DefaultMaxQueueSize;
+                    }
+                    _maxQueueSizeParsed = true;
+                }
+                return _maxQueueSize;
+            }
+            set
+            {
+                _maxQueueSize = value;
+                _maxQueueSizeParsed = true;
+                Attributes["maxBatchSize"] = value.ToString(CultureInfo.InvariantCulture);
+            }
+        }
+
+        public int MaxRetries
+        {
+            get
+            {
+                if (!_maxRetriesParsed)
+                {
+                    if (Attributes.ContainsKey("maxRetries"))
+                    {
+                        int maxRetries;
+                        if (int.TryParse(Attributes["maxRetries"], NumberStyles.Any,
+                            CultureInfo.InvariantCulture, out maxRetries))
+                        {
+                            _maxRetries = maxRetries;
+                        }
+                        else
+                        {
+                            _maxRetries = DefaultMaxRetries;
+                        }
+                    }
+                    else
+                    {
+                        _maxRetries = DefaultMaxRetries;
+                    }
+                    _maxRetriesParsed = true;
+                }
+                return _maxRetries;
+            }
+            set
+            {
+                _maxRetries = value;
+                _maxRetriesParsed = true;
+                Attributes["maxRetries"] = value.ToString(CultureInfo.InvariantCulture);
             }
         }
 

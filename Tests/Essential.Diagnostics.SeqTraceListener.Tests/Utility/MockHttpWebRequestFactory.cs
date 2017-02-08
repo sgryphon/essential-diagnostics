@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -24,7 +25,15 @@ namespace Essential.Diagnostics.Tests.Utility
 
         public IHttpWebRequest Create(string uri)
         {
-            var response = _responseQueue.Dequeue();
+            MockHttpWebResponse response;
+            if (_responseQueue.Count > 0)
+            {
+                response = _responseQueue.Dequeue();
+            }
+            else
+            {
+                response = new MockHttpWebResponse(HttpStatusCode.InternalServerError, null);
+            }
             var request = new MockHttpWebRequest(uri, response);
             _requestsCreated.Add(request);
             return request;

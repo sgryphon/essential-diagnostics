@@ -1,6 +1,7 @@
 ﻿using Essential.Net;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -27,9 +28,13 @@ namespace Essential.Diagnostics
             _httpWebRequestFactory = httpWebRequestFactory;
         }
 
+        // TODO: Max queued
+        // TODO: Max retries (poison message)
+
         public void Enqueue(TraceData traceData)
         {
-            // Batch size 0 sends immediately (synchronous); batch size 1 sends one at a time, but async.
+            // Batch size 0 sends immediately (synchronous), with no error handling. 
+            // Batch size 1 sends one at a time, but async, including retry, etc.
             if (_associatedTraceListener.BatchSize > 0)
             {
                 EnqueueTraceData(traceData);
@@ -39,6 +44,15 @@ namespace Essential.Diagnostics
                 PostBatch(new[] { traceData });
             }
         }
+
+
+        // Get a batch
+        // Try and send it
+        //    If not, wait, and retry
+        // Once sent, see if there is another batch, is so, repeat above
+        // If not, wait timeout (unless it fills up before!)
+        // If any queue, treat as a batch, repeat above
+        // If none queued, end.
 
         internal IHttpWebRequestFactory HttpWebRequestFactory
         {
@@ -51,9 +65,14 @@ namespace Essential.Diagnostics
 
         private void EnqueueTraceData(TraceData traceData)
         {
+Console.WriteLine(string.Format("Enqueue {0}", traceData.Id));
+
             lock (stateLock)
             {
-                queue.Enqueue(traceData);
+                if (queue.Count < _associatedTraceListener.MaxQueueSize)
+                {
+                    queue.Enqueue(traceData);
+                }
                 if (isProcessing)
                 {
                     if (queue.Count >= _associatedTraceListener.BatchSize)
@@ -64,7 +83,9 @@ namespace Essential.Diagnostics
                 else
                 {
                     isProcessing = true;
-                    // Trigger to send immediately
+                    // Trigger to send immediately for first message,
+                    // (or the first message after a wait) 
+                    // so the server knows we are up and running.
                     sendTrigger.Set();
                     var queued = ThreadPool.QueueUserWorkItem(delegate
                     {
@@ -76,42 +97,105 @@ namespace Essential.Diagnostics
 
         private void Process()
         {
+Console.WriteLine("Process started");
+
             bool finished = false;
+            List<TraceData> currentBatch = new List<TraceData>();
+            int retryCount = 0;
+            TimeSpan retryTimeout = TimeSpan.Zero;
+
             while (!finished)
             {
-                // Wait for next check (unless triggered early)
-                var triggered = sendTrigger.WaitOne(_associatedTraceListener.BatchTimeout);
-
-                IEnumerable<TraceData> eventsToSend = null;
-                lock (stateLock)
+                if (currentBatch.Count > 0)
                 {
-                    if (queue.Count > 0)
+Console.WriteLine("Wait retry timeout");
+                    // Wait retry timeout.
+                    Thread.Sleep(retryTimeout);
+                }
+                else
+                {
+Console.WriteLine("Wait next check or trigger");
+                    // Wait for next check (unless triggered early)
+                    var triggered = sendTrigger.WaitOne(_associatedTraceListener.BatchTimeout);
+                }
+
+                // If we don't already have a batch, try and get one
+                if (currentBatch.Count == 0)
+                {
+Console.WriteLine("Getting batch from queue");
+                    lock (stateLock)
                     {
-                        // Copy and then clear queue
-                        eventsToSend = queue.ToArray();
-                        queue.Clear();
-                    }
-                    else
-                    {
-                        // Nothing to process, so finish
-                        isProcessing = false;
-                        finished = true;
+                        if (queue.Count > 0)
+                        {
+                            // Dequeue items and add to batch
+                            var count = _associatedTraceListener.BatchSize;
+                            if (queue.Count < count)
+                            {
+                                count = queue.Count;
+                            }
+                            for (var i = 0; i < count; i++)
+                            {
+                                var item = queue.Dequeue();
+                                currentBatch.Add(item);
+                            }
+                        }
+                        else
+                        {
+Console.WriteLine("Finish");
+                            // Tried to get batch, but nothing there:
+                            // So finish (local variable to this thread)
+                            finished = true;
+                            // Also indicate that queue can start new thread
+                            isProcessing = false;
+                        }
                     }
                 }
 
                 // Actually send the batch outside the lock
-                if (eventsToSend != null)
+                if (!finished)
                 {
-                    // TODO: Logic to handle when batch fails
-                    PostBatch(eventsToSend);
+                    var success = PostBatch(currentBatch, false);
+                    // Retry when batch fails
+                    if (success)
+                    {
+Console.WriteLine("Post batch success");
+                        currentBatch.Clear();
+                        retryCount = 0;
+                        retryTimeout = TimeSpan.Zero;
+                    }
+                    else
+                    {
+                        if (retryCount >= _associatedTraceListener.MaxRetries)
+                        {
+                            if (Console.Error != null) Console.Error.WriteLine("SeqBatchSender exceeded retry count; abandoning batch.");
+                            currentBatch.Clear();
+                            retryCount = 0;
+                            retryTimeout = TimeSpan.Zero;
+                        }
+                        else
+                        {
+                            if (retryTimeout == TimeSpan.Zero)
+                            {
+                                retryCount = 1;
+                                retryTimeout = _associatedTraceListener.BatchTimeout;
+                            }
+                            else
+                            {
+                                retryCount++;
+                                retryTimeout = retryTimeout + retryTimeout;
+                            }
+                            // Can't really trace this anywhere else
+                            if (Console.Error != null) Console.Error.WriteLine(string.Format("SeqBatchSender retry {0} with timeout {1}", retryCount, retryTimeout));
+                        }
+                    }
                 }
             }
         }
 
-        private void PostBatch(IEnumerable<TraceData> events)
+        private bool PostBatch(IEnumerable<TraceData> events, bool shouldThrow = true)
         {
             if (_associatedTraceListener.ServerUrl == null)
-                return;
+                return true;
 
             var uri = _associatedTraceListener.ServerUrl;
             if (!uri.EndsWith("/"))
@@ -153,10 +237,17 @@ namespace Essential.Diagnostics
                 using (var reader = new StreamReader(responseStream))
                 {
                     var data = reader.ReadToEnd();
-                    if ((int)response.StatusCode > 299)
-                        throw new WebException(string.Format("Received failed response {0} from Seq server: {1}",
-                            response.StatusCode,
-                            data));
+                    if ((int)response.StatusCode >= 300)
+                    {
+                        if (shouldThrow)
+                        {
+                            throw new WebException(string.Format("Received failed response {0} from Seq server: {1}",
+                                response.StatusCode,
+                                data));
+                        }
+                        return false;
+                    }
+                    return true;
                 }
             }
         }
