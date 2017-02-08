@@ -1,7 +1,7 @@
 ﻿Essential.Diagnostics - Scope Example
 =====================================
 
-An example how ActivityScope can be used to simplify management of .
+An example how ActivityScope can be used to simplify management of setting the ActivityId.
 
 Instructions
 ------------
