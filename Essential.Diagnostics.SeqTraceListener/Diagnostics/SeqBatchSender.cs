@@ -168,6 +168,8 @@ namespace Essential.Diagnostics
                             currentBatch.Clear();
                             retryCount = 0;
                             retryTimeout = TimeSpan.Zero;
+                            // Want to try next batch immediately
+                            sendTrigger.Set();
                         }
                         else
                         {
