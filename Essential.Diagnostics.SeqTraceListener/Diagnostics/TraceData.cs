@@ -11,7 +11,7 @@ namespace Essential.Diagnostics
         //IList<object> _data;
         //IList<object> _messageArgs;
         //object[] _logicalOperationStack;
-        Dictionary<string, object> _properties;
+        //Dictionary<string, object> _properties;
 
         internal TraceData(DateTimeOffset traceTime, string source, Guid activityId, TraceEventType eventType, int id, 
             string messageFormat, object[] messageArgs, Exception ex, Guid? relatedActivityId, object[] data,

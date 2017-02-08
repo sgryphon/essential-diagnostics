@@ -418,7 +418,7 @@ namespace Essential.Diagnostics
             // Convert stack to string for serialization
             if (_propertyLogicalOperationStack || (TraceOutputOptions & TraceOptions.LogicalOperationStack) == TraceOptions.LogicalOperationStack)
             {
-                var stack = (eventCache?.LogicalOperationStack) ?? Trace.CorrelationManager.LogicalOperationStack;
+                var stack = (eventCache != null ? eventCache.LogicalOperationStack : null) ?? Trace.CorrelationManager.LogicalOperationStack;
 
                 var logicalOperationStack = new List<object>();
                 if (stack != null && stack.Count > 0)
@@ -466,15 +466,29 @@ namespace Essential.Diagnostics
 
             if (_propertyPrincipalName)
             {
-                properties.Add("PrincipalName", Thread.CurrentPrincipal?.Identity?.Name);
+				string principalName = null;
+				if (Thread.CurrentPrincipal != null && Thread.CurrentPrincipal.Identity != null) 
+				{
+					principalName = Thread.CurrentPrincipal.Identity.Name;
+				}
+                properties.Add("PrincipalName", principalName);
             }
 
             //var thread = Thread.CurrentThread.Name ?? threadId;
 
             //payload.Properties.Add("Thing", new Thing("Foo"));
+			
+			object[] recordedArgsArray = null;
+			if (recordedArgs != null) {
+				recordedArgsArray = recordedArgs.ToArray();
+			}
+			object[] recordedDataArray = null;
+			if (recordedData != null) {
+				recordedDataArray = recordedData.ToArray();
+			}
 
             var traceData = new TraceData(traceTime, source, activityId, eventType, id, messageFormat, 
-                recordedArgs?.ToArray(), exception, relatedActivityId, recordedData?.ToArray(), properties);
+                recordedArgsArray, exception, relatedActivityId, recordedDataArray, properties);
             return traceData;
         }
 

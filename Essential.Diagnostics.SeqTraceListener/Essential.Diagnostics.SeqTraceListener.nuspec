@@ -21,7 +21,7 @@
     <releaseNotes>
     </releaseNotes>
     <copyright>Copyright © Gryphon Technology Pty Ltd 2017</copyright>
-    <tags>Logging Tracing Diagnostics Log Trace TraceListener Rolling File</tags>
+    <tags>Logging Tracing Diagnostics Log Trace TraceListener Seq</tags>
     <dependencies>
       <dependency id="Essential.Diagnostics.Core" version="2.0.0.0" />
     </dependencies>
