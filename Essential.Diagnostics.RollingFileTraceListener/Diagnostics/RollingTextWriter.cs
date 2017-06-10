@@ -50,17 +50,11 @@ namespace Essential.Diagnostics
                     }
                 }
                 var filePath = rootFolder + segments[2];
-                var dir = Path.GetDirectoryName(filePath);
-                if (!Directory.Exists(dir))
-                    Directory.CreateDirectory(dir);
-
                 return new RollingTextWriter(filePath);
+            }
 
-            }
-            else
-            {
-                return new RollingTextWriter(filePathTemplate);
-            }
+            return new RollingTextWriter(filePathTemplate);
+
         }
 
         public string FilePathTemplate
