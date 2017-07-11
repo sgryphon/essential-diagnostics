@@ -71,7 +71,7 @@ The Framework and extensions can be used to write information to any of the foll
 * An [XML](docs/Service-Trace-Viewer.md) file (viewable using the Service Trace Viewer)
 * Event Tracing for Windows (Vista [ETW](docs/reference/EventProviderTraceListener.md))
 * A [database](docs/reference/SqlDatabaseTraceListener.md)![EX](docs/images/ex.png)
-* The [Seq](https://getseq.net/) logging server![EX](docs/images/ex.png)
+* The [Seq](docs/reference/SeqTraceListener.md) logging server![EX](docs/images/ex.png)
 
 Log information can be [custom formatted](docs/reference/TraceFormatter.md) and include context information such as:
 
