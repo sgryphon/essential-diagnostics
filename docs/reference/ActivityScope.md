@@ -20,7 +20,7 @@ The sequence of events follows the convention used in WCF logging:
 
 ## Example
 
-{code:c#}
+```c#
 TraceSource source = new TraceSource("ExampleSource");
 
 source.TraceEvent(TraceEventType.Information, 1, "Message 1");
@@ -29,7 +29,7 @@ using (var scope = new ActivityScope(source, 11, 12, 13, 14))
     source.TraceEvent(TraceEventType.Warning, 2, "Message 2");
 }
 source.TraceEvent(TraceEventType.Error, 3, "Message 3");
-{code:c#}
+```
 
 Trace events generated:
 * {original activity}, 1, "Message 1"
