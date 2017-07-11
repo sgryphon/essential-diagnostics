@@ -28,7 +28,8 @@ If the maximum number of retries is reached, then the failing batch is dropped; 
 
 ## Config Attributes
 
-|| Attribute || Description ||
+| Attribute | Description |
+| --------- | ----------- |
 | initializeData | URL of the Seq server (e.g. local development is usually http://localhost:5341). |
 | traceOutputOptions | If specified, sent as additional properties (can be specified either here, or in additionalProperties). |
 | apiKey | Your API key for the Seq server (for local development this can be empty). |
@@ -40,7 +41,7 @@ If the maximum number of retries is reached, then the failing batch is dropped; 
 
 ## Example Config
 
-{code:xml}
+```xml
 <?xml version="1.0" encoding="utf-8" ?>
 <configuration>
   <system.diagnostics>
@@ -61,17 +62,17 @@ If the maximum number of retries is reached, then the failing batch is dropped; 
     </sources>
   </system.diagnostics>
 </configuration>
-{code:xml}
+```
 
 ## Example Output
 
 Events are sent to the specified Seq server, where they can be queried, filtered, etc.
 
-![SeqTraceListener example Seq output](SeqTraceListener_SeqTraceListener800.png)
+![SeqTraceListener example Seq output](../images/SeqTraceListener_SeqTraceListener800.png)
 
 ## Config Template
 
-{code:xml}
+```xml
 <add name="seq"
   type="Essential.Diagnostics.SeqTraceListener, Essential.Diagnostics.SeqTraceListener" 
   initializeData="Seq server URL"
@@ -83,4 +84,4 @@ additionalProperties="CallStack,LogicalOperationStack,MachineName,PrincipalName,
   maxQueueSize="1000"
   maxRetries="10"  
 />
-{code:xml}
+```
