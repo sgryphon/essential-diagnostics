@@ -7,6 +7,8 @@
 
 ## Installing
 
+### Listeners (various output locations)
+
 Install the Essential.Diagnostics packages for just the trace listeners you need via NuGet. Using these classes requires no change to existing System.Diagnostics tracing code, only config changes (which are included in the packages):
 
 * PM> **Install-Package [Essential.Diagnostics.BufferedEmailTraceListener](http://www.nuget.org/packages/Essential.Diagnostics.BufferedEmailTraceListener)**
@@ -18,13 +20,19 @@ Install the Essential.Diagnostics packages for just the trace listeners you need
 * PM> **Install-Package [Essential.Diagnostics.SeqTraceListener](http://www.nuget.org/packages/Essential.Diagnostics.SeqTraceListener)**
 * PM> **Install-Package [Essential.Diagnostics.SqlDatabaseTraceListener](http://www.nuget.org/packages/Essential.Diagnostics.SqlDatabaseTraceListener)**
 
+### Core
+
 The trace listener packages depend on the Core package, which has a base listener class, as well as the expression filter and file configuration watcher. Usually it is installed automatically with one of the above listeners, but it can also be installed separately if needed:
 
 * PM> **Install-Package [Essential.Diagnostics.Core](http://www.nuget.org/packages/Essential.Diagnostics.Core)**
 
+### Fluent extensions (application-side, to improve tracing)
+
 There is also a separate package that has the scope utility classes, abstractions, and templated classes for easy use with dependency injection. This package makes using System.Diagnotics trace sources easier, and can be used either separately (with system trace listeners), or in conjunction with the extended trace listeners above.
 
 * PM> **Install-Package [Essential.Diagnostics.Fluent](http://www.nuget.org/packages/Essential.Diagnostics.Fluent)**
+
+### Examples
 
 Source code and examples are available here on GitHub.
 
@@ -63,6 +71,7 @@ The Framework and extensions can be used to write information to any of the foll
 * An [XML](docs/Service-Trace-Viewer.md) file (viewable using the Service Trace Viewer)
 * Event Tracing for Windows (Vista [ETW](docs/reference/EventProviderTraceListener.md))
 * A [database](docs/reference/SqlDatabaseTraceListener.md)![EX](docs/images/ex.png)
+* The [Seq](https://getseq.net/) logging server![EX](docs/images/ex.png)
 
 Log information can be [custom formatted](docs/reference/TraceFormatter.md) and include context information such as:
 
@@ -70,7 +79,5 @@ Log information can be [custom formatted](docs/reference/TraceFormatter.md) and 
 * Source - allows you to partition your logs
 * Event time and date
 * Thread id, process id and call stack
-* Logical operation stack, activity id, and correlation
+* Correlation, activity ID, and logical operation stack
 * Machine name, user name and Windows Identity ![EX](docs/images/ex.png)
-
-[About](docs/About.md)
