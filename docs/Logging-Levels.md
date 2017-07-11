@@ -1,10 +1,13 @@
+[Home](../ReadMe.md) | [Index](Index.md) | [Examples](Examples.md) | [Guidance](Guidance.md) | [FAQ](FAQ.md) | [Listeners](Listeners.md) | [Filters](Filters.md) | [Extensions](Extensions.md)
+
 # Trace levels
 
 Instrumentation needs to support different levels of operation, from high performance production systems through to developmental debugging.
 
 Usually there are several levels of event type of increasing detail. The structure of the levels can be considered a pyramid, with each level having less importance but a higher volume of events:
 
-![](Logging Levels_Levels-Diagram-Small.png)
+![](images/Logging-Levels_Levels-Diagram-Small.png)
+
 _Note: This diagram is an older version and has slightly different levels than described in the text._
 
 There should be few (hopefully no) critical events, maybe a few errors, and hopefully more warnings than errors; information events and activities should be relatively regular occurrences, but not an overwhelming volume, while there would be a large volume of verbose and more detailed tracing – if it was all turned on at once.
@@ -37,7 +40,8 @@ Although the higher levels provide context for the trace, the gritty details cor
 
 For each level in your diagnostics model, you should plan the logging, monitoring and tracing strategies you will use. For example, with the levels above:
 
-|| Type || Description || Logging || Monitoring || Tracing ||
+| Type | Description | Logging | Monitoring | Tracing |
+| ---- | ----------- | ------- | ---------- | ------- |
 | Critical | Events that demand the immediate attention of the system administrator, e.g. an application or system has failed or stopped responding. | Windows event log (Error) |  | TraceSource* |
 | Error | Events that indicate problems or errors that should be investigated and fixed, for example unexpected exceptions. | Windows event log (Error) | Errors/sec | TraceSource* |
 | Warning | Events that provide forewarning of potential problems or data that can be collected and analysed over time, looking for problem trends. | Windows event log (Warning) | Resource level (where appropriate) | TraceSource* |
@@ -46,7 +50,7 @@ For each level in your diagnostics model, you should plan the logging, monitorin
 | Verbose | Useful primarily to help developers debug low-level code failures, however should not produce more detail than can be handled. |  |  | TraceSource |
 | Detail | Useful for traces that are likely to be high volume, especially information that is not needed for all debugging scenarios. |  |  | BooleanSwitch |
 
- * Note: Normally a SourceSwitch will either be off (no tracing) or turned on with at least Information level of logging.
+&ast; Note: Normally a SourceSwitch will either be off (no tracing) or turned on with at least Information level of logging.
 
 
 # Instrumentation consistency
