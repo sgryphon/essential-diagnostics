@@ -2,12 +2,12 @@
 
 Let’s introduce some logging into our [application](Logging-Primer), and we can see what it can do.
 
-|| This examples shows manually configuring the app.config file, however the easiest way to add this, right now, to your existing project is using [NuGet](http://nuget.org) via "nuget System.Diagnostics.Config" or "nuget Essential.Diagnostics.Config". ||
+> This examples shows manually configuring the app.config file, however the easiest way to add this, right now, to your existing project is using [NuGet](http://nuget.org) via `Install-Package System.Diagnostics.Config`.
 
 Note that this code is intended to demonstrate logging and does not necessarily follow best practices in order to keep things simple (e.g. normally you would use properties instead of public fields). Also there is a lot of logging code because even though the example is short it tries to include many of the logging features.
 
 **HelloLogging.cs**
-{code:c#}
+```c#
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -107,12 +107,12 @@ class Worker {
     Trace.CorrelationManager.StopLogicalOperation();
   }
 }
-{code:c#}
+```
 
 For logging you also need a configuration file:
 
 **HelloLogging.exe.config**
-{code:xml}
+```xml
 <?xml version="1.0" encoding="utf-8" ?>
 <configuration>
   <system.diagnostics>
@@ -136,10 +136,10 @@ For logging you also need a configuration file:
     </sources>
   </system.diagnostics>
 </configuration>
-{code:xml}
+```
 
-Now, compile with “csc HelloLogging.cs /d:TRACE” – don’t forget the TRACE flag, or you won’t get any logging – and run.
+Now, compile with `csc HelloLogging.cs /d:TRACE` – don’t forget the TRACE flag, or you won’t get any logging – and run.
 
 With the basic console logger the information may not add much clarity, however the level of detail can be controlled by simply altering the configuration file without having to recompile.
 
->{**Next: [Service Trace Viewer](Service-Trace-Viewer)**}>
+**Next: [Service Trace Viewer](Service-Trace-Viewer)**
