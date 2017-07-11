@@ -1,6 +1,6 @@
 # Hello Logging
 
-Let’s introduce some logging into our [application](Logging-Primer), and we can see what it can do.
+Let’s introduce some logging into our [application](Logging-Primer.md), and we can see what it can do.
 
 > This examples shows manually configuring the app.config file, however the easiest way to add this, right now, to your existing project is using [NuGet](http://nuget.org) via `Install-Package System.Diagnostics.Config`.
 
@@ -142,4 +142,4 @@ Now, compile with `csc HelloLogging.cs /d:TRACE` – don’t forget the TRACE fl
 
 With the basic console logger the information may not add much clarity, however the level of detail can be controlled by simply altering the configuration file without having to recompile.
 
-**Next: [Service Trace Viewer](Service-Trace-Viewer)**
+**Next: [Service Trace Viewer](Service-Trace-Viewer.md)**
