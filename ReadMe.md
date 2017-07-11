@@ -1,7 +1,7 @@
-![Essential Diagnostics](docs/Home_Essential-Diagnostics-64.png)
+![Essential Diagnostics](docs/images/Essential-Diagnostics-64.png)
 # Using and extending System.Diagnostics trace logging
 
-[Examples](docs/Examples.md) | [Guidance](docs/Guidance.md) | [FAQ](docs/FAQ.md) | [Listeners](docs/Listeners.md) | [Filters](docs/Filters.md) | [Extensions](docs/Extensions.md)
+[Index](docs/Index) | [Examples](docs/Examples.md) | [Guidance](docs/Guidance.md) | [FAQ](docs/FAQ.md) | [Listeners](docs/Listeners.md) | [Filters](docs/Filters.md) | [Extensions](docs/Extensions.md)
 
 **Essential.Diagnostics** contains additional trace listeners, filters and utility classes for the **.NET Framework System.Diagnostics** trace logging. Included are colored console (that allows custom formats), SQL database (including a tool to create tables), formatted rolling file trace listener, rolling XML trace listener, Seq logging server listener, and in-memory trace listeners, simple property and expression filters, activity and logical operation scopes, and configuration file monitoring.
 
@@ -36,13 +36,13 @@ This project uses the inbuilt features of the System.Diagnostics namespace, and 
 
 This project also provides a library that enhances System.Diagnostics through it's numerous built-in extension points, but shouldn't require any changes to existing code (that uses the .NET Framework logging) to use some or all of the features.
 
-Extension features provided by this project are marked ![EX](docs/Home_ex.png) -- other features are already provided by the .NET Framework you are using right now.
+Extension features provided by this project are marked ![EX](docs/images/ex.png) -- other features are already provided by the .NET Framework you are using right now.
 
-To see how you can use **System.Diagnostics** and the **Essential.Diagnostics** extensions see [Getting Started](docs/Getting Started.md) and the [Logging Primer](docs/Logging Primer.md).
+To see how you can use **System.Diagnostics** and the **Essential.Diagnostics** extensions see [Getting Started](docs/Getting-Started.md) and the [Logging Primer](docs/Logging-Primer.md).
  
 ## Features
 
-The **.NET Framework System.Diagnostics**, along with the extensions here, provides the following key features, or see a [comparison](docs/comparison.md) with other logging frameworks.
+The **.NET Framework System.Diagnostics**, along with the extensions here, provides the following key features, or see a [comparison](docs/Comparison.md) with other logging frameworks.
 
 * Multiple logging sources.
 * Output to multiple trace [listeners](docs/Listeners.md) with different [filtering](docs/Filters.md).
@@ -56,21 +56,21 @@ The **.NET Framework System.Diagnostics**, along with the extensions here, provi
 
 The Framework and extensions can be used to write information to any of the following [Listeners](docs/listeners.md):
 
-* A [text file](docs/FileLogTraceListener.md)
-* The command [console](docs/Hello Logging.md) or [colored console](docs/ColoredConsoleTraceListener.md)![EX](docs/Home_ex.png)
-* The [event log](docs/Windows Event Log.md)
-* [ASP.NET](docs/WebPageTraceListener.md) tracing
-* An [XML](docs/Service Trace Viewer.md) file (viewable using the Service Trace Viewer)
-* Event Tracing for Windows (Vista [ETW](docs/EventProviderTraceListener.md))
-* A [database](docs/SqlDatabaseTraceListener.md)![EX](docs/Home_ex.png)
+* A [text file](docs/reference/FileLogTraceListener.md)
+* The command [console](docs/Hello-Logging.md) or [colored console](docs/reference/ColoredConsoleTraceListener.md)![EX](docs/images/ex.png)
+* The [event log](docs/Windows-Event-Log.md)
+* [ASP.NET](docs/reference/WebPageTraceListener.md) tracing
+* An [XML](docs/Service-Trace-Viewer.md) file (viewable using the Service Trace Viewer)
+* Event Tracing for Windows (Vista [ETW](docs/reference/EventProviderTraceListener.md))
+* A [database](docs/reference/SqlDatabaseTraceListener.md)![EX](docs/images/ex.png)
 
-Log information can be [custom formatted](docs/TraceFormatter.md) and include context information such as:
+Log information can be [custom formatted](docs/reference/TraceFormatter.md) and include context information such as:
 
 * Event id, type, and message
 * Source - allows you to partition your logs
 * Event time and date
 * Thread id, process id and call stack
 * Logical operation stack, activity id, and correlation
-* Machine name, user name and Windows Identity ![EX](docs/Home_ex.png)
+* Machine name, user name and Windows Identity ![EX](docs/images/ex.png)
 
 [About](docs/About.md)
