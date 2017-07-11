@@ -1,14 +1,14 @@
 # Logging Primer
 
-A simple ["Hello" example](Getting-Started) isn’t however very useful for showing the different capabilities of logging, so we will use a slightly more complicated example. First of all, here is the program we will use both without and then with simple logging.
+A simple ["Hello" example](Getting-Started.md) isn’t however very useful for showing the different capabilities of logging, so we will use a slightly more complicated example. First of all, here is the program we will use both without and then with simple logging.
 
-* [Hello World with no logging](#HelloNoLogging)
-* [Hello Logging](Hello-Logging)
+* Hello World with no logging (see below)
+* [Hello Logging](Hello-Logging.md)
 
 Once the program has had logging statements added, any of the trace listeners and filters can be configured to send the trace output to a wide variety of destinations.
 
-* [Service Trace Viewer](Service-Trace-Viewer)
-* [Windows Event Log](Windows-Event-Log)
+* [Service Trace Viewer](Service-Trace-Viewer.md)
+* [Windows Event Log](Windows-Event-Log.md)
 
 ## Extending System.Diagnostics
 
@@ -18,16 +18,15 @@ So, as well as teaching you about what you already have, this project provides s
 
 For example, here are examples of some of the extended listeners provided.
 
-* [Hello Color](Hello-Color) ![EX](Logging Primer_http://www.codeplex.com/download?ProjectName=essentialdiagnostics&DownloadId=150104)
-* [Hello Database](Hello-Database) ![EX](Logging Primer_http://www.codeplex.com/download?ProjectName=essentialdiagnostics&DownloadId=150104)
+* [Hello Color](Hello-Color.md) ![EX](images/ex.png)
+* [Hello Database](Hello-Database.md) ![EX](images/ex.png)
 
-{anchor:HelloNoLogging}
 # Hello World (no logging)
 
 This version of “Hello World” involves a bunch of Worker classes that Poke() each other to say “Hello World”. Sometimes they get sick of being poked.
 
 **HelloWorld.cs**
-{code:c#}
+```c#
 using System;
 using System.Collections.ObjectModel;
 using System.Threading;
@@ -82,11 +81,11 @@ class Worker {
     FinishedEvent.Set();
   }
 }
-{code:c#}
+```
 
 Compiling and running this program may produce the following:
 
-{code:powershell}
+```powershell
 PS C:\Microsoft.Diagnostics\Examples> .\HelloWorld.exe
 Hello World 1
 Hello World 2
@@ -98,8 +97,8 @@ Hello World 1
 Hi
 Hello World 3
 Hello World 2
-{code:powershell}
+```
 
 Lots of “Hello World”, but a bit difficult to tell which bit of code did what.
 
->{**Next: [Hello Logging](Hello-Logging)**}>
+**Next: [Hello Logging](Hello-Logging.md)**
