@@ -77,7 +77,7 @@ Events are sent to the specified Seq server, where they can be queried, filtered
   type="Essential.Diagnostics.SeqTraceListener, Essential.Diagnostics.SeqTraceListener" 
   initializeData="Seq server URL"
   traceOutputOptions="CallStack,LogicalOperationStack,ProcessId,ThreadId,User"
-additionalProperties="CallStack,LogicalOperationStack,MachineName,PrincipalName,ProcessId,ThreadId,User"
+  additionalProperties="CallStack,LogicalOperationStack,MachineName,PrincipalName,ProcessId,ThreadId,User"
   apiKey="your API key, or blank for localhost"
   batchSize="100|use 0 to disable"
   batchTimeout="00:00:01.00"
