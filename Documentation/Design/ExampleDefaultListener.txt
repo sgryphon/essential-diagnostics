@@ -1,2 +1,0 @@
-ScopeExample Transfer: 0 : Transfer, relatedActivityId=6ca6d7e2-21eb-4507-8e11-4e3f3efbcbe6
-ScopeExample Start: 2001 : Start
