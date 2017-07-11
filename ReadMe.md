@@ -1,7 +1,7 @@
 ![Essential Diagnostics](docs/Home_Essential-Diagnostics-64.png)
 # Using and extending System.Diagnostics trace logging
 
-[Download](docs/Download.md) | [FAQ](docs/FAQ.md) | [Examples](docs/Examples.md) | [Guidance](docs/Guidance.md) | [Listeners](docs/Listeners.md) | [Filters](docs/Filters.md) | [Extensions](docs/Extensions.md)
+[Examples](docs/Examples.md) | [Guidance](docs/Guidance.md) | [FAQ](docs/FAQ.md) | [Listeners](docs/Listeners.md) | [Filters](docs/Filters.md) | [Extensions](docs/Extensions.md)
 
 **Essential.Diagnostics** contains additional trace listeners, filters and utility classes for the **.NET Framework System.Diagnostics** trace logging. Included are colored console (that allows custom formats), SQL database (including a tool to create tables), formatted rolling file trace listener, rolling XML trace listener, Seq logging server listener, and in-memory trace listeners, simple property and expression filters, activity and logical operation scopes, and configuration file monitoring.
 
@@ -38,7 +38,7 @@ This project also provides a library that enhances System.Diagnostics through it
 
 Extension features provided by this project are marked ![EX](docs/Home_ex.png) -- other features are already provided by the .NET Framework you are using right now.
 
-To see how you can use **System.Diagnostics** and the **Essential.Diagnostics** extensions see [Getting Started](docs/Getting-Started.md) and the [Logging Primer](docs/Logging-Primer.md).
+To see how you can use **System.Diagnostics** and the **Essential.Diagnostics** extensions see [Getting Started](docs/Getting Started.md) and the [Logging Primer](docs/Logging Primer.md).
  
 ## Features
 
@@ -57,10 +57,10 @@ The **.NET Framework System.Diagnostics**, along with the extensions here, provi
 The Framework and extensions can be used to write information to any of the following [Listeners](docs/listeners.md):
 
 * A [text file](docs/FileLogTraceListener.md)
-* The command [console](docs/Hello-Logging.md) or [colored console](docs/ColoredConsoleTraceListener.md)![EX](docs/Home_ex.png)
-* The [event log](docs/Windows-Event-Log.md)
+* The command [console](docs/Hello Logging.md) or [colored console](docs/ColoredConsoleTraceListener.md)![EX](docs/Home_ex.png)
+* The [event log](docs/Windows Event Log.md)
 * [ASP.NET](docs/WebPageTraceListener.md) tracing
-* An [XML](docs/Service-Trace-Viewer.md) file (viewable using the Service Trace Viewer)
+* An [XML](docs/Service Trace Viewer.md) file (viewable using the Service Trace Viewer)
 * Event Tracing for Windows (Vista [ETW](docs/EventProviderTraceListener.md))
 * A [database](docs/SqlDatabaseTraceListener.md)![EX](docs/Home_ex.png)
 
