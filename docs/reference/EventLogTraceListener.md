@@ -27,13 +27,14 @@ can be used in initializeData to created event log sources.
 	
 ## Config Attributes
 
-|| Attribute || Description ||
+| Attribute | Description |
+| --------- | ----------- |
 | initalizeData | Name of the event log source. |
 | traceOutputOptions | Ignored. |
 
 ## Example Config
 
-{code:xml}
+```xml
 <?xml version="1.0" encoding="utf-8" ?>
 <configuration>
   <system.diagnostics>
@@ -55,7 +56,7 @@ can be used in initializeData to created event log sources.
     </sources>
   </system.diagnostics>
 </configuration>
-{code:xml}
+```
 
 ## Example Output
 
@@ -63,9 +64,9 @@ To see an example download the Complete package with examples and see the EventL
 
 ## Config Template
 
-{code:xml}
+```xml
 <add name="eventlog"
   type="System.Diagnostics.EventLogTraceListener"
   initalizeData=""
   />
-{code:xml}
+```

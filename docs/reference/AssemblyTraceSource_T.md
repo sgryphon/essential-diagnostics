@@ -12,7 +12,7 @@ Install via NuGet:
 
 This class provides a way to automatically configure trace sources based on the target class (specifically naming the source after the assembly the class is from),which works well with dependency injection frameworks.
 
-If using a dependency injection framework, by simply declaring a dependency of type ITraceSource`T and registering AssemblyTraceSource`T with the dependency injection container, classes will automatically get an ITraceSource based on their assembly name.
+If using a dependency injection framework, by simply declaring a dependency of type ITraceSource<T> and registering AssemblyTraceSource<T> with the dependency injection container, classes will automatically get an ITraceSource based on their assembly name.
 
 ## Example Remarks
 
@@ -30,5 +30,5 @@ The second test example shows how you can use InMemoryTraceListener in your test
 
 ## Example
 
-{code:c#}
-{code:c#}
+```c#
+```

@@ -16,7 +16,8 @@ Each message is sent in an asynchronous call. When the host process exits gracef
 
 ## Config Attributes
 
-|| Attribute || Description ||
+| Attribute | Description |
+| --------- | ----------- |
 | initializeData | Email address of the recipient. Multiple recipients may be separated by commas, for example "user1@example.org,userB@example.com". |
 | traceOutputOptions | Ignored. |
 | bodyTemplate | Template used to construct the email body. |
@@ -29,11 +30,11 @@ The default subject template is "{EventType} {Id}: {MessagePrefix}; {MachineName
 
 The default body template includes the source, date (UTC and local), event ID, level, activity correlation identifier, application information (machine name, application name, application domain), process information (process ID, name, user), thread information (thread ID, name, principal), and the formatted trace message and data.
 
-For more information on the template tokens available in bodyTemplate and subjectTemplate, see [TraceFormatter](TraceFormatter).
+For more information on the template tokens available in bodyTemplate and subjectTemplate, see [TraceFormatter](TraceFormatter.md).
 
 ## Example Config
 
-{code:xml}
+```xml
 <?xml version="1.0" encoding="utf-8" ?>
 <configuration>
   <system.diagnostics>
@@ -62,27 +63,27 @@ For more information on the template tokens available in bodyTemplate and subjec
     </mailSettings>
   </system.net>
 </configuration>
-{code:xml}
+```
 
 **Note:** The above example sends emails to a local pickup directory. To use an SMTP server change the mail settings to use deliveryMethod="Network" and enter your SMTP server name. If testing with a tool such as smtp4dev, use host="localhost".
 
-{code:xml}
+```xml
     <mailSettings>
       <smtp deliveryMethod="Network" from="[application-name](application-name)@example.org">
         <network host="[smtp-server-name](smtp-server-name)" defaultCredentials="true" />
       </smtp>
     </mailSettings>
-{code:xml}
+```
 
 ## Example Output
 
 Email message, showing templated subject and body with details of a single event.
 
-![EmailTraceListener Example Output](EmailTraceListener_ExampleEmail800.png)
+![EmailTraceListener Example Output](../images/EmailTraceListener_ExampleEmail800.png)
 
 ## Config Template
 
-{code:xml}
+```xml
 <add name="email"
   type="Essential.Diagnostics.EmailTraceListener, Essential.Diagnostics"
   initalizeData=""
@@ -121,7 +122,7 @@ Data:
   >
   <filter type="System.Diagnostics.EventTypeFilter" initializeData="Warning" />
 </add>
-{code:xml}
+```
 
 ## Notes
 

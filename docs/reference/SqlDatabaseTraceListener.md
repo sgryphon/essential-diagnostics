@@ -18,7 +18,8 @@ If you supply your own command then you need to create any tables and stored pro
 
 ## Config Attributes
 
-|| Attribute || Description ||
+| Attribute | Description |
+| --------- | ----------- |
 | initializeData | Name of the connection string of the database to write to. |
 | traceOutputOptions | Not used. |
 | applicationName | Application name to use when writing to the database; set this value when the database is shared between multiple applications. The default value is an empty string. |
@@ -27,7 +28,7 @@ If you supply your own command then you need to create any tables and stored pro
 
 ## Example Config
 
-{code:xml}
+```xml
 <?xml version="1.0" encoding="utf-8" ?>
 <configuration>
   <connectionStrings>
@@ -52,23 +53,23 @@ If you supply your own command then you need to create any tables and stored pro
     </sources>
   </system.diagnostics>
 </configuration>
-{code:xml}
+```
 
 ## Example Output
 
 Use the diagnostics_regsql tool to create the diagnostics_Trace table and stored procedure:
 
-![diagnostics_regsql](SqlDatabaseTraceListener_diagnostics_regsql800.png)
+![diagnostics_regsql](../images/SqlDatabaseTraceListener_diagnostics_regsql800.png)
 
 Data is written to SQL using the specified command. 
 
 You can query the diagnostics_Trace table to see the messages written:
 
-![SqlDatabaseTraceListener Example Output](SqlDatabaseTraceListener_SqlDatabase800.png)
+![SqlDatabaseTraceListener Example Output](../images/SqlDatabaseTraceListener_SqlDatabase800.png)
 
 ## Config Template
 
-{code:xml}
+```xml
 <add name="sqldatabase"
   type="Essential.Diagnostics.SqlDatabaseTraceListener, Essential.Diagnostics.SqlDatabaseTraceListener" 
   initializeData="connection string name"
@@ -76,4 +77,4 @@ You can query the diagnostics_Trace table to see the messages written:
   commandText="SQL command"
   maxMessageLength="1500"
 />
-{code:xml}
+```

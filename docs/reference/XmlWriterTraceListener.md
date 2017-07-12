@@ -8,13 +8,14 @@ For an alternative that supports rolling E2ETraceEvent files with various creati
 	
 ## Config Attributes
 
-|| Attribute || Description ||
+| Attribute | Description |
+| --------- | ----------- |
 | initializeData | Path of the file to write to. |
 | traceOutputOptions | Ignored. |
 
 ## Example Config
 
-{code:xml}
+```xml
 <?xml version="1.0" encoding="utf-8" ?>
 <configuration>
   <system.diagnostics>
@@ -33,19 +34,19 @@ For an alternative that supports rolling E2ETraceEvent files with various creati
     </sources>
   </system.diagnostics>
 </configuration>
-{code:xml}
+```
 
 ## Example Output
 
 Output files from multiple processes can be opened in the Service Trace Viewer tool and correlated across boundaries:
 
-![XmlWriterTraceListener Example Output](XmlWriterTraceListener_http://i3.codeplex.com/Download?ProjectName=essentialdiagnostics&DownloadId=150157)
+![XmlWriterTraceListener Example Output](../images/Service-Trace-Viewer_TraceViewerExample800.png)
 
 ## Config Template
 
-{code:xml}
+```xml
 <add name="xmlwriter"
   type="System.Diagnostics.XmlWriterTraceListener"
   initalizeData=""
   />
-{code:xml}
+```

@@ -8,11 +8,12 @@ The initializeData for the listener should contain a to Email address, which is 
 
 Intended to be used in console apps which will send all warning/error traces via one Email message at the end of the hosting process. If there’s no trace, this listener will not send anything.
 
-Calling BufferedEmailTraceListener.SendAll() will send accumulated messages for all listeners attached to the default Trace before the end of the host process, for example, you might want to send one message at the end of each loop. Using TraceSource you need need to check the listener collection and call listener.Send() for the same effect.
+Calling `BufferedEmailTraceListener.SendAll()` will send accumulated messages for all listeners attached to the default Trace before the end of the host process, for example, you might want to send one message at the end of each loop. Using TraceSource you need need to check the listener collection and call `listener.Send()` for the same effect.
 	
 ## Config Attributes
 
-|| Attribute || Description ||
+| Attribute | Description |
+| --------- | ----------- |
 | initializeData | Email address of the recipient. Multiple recipients may be separated by commas, for example "user1@example.org,userB@example.com". |
 | traceOutputOptions | Ignored. |
 | fromAddress | Optional alternate from address, instead of the one configured in system.net mailSettings. |
@@ -27,11 +28,11 @@ The email body consists of the header template, followed by a line break, follow
 
 The default template for individual traces is "{DateTime:u} [{Thread}]({Thread}) {EventType} {Source} {Id}: {Message}{Data}".
 
-For more information on the template tokens available in headerTemplate subjectTemplate and traceTemplate, see [TraceFormatter](TraceFormatter).
+For more information on the template tokens available in headerTemplate subjectTemplate and traceTemplate, see [TraceFormatter](TraceFormatter.md).
 
 ## Example Config
 
-{code:xml}
+```xml
 <?xml version="1.0" encoding="utf-8" ?>
 <configuration>
   <system.diagnostics>
@@ -58,27 +59,27 @@ For more information on the template tokens available in headerTemplate subjectT
     </mailSettings>
   </system.net>
 </configuration>
-{code:xml}
+```
 
 **Note:** The above example sends emails to a local pickup directory. To use an SMTP server change the mail settings to use deliveryMethod="Network" and enter your SMTP server name. If testing with a tool such as smtp4dev, use host="localhost".
 
-{code:xml}
+```xml
     <mailSettings>
       <smtp deliveryMethod="Network" from="[application-name](application-name)@example.org">
         <network host="[smtp-server-name](smtp-server-name)" defaultCredentials="true" />
       </smtp>
     </mailSettings>
-{code:xml}
+```
 
 ## Example Output
 
 Email message, showing templated subject and body header with details of the first event, followed by lines containing all of the events that were logged.
 
-![BufferedEmailTraceListener Example Output](BufferedEmailTraceListener_ExampleBufferedEmail800.png)
+![BufferedEmailTraceListener Example Output](../images/BufferedEmailTraceListener_ExampleBufferedEmail800.png)
 
 ## Config Template
 
-{code:xml}
+```xml
 <add name="bufferedEmail"
   type="Essential.Diagnostics.BufferedEmailTraceListener, Essential.Diagnostics"
   initalizeData=""
@@ -102,4 +103,4 @@ Trace Events:"
   traceTemplate="{DateTime:u} [{Thread}]({Thread}) {EventType} {Source} {Id}: {Message}{Data}"
   subjectTemplate="{Listener} {DateTime:u}; {MachineName}; {User}; {ProcessName}"
   />
-{code:xml}
+```

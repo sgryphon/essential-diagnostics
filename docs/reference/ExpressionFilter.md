@@ -16,14 +16,16 @@ You can also use an C# expression, including accessing environment details. The 
 
 ## Config Attributes
 
-|| Attribute || Description ||
+| Attribute | Description |
+| --------- | ----------- |
 | initializeData | Boolean C# expression to evaluate, e.g. " Id == 1001 ". |
 
 ## Expression Parameters
 
 The following simple parameter variables may be used in the expression:
 
-|| Parameter || Description ||
+| Parameter | Description |
+| --------- | ----------- |
 | Callstack | Program call stack as a string. |
 | DateTime | DateTimeOffset of the log event, in the UTC (+0) timezone. |
 | EventType | TraceEventType, e.g. Verbose, Information, Warning, Error, Critical, or one of the activity tracing events. |
@@ -39,7 +41,7 @@ You can also use C# code and .NET functions in the expression.
 
 ## Example Config
 
-{code:xml}
+```xml
 <?xml version="1.0" encoding="utf-8" ?>
 <configuration>
   <system.diagnostics>
@@ -60,5 +62,4 @@ You can also use C# code and .NET functions in the expression.
     </sources>
   </system.diagnostics>
 </configuration>
-{code:xml}
-
+```

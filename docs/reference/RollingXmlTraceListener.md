@@ -18,13 +18,15 @@ The E2ETraceEvent XML fragment format can be read by the Service Trace Viewer to
 	
 ## Config Attributes
 
-|| Attribute || Description ||
+| Attribute | Description |
+| --------- | ----------- |
 | initializeData | Template file path and name to log to, using replacement tokens to rotate based on the date; the default template is "{ApplicationName}-{DateTime:yyyy-MM-dd}.svclog", which rotates on a daily basis. |
 | traceOutputOptions | Not used. |
 
 ## Path Template Parameters
 
-|| Parameter || Description ||
+| Parameter | Description |
+| --------- | ----------- |
 | {ApplicationName} | Name of the current executable, without the extension. |
 | {DateTime} | DateTimeOffset of the log event, in the UTC (+0) timezone. |
 | {LocalDateTime} | DateTimeOffset of the log event, in the local timezone. |
@@ -34,7 +36,7 @@ The E2ETraceEvent XML fragment format can be read by the Service Trace Viewer to
 
 ## Example Config
 
-{code:xml}
+```xml
 <?xml version="1.0" encoding="utf-8" ?>
 <configuration>
   <system.diagnostics>
@@ -53,19 +55,19 @@ The E2ETraceEvent XML fragment format can be read by the Service Trace Viewer to
     </sources>
   </system.diagnostics>
 </configuration>
-{code:xml}
+```
 
 ## Example Output
 
 Output files from multiple processes can be opened in the Service Trace Viewer tool and correlated across boundaries:
 
-![RollingXmlTraceListener Example Output](RollingXmlTraceListener_TraceViewerExample800.png)
+![RollingXmlTraceListener Example Output](../images/RollingXmlTraceListener_TraceViewerExample800.png)
 
 ## Config Template
 
-{code:xml}
+```xml
 <add name="rollingxml"
   type="Essential.Diagnostics.RollingXmlTraceListener, Essential.Diagnostics.RollingXmlTraceListener"
   initializeData="{ApplicationName}-{DateTime:yyyy-MM-dd}.svclog"
 />
-{code:xml}
+```

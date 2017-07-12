@@ -16,11 +16,12 @@ Available tokens include DateTime (a UTC DateTimeOffset) and LocalDateTime (a lo
 
 The default filePathTemplate is "{ApplicationName}-{DateTime:yyyy-MM-dd}.log", which matches the format used by Microsoft.VisualBasic.Logging.FileLogTraceListener (except that it uses UTC time instead of local time).
 
-Log messages can be formatted by using the template property. The available arguments are detailed in [TraceFormatter](TraceFormatter).
+Log messages can be formatted by using the template property. The available arguments are detailed in [TraceFormatter](TraceFormatter.md).
 	
 ## Config Attributes
 
-|| Attribute || Description ||
+| Attribute | Description |
+| --------- | ----------- |
 | initializeData | Template file path and name to log to, using replacement tokens to rotate based on the date; the default template is "{ApplicationName}-{DateTime:yyyy-MM-dd}.log", which rotates on a daily basis. |
 | traceOutputOptions | Not used. |
 | convertWriteToEvent | If true (default), then calls to Write(String, String, Object), WriteLine(String, String, Object) and similar methods are converted to Verbose trace events and then output using the same format as calls to Trace methods. If false, then calls to these methods are output directly to the output file.  |
@@ -28,7 +29,8 @@ Log messages can be formatted by using the template property. The available argu
 
 ## Path Template Parameters
 
-|| Parameter || Description ||
+| Parameter | Description |
+| --------- | ----------- |
 | {AppData} | Resolves the mapped path equivalent to "~/App_Data", for the current HttpContext. |
 | {ApplicationName} | Name of the current executable, without the extension. |
 | {DateTime} | DateTimeOffset of the log event, in the UTC (+0) timezone. |
@@ -39,7 +41,7 @@ Log messages can be formatted by using the template property. The available argu
 
 ## Example Config
 
-{code:xml}
+```xml
 <?xml version="1.0" encoding="utf-8" ?>
 <configuration>
   <system.diagnostics>
@@ -58,21 +60,21 @@ Log messages can be formatted by using the template property. The available argu
     </sources>
   </system.diagnostics>
 </configuration>
-{code:xml}
+```
 
 ## Example Output
 
 Example log file messages, open in a text editor:
 
-![RollingFileTraceListener Example Output](RollingFileTraceListener_RollingFile800.png)
+![RollingFileTraceListener Example Output](../images/RollingFileTraceListener_RollingFile800.png)
 
 ## Config Template
 
-{code:xml}
+```xml
 <add name="rollingfile"
   type="Essential.Diagnostics.RollingFileTraceListener, Essential.Diagnostics.RollingFileTraceListener"
   initializeData="{ApplicationName}-{DateTime:yyyy-MM-dd}.log"
   convertWriteToEvent="true|false" 
   template="{DateTime:u} [{Thread}]({Thread}) {EventType} {Source} {Id}: {Message}{Data}"
 />
-{code:xml}
+```

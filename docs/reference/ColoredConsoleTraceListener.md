@@ -22,24 +22,25 @@ The default format is "{Source} {EventType}: {Id} : {Message}", and default colo
 
 ## Config Attributes
 
-|| Attribute || Description ||
+| Attribute | Description |
+| --------- | ----------- |
 | initializeData | false (default) to use the Console.Out stream; true to use Console.Error. |
 | traceOutputOptions | Are written on separate lines after each trace output in a fixed format; largely redundant as the template can be used to format as desired. |
 | convertWriteToEvent | If false (default), then calls to Write(String, String, Object),WriteLine(String, String, Object) and similar methods are output directly to the output stream (using the Verbose color). If true, then calls to these methods are instead converted to Verbose trace events and then output using the same format as calls to Trace methods. |
 | template | Template to use to format trace messages. The default format is "{Source} {EventType}: {Id} : {Message}". For more information on the template tokens available, [TraceFormatter](TraceFormatter). |
 | ...Color | Color to use for the specified type of event. Valid console color values are: Black, DarkBlue, DarkGreen, DarkCyan, DarkRed, DarkMagenta, DarkYellow, Gray, DarkGray, Blue, Green, Cyan, Red, Magenta, Yellow, White. |
-![ConsoleColor](ColoredConsoleTraceListener_ConsoleColor.png)
 
+![ConsoleColor](../images/ColoredConsoleTraceListener_ConsoleColor.png)
 
 activityTracingColor applies to all activity tracing events unless overridden by for a specific event type, e.g. transferColor.
 
 **Note:** When selecting colors note that PowerShell redefines DarkYellow and DarkMagenta and uses them as default colors, so best to to avoid those two colors because result is not consistent.
 
-![ConsoleColor](ColoredConsoleTraceListener_ConsoleColorInPowerShell.png)
+![ConsoleColor](../images/ColoredConsoleTraceListener_ConsoleColorInPowerShell.png)
 
 ## Example Config
 
-{code:xml}
+```xml
 <?xml version="1.0" encoding="utf-8" ?>
 <configuration>
   <system.diagnostics>
@@ -59,17 +60,17 @@ activityTracingColor applies to all activity tracing events unless overridden by
     </sources>
   </system.diagnostics>
 </configuration>
-{code:xml}
+```
 
 ## Example Output
 
 The trace listener writes to the standard console, or PowerShell, with colored messages:
 
-![ColoredConsoleTraceListener Example Output](ColoredConsoleTraceListener_ColoredConsole800.png)
+![ColoredConsoleTraceListener Example Output](../images/ColoredConsoleTraceListener_ColoredConsole800.png)
 
 ## Config Template
 
-{code:xml}
+```xml
 <add name="coloredconsole"
   type="Essential.Diagnostics.ColoredConsoleTraceListener, Essential.Diagnostics.ColoredConsoleTraceListener"
   initalizeData="false|true"
@@ -88,4 +89,4 @@ The trace listener writes to the standard console, or PowerShell, with colored m
   verboseColor="DarkCyan|other console color"
   warningColor="Yellow|other console color" 
 />
-{code:xml}
+```

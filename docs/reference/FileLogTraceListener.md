@@ -27,11 +27,12 @@ by the delimiter. If the includeHostName option is set, then a final delimiter a
 the MachineName are also written.
 
 For an alternative that allows a customised output format and alternative creation
-frequencies, see [RollingFileTraceListener](RollingFileTraceListener).
+frequencies, see [RollingFileTraceListener](RollingFileTraceListener.md).
 	
 ## Config Attributes
 
-|| Attribute || Description ||
+| Attribute | Description |
+| --------- | ----------- |
 | initalizeData | Ignored. |
 | traceOutputOptions | Appended to output, separated by the specified delimiter. |
 | baseFileName | Default is the application executable name. |
@@ -44,7 +45,7 @@ frequencies, see [RollingFileTraceListener](RollingFileTraceListener).
 
 **Note:** You may need to change the version number of Visual Basic based on the .NET version you are using.
 
-{code:xml}
+```xml
 <?xml version="1.0" encoding="utf-8" ?>
 <configuration>
   <system.diagnostics>
@@ -66,7 +67,7 @@ frequencies, see [RollingFileTraceListener](RollingFileTraceListener).
     </sources>
   </system.diagnostics>
 </configuration>
-{code:xml}
+```
 
 ## Example Output
 
@@ -74,7 +75,7 @@ Download the Complete package with examples and see the FileLog subfolder in the
 
 ## Config Template
 
-{code:xml}
+```xml
 <!-- Note: You may need to change the version number of Visual Basic based on the .NET version you are using. -->
 <add name="filelog"
   type="Microsoft.VisualBasic.Logging.FileLogTraceListener, Microsoft.VisualBasic, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
@@ -93,4 +94,4 @@ Download the Complete package with examples and see the FileLog subfolder in the
   maxFileSize="5000000"
   reserveDiskSpace="10000000"
   />
-{code:xml}
+```

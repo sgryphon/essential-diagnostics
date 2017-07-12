@@ -16,11 +16,12 @@ The following parameters are available in the template string: Data, Data0, Even
 
 Standard .NET formatting can be applied to these values, e.g. "{UtcDateTime:yyyy-MM-dd}" outputs the year, month and day, or "{EventType,12}" outputs the event type padded to width 12.
 
-An example template that generates the same output as [ColoredConsoleTraceListener](ColoredConsoleTraceListener) is: "{Source} {EventType}: {Id} : {Message}". 
+An example template that generates the same output as [ColoredConsoleTraceListener](ColoredConsoleTraceListener.md) is: "{Source} {EventType}: {Id} : {Message}". 
 
 ## Available Parameters
 
-|| Parameter || Description ||
+| Parameter | Description |
+| --------- | ----------- |
 | {ActivityId} | Value of the Trace.CorrelationManager.ActivityId Guid; used to correlate traces relating to the same activity. |
 | {ApplicationName} | Name of the current executable, without the extension. |
 | {Callstack} | Program call stack; this contains multiple lines of output. |

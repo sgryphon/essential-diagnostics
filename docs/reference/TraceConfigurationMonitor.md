@@ -2,7 +2,6 @@
 
 Monitors the application configuration file and refreshes the tracing configuration when the file is changed. 
 
-
 ## Installing
 
 Install via NuGet (this package is automatically installed when you install one of the trace listeners):
@@ -19,7 +18,7 @@ The TraceConfigurationMonitor sets up a FileSystemWatcher that is watching the a
 
 In your application, create and start the configuration monitor. For example in a Windows Service you could use the following:
 
-{code:c#}
+```c#
 public partial class ExampleService : ServiceBase
 {
     TraceConfigurationMonitor configMonitor;
@@ -34,16 +33,16 @@ public partial class ExampleService : ServiceBase
 	
     // ...
 }
-{code:c#}
+```
 
 Now if you change the application config file (while it is running), the diagnostics configuration is reloaded.
 
 When your application ends you can clean up by stopping and disposing the configuration monitor:
 
-{code:c#}
+```c#
     protected override void OnStop()
     {
         configMonitor.Stop();
         configMonitor.Dispose();
     }
-{code:c#}
+```
