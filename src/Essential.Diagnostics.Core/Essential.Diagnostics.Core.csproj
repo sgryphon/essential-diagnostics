@@ -44,6 +44,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Diagnostics\ExpressionFilter.cs" />
+    <Compile Include="Diagnostics\IStructuredData.cs" />
+    <Compile Include="Diagnostics\StructuredData.cs" />
     <Compile Include="Diagnostics\TraceConfigurationMonitor.cs" />
     <Compile Include="Diagnostics\TraceFormatter.cs" />
     <Compile Include="Diagnostics\TraceListenerBase.cs" />
