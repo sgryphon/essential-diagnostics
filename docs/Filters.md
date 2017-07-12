@@ -1,6 +1,9 @@
+[Home](../ReadMe.md) | [Index](Index.md) | [Examples](Examples.md) | [Guidance](Guidance.md) | [FAQ](FAQ.md) | [Listeners](Listeners.md) | [Filters](Filters.md) | [Extensions](Extensions.md)
+
 # Filters
 
+| Class | Description |
+| ----- | ----------- |
 | EventTypeFilter | Filters based on the level of the TraceEventType, e.g. Warning, Error, etc. |
-| [ExpressionFilter](ExpressionFilter)![EX](Filters_http://www.codeplex.com/download?ProjectName=essentialdiagnostics&DownloadId=150104) | Filter events based on an expression. |
-| [PropertyFilter](PropertyFilter)![EX](Filters_http://www.codeplex.com/download?ProjectName=essentialdiagnostics&DownloadId=150104) | Filter events based on the value of a single property. |
+| [ExpressionFilter](reference/ExpressionFilter.md)![EX](images/ex.png) | Filter events based on an expression. |
 | SourceFilter | Filters based on the TraceSource that generated the message. |

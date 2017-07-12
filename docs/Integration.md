@@ -1,11 +1,15 @@
+[Home](../ReadMe.md) | [Index](Index.md) | [Examples](Examples.md) | [Guidance](Guidance.md) | [FAQ](FAQ.md) | [Listeners](Listeners.md) | [Filters](Filters.md) | [Extensions](Extensions.md)
+
 # Integration
+
 System.Diagnostics is already integrated with many parts of the .NET Framework, so you can include framework tracing within your application tracing.
 
 ## System Defined Sources Summary
 
 See below for details
 
-|| Source || Description ||
+| Source | Description |
+| ------ | ----------- |
 | CardSpace | Tracing for CardSpace. |
 | System.IdentityModel | Good for debugging Windows Identity Foundation. Old source was Microsoft.IdentityModel. |
 | System.IO.Log | Logging for the .NET Framework interface to the Common Log File System (CLFS). |
@@ -20,7 +24,7 @@ See below for details
 
 Example config sections, listing the sources only (but not configured with any listeners), plus the additional settings needed for WCF tracing.
 
-{code:xml}
+```xml
 <?xml version="1.0" encoding="utf-8" ?>
 <configuration>
   <system.diagnostics>
@@ -59,7 +63,7 @@ Example config sections, listing the sources only (but not configured with any l
     </diagnostics>
   </system.serviceModel>
 </configuration>
-{code:xml}
+```
 
 ## Detail And References
 

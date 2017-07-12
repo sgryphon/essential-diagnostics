@@ -47,38 +47,38 @@ Note: ^^1^^ These trace listeners from the Enterprise Library Logging Applicatio
 | Class | Description |
 | ----- | ----------- |
 | EventTypeFilter | Filters based on the level of the TraceEventType, e.g. Warning, Error, etc. |
-| [ExpressionFilter](ExpressionFilter.md)![EX](images/ex.png) | Filter events based on an expression. |
+| [ExpressionFilter](reference/ExpressionFilter.md)![EX](images/ex.png) | Filter events based on an expression. |
 | SourceFilter | Filters based on the TraceSource that generated the message. |
 
 ## Listener [Extensions](Extensions.md)
 
 | Class | Description |
 | ----- | ----------- |
-| [TraceFormatter](TraceFormatter.md)![EX](images/ex.png) | Inserts trace information into a provided template string. Used to provide the advanced formatting for several listeners. |
-| [TraceConfigurationMonitor](TraceConfigurationMonitor.md)![EX](images/ex.png) | Monitors the config file for changes are refreshes trace listeners when required. |
+| [TraceFormatter](reference/TraceFormatter.md)![EX](images/ex.png) | Inserts trace information into a provided template string. Used to provide the advanced formatting for several listeners. |
+| [TraceConfigurationMonitor](reference/TraceConfigurationMonitor.md)![EX](images/ex.png) | Monitors the config file for changes are refreshes trace listeners when required. |
 
 ## Tracing [Extensions](Extensions.md)
 
 | Class | Description |
 | ----- | ----------- |
-| [ActivityScope](ActivityScope.md)![EX](images/ex.png) | Sets the correlation ActivityId for the life of the scope object, performs a transfer, and logs activity messages. |
-| [LogicalOperationScope](LogicalOperationScope.md)![EX](images/ex.png) | Sets the correlation LogicalOperation stack for the life of the scope object. |
+| [ActivityScope](reference/ActivityScope.md)![EX](images/ex.png) | Sets the correlation ActivityId for the life of the scope object, performs a transfer, and logs activity messages. |
+| [LogicalOperationScope](reference/LogicalOperationScope.md)![EX](images/ex.png) | Sets the correlation LogicalOperation stack for the life of the scope object. |
 
 ## [Diagnostics.Abstractions](Abstractions.md)
 
 | Class | Description |
 | ----- | ----------- |
-| [AssemblyTraceSource<T>](AssemblyTraceSource_T_.md)![EX](images/ex.png) | Enable applications to trace the execution of code and associate trace messages with a source named after the assembly the generic type is from. |
-| [ITraceSource](ITraceSource.md)![EX](images/ex.png) | Defines a set of methods and properties that enable applications to trace the execution of code and associate trace messages with their source.  |
-| [ITraceSource<T>](ITraceSource_T_.md)![EX](images/ex.png) | Defines a set of methods and properties that enable applications to trace the execution of code and associate trace messages with a source related to a specific class. |
-| [TraceSourceWrapper](TraceSourceWrapper.md)![EX](images/ex.png) | Provides a wrapper around TraceSource that implements the ITraceSource interface, enable applications to trace the execution of code and associate trace messages with their source in a decoupled manner. |
+| [AssemblyTraceSource<T>](reference/AssemblyTraceSource_T.md)![EX](images/ex.png) | Enable applications to trace the execution of code and associate trace messages with a source named after the assembly the generic type is from. |
+| [ITraceSource](reference/ITraceSource.md)![EX](images/ex.png) | Defines a set of methods and properties that enable applications to trace the execution of code and associate trace messages with their source.  |
+| [ITraceSource<T>](reference/ITraceSource_T.md)![EX](images/ex.png) | Defines a set of methods and properties that enable applications to trace the execution of code and associate trace messages with a source related to a specific class. |
+| [TraceSourceWrapper](reference/TraceSourceWrapper.md)![EX](images/ex.png) | Provides a wrapper around TraceSource that implements the ITraceSource interface, enable applications to trace the execution of code and associate trace messages with their source in a decoupled manner. |
 
 ## Base Classes
 
 | Class | Description |
 | ----- | ----------- |
 | TraceListener | Base trace listener class provided by the .NET framework. |
-| [TraceListenerBase](TraceListenerBase.md)![EX](images/ex.png) | Extended trace listener designed to be subclassed with as little as a single template method override. |
+| [TraceListenerBase](reference/TraceListenerBase.md)![EX](images/ex.png) | Extended trace listener designed to be subclassed with as little as a single template method override. |
 | TraceFilter | Base trace filter class provided by the .NET framework. |
 
 ## [Guidance](Guidance.md)

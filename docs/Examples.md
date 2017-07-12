@@ -1,8 +1,10 @@
+[Home](../ReadMe.md) | [Index](Index.md) | [Examples](Examples.md) | [Guidance](Guidance.md) | [FAQ](FAQ.md) | [Listeners](Listeners.md) | [Filters](Filters.md) | [Extensions](Extensions.md)
+
 # Examples
 
-* [Getting Started](Getting-Started)
-* [Logging Primer](Logging-Primer)
-	* [Hello Logging](Hello-Logging)
-	* [Service Trace Viewer](Service-Trace-Viewer)
-	* [Windows Event Log](Windows-Event-Log)
-	* [Hello Color](Hello-Color)![EX](Examples_http://i3.codeplex.com/download?ProjectName=essentialdiagnostics&DownloadId=150104)
+* [Getting Started](Getting-Started.md)
+* [Logging Primer](Logging-Primer.md)
+ * [Hello Logging](Hello-Logging.md)
+ * [Service Trace Viewer](Service-Trace-Viewer.md)
+ * [Windows Event Log](Windows-Event-Log.md)
+ * [Hello Color](Hello-Color.md)![EX](images/ex.png)

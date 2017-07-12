@@ -1,3 +1,5 @@
+[Home](../ReadMe.md) | [Index](Index.md) | [Examples](Examples.md) | [Guidance](Guidance.md) | [FAQ](FAQ.md) | [Listeners](Listeners.md) | [Filters](Filters.md) | [Extensions](Extensions.md)
+
 # Comparison of logging frameworks
 
 The following table shows how System.Diagnostics stacks up against some popular 3rd party logging frameworks, as well as the Enterprise Library Logging Application Block extensions from Microsoft, comparing the general features, the information logged, the filters that can be used and the output formats available. 
@@ -6,59 +8,60 @@ The System.Diagnostics column indicates both the built in features, as well as t
 
 Please contact me if you think any information in this table is out of date.
 
-|| General Features || System. Diagnostics || log4net || NLog || Enterprise Library ||
+| General Features | System. Diagnostics | log4net | NLog | Enterprise Library |
+| ---------------- | ------------------- | ------- | ---- | ------------------ |
 | Availability | built-in | 3rd party | 3rd party | Microsoft |
 | Levels | 5 | 5 | 6 | 5 |
-| Multiple sources | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) |
-| > Hierarchical sources | ![](Comparison_cross.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_cross.png) |
-| Extensible | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) |
-| Listener chaining | ![](Comparison_cross.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) |
-| Delayed formatting | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_cross.png) |
-| > Lambda | ![](Comparison_cross.png) | ![](Comparison_cross.png) | ![](Comparison_tick.png) | ![](Comparison_cross.png) |
-| Templates | ![](Comparison_ex.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) |
-| Logging interface | ![](Comparison_ex.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_cross.png) |
-| Dynamic configuration | ![](Comparison_ex.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) |
-| Minimum trust | ![](Comparison_cross.png) | TBA | TBA | ![](Comparison_cross.png) |
-| Trace .NET framework (WCF, WIF, System.Net, etc) | ![](Comparison_tick.png) | ![](Comparison_cross.png) | ![](Comparison_cross.png) | ![](Comparison_cross.png) |
-| Source from .NET Trace | ![](Comparison_tick.png) | ![](Comparison_cross.png) | ![](Comparison_cross.png) | ![](Comparison_tick.png) |
+| Multiple sources | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) |
+| > Hierarchical sources | ![](images/Comparison_cross.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_cross.png) |
+| Extensible | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) |
+| Listener chaining | ![](images/Comparison_cross.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) |
+| Delayed formatting | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_cross.png) |
+| > Lambda | ![](images/Comparison_cross.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_cross.png) |
+| Templates | ![](images/ex.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) |
+| Logging interface | ![](images/ex.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_cross.png) |
+| Dynamic configuration | ![](images/ex.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) |
+| Minimum trust | ![](images/Comparison_cross.png) | TBA | TBA | ![](images/Comparison_cross.png) |
+| Trace .NET framework (WCF, WIF, System.Net, etc) | ![](images/Comparison_tick.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_cross.png) |
+| Source from .NET Trace | ![](images/Comparison_tick.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_tick.png) |
 || Log Information || System. Diagnostics || Log4net || NLog || Enterprise Library ||
-| Event ID | ![](Comparison_tick.png) | contrib extension | ![](Comparison_cross.png) | ![](Comparison_tick.png) |
-| Priority | ![](Comparison_cross.png) | ![](Comparison_cross.png) | ![](Comparison_cross.png) | ![](Comparison_tick.png) |
-| Process/thread information | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) |
-| ASP.NET information | ![](Comparison_ex.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) |
-| Trace Context | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) |
-| > Correlation identifier | ![](Comparison_tick.png) | ![](Comparison_cross.png) | ![](Comparison_cross.png) | ![](Comparison_tick.png) |
-| > Cross-process correlation | ![](Comparison_tick.png) | ![](Comparison_cross.png) | ![](Comparison_cross.png) | ![](Comparison_tick.png) |
-| Exceptions | ![](Comparison_cross.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) | via exception block |
+| Event ID | ![](images/Comparison_tick.png) | contrib extension | ![](images/Comparison_cross.png) | ![](images/Comparison_tick.png) |
+| Priority | ![](images/Comparison_cross.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_tick.png) |
+| Process/thread information | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) |
+| ASP.NET information | ![](images/ex.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) |
+| Trace Context | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) |
+| > Correlation identifier | ![](images/Comparison_tick.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_tick.png) |
+| > Cross-process correlation | ![](images/Comparison_tick.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_tick.png) |
+| Exceptions | ![](images/Comparison_cross.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | via exception block |
 || Filters || System. Diagnostics || Log4net || NLog || Enterprise Library ||
-| Event level | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) |
-| Source | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) |
-| Property | ![](Comparison_ex.png) | ![](Comparison_tick.png) | ![](Comparison_cross.png) | ![](Comparison_cross.png) |
-| String match | ![](Comparison_cross.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_cross.png) |
-| Expression | ![](Comparison_ex.png) | ![](Comparison_cross.png) | ![](Comparison_tick.png) | ![](Comparison_cross.png) |
-| Priority | ![](Comparison_cross.png) | ![](Comparison_cross.png) | ![](Comparison_cross.png) | ![](Comparison_tick.png) |
+| Event level | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) |
+| Source | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) |
+| Property | ![](images/ex.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_cross.png) |
+| String match | ![](images/Comparison_cross.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_cross.png) |
+| Expression | ![](images/ex.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_cross.png) |
+| Priority | ![](images/Comparison_cross.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_tick.png) |
 || Listeners || System. Diagnostics || Log4net || NLog || Enterprise Library ||
-| > Forward to .NET Trace | ![](Comparison_tick.png) | limited | limited | ![](Comparison_tick.png) |
-| ASP.NET Trace | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_cross.png) |
-| Chainsaw (log4j) | ![](Comparison_cross.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_cross.png) |
-| Colored Console | ![](Comparison_ex.png) | ![](Comparison_tick.png) | ![](Comparison_cross.png) | ![](Comparison_cross.png) |
-| Console | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_cross.png) |
-| Database | ![](Comparison_ex.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) |
-| Debug | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_cross.png) |
-| Event Log | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) |
-| Event Tracing (ETW) | ![](Comparison_tick.png) | ![](Comparison_cross.png) | ![](Comparison_cross.png) | ![](Comparison_cross.png) |
-| File | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) |
-| Mail | ![](Comparison_ex.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) |
-| Memory | ![](Comparison_ex.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_cross.png) |
-| MSMQ | ![](Comparison_cross.png) | ![](Comparison_cross.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) |
-| Net Send | ![](Comparison_cross.png) | ![](Comparison_tick.png) | ![](Comparison_cross.png) | ![](Comparison_cross.png) |
-| Remoting | ![](Comparison_cross.png) | ![](Comparison_tick.png) | ![](Comparison_cross.png) | ![](Comparison_cross.png) |
-| Rolling File | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_tick.png) |
-| Syslog (unix) | ![](Comparison_cross.png) | ![](Comparison_tick.png) | ![](Comparison_cross.png) | ![](Comparison_cross.png) |
-| Telnet | ![](Comparison_cross.png) | ![](Comparison_tick.png) | ![](Comparison_cross.png) | ![](Comparison_cross.png) |
-| UDP | UdpPocketTrace extension | ![](Comparison_tick.png) | ![](Comparison_tick.png) | ![](Comparison_cross.png) |
-| WMI | ![](Comparison_cross.png) | ![](Comparison_cross.png) | ![](Comparison_cross.png) | ![](Comparison_tick.png) |
-| XML (Service Trace) | ![](Comparison_tick.png) | ![](Comparison_cross.png) | ![](Comparison_cross.png) | ![](Comparison_tick.png) |
+| > Forward to .NET Trace | ![](images/Comparison_tick.png) | limited | limited | ![](images/Comparison_tick.png) |
+| ASP.NET Trace | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_cross.png) |
+| Chainsaw (log4j) | ![](images/Comparison_cross.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_cross.png) |
+| Colored Console | ![](images/ex.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_cross.png) |
+| Console | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_cross.png) |
+| Database | ![](images/ex.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) |
+| Debug | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_cross.png) |
+| Event Log | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) |
+| Event Tracing (ETW) | ![](images/Comparison_tick.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_cross.png) |
+| File | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) |
+| Mail | ![](images/ex.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) |
+| Memory | ![](images/ex.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_cross.png) |
+| MSMQ | ![](images/Comparison_cross.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) |
+| Net Send | ![](images/Comparison_cross.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_cross.png) |
+| Remoting | ![](images/Comparison_cross.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_cross.png) |
+| Rolling File | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) |
+| Syslog (unix) | ![](images/Comparison_cross.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_cross.png) |
+| Telnet | ![](images/Comparison_cross.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_cross.png) |
+| UDP | UdpPocketTrace extension | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_cross.png) |
+| WMI | ![](images/Comparison_cross.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_tick.png) |
+| XML (Service Trace) | ![](images/Comparison_tick.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_tick.png) |
 
 Note that for some features the answer is more complex than a simple table, e.g. System.Diagnostics provides some process/thread information in some listeners, with Essential.Diagnostics providing additional information.
 
@@ -86,7 +89,8 @@ Base test framework: 56 ms
 
 Logging overhead (ms for 1 million log messages, lower is better):
 
-|| Scenario (logged messages) || System. Diagnostics — FileLog || ![](Comparison_ex.png) RollingFile || log4net — RollingFile || NLog — File || Enterprise Application Block — RollingFlatFile ||
+| Scenario (logged messages) | System. Diagnostics — FileLog | ![EX](images/ex.png) RollingFile | log4net — RollingFile | NLog — File | Enterprise Application Block — RollingFlatFile |
+| --- | --- | --- | --- | --- } --- |
 | Logging off (0) | 50 | 50 | 46 | 3 | > 20,000 |
 | Single filtered (16) | 59 | 54 | 43 | 8 | > 20,000 |
 | Multiple filtered (245) | 89 | 64 | 49 | 61 | > 20,000 |
@@ -100,7 +104,7 @@ There are also several configurations in the test harness to compare various oth
 
 If you don't clear the list it may look like you have no listeners but instead you will get all messages written to the default listener, which will severely impact the performance of your application. i.e. the worst thing you can do is set the trace switch to allow a lot of messages (e.g. All) without clearing the listeners:
 
-{code:xml}
+```xml
 <!-- Bad example: will severely impact performance (clear listeners, but leave source) -->
 <source name="SourceWithBadSwitch" switchValue="All">
 </source>
@@ -111,4 +115,4 @@ If you don't clear the list it may look like you have no listeners but instead y
     <add name="filelog"/>
    </listeners>
 </source>
-{code:xml}
+```

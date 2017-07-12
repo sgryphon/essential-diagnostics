@@ -1,3 +1,5 @@
+[Home](../ReadMe.md) | [Index](Index.md) | [Examples](Examples.md) | [Guidance](Guidance.md) | [FAQ](FAQ.md) | [Listeners](Listeners.md) | [Filters](Filters.md) | [Extensions](Extensions.md)
+
 # Theory of Event IDs
 
 The "Theory of Reply Codes" was a proposition in early RFC's (particularly SMTP, FTP and HTTP) which provided some structure around reply codes. This organised codes into a hierarchy where the first digit indicated the general class of the response and so on, provide some structure to the values.
@@ -14,7 +16,8 @@ Note that this theory in primarily intended to apply for significant (infrequent
 
 The following standard values are used for the first digit:
 
-|| Event ID || Meaning || Example || Event Type ||
+| Event ID | Meaning | Example | Event Type |
+| -------- | ------- | ------- | ---------- |
 | 1bxx | Positive Occasional Preliminary | Service starting | Information |
 | 2bxx | Positive Occasional Completion | Connection made, or user logged on | Information |
 | 3bxx | Positive Frequent Intermediate | Command received | (Application Log) |
@@ -37,7 +40,8 @@ Event types 6bxx and 7bxx are not standardised in this theory, but could be used
 
 The following standard values are used for the second digit:
 
-|| Event ID || Event Subtype / Category || Example ||
+| Event ID | Event Subtype / Category | Example |
+| -------- | ------------------------ | ------- |
 | a0xx | Syntax	| Error in syntax or configuration |
 | a1xx | System Control | Status, also system-level statuses |
 | a2xx | Connection | Low level communication channels	|
