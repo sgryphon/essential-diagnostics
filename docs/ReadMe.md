@@ -1,6 +1,6 @@
 [Home](../ReadMe.md) | [Examples](Examples.md) | [Guidance](Guidance.md) | [FAQ](FAQ.md) | [Listeners](Trace-Listeners.md) | [Fluent](Essential-Diagnostics-Fluent.md) | [Core](Essential-Diagnostics-Core.md)
 
-# Index
+# Documentation
 
 ## [Examples](Examples.md)
 
@@ -11,7 +11,7 @@
   * [Windows Event Log](Windows-Event-Log.md)
   * [Hello Color](Hello-Color.md)![EX](images/ex.png)
 
-## [Trace Listeners](Trace-Listeners.md)
+## [Trace Listeners](Trace-Listeners.md)![EX](images/ex.png)
 
 The following trace listeners are provided by the Essential.Diagnostics extensions.
 
@@ -19,16 +19,16 @@ The following trace listeners are provided by the Essential.Diagnostics extensio
 
 | Class | Description |
 | ----- | ----------- |
-| [BufferedEmailTraceListener](reference/BufferedEmailTraceListener.md)![EX](images/ex.png) | Writes trace events to an Email message sent at the end of the host process. |
-| [ColoredConsoleTraceListener](reference/ColoredConsoleTraceListener.md)![EX](images/ex.png) | Writes formatted trace events to the console in color based on the type. |
-| [EmailTraceListener](reference/EmailTraceListener.md)![EX](images/ex.png) | Writes trace events to Email messages sent asynchronously. |
-| [InMemoryTraceListener](reference/InMemoryTraceListener.md)![EX](images/ex.png) | Writes traces to an in-memory array. |
-| [RollingFileTraceListener](reference/RollingFileTraceListener.md)![EX](images/ex.png) | Trace listener that writes formatted messages to a text file, rolling to a new file based on a filename template (usually including the date). |
-| [RollingXmlTraceListener](reference/RollingXmlTraceListener.md)![EX](images/ex.png) | Trace listener that writes E2ETraceEvent XML fragments to a text file, rolling to a new file based on a filename template (usually including the date). |
-| [SeqTraceListener](reference/SeqTraceListener.md)![EX](images/ex.png) | Writes trace information to a [Seq](https://getseq.net/) logging server. |
-| [SqlDatabaseTraceListener](reference/SqlDatabaseTraceListener.md)![EX](images/ex.png) | Writes trace information to a SQL database. |
+| [BufferedEmailTraceListener](reference/BufferedEmailTraceListener.md) | Writes trace events to an Email message sent at the end of the host process. |
+| [ColoredConsoleTraceListener](reference/ColoredConsoleTraceListener.md) | Writes formatted trace events to the console in color based on the type. |
+| [EmailTraceListener](reference/EmailTraceListener.md) | Writes trace events to Email messages sent asynchronously. |
+| [InMemoryTraceListener](reference/InMemoryTraceListener.md) | Writes traces to an in-memory array. |
+| [RollingFileTraceListener](reference/RollingFileTraceListener.md) | Trace listener that writes formatted messages to a text file, rolling to a new file based on a filename template (usually including the date). |
+| [RollingXmlTraceListener](reference/RollingXmlTraceListener.md) | Trace listener that writes E2ETraceEvent XML fragments to a text file, rolling to a new file based on a filename template (usually including the date). |
+| [SeqTraceListener](reference/SeqTraceListener.md) | Writes trace information to a [Seq](https://getseq.net/) logging server. |
+| [SqlDatabaseTraceListener](reference/SqlDatabaseTraceListener.md) | Writes trace information to a SQL database. |
 
-## [Essential.Diagnostics.Fluent](Essential-Diagnostics-Fluent.md)
+## [Essential.Diagnostics.Fluent](Essential-Diagnostics-Fluent.md)![EX](images/ex.png)
 
 Contains the scope utility classes, abstractions, and templated classes for easy use with dependency injection. This package makes using System.Diagnotics trace sources easier, and can be used either separately (with system trace listeners), or in conjunction with the extended trace listeners above.
 
@@ -36,24 +36,24 @@ Contains the scope utility classes, abstractions, and templated classes for easy
 
 | Class | Description |
 | ----- | ----------- |
-| [ActivityScope](reference/ActivityScope.md)![EX](images/ex.png) | Sets the correlation ActivityId for the life of the scope object, performs a transfer, and logs activity messages. |
-| [LogicalOperationScope](reference/LogicalOperationScope.md)![EX](images/ex.png) | Sets the correlation LogicalOperation stack for the life of the scope object. |
+| [ActivityScope](reference/ActivityScope.md) | Sets the correlation ActivityId for the life of the scope object, performs a transfer, and logs activity messages. |
+| [LogicalOperationScope](reference/LogicalOperationScope.md) | Sets the correlation LogicalOperation stack for the life of the scope object. |
 
 ### Essential.Diagnostics.Abstractions namespace
 
 | Class | Description |
 | ----- | ----------- |
 | AssemblyTraceLog<TEventId, TTarget> | Implementation of the fluent log interface that is bound to a specific EventId type and with a source named after the target class assembly. |
-| [AssemblyTraceSource<TTarget>](reference/AssemblyTraceSource_T.md)![EX](images/ex.png) | Enable applications to trace the execution of code and associate trace messages with a source named after the assembly the generic type is from. |
+| [AssemblyTraceSource<TTarget>](reference/AssemblyTraceSource_T.md) | Enable applications to trace the execution of code and associate trace messages with a source named after the assembly the generic type is from. |
 | GenericEventId | General event IDs. |
 | GenericTraceLog | Implementation of TraceLog<TEventId> bound to GenericEventId. |
 | ITraceLog<TEventId> | Fluent log interface, with strongly typed event IDs. |
-| [ITraceSource](reference/ITraceSource.md)![EX](images/ex.png) | Defines a set of methods and properties that enable applications to trace the execution of code and associate trace messages with their source.  |
-| [ITraceSource<TTarget>](reference/ITraceSource_T.md)![EX](images/ex.png) | Defines a set of methods and properties that enable applications to trace the execution of code and associate trace messages with a source related to a specific class. |
+| [ITraceSource](reference/ITraceSource.md) | Defines a set of methods and properties that enable applications to trace the execution of code and associate trace messages with their source.  |
+| [ITraceSource<TTarget>](reference/ITraceSource_T.md) | Defines a set of methods and properties that enable applications to trace the execution of code and associate trace messages with a source related to a specific class. |
 | TraceLog<TEventId> | Generic implementation of the fluent log interface. |
-| [TraceSourceWrapper](reference/TraceSourceWrapper.md)![EX](images/ex.png) | Provides a wrapper around TraceSource that implements the ITraceSource interface, enable applications to trace the execution of code and associate trace messages with their source in a decoupled manner. |
+| [TraceSourceWrapper](reference/TraceSourceWrapper.md) | Provides a wrapper around TraceSource that implements the ITraceSource interface, enable applications to trace the execution of code and associate trace messages with their source in a decoupled manner. |
 
-## [Essential.Diagnostics.Core](Essential-Diagnostics-Core.md)
+## [Essential.Diagnostics.Core](Essential-Diagnostics-Core.md)![EX](images/ex.png)
 
 Core library with base classes, referenced by other packages.
 
@@ -61,10 +61,10 @@ Core library with base classes, referenced by other packages.
 
 | Class | Description |
 | ----- | ----------- |                                                     s
-| [ExpressionFilter](reference/ExpressionFilter.md)![EX](images/ex.png) | Filter events based on an expression. |
-| [TraceConfigurationMonitor](reference/TraceConfigurationMonitor.md)![EX](images/ex.png) | Monitors the config file for changes are refreshes trace listeners when required. |
-| [TraceFormatter](reference/TraceFormatter.md)![EX](images/ex.png) | Inserts trace information into a provided template string. Used to provide the advanced formatting for several listeners. |
-| [TraceListenerBase](reference/TraceListenerBase.md)![EX](images/ex.png) | Extended trace listener designed to be subclassed with as little as a single template method override. |
+| [ExpressionFilter](reference/ExpressionFilter.md) | Filter events based on an expression. |
+| [TraceConfigurationMonitor](reference/TraceConfigurationMonitor.md) | Monitors the config file for changes are refreshes trace listeners when required. |
+| [TraceFormatter](reference/TraceFormatter.md) | Inserts trace information into a provided template string. Used to provide the advanced formatting for several listeners. |
+| [TraceListenerBase](reference/TraceListenerBase.md) | Extended trace listener designed to be subclassed with as little as a single template method override. |
 
 ## .NET Framework classes
 

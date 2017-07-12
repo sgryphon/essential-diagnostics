@@ -1,7 +1,7 @@
 ![Essential Diagnostics](docs/images/Essential-Diagnostics-64.png)
 # Using and extending System.Diagnostics trace logging
 
-[Index](docs/Index.md) | [Examples](docs/Examples.md) | [Guidance](docs/Guidance.md) | [FAQ](docs/FAQ.md) | [Listeners](docs/Listeners.md) | [Filters](docs/Filters.md) | [Extensions](docs/Extensions.md)
+[Docs](docs/ReadMe.md) | [Examples](docs/Examples.md) | [Guidance](docs/Guidance.md) | [FAQ](docs/FAQ.md) | [Listeners](docs/Listeners.md) | [Filters](docs/Filters.md) | [Extensions](docs/Extensions.md)
 
 **Essential.Diagnostics** contains additional trace listeners, filters and utility classes for the **.NET Framework System.Diagnostics** trace logging. Included are colored console (that allows custom formats), SQL database (including a tool to create tables), formatted rolling file trace listener, rolling XML trace listener, Seq logging server listener, and in-memory trace listeners, simple property and expression filters, activity and logical operation scopes, and configuration file monitoring.
 

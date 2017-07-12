@@ -8,7 +8,7 @@ Core library with base classes, referenced by other packages.
 
 | Class | Description |
 | ----- | ----------- |                                                     s
-| [ExpressionFilter](reference/ExpressionFilter.md)![EX](images/ex.png) | Filter events based on an expression. |
-| [TraceConfigurationMonitor](reference/TraceConfigurationMonitor.md)![EX](images/ex.png) | Monitors the config file for changes are refreshes trace listeners when required. |
-| [TraceFormatter](reference/TraceFormatter.md)![EX](images/ex.png) | Inserts trace information into a provided template string. Used to provide the advanced formatting for several listeners. |
-| [TraceListenerBase](reference/TraceListenerBase.md)![EX](images/ex.png) | Extended trace listener designed to be subclassed with as little as a single template method override. |
+| [ExpressionFilter](reference/ExpressionFilter.md) | Filter events based on an expression. |
+| [TraceConfigurationMonitor](reference/TraceConfigurationMonitor.md) | Monitors the config file for changes are refreshes trace listeners when required. |
+| [TraceFormatter](reference/TraceFormatter.md) | Inserts trace information into a provided template string. Used to provide the advanced formatting for several listeners. |
+| [TraceListenerBase](reference/TraceListenerBase.md) | Extended trace listener designed to be subclassed with as little as a single template method override. |
