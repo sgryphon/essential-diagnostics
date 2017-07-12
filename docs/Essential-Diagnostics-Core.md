@@ -7,7 +7,7 @@ Core library with base classes, referenced by other packages.
 ### Essential.Diagnostics namespace
 
 | Class | Description |
-| ----- | ----------- |                                                     s
+| ----- | ----------- |
 | [ExpressionFilter](reference/ExpressionFilter.md) | Filter events based on an expression. |
 | [TraceConfigurationMonitor](reference/TraceConfigurationMonitor.md) | Monitors the config file for changes are refreshes trace listeners when required. |
 | [TraceFormatter](reference/TraceFormatter.md) | Inserts trace information into a provided template string. Used to provide the advanced formatting for several listeners. |
