@@ -14,6 +14,7 @@ namespace Essential.Diagnostics
         Exception _exception;
         string _message;
         string _messageTemplate;
+        IList<string> _messageTemplateKeys;
         List<object> _templateValues;
 
         /// <summary>
@@ -91,7 +92,14 @@ namespace Essential.Diagnostics
             }
             _exception = exception;
             _messageTemplate = messageTemplate;
-            _templateValues = new List<object>(templateValues);
+            if (templateValues == null)
+            {
+                _templateValues = new List<object>();
+            }
+            else
+            {
+                _templateValues = new List<object>(templateValues);
+            }
         }
 
         public IDictionary<string, object> BaseProperties { get { return _baseProperties; } }
@@ -126,16 +134,23 @@ namespace Essential.Diagnostics
                 {
                     allProperties["Exception"] = _exception;
                 }
-                if (_templateValues != null && _templateValues.Count > 0)
+                if (_messageTemplate != null)
                 {
                     var keyExtractor = new MessageTemplateKeyExtractor(_messageTemplate);
-                    var keys = keyExtractor.GetKeys();
+                    _messageTemplateKeys = keyExtractor.GetKeys();
+                }
+                else
+                {
+                    _messageTemplateKeys = new List<string>();
+                }
+                if (_templateValues != null && _templateValues.Count > 0)
+                {
                     var extraCount = 0;
                     for (var index = 0; index < _templateValues.Count; index++)
                     {
-                        if (index < keys.Count)
+                        if (index < _messageTemplateKeys.Count)
                         {
-                            allProperties[keys[index]] = _templateValues[index];
+                            allProperties[_messageTemplateKeys[index]] = _templateValues[index];
                         }
                         else
                         {
@@ -153,9 +168,74 @@ namespace Essential.Diagnostics
             if (_message == null)
             {
                 BuildAllProperties();
-                _message = StringTemplate.Format(_messageTemplate, GetValue);
+                var builder = new StringBuilder();
+                if (_messageTemplate != null)
+                {
+                    var messageFromTemplate = StringTemplate.Format(_messageTemplate, GetValue);
+                    builder.Append(messageFromTemplate);
+                }
+                foreach (var kvp in _allProperties)
+                {
+                    if (!_messageTemplateKeys.Contains(kvp.Key))
+                    {
+                        var key = kvp.Key.Replace(' ', '_').Replace('=', '_');
+                        var value = BuildValue(kvp.Value);
+                        if (builder.Length > 0)
+                        {
+                            builder.Append(" ");
+                        }
+                        builder.AppendFormat("{0}={1}", key, value);
+                    }
+                }
+                _message = builder.ToString();
             }
         }
+
+        private string BuildValue(object value)
+        {
+            if (ValueIsPrimitive(value))
+            {
+                return value.ToString();
+            }
+            else if (value is Byte)
+            {
+                return string.Format("0x{0:H}", value);
+            }
+            else if (value is DateTime)
+            {
+                return ((DateTime)value).ToString("s");
+            }
+            else if (value is DateTimeOffset)
+            {
+                return ((DateTimeOffset)value).ToString("s");
+            }
+            else if (value is TimeSpan)
+            {
+                return ((TimeSpan)value).ToString();
+            }
+            else if (value is String)
+            {
+                return "'" + ((String)value).Replace(@"\", @"\\").Replace("'", @"\'") + "'";
+            }
+            else
+            {
+                return value.ToString();
+            }
+        }
+
+        private bool ValueIsPrimitive(object value)
+        {
+            return value is Int16
+                || value is Int32
+                || value is Int64
+                || value is SByte
+                || value is UInt16
+                || value is UInt32
+                || value is UInt64
+                || value is Single
+                || value is Double
+                || value is Decimal;
+         }
 
         private bool GetValue(string name, out object value)
         {

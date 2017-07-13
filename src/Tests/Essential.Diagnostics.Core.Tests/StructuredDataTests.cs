@@ -139,6 +139,20 @@ namespace Essential.Diagnostics.Tests
             Assert.AreEqual("Ax2", actual);
         }
 
+        [TestMethod()]
+        public void StringPropertyOnly()
+        {
+            var properties = new Dictionary<string, object>() {
+                { "a", 1 },
+            };
+
+            IStructuredData data = new StructuredData(properties);
+            var actual = data.ToString();
+
+            Assert.AreEqual("a=1", actual);
+        }
+
+
         //[TestMethod()]
         //public void StringWithException()
         //{
