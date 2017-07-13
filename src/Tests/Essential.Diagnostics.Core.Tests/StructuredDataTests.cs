@@ -73,6 +73,20 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod()]
+        public void StringFormatProperty()
+        {
+            var template = "x{a}";
+            var properties = new Dictionary<string, object>() {
+                { "a", 1 },
+            };                  
+
+            IStructuredData data = new StructuredData(properties, template);
+            var actual = data.ToString();
+
+            Assert.AreEqual("x1", actual);
+        }
+
+        [TestMethod()]
         public void StringFormatValue()
         {
             var template = "x{a}";
@@ -94,6 +108,23 @@ namespace Essential.Diagnostics.Tests
             var actual = data.ToString();
 
             Assert.AreEqual("AxB", actual);
+        }
+
+        [TestMethod()]
+        public void StringValuesOverrideProperties()
+        {
+            var template = "{a}x{b}";
+            var a = "A";
+
+            var properties = new Dictionary<string, object>() {
+                { "a", 1 },
+                { "b", 2 },
+            };
+
+            IStructuredData data = new StructuredData(properties, template, a);
+            var actual = data.ToString();
+
+            Assert.AreEqual("Ax2", actual);
         }
 
         //[TestMethod()]
