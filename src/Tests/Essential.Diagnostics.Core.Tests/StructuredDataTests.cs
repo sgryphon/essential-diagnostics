@@ -221,43 +221,151 @@ namespace Essential.Diagnostics.Tests
             Assert.AreEqual("a=00:00:04.0050000 b=-1.02:03:04.0050000", actual);
         }
 
+        [TestMethod()]
+        public void StringPrimitiveValue()
+        {
+            var properties = new Dictionary<string, object>() {
+                { "a", (short)-1 },
+                { "b", (int)-2 },
+                { "c", (long)-3 },
+                { "d", (ushort)4 },
+                { "e", (uint)5 },
+                { "f", (ulong)6 },
+                { "g", (sbyte)7 },
+                { "h", (float)8.1 },
+                { "i", (double)9.2 },
+                { "j", (decimal)10.3 },
+            };
 
-        //[TestMethod()]
-        //public void StringWithException()
-        //{
-        //    var template = "x{a}";
+            IStructuredData data = new StructuredData(properties);
+            var actual = data.ToString();
 
-        //    IStructuredData data;
-        //    try
-        //    {
-        //        throw new ApplicationException("B");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        data = new StructuredData(ex, template, "A");
-        //    }
-        //    var actual = data.ToString();
+            Assert.AreEqual("a=-1 b=-2 c=-3 d=4 e=5 f=6 g=7 h=8.1 i=9.2 j=10.3", actual);
+        }
 
-        //    var expectedMessageWithStartOfStackTrace = "xA|Exception: System.ApplicationException: B\r\n   at Essential.Diagnostics.Core.Tests.StructuredDataTests.StringWithException() ";
-        //    StringAssert.StartsWith(actual, expectedMessageWithStartOfStackTrace);
-        //}
+        [TestMethod()]
+        public void StringGuidValue()
+        {
+            var properties = new Dictionary<string, object>() {
+                { "a", new Guid("12345678-abcd-4321-8765-ba9876543210") },
+            };
 
-        //[TestMethod()]
-        //public void StringWithAdditionalData()
-        //{
-        //    var template = "x{a}";
-        //    var additional = new Dictionary<string, object>() { { "b", "B" } };
+            IStructuredData data = new StructuredData(properties);
+            var actual = data.ToString();
 
-        //    IStructuredData data = new StructuredData(additional, template, "A");
-        //    var actual = data.ToString();
+            Assert.AreEqual("a=12345678-abcd-4321-8765-ba9876543210", actual);
+        }
 
-        //    Assert.AreEqual("xA; { \"b\" = \"B\" }", actual);
-        //}
+        [TestMethod()]
+        public void StringEscapedStringValue()
+        {
+            var properties = new Dictionary<string, object>() {
+                { "a", @"w=x\y'z" },
+            };
 
-        // TODO: Test with properties only
-        // TODO: Test template values override properties
-        // TODO: Test duplicate template values
-        // TODO: Test string adds remaining properties only
-        // NOTE: Allow both (props, template) and (template, values)
+            IStructuredData data = new StructuredData(properties);
+            var actual = data.ToString();
+
+            Assert.AreEqual(@"a='w=x\\y\'z'", actual);
+        }
+
+        [TestMethod()]
+        public void StringCustomObjectValue()
+        {
+            var properties = new Dictionary<string, object>() {
+                { "a", new TestObject() },
+            };
+
+            IStructuredData data = new StructuredData(properties);
+            var actual = data.ToString();
+
+            Assert.AreEqual(@"a='w=x\\y\'z'", actual);
+        }
+
+        class TestObject
+        {
+            public override string ToString()
+            {
+                return @"w=x\y'z";
+            }
+        }
+
+        [TestMethod()]
+        public void StringMessageAndProperty()
+        {
+            var properties = new Dictionary<string, object>() {
+                { "a", 1 },
+            };
+
+            IStructuredData data = new StructuredData(properties, "X");
+            var actual = data.ToString();
+
+            Assert.AreEqual("X; a=1", actual);
+        }
+
+        [TestMethod()]
+        public void StringPropetiesAndTemplateValues()
+        {
+            var properties = new Dictionary<string, object>() {
+                { "a", 1 },
+                { "b", 2 },
+                { "d", 4 },
+            };
+
+            IStructuredData data = new StructuredData(properties, "x{b}y{c}z{d}", "B", "C");
+            var actual = data.ToString();
+
+            Assert.AreEqual(@"xByCz4; a=1", actual);
+        }
+
+        [TestMethod()]
+        public void StringExtraValues()
+        {
+            IStructuredData data = new StructuredData("x{a}", 1, 2);
+            var actual = data.ToString();
+
+            Assert.AreEqual(@"x1; Extra1=2", actual);
+        }
+
+        [TestMethod()]
+        public void StringWithException()
+        {
+            var template = "x{a}";
+
+            IStructuredData data;
+            try
+            {
+                throw new ApplicationException("B");
+            }
+            catch (Exception ex)
+            {
+                data = new StructuredData(ex, template, "A");
+            }
+            var actual = data.ToString();
+
+            var expectedMessageWithStartOfStackTrace = "xA; Exception='System.ApplicationException: B\r\n   at Essential.Diagnostics.Tests.StructuredDataTests.StringWithException() ";
+            StringAssert.StartsWith(actual, expectedMessageWithStartOfStackTrace);
+        }
+
+        [TestMethod()]
+        public void StringWithAdditionalData()
+        {
+            var template = "x{a}";
+            var additional = new Dictionary<string, object>() { { "b", "B" } };
+
+            IStructuredData data = new StructuredData(additional, template, "A");
+            var actual = data.ToString();
+
+            Assert.AreEqual("xA; b='B'", actual);
+        }
+
+        [TestMethod()]
+        public void StringWithDuplicateTemplateValues()
+        {
+            IStructuredData data = new StructuredData("{a}x{a}", "A", "B");
+            var actual = data.ToString();
+
+            Assert.AreEqual("BxB", actual);
+        }
     }
 }

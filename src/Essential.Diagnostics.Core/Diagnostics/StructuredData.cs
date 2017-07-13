@@ -174,13 +174,22 @@ namespace Essential.Diagnostics
                     var messageFromTemplate = StringTemplate.Format(_messageTemplate, GetValue);
                     builder.Append(messageFromTemplate);
                 }
+                var first = true;
                 foreach (var kvp in _allProperties)
                 {
                     if (!_messageTemplateKeys.Contains(kvp.Key))
                     {
                         var key = kvp.Key.Replace(' ', '_').Replace('=', '_');
                         var value = BuildValue(kvp.Value);
-                        if (builder.Length > 0)
+                        if (first)
+                        {
+                            if (builder.Length > 0)
+                            {
+                                builder.Append("; ");
+                            }
+                            first = false;
+                        }
+                        else
                         {
                             builder.Append(" ");
                         }
@@ -216,12 +225,17 @@ namespace Essential.Diagnostics
             }
             else if (value is String)
             {
-                return "'" + ((String)value).Replace(@"\", @"\\").Replace("'", @"\'") + "'";
+                return QuoteString((string)value);
             }
             else
             {
-                return value.ToString();
+                return QuoteString(value.ToString());
             }
+        }
+
+        private string QuoteString(string value)
+        {
+            return "'" + value.Replace(@"\", @"\\").Replace("'", @"\'") + "'";
         }
 
         private bool ValueIsPrimitive(object value)
@@ -235,7 +249,8 @@ namespace Essential.Diagnostics
                 || value is UInt64
                 || value is Single
                 || value is Double
-                || value is Decimal;
+                || value is Decimal
+                || value is Guid;
          }
 
         private bool GetValue(string name, out object value)
