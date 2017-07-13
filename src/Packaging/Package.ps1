@@ -379,6 +379,7 @@ function Package-NuPackAll($solutionPath, $configuration, $version, $dependencyV
 	Package-NuPackProject $solutionpath $configuration $version $dependencyVersion "Essential.Diagnostics.SqlDatabaseTraceListener" $true
 
 	Package-NuPackProject $solutionpath $configuration $version $dependencyVersion "Essential.Diagnostics.Fluent"
+	Package-NuPackProject $solutionpath $configuration $version $dependencyVersion "Essential.Diagnostics.StructuredExtensions"
 }
 
 function Package-NuPackProject($solutionPath, $configuration, $version, $dependencyVersion, $project, $includeSqlTool = $false) {
