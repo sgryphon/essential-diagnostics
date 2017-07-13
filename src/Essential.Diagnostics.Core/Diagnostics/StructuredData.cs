@@ -153,8 +153,17 @@ namespace Essential.Diagnostics
             if (_message == null)
             {
                 BuildAllProperties();
-                _message = StringTemplate.Format(_messageTemplate, _allProperties);
+                _message = StringTemplate.Format(_messageTemplate, GetValue);
             }
+        }
+
+        private bool GetValue(string name, out object value)
+        {
+            if (!_allProperties.TryGetValue(name, out value))
+            {
+                value = null;
+            }
+            return true;
         }
 
         class MessageTemplateKeyExtractor

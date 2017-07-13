@@ -111,6 +111,18 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod()]
+        public void StringValuesMissingAreBlank()
+        {
+            var template = "{a}x{b}y";
+            var a = "A";
+
+            IStructuredData data = new StructuredData(template, a);
+            var actual = data.ToString();
+
+            Assert.AreEqual("Axy", actual);
+        }
+
+        [TestMethod()]
         public void StringValuesOverrideProperties()
         {
             var template = "{a}x{b}";
