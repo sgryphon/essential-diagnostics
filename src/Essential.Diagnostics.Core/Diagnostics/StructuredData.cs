@@ -4,49 +4,101 @@ using System.Text;
 
 namespace Essential.Diagnostics
 {
+    /// <summary>
+    /// Holds structured data for logging as key-value properties, along with a templated message.
+    /// </summary>
     public class StructuredData : IStructuredData
     {
+        Dictionary<string, object> _allProperties;
+        Dictionary<string, object> _baseProperties;
+        Exception _exception;
         string _message;
-        List<string> _templateKeys = new List<string>();
+        string _messageTemplate;
         List<object> _templateValues;
 
+        /// <summary>
+        /// Constructor. Creates structured data with the specified properties.
+        /// </summary>
+        /// <param name="properties">The key-value properties to trace</param>
+        public StructuredData(IDictionary<string, object> properties)
+            : this(properties, null, null, null)
+        {
+        }
+
+        /// <summary>
+        /// Constructor. Creates structured data with the specified properties, message template, and (optional) override template values.
+        /// </summary>
+        /// <param name="properties">The key-value properties to trace</param>
+        /// <param name="messageTemplate">Message template to insert properties into, containing keys</param>
+        /// <param name="templateValues">Optional values, assigned in sequence, to keys in the template</param>
+        public StructuredData(IDictionary<string, object> properties, string messageTemplate, params object[] templateValues)
+            : this(properties, null, messageTemplate, templateValues)
+        {
+        }
+
+        /// <summary>
+        /// Constructor. Creates structured data with the specified message template, and template values.
+        /// </summary>
+        /// <param name="messageTemplate">Message template to insert properties into, containing keys</param>
+        /// <param name="templateValues">Values, assigned in sequence, to keys in the template</param>
         public StructuredData(string messageTemplate, params object[] templateValues)
             : this(null, null, messageTemplate, templateValues)
         {
         }
 
+        /// <summary>
+        /// Constructor. Creates structured data with the specified exception, message template, and template values.
+        /// </summary>
+        /// <param name="exception">The Exception to trace</param>
+        /// <param name="messageTemplate">Message template to insert properties into, containing keys</param>
+        /// <param name="templateValues">Values, assigned in sequence, to keys in the template</param>
         public StructuredData(Exception exception, string messageTemplate, params object[] templateValues)
-            : this(exception, null, messageTemplate, templateValues)
+            : this(null, exception, messageTemplate, templateValues)
         {
         }
 
-        public StructuredData(IDictionary<string, object> properties, string messageTemplate, params object[] templateValues)
-            : this(null, properties, messageTemplate, templateValues)
+        /// <summary>
+        /// Constructor. Creates structured data with the specified properties, exception, message template, and (optional) override template values.
+        /// </summary>
+        /// <param name="properties">The key-value properties to trace</param>
+        /// <param name="exception">The Exception to trace</param>
+        /// <param name="messageTemplate">Message template to insert properties into, containing keys</param>
+        /// <param name="templateValues">Optional values, assigned in sequence, to keys in the template</param>
+        /// <remarks>
+        /// <para>
+        /// Note that the relationship between messageTemplate and templateValues is flexible.
+        /// </para>
+        /// <para>
+        /// The IStructuredData.Properties dictionary is built from the properties parameter, if present, 
+        /// with the exception parameter, if present, overriding the "Exception" property.
+        /// </para>
+        /// <para>
+        /// Items in templateValues, if any, are then added to the properties using the matching key in sequence from
+        /// messageTemplate, overriding any existing value in properties. Note that templateValues are not needed, and 
+        /// there is no error if there are less values than messageTemplate keys. If there are more values than keys, 
+        /// then they are added as "Extra1", "Extra2", etc.
+        /// </para>
+        /// </remarks>
+        public StructuredData(IDictionary<string, object> properties, Exception exception, string messageTemplate, params object[] templateValues)
         {
-        }
-
-        public StructuredData(Exception exception, IDictionary<string, object> additionalProperties, string messageTemplate, params object[] templateValues)
-        {
-            if (additionalProperties == null)
+            if (properties == null)
             {
-                AdditionalProperties = new Dictionary<string, object>();
+                _baseProperties = new Dictionary<string, object>();
             }
             else
             {
-                AdditionalProperties = new Dictionary<string, object>(additionalProperties);
+                _baseProperties = new Dictionary<string, object>(properties);
             }
-            Exception = exception;
-            MessageTemplate = messageTemplate;
+            _exception = exception;
+            _messageTemplate = messageTemplate;
             _templateValues = new List<object>(templateValues);
-            // TODO: Move parsing the message to only when needed
-            _message = StringTemplate.Format(MessageTemplate, GetValue);
         }
 
-        public IDictionary<string, object> AdditionalProperties { get; }
+        public IDictionary<string, object> BaseProperties { get { return _baseProperties; } }
 
-        public Exception Exception { get; }
+        public Exception Exception { get { return _exception; } }
 
-        public string MessageTemplate { get; }
+        public string MessageTemplate { get { return _messageTemplate; } }
 
         public IEnumerable<object> TemplateValues { get { return _templateValues; } }
 
@@ -54,37 +106,83 @@ namespace Essential.Diagnostics
         {
             get
             {
-                // TODO: Generate once and cache
-                // TODO: Return null to GetValue for quick grab of names
-                var allProperties = new Dictionary<string, object>();
-                for (var index = 0; index < _templateKeys.Count; index++)
-                {
-                    allProperties.Add(_templateKeys[index], _templateValues[index]);
-                }
-                if (Exception != null)
-                {
-                    allProperties.Add("Exception", Exception);
-                }
-                foreach (var kvp in AdditionalProperties)
-                {
-                    allProperties.Add(kvp.Key, kvp.Value);
-                }
-                return allProperties;
+                BuildAllProperties();
+                return _allProperties;
             }
         }
 
         public override string ToString()
         {
+            BuildMessage();
             return _message;
         }
-        
-        private bool GetValue(string name, out object value)
+
+        private void BuildAllProperties()
         {
-            // TODO: Return false (which will throw error) if too many items requested
-            // TODO: If lazy, then need to lock for multithread (only init once)
-            _templateKeys.Add(name);
-            value = _templateValues[_templateKeys.Count - 1];
-            return true;
+            if (_allProperties == null)
+            {
+                var allProperties = new Dictionary<string, object>(_baseProperties);
+                if (_exception != null)
+                {
+                    allProperties["Exception"] = _exception;
+                }
+                if (_templateValues != null && _templateValues.Count > 0)
+                {
+                    var keyExtractor = new MessageTemplateKeyExtractor(_messageTemplate);
+                    var keys = keyExtractor.GetKeys();
+                    var extraCount = 0;
+                    for (var index = 0; index < _templateValues.Count; index++)
+                    {
+                        if (index < keys.Count)
+                        {
+                            allProperties[keys[index]] = _templateValues[index];
+                        }
+                        else
+                        {
+                            extraCount++;
+                            allProperties[string.Format("Extra{0}", extraCount)] = _templateValues[index];
+                        }
+                    }
+                }
+                _allProperties = allProperties;
+            }
+        }
+
+        private void BuildMessage()
+        {
+            if (_message == null)
+            {
+                BuildAllProperties();
+                _message = StringTemplate.Format(_messageTemplate, _allProperties);
+            }
+        }
+
+        class MessageTemplateKeyExtractor
+        {
+            string _messageTemplate;
+            IList<string> _keys;
+
+            public MessageTemplateKeyExtractor(string messageTemplate)
+            {
+                _messageTemplate = messageTemplate;
+            }
+
+            public IList<string> GetKeys()
+            {
+                if (_keys == null)
+                {
+                    _keys = new List<string>();
+                    var dummy = StringTemplate.Format(_messageTemplate, GetValue);
+                }
+                return _keys;
+            }
+
+            private bool GetValue(string name, out object value)
+            {
+                _keys.Add(name);
+                value = null;
+                return true;
+            }
         }
     }
 }
