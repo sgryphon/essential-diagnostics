@@ -152,6 +152,75 @@ namespace Essential.Diagnostics.Tests
             Assert.AreEqual("a=1", actual);
         }
 
+        [TestMethod()]
+        public void StringBasicStringValue()
+        {
+            var properties = new Dictionary<string, object>() {
+                { "a", "A" },
+            };
+
+            IStructuredData data = new StructuredData(properties);
+            var actual = data.ToString();
+
+            Assert.AreEqual("a='A'", actual);
+        }
+
+        [TestMethod()]
+        public void StringDateTimeValue()
+        {
+            var properties = new Dictionary<string, object>() {
+                { "a", new DateTime(2001, 2, 3, 4, 5, 6, 7, DateTimeKind.Utc) },
+                { "b", new DateTime(2002, 2, 3, 4, 5, 6, 7, DateTimeKind.Local) },
+            };
+
+            IStructuredData data = new StructuredData(properties);
+            var actual = data.ToString();
+
+            Assert.AreEqual("a=2001-02-03T04:05:06 b=2002-02-03T04:05:06", actual);
+        }
+
+        [TestMethod()]
+        public void StringDateTimeOffsetValue()
+        {
+            var properties = new Dictionary<string, object>() {
+                { "a", new DateTimeOffset(2001, 2, 3, 4, 5, 6, 7, TimeSpan.Zero) },
+                { "b", new DateTimeOffset(2002, 2, 3, 4, 5, 6, 7, TimeSpan.FromHours(10)) },
+            };
+
+            IStructuredData data = new StructuredData(properties);
+            var actual = data.ToString();
+
+            Assert.AreEqual("a=2001-02-03T04:05:06+00:00 b=2002-02-03T04:05:06+10:00", actual);
+        }
+
+        [TestMethod()]
+        public void StringByteValue()
+        {
+            var properties = new Dictionary<string, object>() {
+                { "a", (byte)0 },
+                { "b", (byte)0xa1 },
+            };
+
+            IStructuredData data = new StructuredData(properties);
+            var actual = data.ToString();
+
+            Assert.AreEqual("a=0x0 b=0xA1", actual);
+        }
+
+        [TestMethod()]
+        public void StringTimeSpanValue()
+        {
+            var properties = new Dictionary<string, object>() {
+                { "a", new TimeSpan(0, 0, 0, 4, 5) },
+                { "b", TimeSpan.Zero - new TimeSpan(1, 2, 3, 4, 5) },
+            };
+
+            IStructuredData data = new StructuredData(properties);
+            var actual = data.ToString();
+
+            Assert.AreEqual("a=00:00:04.0050000 b=-1.02:03:04.0050000", actual);
+        }
+
 
         //[TestMethod()]
         //public void StringWithException()

@@ -199,7 +199,7 @@ namespace Essential.Diagnostics
             }
             else if (value is Byte)
             {
-                return string.Format("0x{0:H}", value);
+                return string.Format("0x{0:X}", value);
             }
             else if (value is DateTime)
             {
@@ -207,10 +207,11 @@ namespace Essential.Diagnostics
             }
             else if (value is DateTimeOffset)
             {
-                return ((DateTimeOffset)value).ToString("s");
+                return ((DateTimeOffset)value).ToString("yyyy'-'MM'-'dd'T'HH':'mm':'sszzz");
             }
             else if (value is TimeSpan)
             {
+                // TODO: Use ISO format for timespans??
                 return ((TimeSpan)value).ToString();
             }
             else if (value is String)
