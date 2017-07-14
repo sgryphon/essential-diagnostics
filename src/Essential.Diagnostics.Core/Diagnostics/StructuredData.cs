@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace Essential.Diagnostics
@@ -168,90 +170,18 @@ namespace Essential.Diagnostics
             if (_message == null)
             {
                 BuildAllProperties();
-                var builder = new StringBuilder();
+                var writer = new StringWriter();
+                var delimiter = "";
                 if (_messageTemplate != null)
                 {
                     var messageFromTemplate = StringTemplate.Format(_messageTemplate, GetValue);
-                    builder.Append(messageFromTemplate);
+                    writer.Write(messageFromTemplate);
+                    delimiter = "; ";
                 }
-                var first = true;
-                foreach (var kvp in _allProperties)
-                {
-                    if (!_messageTemplateKeys.Contains(kvp.Key))
-                    {
-                        var key = kvp.Key.Replace(' ', '_').Replace('=', '_');
-                        var value = BuildValue(kvp.Value);
-                        if (first)
-                        {
-                            if (builder.Length > 0)
-                            {
-                                builder.Append("; ");
-                            }
-                            first = false;
-                        }
-                        else
-                        {
-                            builder.Append(" ");
-                        }
-                        builder.AppendFormat("{0}={1}", key, value);
-                    }
-                }
-                _message = builder.ToString();
+                StructuredPropertyFormatter.FormatProperties(_allProperties, _messageTemplateKeys, writer, ref delimiter);
+                _message = writer.GetStringBuilder().ToString();
             }
         }
-
-        private string BuildValue(object value)
-        {
-            if (ValueIsPrimitive(value))
-            {
-                return value.ToString();
-            }
-            else if (value is Byte)
-            {
-                return string.Format("0x{0:X}", value);
-            }
-            else if (value is DateTime)
-            {
-                return ((DateTime)value).ToString("s");
-            }
-            else if (value is DateTimeOffset)
-            {
-                return ((DateTimeOffset)value).ToString("yyyy'-'MM'-'dd'T'HH':'mm':'sszzz");
-            }
-            else if (value is TimeSpan)
-            {
-                // TODO: Use ISO format for timespans??
-                return ((TimeSpan)value).ToString();
-            }
-            else if (value is String)
-            {
-                return QuoteString((string)value);
-            }
-            else
-            {
-                return QuoteString(value.ToString());
-            }
-        }
-
-        private string QuoteString(string value)
-        {
-            return "'" + value.Replace(@"\", @"\\").Replace("'", @"\'") + "'";
-        }
-
-        private bool ValueIsPrimitive(object value)
-        {
-            return value is Int16
-                || value is Int32
-                || value is Int64
-                || value is SByte
-                || value is UInt16
-                || value is UInt32
-                || value is UInt64
-                || value is Single
-                || value is Double
-                || value is Decimal
-                || value is Guid;
-         }
 
         private bool GetValue(string name, out object value)
         {
