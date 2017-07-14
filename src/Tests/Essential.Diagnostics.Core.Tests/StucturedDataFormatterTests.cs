@@ -126,19 +126,19 @@ namespace Essential.Diagnostics.Tests
             Assert.AreEqual("a=12345678-abcd-4321-8765-ba9876543210", actual);
         }
 
-        //[TestMethod()]
-        //public void ArrayValues()
-        //{
-        //    var properties = new Dictionary<string, object>() {
-        //        { "a", new int[] { 1, 2, 3 } },
-        //        { "b", new List<string>() { "A", "B", "C" } },
-        //    };
+        [TestMethod()]
+        public void ArrayValues()
+        {
+            var properties = new Dictionary<string, object>() {
+                { "a", new int[] { 1, 2, 3 } },
+                { "b", new List<string>() { "A", "B", "C" } },
+            };
 
-        //    IStructuredData data = new StructuredData(properties);
-        //    var actual = data.ToString();
+            IStructuredData data = new StructuredData(properties);
+            var actual = data.ToString();
 
-        //    Assert.AreEqual("a=[1,2,3] b=['A','B','C']", actual);
-        //}
+            Assert.AreEqual("a=[1,2,3] b=['A','B','C']", actual);
+        }
 
         [TestMethod()]
         public void EscapedStringValue()

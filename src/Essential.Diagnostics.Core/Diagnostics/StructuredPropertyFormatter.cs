@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -50,7 +51,7 @@ namespace Essential
         {
             output.Write(delimiter);
             WritePropertyName(name, output);
-            WriteLiteral(value, output);
+            WritePropertyValue(value, output);
             delimiter = " ";
         }
 
@@ -70,7 +71,7 @@ namespace Essential
             output.Write("=");
         }
 
-        static void WriteArray(IList<object> array, TextWriter output)
+        static void WriteArray(IList array, TextWriter output)
         {
             output.Write("[");
             for (var index = 0; index < array.Count; index++)
@@ -80,12 +81,12 @@ namespace Essential
                     output.Write(",");
                 }
                 var value = array[index];
-                WriteLiteral(value, output);
+                WritePropertyValue(value, output);
             }
             output.Write("]");
         }
 
-        static void WriteLiteral(object value, TextWriter output)
+        static void WritePropertyValue(object value, TextWriter output)
         {
             if (value == null)
             {
@@ -93,9 +94,9 @@ namespace Essential
                 return;
             }
 
-            if (value is IList<object>)
+            if (value is IList)
             {
-                WriteArray((IList<object>)value, output);
+                WriteArray((IList)value, output);
                 return;
             }
 
