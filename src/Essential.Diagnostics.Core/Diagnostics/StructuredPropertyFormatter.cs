@@ -56,7 +56,17 @@ namespace Essential
 
         static void WritePropertyName(string name, TextWriter output)
         {
-            output.Write(name);
+            foreach (var c in name)
+            {
+                if (c == ' ')
+                {
+                    output.Write('_');
+                }
+                else if (char.IsLetterOrDigit(c))
+                {
+                    output.Write(c);
+                }
+            }
             output.Write("=");
         }
 
