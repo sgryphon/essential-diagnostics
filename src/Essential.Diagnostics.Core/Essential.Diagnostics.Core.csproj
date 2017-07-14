@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\OrderedDictionary.cs" />
     <Compile Include="Diagnostics\StructuredPropertyFormatter.cs" />
     <Compile Include="Diagnostics\ExpressionFilter.cs" />
     <Compile Include="Diagnostics\IStructuredData.cs" />

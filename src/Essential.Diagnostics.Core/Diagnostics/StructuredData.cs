@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Essential.Collections;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
 
@@ -11,8 +13,8 @@ namespace Essential.Diagnostics
     /// </summary>
     public class StructuredData : IStructuredData
     {
-        Dictionary<string, object> _allProperties;
-        Dictionary<string, object> _baseProperties;
+        OrderedDictionary<string, object> _allProperties;
+        OrderedDictionary<string, object> _baseProperties;
         Exception _exception;
         string _message;
         string _messageTemplate;
@@ -23,7 +25,7 @@ namespace Essential.Diagnostics
         /// Constructor. Creates structured data with the specified properties.
         /// </summary>
         /// <param name="properties">The key-value properties to trace</param>
-        public StructuredData(IDictionary<string, object> properties)
+        public StructuredData(IEnumerable<KeyValuePair<string, object>> properties)
             : this(properties, null, null, null)
         {
         }
@@ -34,7 +36,7 @@ namespace Essential.Diagnostics
         /// <param name="properties">The key-value properties to trace</param>
         /// <param name="messageTemplate">Message template to insert properties into, containing keys</param>
         /// <param name="templateValues">Optional values, assigned in sequence, to keys in the template</param>
-        public StructuredData(IDictionary<string, object> properties, string messageTemplate, params object[] templateValues)
+        public StructuredData(IEnumerable<KeyValuePair<string, object>> properties, string messageTemplate, params object[] templateValues)
             : this(properties, null, messageTemplate, templateValues)
         {
         }
@@ -82,15 +84,15 @@ namespace Essential.Diagnostics
         /// then they are added as "Extra1", "Extra2", etc.
         /// </para>
         /// </remarks>
-        public StructuredData(IDictionary<string, object> properties, Exception exception, string messageTemplate, params object[] templateValues)
+        public StructuredData(IEnumerable<KeyValuePair<string, object>> properties, Exception exception, string messageTemplate, params object[] templateValues)
         {
             if (properties == null)
             {
-                _baseProperties = new Dictionary<string, object>();
+                _baseProperties = new OrderedDictionary<string, object>();
             }
             else
             {
-                _baseProperties = new Dictionary<string, object>(properties);
+                _baseProperties = new OrderedDictionary<string, object>(properties);
             }
             _exception = exception;
             _messageTemplate = messageTemplate;
@@ -104,7 +106,7 @@ namespace Essential.Diagnostics
             }
         }
 
-        public IDictionary<string, object> BaseProperties { get { return _baseProperties; } }
+        public IEnumerable<KeyValuePair<string, object>> BaseProperties { get { return _baseProperties; } }
 
         public Exception Exception { get { return _exception; } }
 
@@ -131,10 +133,14 @@ namespace Essential.Diagnostics
         {
             if (_allProperties == null)
             {
-                var allProperties = new Dictionary<string, object>(_baseProperties);
+                var allProperties = new OrderedDictionary<string, object>();
+                foreach (var kvp in _baseProperties)
+                {
+                    allProperties.Add(kvp.Key, kvp.Value);
+                }
                 if (_exception != null)
                 {
-                    allProperties["Exception"] = _exception;
+                    ((IDictionary<string,object>)allProperties)["Exception"] = _exception;
                 }
                 if (_messageTemplate != null)
                 {
@@ -152,12 +158,12 @@ namespace Essential.Diagnostics
                     {
                         if (index < _messageTemplateKeys.Count)
                         {
-                            allProperties[_messageTemplateKeys[index]] = _templateValues[index];
+                            ((IDictionary<string,object>)allProperties)[_messageTemplateKeys[index]] = _templateValues[index];
                         }
                         else
                         {
                             extraCount++;
-                            allProperties[string.Format("Extra{0}", extraCount)] = _templateValues[index];
+                            ((IDictionary<string, object>)allProperties)[string.Format("Extra{0}", extraCount)] = _templateValues[index];
                         }
                     }
                 }
@@ -191,6 +197,7 @@ namespace Essential.Diagnostics
             }
             return true;
         }
+
 
         class MessageTemplateKeyExtractor
         {
