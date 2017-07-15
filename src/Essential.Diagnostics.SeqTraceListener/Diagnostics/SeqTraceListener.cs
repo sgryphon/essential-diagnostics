@@ -1,5 +1,6 @@
 ﻿using Essential.Net;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -513,7 +514,7 @@ namespace Essential.Diagnostics
 
         private bool IsFormatterLiteral(object value)
         {
-            return SeqPayloadFormatter.IsLiteral(value);
+            return SeqPayloadFormatter.IsLiteral(value) || value is IList;
         }
     }
 }

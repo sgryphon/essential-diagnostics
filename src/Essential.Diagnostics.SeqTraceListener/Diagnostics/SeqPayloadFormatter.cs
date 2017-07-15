@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -196,7 +197,7 @@ namespace Essential.Diagnostics
             output.Write("\":");
         }
 
-        static void WriteArray(IList<object> array, TextWriter output)
+        static void WriteArray(IList array, TextWriter output)
         {
             output.Write("[");
             for (var index = 0; index < array.Count; index++)
@@ -219,9 +220,9 @@ namespace Essential.Diagnostics
                 return;
             }
 
-            if (value is IList<object>)
+            if (value is IList)
             {
-                WriteArray((IList<object>)value, output);
+                WriteArray((IList)value, output);
                 return;
             }
 

@@ -170,5 +170,62 @@ namespace Essential.Diagnostics.Tests
             var regexEventA = new Regex("\"EventId\":\"A\"");
             StringAssert.DoesNotMatch(requestBody, regexEventA);
         }
+
+        [TestMethod]
+        public void SeqStructuredArray()
+        {
+            var mockRequestFactory = new MockHttpWebRequestFactory();
+            mockRequestFactory.ResponseQueue.Enqueue(
+                new MockHttpWebResponse(HttpStatusCode.OK, null)
+                );
+
+            var listener = new SeqTraceListener("http://testuri");
+            listener.BatchSize = 0;
+            listener.BatchSender.HttpWebRequestFactory = mockRequestFactory;
+
+            var structuredData = new StructuredData("{a}", new [] { 1, 2, 3 });
+            listener.TraceData(null, "TestSource", TraceEventType.Warning, 1, structuredData);
+
+            Assert.AreEqual(1, mockRequestFactory.RequestsCreated.Count);
+
+            var request = mockRequestFactory.RequestsCreated[0];
+            var requestBody = request.RequestBody;
+            Console.WriteLine(requestBody);
+            StringAssert.Contains(requestBody, "\"MessageTemplate\":\"{a}\"");
+            StringAssert.Contains(requestBody, "\"a\":[1,2,3]");
+        }
+
+        [TestMethod]
+        public void SeqStructuredCustomObject()
+        {
+            var mockRequestFactory = new MockHttpWebRequestFactory();
+            mockRequestFactory.ResponseQueue.Enqueue(
+                new MockHttpWebResponse(HttpStatusCode.OK, null)
+                );
+
+            var listener = new SeqTraceListener("http://testuri");
+            listener.BatchSize = 0;
+            listener.BatchSender.HttpWebRequestFactory = mockRequestFactory;
+
+            var structuredData = new StructuredData("{a}", new TestObject());
+            listener.TraceData(null, "TestSource", TraceEventType.Warning, 1, structuredData);
+
+            Assert.AreEqual(1, mockRequestFactory.RequestsCreated.Count);
+
+            var request = mockRequestFactory.RequestsCreated[0];
+            var requestBody = request.RequestBody;
+            Console.WriteLine(requestBody);
+            StringAssert.Contains(requestBody, "\"MessageTemplate\":\"{a}\"");
+            // Note that the '\' is encoded as '\\'
+            StringAssert.Contains(requestBody, @"""a"":""w=x\\y'z""");
+        }
+
+        class TestObject
+        {
+            public override string ToString()
+            {
+                return @"w=x\y'z";
+            }
+        }
     }
 }
