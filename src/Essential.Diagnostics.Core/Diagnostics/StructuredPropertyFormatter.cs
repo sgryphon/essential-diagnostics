@@ -130,6 +130,8 @@ namespace Essential
                 return;
             }
 
+            // TODO: Change to IEnumerable, if possible (may need to check LiteralWriters first!)
+            // TODO: Support IDictionary<string, object> as well ... but really need to start being careful of circular references
             if (value is IList)
             {
                 WriteArray((IList)value, output);

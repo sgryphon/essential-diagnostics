@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 
@@ -126,6 +127,9 @@ namespace Essential.Diagnostics
             }
         }
 
+        /// <summary>
+        /// Gets or sets the (maximum) size of batches to send. Use 0 to send each trace individually. Default is 100.
+        /// </summary>
         public int BatchSize
         {
             get
@@ -161,13 +165,16 @@ namespace Essential.Diagnostics
             }
         }
 
+        /// <summary>
+        /// Gets or sets the timeout to wait before sending incomplete batches. Default is 1 second.
+        /// </summary>
         public TimeSpan BatchTimeout
         {
             get
             {
                 if (!_batchTimeoutParsed)
                 {
-                    if (Attributes.ContainsKey("batchSize"))
+                    if (Attributes.ContainsKey("batchTimeout"))
                     {
                         TimeSpan batchTimeout;
                         if (TimeSpan.TryParse(Attributes["batchTimeout"], out batchTimeout))
@@ -195,16 +202,19 @@ namespace Essential.Diagnostics
             }
         }
 
+        /// <summary>
+        /// Gets or sets the maximum number of traces to queue in memory, to limit memory use. Excess traces are discarded. Default is 1000.
+        /// </summary>
         public int MaxQueueSize
         {
             get
             {
                 if (!_maxQueueSizeParsed)
                 {
-                    if (Attributes.ContainsKey("maxBatchSize"))
+                    if (Attributes.ContainsKey("maxQueueSize"))
                     {
                         int maxQueueSize;
-                        if (int.TryParse(Attributes["maxBatchSize"], NumberStyles.Any,
+                        if (int.TryParse(Attributes["maxQueueSize"], NumberStyles.Any,
                             CultureInfo.InvariantCulture, out maxQueueSize))
                         {
                             _maxQueueSize = maxQueueSize;
@@ -226,10 +236,13 @@ namespace Essential.Diagnostics
             {
                 _maxQueueSize = value;
                 _maxQueueSizeParsed = true;
-                Attributes["maxBatchSize"] = value.ToString(CultureInfo.InvariantCulture);
+                Attributes["maxQueueSize"] = value.ToString(CultureInfo.InvariantCulture);
             }
         }
 
+        /// <summary>
+        /// Gets or sets the maximum number of retries to deliver a batch. If exceeded, the batch is dropped, to prevent poison messages. Default is 10.
+        /// </summary>
         public int MaxRetries
         {
             get
@@ -272,11 +285,6 @@ namespace Essential.Diagnostics
         {
             return _supportedAttributes;
         }
-        internal SeqBatchSender BatchSender
-        {
-            get { return _batchSender; }
-            set { _batchSender = value; }
-        }
 
         /// <summary>
         /// Handle the format strings
@@ -297,121 +305,16 @@ namespace Essential.Diagnostics
             _batchSender.Enqueue(traceData);
         }
 
-        private TraceData CreateTraceData(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string messageFormat, object[] messageArgs, Guid? relatedActivityId, object[] data)
+        internal SeqBatchSender BatchSender
         {
-            // Standard properies (always record)
+            get { return _batchSender; }
+            set { _batchSender = value; }
+        }
 
-            // TraceOptions.DateTime
-            var traceTime = default(DateTimeOffset);
-            if (eventCache != null)
-            {
-                traceTime = new DateTimeOffset(eventCache.DateTime);
-            }
-            else
-            {
-                traceTime = DateTimeOffset.UtcNow;
-            }
+        private void AddAttributeProperties(Dictionary<string, object> properties, TraceEventCache eventCache)
+        {
+            EnsureAttributesParsed();
 
-            IStructuredData structuredData = null;
-            var recordedArgs = default(List<object>);
-            var exception = default(Exception);
-            var recordedData = default(List<object>);
-            if (messageFormat == null
-                && (messageArgs == null || messageArgs.Length == 0)
-                && (data != null && data.Length == 1 && data[0] is IStructuredData))
-            {
-                // Structured Data
-                structuredData = (IStructuredData)data[0];
-            }
-            else
-            {
-                // Record Message Args
-                if (messageArgs != null)
-                {
-                    recordedArgs = new List<object>();
-                    foreach (var arg in messageArgs)
-                    {
-                        if (IsFormatterLiteral(arg))
-                        {
-                            recordedArgs.Add(arg);
-                        }
-                        else if (arg is Exception)
-                        {
-                            exception = (Exception)arg;
-                            recordedArgs.Add(arg.ToString());
-                        }
-                        else
-                        {
-                            // TODO: Should really take into account the format specifier in the formatString
-                            // (before serializing)
-                            recordedArgs.Add(arg.ToString());
-                        }
-                    }
-                }
-
-                // Record Data
-                if (data != null)
-                {
-                    recordedData = new List<object>();
-                    foreach (var dataItem in data)
-                    {
-                        if (IsFormatterLiteral(dataItem))
-                        {
-                            recordedData.Add(dataItem);
-                        }
-                        else
-                        {
-                            recordedData.Add(dataItem.ToString());
-                        }
-                    }
-                    if (messageFormat == null)
-                    {
-                        messageFormat = "{Data}";
-                    }
-                }
-            }
-
-            // Activity ID
-            var activityId = Trace.CorrelationManager.ActivityId;
-
-            // Optional properties (based on TraceOptions, etc)
-            var properties = new Dictionary<string, object>();
-
-            if (!_propertiesParsed)
-            {
-                foreach (var propertyName in AdditionalProperties)
-                {
-                    switch (propertyName.ToUpperInvariant())
-                    {
-                        case "CALLSTACK":
-                            _propertyCallstack = true;
-                            break;
-                        case "LOGICALOPERATIONSTACK":
-                            _propertyLogicalOperationStack = true;
-                            break;
-                        case "MACHINENAME":
-                            _propertyMachineName = true;
-                            break;
-                        case "PRINCIPALNAME":
-                            _propertyPrincipalName = true;
-                            break;
-                        case "PROCESSID":
-                            _propertyProcessId = true;
-                            break;
-                        case "THREADID":
-                            _propertyThreadId = true;
-                            break;
-                        case "USER":
-                            _propertyUser = true;
-                            break;
-                    }
-                }
-                _propertiesParsed = true;
-            }
-
-            // TraceOptions.Timestamp
-
-            // Callstack
             if (_propertyCallstack || (TraceOutputOptions & TraceOptions.Callstack) == TraceOptions.Callstack)
             {
                 if (eventCache != null)
@@ -420,24 +323,15 @@ namespace Essential.Diagnostics
                 }
             }
 
-            // Convert stack to string for serialization
             if (_propertyLogicalOperationStack || (TraceOutputOptions & TraceOptions.LogicalOperationStack) == TraceOptions.LogicalOperationStack)
             {
                 var stack = (eventCache != null ? eventCache.LogicalOperationStack : null) ?? Trace.CorrelationManager.LogicalOperationStack;
-
                 var logicalOperationStack = new List<object>();
                 if (stack != null && stack.Count > 0)
                 {
                     foreach (object stackItem in stack)
                     {
-                        if (IsFormatterLiteral(stackItem))
-                        {
-                            logicalOperationStack.Add(stackItem);
-                        }
-                        else
-                        {
-                            logicalOperationStack.Add(stackItem.ToString());
-                        }
+                        logicalOperationStack.Add(GetRecordedValue(stackItem));
                     }
                     properties.Add("LogicalOperationStack", logicalOperationStack.ToArray());
                 }
@@ -474,42 +368,160 @@ namespace Essential.Diagnostics
                 }
                 properties.Add("PrincipalName", principalName);
             }
+        }
 
-            //var thread = Thread.CurrentThread.Name ?? threadId;
-
-            //payload.Properties.Add("Thing", new Thing("Foo"));
-
-            if (structuredData != null)
+        private void AddStructuredData(Dictionary<string, object> properties, IStructuredData structuredData, ref Exception exception, ref string messageFormat)
+        {
+            foreach (var kvp in structuredData.Properties)
             {
-                messageFormat = structuredData.MessageTemplate;
-                foreach (var kvp in structuredData.Properties)
+                if (kvp.Key.StartsWith("@"))
                 {
-                    // TODO: Handle destructuring
-                    if (IsFormatterLiteral(kvp.Value))
+                    Dictionary<string, object> destructuredObject = null;
+                    if (kvp.Value != null)
                     {
-                        properties[kvp.Key] = kvp.Value;
+                        destructuredObject = new Dictionary<string, object>();
+                        var type = kvp.Value.GetType();
+                        var publicProperties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty);
+                        foreach (var propertyInfo in publicProperties)
+                        {
+                            var propertyValue = propertyInfo.GetValue(kvp.Value, null);
+                            destructuredObject[propertyInfo.Name] = GetRecordedValue(propertyValue);
+                        }
                     }
-                    else
-                    {
-                        properties[kvp.Key] = kvp.Value.ToString();
-                    }
+                    properties[kvp.Key] = destructuredObject;
+                }
+                else
+                {
+                    properties[kvp.Key] = GetRecordedValue(kvp.Value);
+                }
+                // Grab value if 'Exception'
+                if (kvp.Key == "Exception" && kvp.Value is Exception)
+                {
+                    exception = (Exception)kvp.Value;
                 }
             }
+            messageFormat = structuredData.MessageTemplate;
+        }
+
+        private List<object> BuildRecordedArgs(object[] messageArgs, ref Exception exception)
+        {
+            List<object> recordedArgs = new List<object>();
+            foreach (var arg in messageArgs)
+            {
+                recordedArgs.Add(GetRecordedValue(arg));
+                // Grab value if Exception (latest wins)
+                if (arg is Exception)
+                {
+                    exception = (Exception)arg;
+                }
+            }
+            return recordedArgs;
+        }
+
+        private List<object> BuildRecordedData(object[] data, ref string messageFormat)
+        {
+            List<object> recordedData = new List<object>();
+            foreach (var dataItem in data)
+            {
+                recordedData.Add(GetRecordedValue(dataItem));
+            }
+            // If message format not set, display the data
+            if (messageFormat == null)
+            {
+                messageFormat = "{Data}";
+            }
+            return recordedData;
+        }
+
+        private TraceData CreateTraceData(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string messageFormat, object[] messageArgs, Guid? relatedActivityId, object[] data)
+        {
+            var traceTime = default(DateTimeOffset);
+            if (eventCache != null)
+            {
+                traceTime = new DateTimeOffset(eventCache.DateTime);
+            }
+            else
+            {
+                traceTime = DateTimeOffset.UtcNow;
+            }
+            var activityId = Trace.CorrelationManager.ActivityId;
+
+            // Properties
+            var properties = new Dictionary<string, object>();
+
+            AddAttributeProperties(properties, eventCache);
 
             object[] recordedArgsArray = null;
-            if (recordedArgs != null)
-            {
-                recordedArgsArray = recordedArgs.ToArray();
-            }
+            var exception = default(Exception);
             object[] recordedDataArray = null;
-            if (recordedData != null)
+            if (messageFormat == null
+                && (messageArgs == null || messageArgs.Length == 0)
+                && (data != null && data.Length == 1 && data[0] is IStructuredData))
             {
-                recordedDataArray = recordedData.ToArray();
+                var structuredData = (IStructuredData)data[0];
+                AddStructuredData(properties, structuredData, ref exception, ref messageFormat);
+            }
+            else
+            {
+                if (messageArgs != null)
+                {
+                    var recordedArgs = BuildRecordedArgs(messageArgs, ref exception);
+                    recordedArgsArray = recordedArgs.ToArray();
+                }
+                if (data != null)
+                {
+                    var recordedData = BuildRecordedData(data, ref messageFormat);
+                    recordedDataArray = recordedData.ToArray();
+                }
             }
 
             var traceData = new TraceData(traceTime, source, activityId, eventType, id, messageFormat,
                 recordedArgsArray, exception, relatedActivityId, recordedDataArray, properties);
             return traceData;
+        }
+
+        private void EnsureAttributesParsed()
+        {
+            if (!_propertiesParsed)
+            {
+                foreach (var propertyName in AdditionalProperties)
+                {
+                    switch (propertyName.ToUpperInvariant())
+                    {
+                        case "CALLSTACK":
+                            _propertyCallstack = true;
+                            break;
+                        case "LOGICALOPERATIONSTACK":
+                            _propertyLogicalOperationStack = true;
+                            break;
+                        case "MACHINENAME":
+                            _propertyMachineName = true;
+                            break;
+                        case "PRINCIPALNAME":
+                            _propertyPrincipalName = true;
+                            break;
+                        case "PROCESSID":
+                            _propertyProcessId = true;
+                            break;
+                        case "THREADID":
+                            _propertyThreadId = true;
+                            break;
+                        case "USER":
+                            _propertyUser = true;
+                            break;
+                    }
+                }
+                _propertiesParsed = true;
+            }
+        }
+
+        private object GetRecordedValue(object value)
+        {
+            if (IsFormatterLiteral(value))
+            {
+                return value;
+            }
+            return value.ToString();
         }
 
         private bool IsFormatterLiteral(object value)

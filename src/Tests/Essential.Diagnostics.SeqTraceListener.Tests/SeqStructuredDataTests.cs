@@ -220,8 +220,37 @@ namespace Essential.Diagnostics.Tests
             StringAssert.Contains(requestBody, @"""a"":""w=x\\y'z""");
         }
 
+        [TestMethod]
+        public void SeqDestructureCustomObject()
+        {
+            var mockRequestFactory = new MockHttpWebRequestFactory();
+            mockRequestFactory.ResponseQueue.Enqueue(
+                new MockHttpWebResponse(HttpStatusCode.OK, null)
+                );
+
+            var listener = new SeqTraceListener("http://testuri");
+            listener.BatchSize = 0;
+            listener.BatchSender.HttpWebRequestFactory = mockRequestFactory;
+
+            var testObject = new TestObject() { X = 1.2, Y = 3.4 };
+            var structuredData = new StructuredData("{@a}", testObject);
+            listener.TraceData(null, "TestSource", TraceEventType.Warning, 1, structuredData);
+
+            Assert.AreEqual(1, mockRequestFactory.RequestsCreated.Count);
+
+            var request = mockRequestFactory.RequestsCreated[0];
+            var requestBody = request.RequestBody;
+            Console.WriteLine(requestBody);
+            StringAssert.Contains(requestBody, "\"MessageTemplate\":\"{@a}\"");
+            StringAssert.Contains(requestBody, "\"a\":{\"X\":1.2,\"Y\":3.4}");
+        }
+
         class TestObject
         {
+            public double X { get; set; }
+
+            public double Y { get; set; }
+
             public override string ToString()
             {
                 return @"w=x\y'z";

@@ -37,7 +37,7 @@ namespace Essential.Diagnostics
                 { typeof(decimal), WriteToString },
                 { typeof(string), (v, w) => WriteString((string)v, w) },
                 { typeof(DateTime), (v, w) => WriteDateTime((DateTime)v, w) },
-                { typeof(DateTimeOffset), (v, w) => WriteOffset((DateTimeOffset)v, w) },
+                { typeof(DateTimeOffset), (v, w) => WriteDateTimeOffset((DateTimeOffset)v, w) },
             };
         }
 
@@ -79,6 +79,96 @@ namespace Essential.Diagnostics
                 delim = ",";
                 ToJson(loggingEvent, currentOffset, payload);
             }
+        }
+
+        static string Escape(string s)
+        {
+            if (s == null) return null;
+
+            StringBuilder escapedResult = null;
+            var cleanSegmentStart = 0;
+            for (var i = 0; i < s.Length; ++i)
+            {
+                var c = s[i];
+                if (c < (char)32 || c == '\\' || c == '"')
+                {
+
+                    if (escapedResult == null)
+                        escapedResult = new StringBuilder();
+
+                    escapedResult.Append(s.Substring(cleanSegmentStart, i - cleanSegmentStart));
+                    cleanSegmentStart = i + 1;
+
+                    switch (c)
+                    {
+                        case '"':
+                            {
+                                escapedResult.Append("\\\"");
+                                break;
+                            }
+                        case '\\':
+                            {
+                                escapedResult.Append("\\\\");
+                                break;
+                            }
+                        case '\n':
+                            {
+                                escapedResult.Append("\\n");
+                                break;
+                            }
+                        case '\r':
+                            {
+                                escapedResult.Append("\\r");
+                                break;
+                            }
+                        case '\f':
+                            {
+                                escapedResult.Append("\\f");
+                                break;
+                            }
+                        case '\t':
+                            {
+                                escapedResult.Append("\\t");
+                                break;
+                            }
+                        default:
+                            {
+                                escapedResult.Append("\\u");
+                                escapedResult.Append(((int)c).ToString("X4"));
+                                break;
+                            }
+                    }
+                }
+            }
+
+            if (escapedResult != null)
+            {
+                if (cleanSegmentStart != s.Length)
+                    escapedResult.Append(s.Substring(cleanSegmentStart));
+
+                return escapedResult.ToString();
+            }
+
+            return s;
+        }
+
+        static string SanitizeKey(string key)
+        {
+            //return new string(key.Replace(":", "_").Where(c => c == '_' || char.IsLetterOrDigit(c)).ToArray());
+
+            var builder = new StringBuilder();
+            foreach (var c in key.ToCharArray())
+            {
+                if (c == ':')
+                {
+                    builder.Append('_');
+                }
+                else if (c == '_' || char.IsLetterOrDigit(c))
+                {
+                    builder.Append(c);
+                }
+            }
+            return builder.ToString();
         }
 
         static void ToJson(TraceData traceData, TimeSpan currentOffset, TextWriter payload)
@@ -162,41 +252,6 @@ namespace Essential.Diagnostics
             payload.Write("}");
         }
 
-        static string SanitizeKey(string key)
-        {
-            //return new string(key.Replace(":", "_").Where(c => c == '_' || char.IsLetterOrDigit(c)).ToArray());
-
-            var builder = new StringBuilder();
-            foreach (var c in key.ToCharArray())
-            {
-                if (c == ':')
-                {
-                    builder.Append('_');
-                }
-                else if (c == '_' || char.IsLetterOrDigit(c))
-                {
-                    builder.Append(c);
-                }
-            }
-            return builder.ToString();
-        }
-
-
-        static void WriteJsonProperty(string name, object value, ref string precedingDelimiter, TextWriter output)
-        {
-            output.Write(precedingDelimiter);
-            WritePropertyName(name, output);
-            WriteLiteral(value, output);
-            precedingDelimiter = ",";
-        }
-
-        static void WritePropertyName(string name, TextWriter output)
-        {
-            output.Write("\"");
-            output.Write(name);
-            output.Write("\":");
-        }
-
         static void WriteArray(IList array, TextWriter output)
         {
             // TODO: Add detection for circular references (in recursive arrays)
@@ -208,38 +263,9 @@ namespace Essential.Diagnostics
                     output.Write(",");
                 }
                 var value = array[index];
-                WriteLiteral(value, output);
+                WritePropertyValue(value, output);
             }
             output.Write("]");
-        }
-
-        static void WriteLiteral(object value, TextWriter output)
-        {
-            if (value == null)
-            {
-                output.Write("null");
-                return;
-            }
-
-            if (value is IList)
-            {
-                WriteArray((IList)value, output);
-                return;
-            }
-
-            Action<object, TextWriter> writer;
-            if (LiteralWriters.TryGetValue(value.GetType(), out writer))
-            {
-                writer(value, output);
-                return;
-            }
-
-            WriteString(value.ToString(), output);
-        }
-
-        static void WriteToString(object number, TextWriter output)
-        {
-            output.Write(number.ToString());
         }
 
         static void WriteBoolean(bool value, TextWriter output)
@@ -247,18 +273,71 @@ namespace Essential.Diagnostics
             output.Write(value ? "true" : "false");
         }
 
-        static void WriteOffset(DateTimeOffset value, TextWriter output)
+        static void WriteDateTime(DateTime value, TextWriter output)
         {
             output.Write("\"");
             output.Write(value.ToString("o"));
             output.Write("\"");
         }
 
-        static void WriteDateTime(DateTime value, TextWriter output)
+        static void WriteDateTimeOffset(DateTimeOffset value, TextWriter output)
         {
             output.Write("\"");
             output.Write(value.ToString("o"));
             output.Write("\"");
+        }
+
+        static void WriteDictionary(IDictionary<string, object> dictionary, TextWriter output)
+        {
+            // TODO: Add detection for circular references (in recursive arrays)
+            output.Write("{");
+            var delimiter = "";
+            foreach (var kvp in dictionary)
+            {
+                WriteJsonProperty(kvp.Key, kvp.Value, ref delimiter, output);
+            }
+            output.Write("}");
+        }
+
+        static void WriteJsonProperty(string name, object value, ref string precedingDelimiter, TextWriter output)
+        {
+            output.Write(precedingDelimiter);
+            WritePropertyName(name, output);
+            WritePropertyValue(value, output);
+            precedingDelimiter = ",";
+        }
+
+        static void WritePropertyName(string name, TextWriter output)
+        {
+            output.Write("\"");
+            output.Write(name);
+            output.Write("\":");
+        }
+
+        static void WritePropertyValue(object value, TextWriter output)
+        {
+            if (value == null)
+            {
+                output.Write("null");
+                return;
+            }
+            if (value is IList)
+            {
+                WriteArray((IList)value, output);
+                return;
+            }
+            if (value is IDictionary<string, object>)
+            {
+                WriteDictionary((IDictionary<string, object>)value, output);
+                return;
+            }
+            Action<object, TextWriter> writer;
+            if (LiteralWriters.TryGetValue(value.GetType(), out writer))
+            {
+                writer(value, output);
+                return;
+            }
+            WriteString(value.ToString(), output);
         }
 
         static void WriteString(string value, TextWriter output)
@@ -269,75 +348,9 @@ namespace Essential.Diagnostics
             output.Write("\"");
         }
 
-        static string Escape(string s)
+        static void WriteToString(object number, TextWriter output)
         {
-            if (s == null) return null;
-
-            StringBuilder escapedResult = null;
-            var cleanSegmentStart = 0;
-            for (var i = 0; i < s.Length; ++i)
-            {
-                var c = s[i];
-                if (c < (char)32 || c == '\\' || c == '"')
-                {
-
-                    if (escapedResult == null)
-                        escapedResult = new StringBuilder();
-
-                    escapedResult.Append(s.Substring(cleanSegmentStart, i - cleanSegmentStart));
-                    cleanSegmentStart = i + 1;
-
-                    switch (c)
-                    {
-                        case '"':
-                            {
-                                escapedResult.Append("\\\"");
-                                break;
-                            }
-                        case '\\':
-                            {
-                                escapedResult.Append("\\\\");
-                                break;
-                            }
-                        case '\n':
-                            {
-                                escapedResult.Append("\\n");
-                                break;
-                            }
-                        case '\r':
-                            {
-                                escapedResult.Append("\\r");
-                                break;
-                            }
-                        case '\f':
-                            {
-                                escapedResult.Append("\\f");
-                                break;
-                            }
-                        case '\t':
-                            {
-                                escapedResult.Append("\\t");
-                                break;
-                            }
-                        default:
-                            {
-                                escapedResult.Append("\\u");
-                                escapedResult.Append(((int)c).ToString("X4"));
-                                break;
-                            }
-                    }
-                }
-            }
-
-            if (escapedResult != null)
-            {
-                if (cleanSegmentStart != s.Length)
-                    escapedResult.Append(s.Substring(cleanSegmentStart));
-
-                return escapedResult.ToString();
-            }
-
-            return s;
+            output.Write(number.ToString());
         }
 
         private delegate void Action<T1, T2>(T1 a, T2 b);
