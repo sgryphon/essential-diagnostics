@@ -10,7 +10,7 @@ namespace Essential.Diagnostics.Tests
     public class StructuredDataTests
     {
         [TestMethod()]
-        public void PropertyValue()
+        public void StructuredPropertyValue()
         {
             var template = "x{a}";
 
@@ -23,7 +23,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod()]
-        public void PropertyValueInOrder()
+        public void StructuredPropertyValueInOrder()
         {
             var template = "{b}x{a}";
             var a = "A";
@@ -38,7 +38,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod()]
-        public void PropertyWithException()
+        public void StructuredPropertyWithException()
         {
             var template = "x{a}";
 
@@ -59,7 +59,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod()]
-        public void PropertyWithAdditionalData()
+        public void StructuredPropertyWithAdditionalData()
         {
             var template = "x{a}";
             var additional = new Dictionary<string, object>() { { "b", "B" } };
@@ -73,7 +73,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod()]
-        public void StringFormatProperty()
+        public void StructuredStringFormatProperty()
         {
             var template = "x{a}";
             var properties = new Dictionary<string, object>() {
@@ -87,7 +87,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod()]
-        public void StringFormatValue()
+        public void StructuredStringFormatValue()
         {
             var template = "x{a}";
 
@@ -98,7 +98,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod()]
-        public void StringValuesInOrder()
+        public void StructuredStringValuesInOrder()
         {
             var template = "{b}x{a}";
             var a = "A";
@@ -111,7 +111,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod()]
-        public void StringValuesMissingAreBlank()
+        public void StructuredStringValuesMissingAreBlank()
         {
             var template = "{a}x{b}y";
             var a = "A";
@@ -123,7 +123,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod()]
-        public void StringValuesOverrideProperties()
+        public void StructuredStringValuesOverrideProperties()
         {
             var template = "{a}x{b}";
             var a = "A";
@@ -140,7 +140,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod()]
-        public void StringPropertyOnly()
+        public void StructuredStringPropertyOnly()
         {
             var properties = new Dictionary<string, object>() {
                 { "a", 1 },
@@ -153,7 +153,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod()]
-        public void StringMessageAndProperty()
+        public void StructuredStringMessageAndProperty()
         {
             var properties = new Dictionary<string, object>() {
                 { "a", 1 },
@@ -166,7 +166,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod()]
-        public void StringPropetiesAndTemplateValues()
+        public void StructuredStringPropetiesAndTemplateValues()
         {
             var properties = new Dictionary<string, object>() {
                 { "a", 1 },
@@ -181,7 +181,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod()]
-        public void StringExtraValues()
+        public void StructuredStringExtraValues()
         {
             IStructuredData data = new StructuredData("x{a}", 1, 2);
             var actual = data.ToString();
@@ -190,7 +190,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod()]
-        public void StringWithException()
+        public void StructuredStringWithException()
         {
             var template = "x{a}";
 
@@ -205,12 +205,12 @@ namespace Essential.Diagnostics.Tests
             }
             var actual = data.ToString();
 
-            var expectedMessageWithStartOfStackTrace = "xA; Exception='System.ApplicationException: B\r\n   at Essential.Diagnostics.Tests.StructuredDataTests.StringWithException() ";
+            var expectedMessageWithStartOfStackTrace = "xA; Exception='System.ApplicationException: B\r\n   at Essential.Diagnostics.Tests.StructuredDataTests.StructuredStringWithException() ";
             StringAssert.StartsWith(actual, expectedMessageWithStartOfStackTrace);
         }
 
         [TestMethod()]
-        public void StringWithAdditionalData()
+        public void StructuredStringWithAdditionalData()
         {
             var template = "x{a}";
             var additional = new Dictionary<string, object>() { { "b", "B" } };
@@ -222,7 +222,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod()]
-        public void StringWithDuplicateTemplateValues()
+        public void StructuredStringWithDuplicateTemplateValues()
         {
             IStructuredData data = new StructuredData("{a}x{a}", "A", "B");
             var actual = data.ToString();

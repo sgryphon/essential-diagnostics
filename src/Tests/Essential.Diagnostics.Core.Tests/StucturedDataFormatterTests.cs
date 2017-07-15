@@ -10,7 +10,7 @@ namespace Essential.Diagnostics.Tests
     public class StucturedDataFormatterTests
     {
         [TestMethod()]
-        public void EscapePropertyName()
+        public void StructuredEscapePropertyName()
         {
             var properties = new Dictionary<string, object>() {
                 { "a b=c", 1 },
@@ -23,7 +23,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod()]
-        public void BasicStringValue()
+        public void StructuredBasicStringValue()
         {
             var properties = new Dictionary<string, object>() {
                 { "a", "A" },
@@ -36,7 +36,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod()]
-        public void DateTimeValue()
+        public void StructuredDateTimeValue()
         {
             var properties = new Dictionary<string, object>() {
                 { "a", new DateTime(2001, 2, 3, 4, 5, 6, 7, DateTimeKind.Utc) },
@@ -50,7 +50,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod()]
-        public void DateTimeOffsetValue()
+        public void StructuredDateTimeOffsetValue()
         {
             var properties = new Dictionary<string, object>() {
                 { "a", new DateTimeOffset(2001, 2, 3, 4, 5, 6, 7, TimeSpan.Zero) },
@@ -64,7 +64,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod()]
-        public void ByteValue()
+        public void StructuredByteValue()
         {
             var properties = new Dictionary<string, object>() {
                 { "a", (byte)0 },
@@ -78,7 +78,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod()]
-        public void TimeSpanValue()
+        public void StructuredTimeSpanValue()
         {
             var properties = new Dictionary<string, object>() {
                 { "a", new TimeSpan(0, 0, 0, 4, 5) },
@@ -92,7 +92,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod()]
-        public void PrimitiveValue()
+        public void StructuredPrimitiveValue()
         {
             var properties = new Dictionary<string, object>() {
                 { "a", (short)-1 },
@@ -114,7 +114,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod()]
-        public void GuidValue()
+        public void StructuredGuidValue()
         {
             var properties = new Dictionary<string, object>() {
                 { "a", new Guid("12345678-abcd-4321-8765-ba9876543210") },
@@ -127,7 +127,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod()]
-        public void ArrayValues()
+        public void StructuredArrayValues()
         {
             var properties = new Dictionary<string, object>() {
                 { "a", new int[] { 1, 2, 3 } },
@@ -141,7 +141,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod()]
-        public void EscapedStringValue()
+        public void StructuredEscapedStringValue()
         {
             var properties = new Dictionary<string, object>() {
                 { "a", @"w=x\y'z" },
@@ -154,7 +154,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod()]
-        public void CustomObjectValue()
+        public void StructuredCustomObjectValue()
         {
             var properties = new Dictionary<string, object>() {
                 { "a", new TestObject() },
