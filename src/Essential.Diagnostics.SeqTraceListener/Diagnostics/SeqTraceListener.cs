@@ -106,7 +106,8 @@ namespace Essential.Diagnostics
         /// <summary>
         /// Gets or sets the Seq <i>API key</i> that authenticates the client to the Seq server.
         /// </summary>
-        public string ApiKey {
+        public string ApiKey
+        {
             get
             {
                 if (Attributes.ContainsKey("apikey"))
@@ -310,59 +311,62 @@ namespace Essential.Diagnostics
                 traceTime = DateTimeOffset.UtcNow;
             }
 
-            // Record Message Args
+            IStructuredData structuredData = null;
             var recordedArgs = default(List<object>);
             var exception = default(Exception);
-            if (messageArgs != null)
-            {
-                recordedArgs = new List<object>();
-                foreach (var arg in messageArgs)
-                {
-                    if (arg is bool || arg is char || arg is byte || arg is sbyte
-                        || arg is short || arg is ushort || arg is int || arg is uint
-                        || arg is long || arg is ulong || arg is float || arg is double
-                        || arg is decimal || arg is DateTime || arg is DateTimeOffset
-                        || arg is string)
-                    {
-                        recordedArgs.Add(arg);
-                    }
-                    else if (arg is Exception)
-                    {
-                        exception = (Exception)arg;
-                        recordedArgs.Add(arg.ToString());
-                    }
-                    else
-                    {
-                        // TODO: Should really take into account the format specifier in the formatString
-                        // (before serializing)
-                        recordedArgs.Add(arg.ToString());
-                    }
-                }
-            }
-
-            // Record Data
             var recordedData = default(List<object>);
-            if (data != null)
+            if (messageFormat == null
+                && (messageArgs == null || messageArgs.Length == 0)
+                && (data != null && data.Length == 1 && data[0] is IStructuredData))
             {
-                recordedData = new List<object>();
-                foreach (var dataItem in data)
+                // Structured Data
+                structuredData = (IStructuredData)data[0];
+            }
+            else
+            {
+                // Record Message Args
+                if (messageArgs != null)
                 {
-                    if (dataItem is bool || dataItem is char || dataItem is byte || dataItem is sbyte
-                        || dataItem is short || dataItem is ushort || dataItem is int || dataItem is uint
-                        || dataItem is long || dataItem is ulong || dataItem is float || dataItem is double
-                        || dataItem is decimal || dataItem is DateTime || dataItem is DateTimeOffset
-                        || dataItem is string)
+                    recordedArgs = new List<object>();
+                    foreach (var arg in messageArgs)
                     {
-                        recordedData.Add(dataItem);
-                    }
-                    else
-                    {
-                        recordedData.Add(dataItem.ToString());
+                        if (IsFormatterLiteral(arg))
+                        {
+                            recordedArgs.Add(arg);
+                        }
+                        else if (arg is Exception)
+                        {
+                            exception = (Exception)arg;
+                            recordedArgs.Add(arg.ToString());
+                        }
+                        else
+                        {
+                            // TODO: Should really take into account the format specifier in the formatString
+                            // (before serializing)
+                            recordedArgs.Add(arg.ToString());
+                        }
                     }
                 }
-                if (messageFormat == null)
+
+                // Record Data
+                if (data != null)
                 {
-                    messageFormat = "{Data}";
+                    recordedData = new List<object>();
+                    foreach (var dataItem in data)
+                    {
+                        if (IsFormatterLiteral(dataItem))
+                        {
+                            recordedData.Add(dataItem);
+                        }
+                        else
+                        {
+                            recordedData.Add(dataItem.ToString());
+                        }
+                    }
+                    if (messageFormat == null)
+                    {
+                        messageFormat = "{Data}";
+                    }
                 }
             }
 
@@ -425,11 +429,7 @@ namespace Essential.Diagnostics
                 {
                     foreach (object stackItem in stack)
                     {
-                        if (stackItem is bool || stackItem is char || stackItem is byte || stackItem is sbyte
-                            || stackItem is short || stackItem is ushort || stackItem is int || stackItem is uint
-                            || stackItem is long || stackItem is ulong || stackItem is float || stackItem is double
-                            || stackItem is decimal || stackItem is DateTime || stackItem is DateTimeOffset
-                            || stackItem is string)
+                        if (IsFormatterLiteral(stackItem))
                         {
                             logicalOperationStack.Add(stackItem);
                         }
@@ -466,32 +466,54 @@ namespace Essential.Diagnostics
 
             if (_propertyPrincipalName)
             {
-				string principalName = null;
-				if (Thread.CurrentPrincipal != null && Thread.CurrentPrincipal.Identity != null) 
-				{
-					principalName = Thread.CurrentPrincipal.Identity.Name;
-				}
+                string principalName = null;
+                if (Thread.CurrentPrincipal != null && Thread.CurrentPrincipal.Identity != null)
+                {
+                    principalName = Thread.CurrentPrincipal.Identity.Name;
+                }
                 properties.Add("PrincipalName", principalName);
             }
 
             //var thread = Thread.CurrentThread.Name ?? threadId;
 
             //payload.Properties.Add("Thing", new Thing("Foo"));
-			
-			object[] recordedArgsArray = null;
-			if (recordedArgs != null) {
-				recordedArgsArray = recordedArgs.ToArray();
-			}
-			object[] recordedDataArray = null;
-			if (recordedData != null) {
-				recordedDataArray = recordedData.ToArray();
-			}
 
-            var traceData = new TraceData(traceTime, source, activityId, eventType, id, messageFormat, 
+            if (structuredData != null)
+            {
+                messageFormat = structuredData.MessageTemplate;
+                foreach (var kvp in structuredData.Properties)
+                {
+                    // TODO: Handle destructuring
+                    if (IsFormatterLiteral(kvp.Value))
+                    {
+                        properties[kvp.Key] = kvp.Value;
+                    }
+                    else
+                    {
+                        properties[kvp.Key] = kvp.Value.ToString();
+                    }
+                }
+            }
+
+            object[] recordedArgsArray = null;
+            if (recordedArgs != null)
+            {
+                recordedArgsArray = recordedArgs.ToArray();
+            }
+            object[] recordedDataArray = null;
+            if (recordedData != null)
+            {
+                recordedDataArray = recordedData.ToArray();
+            }
+
+            var traceData = new TraceData(traceTime, source, activityId, eventType, id, messageFormat,
                 recordedArgsArray, exception, relatedActivityId, recordedDataArray, properties);
             return traceData;
         }
 
-
+        private bool IsFormatterLiteral(object value)
+        {
+            return SeqPayloadFormatter.IsLiteral(value);
+        }
     }
 }

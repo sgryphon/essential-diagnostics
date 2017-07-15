@@ -9,6 +9,12 @@ namespace Essential.Diagnostics
 {
     static class SeqPayloadFormatter
     {
+        static string EventTypeKey = "EventType";
+        static string EventIdKey = "EventId";
+        static string SourceKey = "Source";
+        static string ActivityIdKey = "ActivityId";
+        static string RelatedActivityIdKey = "RelatedActivityId";
+
         static readonly IDictionary<Type, Action<object, TextWriter>> LiteralWriters;
 
         static SeqPayloadFormatter()
@@ -51,6 +57,16 @@ namespace Essential.Diagnostics
             { TraceEventType.Suspend, "Verbose" },
         };
 
+        public static bool IsLiteral(object value)
+        {
+            if (value == null)
+            {
+                return true;
+            }
+            var type = value.GetType();
+            return LiteralWriters.ContainsKey(type);
+        }
+
         public static void ToJson(IEnumerable<TraceData> events, TextWriter payload)
         {
             var currentOffset = DateTimeOffset.Now.Offset;
@@ -90,55 +106,46 @@ namespace Essential.Diagnostics
             payload.Write(",\"Properties\":{");
 
             var pdelim = "";
+            var seenKeys = new List<string>();
 
-            WriteJsonProperty("EventType", traceData.EventType, ref pdelim, payload);
+            WriteJsonProperty(EventTypeKey, traceData.EventType, ref pdelim, payload);
+            seenKeys.Add(EventTypeKey);
 
             if (traceData.Source != null)
             {
-                WriteJsonProperty("Source", traceData.Source, ref pdelim, payload);
-                WriteJsonProperty("EventId", traceData.Id, ref pdelim, payload);
+                WriteJsonProperty(SourceKey, traceData.Source, ref pdelim, payload);
+                seenKeys.Add(SourceKey);
+                WriteJsonProperty(EventIdKey, traceData.Id, ref pdelim, payload);
+                seenKeys.Add(EventIdKey);
             }
 
-            WriteJsonProperty("ActivityId", traceData.ActivityId, ref pdelim, payload);
+            WriteJsonProperty(ActivityIdKey, traceData.ActivityId, ref pdelim, payload);
+            seenKeys.Add(ActivityIdKey);
 
             if (traceData.RelatedActivityId.HasValue)
             {
-                WriteJsonProperty("RelatedActivityId", traceData.RelatedActivityId, ref pdelim, payload);
+                WriteJsonProperty(RelatedActivityIdKey, traceData.RelatedActivityId, ref pdelim, payload);
+                seenKeys.Add(RelatedActivityIdKey);
             }
 
             if (traceData.Data != null && traceData.Data.Count > 0)
             {
                 WriteJsonProperty("Data", traceData.Data, ref pdelim, payload);
+                seenKeys.Add("Data");
             }
-
-            //foreach (var property in properties)
-            //{
-            //    var stringValue = property.Value.Render(loggingEvent);
-            //    if (property.As == "number")
-            //    {
-            //        decimal numberValue;
-            //        if (decimal.TryParse(stringValue, out numberValue))
-            //        {
-            //            WriteJsonProperty(property.Name, numberValue, ref pdelim, payload);
-            //            continue;
-            //        }
-            //    }
-
-            //    WriteJsonProperty(property.Name, stringValue, ref pdelim, payload);
-            //}
 
             if (traceData.MessageArgs != null)
             {
                 for (var i = 0; i < traceData.MessageArgs.Count; ++i)
                 {
-                    WriteJsonProperty(i.ToString(CultureInfo.InvariantCulture), traceData.MessageArgs[i], ref pdelim, payload);
+                    var argKey = i.ToString(CultureInfo.InvariantCulture);
+                    WriteJsonProperty(argKey, traceData.MessageArgs[i], ref pdelim, payload);
+                    seenKeys.Add(argKey);
                 }
             }
 
             if (traceData.Properties != null)
             {
-                //var seenKeys = new HashSet<string>();
-                var seenKeys = new List<string>();
                 foreach (var property in traceData.Properties)
                 {
                     var sanitizedKey = SanitizeKey(property.Key.ToString());
