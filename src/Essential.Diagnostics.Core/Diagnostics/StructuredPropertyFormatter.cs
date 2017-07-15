@@ -38,6 +38,13 @@ namespace Essential
             };
         }
 
+        public static string DestructureObject(object obj)
+        {
+            var writer = new StringWriter();
+            DestructurePropertyValue(obj, writer);
+            return writer.ToString();
+        }
+
         public static void FormatProperties(IEnumerable<KeyValuePair<string, object>> properties, IList<string> excludeKeys, TextWriter output, ref string delimiter)
         {
             foreach (var kvp in properties)
@@ -47,13 +54,6 @@ namespace Essential
                     WriteProperty(kvp.Key, kvp.Value, output, ref delimiter);
                 }
             }
-        }
-
-        public static string DestructureObject(object obj)
-        {
-            var writer = new StringWriter();
-            DestructurePropertyValue(obj, writer);
-            return writer.ToString();
         }
 
         static void DestructurePropertyValue(object obj, TextWriter output)
@@ -74,117 +74,6 @@ namespace Essential
                 WriteProperty(propertyInfo.Name, propertyValue, output, ref delimiter);
             }
             output.Write(")");
-        }
-
-        static void WriteProperty(string name, object value, TextWriter output, ref string delimiter)
-        {
-            output.Write(delimiter);
-            var destructure = name.StartsWith("@");
-            WritePropertyName(name, output);
-            if (name.StartsWith("@"))
-            {
-                DestructurePropertyValue(value, output);
-            }
-            else
-            {
-                WritePropertyValue(value, output);
-            }
-            delimiter = " ";
-        }
-
-        static void WritePropertyName(string name, TextWriter output)
-        {
-            foreach (var c in name)
-            {
-                if (c == ' ')
-                {
-                    output.Write('_');
-                }
-                else if (char.IsLetterOrDigit(c))
-                {
-                    output.Write(c);
-                }
-            }
-            output.Write("=");
-        }
-
-        static void WriteArray(IList array, TextWriter output)
-        {
-            output.Write("[");
-            for (var index = 0; index < array.Count; index++)
-            {
-                if (index > 0)
-                {
-                    output.Write(",");
-                }
-                var value = array[index];
-                WritePropertyValue(value, output);
-            }
-            output.Write("]");
-        }
-
-        static void WritePropertyValue(object value, TextWriter output)
-        {
-            if (value == null)
-            {
-                output.Write("null");
-                return;
-            }
-            Action<object, TextWriter> writer;
-            if (LiteralWriters.TryGetValue(value.GetType(), out writer))
-            {
-                writer(value, output);
-                return;
-            }
-            // TODO: Support IDictionary<string, object> as well ... but really need to start being careful of circular references
-            if (value is IList)
-            {
-                WriteArray((IList)value, output);
-                return;
-            }
-            WriteString(value.ToString(), output);
-        }
-
-        static void WriteToString(object number, TextWriter output)
-        {
-            output.Write(number.ToString());
-        }
-
-        static void WriteBoolean(bool value, TextWriter output)
-        {
-            output.Write(value ? "true" : "false");
-        }
-
-        static void WriteByte(byte value, TextWriter output)
-        {
-            output.Write("0x");
-            output.Write(value.ToString("X2"));
-        }
-
-        static void WriteByteArray(byte[] value, TextWriter output)
-        {
-            foreach (var b in value)
-            {
-                output.Write(b.ToString("X2"));
-            }
-        }
-
-        static void WriteDateTimeOffset(DateTimeOffset value, TextWriter output)
-        {
-            output.Write(value.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'sszzz"));
-        }
-
-        static void WriteDateTime(DateTime value, TextWriter output)
-        {
-            output.Write(value.ToString("s"));
-        }
-
-        static void WriteString(string value, TextWriter output)
-        {
-            var content = Escape(value);
-            output.Write("'");
-            output.Write(content);
-            output.Write("'");
         }
 
         static string Escape(string s)
@@ -256,6 +145,117 @@ namespace Essential
             }
 
             return s;
+        }
+
+        static void WriteArray(IList array, TextWriter output)
+        {
+            output.Write("[");
+            for (var index = 0; index < array.Count; index++)
+            {
+                if (index > 0)
+                {
+                    output.Write(",");
+                }
+                var value = array[index];
+                WritePropertyValue(value, output);
+            }
+            output.Write("]");
+        }
+
+        static void WriteBoolean(bool value, TextWriter output)
+        {
+            output.Write(value ? "true" : "false");
+        }
+
+        static void WriteByte(byte value, TextWriter output)
+        {
+            output.Write("0x");
+            output.Write(value.ToString("X2"));
+        }
+
+        static void WriteByteArray(byte[] value, TextWriter output)
+        {
+            foreach (var b in value)
+            {
+                output.Write(b.ToString("X2"));
+            }
+        }
+
+        static void WriteDateTime(DateTime value, TextWriter output)
+        {
+            output.Write(value.ToString("s"));
+        }
+
+        static void WriteDateTimeOffset(DateTimeOffset value, TextWriter output)
+        {
+            output.Write(value.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'sszzz"));
+        }
+
+        static void WriteProperty(string name, object value, TextWriter output, ref string delimiter)
+        {
+            output.Write(delimiter);
+            var destructure = name.StartsWith("@");
+            WritePropertyName(name, output);
+            if (name.StartsWith("@"))
+            {
+                DestructurePropertyValue(value, output);
+            }
+            else
+            {
+                WritePropertyValue(value, output);
+            }
+            delimiter = " ";
+        }
+
+        static void WritePropertyName(string name, TextWriter output)
+        {
+            foreach (var c in name)
+            {
+                if (c == ' ')
+                {
+                    output.Write('_');
+                }
+                else if (char.IsLetterOrDigit(c))
+                {
+                    output.Write(c);
+                }
+            }
+            output.Write("=");
+        }
+
+        static void WritePropertyValue(object value, TextWriter output)
+        {
+            if (value == null)
+            {
+                output.Write("null");
+                return;
+            }
+            Action<object, TextWriter> writer;
+            if (LiteralWriters.TryGetValue(value.GetType(), out writer))
+            {
+                writer(value, output);
+                return;
+            }
+            // TODO: Support IDictionary<string, object> as well ... but really need to start being careful of circular references
+            if (value is IList)
+            {
+                WriteArray((IList)value, output);
+                return;
+            }
+            WriteString(value.ToString(), output);
+        }
+
+        static void WriteString(string value, TextWriter output)
+        {
+            var content = Escape(value);
+            output.Write("'");
+            output.Write(content);
+            output.Write("'");
+        }
+
+        static void WriteToString(object number, TextWriter output)
+        {
+            output.Write(number.ToString());
         }
 
         private delegate void Action<T1, T2>(T1 a, T2 b);
