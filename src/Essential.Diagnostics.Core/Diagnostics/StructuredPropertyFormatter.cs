@@ -19,6 +19,7 @@ namespace Essential
                 { typeof(bool), (v, w) => WriteBoolean((bool)v, w) },
                 { typeof(char), (v, w) => WriteString(((char)v).ToString(CultureInfo.InvariantCulture), w) },
                 { typeof(byte), (v, w) => WriteByte((byte)v, w) },
+                { typeof(byte[]), (v, w) => WriteByteArray((byte[])v, w) },
                 { typeof(sbyte), WriteToString },
                 { typeof(short), WriteToString },
                 { typeof(ushort), WriteToString },
@@ -33,7 +34,7 @@ namespace Essential
                 { typeof(TimeSpan), WriteToString },
                 { typeof(string), (v, w) => WriteString((string)v, w) },
                 { typeof(DateTime), (v, w) => WriteDateTime((DateTime)v, w) },
-                { typeof(DateTimeOffset), (v, w) => WriteOffset((DateTimeOffset)v, w) },
+                { typeof(DateTimeOffset), (v, w) => WriteDateTimeOffset((DateTimeOffset)v, w) },
             };
         }
 
@@ -129,22 +130,18 @@ namespace Essential
                 output.Write("null");
                 return;
             }
-
-            // TODO: Change to IEnumerable, if possible (may need to check LiteralWriters first!)
-            // TODO: Support IDictionary<string, object> as well ... but really need to start being careful of circular references
-            if (value is IList)
-            {
-                WriteArray((IList)value, output);
-                return;
-            }
-
             Action<object, TextWriter> writer;
             if (LiteralWriters.TryGetValue(value.GetType(), out writer))
             {
                 writer(value, output);
                 return;
             }
-
+            // TODO: Support IDictionary<string, object> as well ... but really need to start being careful of circular references
+            if (value is IList)
+            {
+                WriteArray((IList)value, output);
+                return;
+            }
             WriteString(value.ToString(), output);
         }
 
@@ -161,11 +158,18 @@ namespace Essential
         static void WriteByte(byte value, TextWriter output)
         {
             output.Write("0x");
-            output.Write(value.ToString("X"));
+            output.Write(value.ToString("X2"));
         }
 
+        static void WriteByteArray(byte[] value, TextWriter output)
+        {
+            foreach (var b in value)
+            {
+                output.Write(b.ToString("X2"));
+            }
+        }
 
-        static void WriteOffset(DateTimeOffset value, TextWriter output)
+        static void WriteDateTimeOffset(DateTimeOffset value, TextWriter output)
         {
             output.Write(value.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'sszzz"));
         }

@@ -64,6 +64,24 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod()]
+        public void StructuredByteArray()
+        {
+            var byteArray1 = new byte[] { 0xa1, 0, 5, 255 };
+            var byteArray2 = new byte[0];
+            var byteArray3 = new List<byte>() { 1, 2 };
+            var properties = new Dictionary<string, object>() {
+                { "a", byteArray1 },
+                { "b", byteArray2 },
+                { "c", byteArray3 },
+            };
+
+            IStructuredData data = new StructuredData(properties);
+            var actual = data.ToString();
+
+            Assert.AreEqual("a=A10005FF b= c=[0x01,0x02]", actual);
+        }
+
+        [TestMethod()]
         public void StructuredByteValue()
         {
             var properties = new Dictionary<string, object>() {
@@ -74,7 +92,7 @@ namespace Essential.Diagnostics.Tests
             IStructuredData data = new StructuredData(properties);
             var actual = data.ToString();
 
-            Assert.AreEqual("a=0x0 b=0xA1", actual);
+            Assert.AreEqual("a=0x00 b=0xA1", actual);
         }
 
         [TestMethod()]
@@ -111,6 +129,50 @@ namespace Essential.Diagnostics.Tests
             var actual = data.ToString();
 
             Assert.AreEqual("a=-1 b=-2 c=-3 d=4 e=5 f=6 g=7 h=8.1 i=9.2 j=10.3", actual);
+        }
+
+        [TestMethod()]
+        public void StructuredNullableValue()
+        {
+            int? b = -2;
+            int? k = null;
+            var properties = new Dictionary<string, object>() {
+                { "a", (short?)-1 },
+                { "b", b },
+                { "c", (long?)-3 },
+                { "d", (ushort?)4 },
+                { "e", (uint?)5 },
+                { "f", (ulong?)6 },
+                { "g", (sbyte?)7 },
+                { "h", (float?)8.1 },
+                { "i", (double?)9.2 },
+                { "j", (decimal?)10.3 },
+                { "k", k },
+            };
+
+            IStructuredData data = new StructuredData(properties);
+            var actual = data.ToString();
+
+            Console.WriteLine(actual);
+            Assert.AreEqual("a=-1 b=-2 c=-3 d=4 e=5 f=6 g=7 h=8.1 i=9.2 j=10.3 k=null", actual);
+        }
+
+        [TestMethod()]
+        public void StructuredNullableOtherValue()
+        {
+            var properties = new Dictionary<string, object>() {
+                { "a", (bool?)true },
+                { "b", (bool?)null },
+                { "c", (DateTime?)new DateTime(2001, 2, 3, 4, 5, 6, 8, DateTimeKind.Unspecified) },
+                { "d", (DateTimeOffset?)new DateTimeOffset(2002, 3, 4, 5, 6, 7, 8, TimeSpan.FromHours(10)) },
+                { "e", (TimeSpan?)new TimeSpan(1, 2, 3, 4, 5) },
+                { "f", (Guid?)new Guid("12345678-abcd-4321-8765-ba9876543210") },
+            };
+
+            IStructuredData data = new StructuredData(properties);
+            var actual = data.ToString();
+
+            Assert.AreEqual("a=true b=null c=2001-02-03T04:05:06 d=2002-03-04T05:06:07+10:00 e=1.02:03:04.0050000 f=12345678-abcd-4321-8765-ba9876543210", actual);
         }
 
         [TestMethod()]
