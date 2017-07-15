@@ -153,6 +153,9 @@ namespace Essential.Diagnostics.Tests
             Assert.AreEqual(@"a='w=x\\y\'z'", actual);
         }
 
+        // TODO: Nullables, also maybe explicit handling for Uri??
+        // TODO: Byte array
+
         [TestMethod()]
         public void StructuredCustomObjectValue()
         {
@@ -166,8 +169,37 @@ namespace Essential.Diagnostics.Tests
             Assert.AreEqual(@"a='w=x\\y\'z'", actual);
         }
 
+        //[TestMethod()]
+        //public void DestructuredCustomObjectMessage()
+        //{
+        //    var testObject = new TestObject() { X = 1.2, Y = 3.4 };
+
+        //    IStructuredData data = new StructuredData("z{@a}", testObject);
+        //    var actual = data.ToString();
+
+        //    Assert.AreEqual(@"z(X=1.2 Y=3.4)", actual);
+        //}
+
+        [TestMethod()]
+        public void DestructuredCustomObjectProperty()
+        {
+            var testObject = new TestObject() { X = 1.2, Y = 3.4 };
+            var properties = new Dictionary<string, object>() {
+                { "@a", testObject },
+            };
+
+            IStructuredData data = new StructuredData(properties);
+            var actual = data.ToString();
+
+            Assert.AreEqual(@"a=(X=1.2 Y=3.4)", actual);
+        }
+
         class TestObject
         {
+            public double X { get; set; }
+
+            public double Y { get; set; }
+
             public override string ToString()
             {
                 return @"w=x\y'z";

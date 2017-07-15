@@ -199,6 +199,7 @@ namespace Essential.Diagnostics
 
         static void WriteArray(IList array, TextWriter output)
         {
+            // TODO: Add detection for circular references (in recursive arrays)
             output.Write("[");
             for (var index = 0; index < array.Count; index++)
             {

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Text;
 
 namespace Essential
@@ -47,11 +48,41 @@ namespace Essential
             }
         }
 
+        static void DestructurePropertyValue(object obj, TextWriter output)
+        {
+            if (obj == null)
+            {
+                output.Write("null");
+                return;
+            }
+
+            var type = obj.GetType();
+            var publicProperties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty);
+            output.Write("(");
+            var delimiter = "";
+            foreach (var propertyInfo in publicProperties)
+            {
+                var propertyValue = propertyInfo.GetValue(obj, null);
+                WriteProperty(propertyInfo.Name, propertyValue, output, ref delimiter);
+            }
+            output.Write(")");
+        }
+
+
+
         static void WriteProperty(string name, object value, TextWriter output, ref string delimiter)
         {
             output.Write(delimiter);
+            var destructure = name.StartsWith("@");
             WritePropertyName(name, output);
-            WritePropertyValue(value, output);
+            if (name.StartsWith("@"))
+            {
+                DestructurePropertyValue(value, output);
+            }
+            else
+            {
+                WritePropertyValue(value, output);
+            }
             delimiter = " ";
         }
 
