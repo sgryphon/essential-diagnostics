@@ -191,7 +191,14 @@ namespace Essential.Diagnostics
 
         private bool GetValue(string name, out object value)
         {
-            if (!_allProperties.TryGetValue(name, out value))
+            if (_allProperties.TryGetValue(name, out value))
+            {
+                if (name.StartsWith("@"))
+                {
+                    value = StructuredPropertyFormatter.DestructureObject(value);
+                }
+            }
+            else
             {
                 value = null;
             }

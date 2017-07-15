@@ -48,6 +48,13 @@ namespace Essential
             }
         }
 
+        public static string DestructureObject(object obj)
+        {
+            var writer = new StringWriter();
+            DestructurePropertyValue(obj, writer);
+            return writer.ToString();
+        }
+
         static void DestructurePropertyValue(object obj, TextWriter output)
         {
             if (obj == null)
@@ -67,8 +74,6 @@ namespace Essential
             }
             output.Write(")");
         }
-
-
 
         static void WriteProperty(string name, object value, TextWriter output, ref string delimiter)
         {

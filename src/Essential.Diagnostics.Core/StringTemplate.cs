@@ -232,13 +232,14 @@ namespace Essential
                         ch = chArray[index];
                         index++;
                         if (!( ch == '_'
+                            || ch == '@'
                             || ((ch >= 'a') && (ch <= 'z'))
                             || ((ch >= 'A') && (ch <= 'Z'))))
                         {
                             throw new FormatException(Resource_Core.StringTemplate_InvalidString);
                         }
                         while ((index < length) &&
-                                ( ch == '.' || ch == '-' || ch == '_'
+                                ( ch == '.' || ch == '-' || ch == '_' || ch == '@'
                                 || ((ch >= '0') && (ch <= '9'))
                                 || ((ch >= 'a') && (ch <= 'z'))
                                 || ((ch >= 'A') && (ch <= 'Z'))))

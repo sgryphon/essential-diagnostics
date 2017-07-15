@@ -169,16 +169,16 @@ namespace Essential.Diagnostics.Tests
             Assert.AreEqual(@"a='w=x\\y\'z'", actual);
         }
 
-        //[TestMethod()]
-        //public void DestructuredCustomObjectMessage()
-        //{
-        //    var testObject = new TestObject() { X = 1.2, Y = 3.4 };
+        [TestMethod()]
+        public void DestructuredCustomObjectMessage()
+        {
+            var testObject = new TestObject() { X = 1.2, Y = 3.4 };
 
-        //    IStructuredData data = new StructuredData("z{@a}", testObject);
-        //    var actual = data.ToString();
+            IStructuredData data = new StructuredData("z{@a}", testObject);
+            var actual = data.ToString();
 
-        //    Assert.AreEqual(@"z(X=1.2 Y=3.4)", actual);
-        //}
+            Assert.AreEqual(@"z(X=1.2 Y=3.4)", actual);
+        }
 
         [TestMethod()]
         public void DestructuredCustomObjectProperty()
