@@ -4,12 +4,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{FF57608E-B2D0-4A37-85F3-4AD2703A86BA}</ProjectGuid>
+    <ProjectGuid>{27184453-DDC3-4B57-A1B6-AFE72042D270}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Essential</RootNamespace>
-    <AssemblyName>Essential.Diagnostics.StructuredExtensions</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <AssemblyName>Essential.Diagnostics.Structured</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -32,25 +32,25 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Diagnostics\TraceSourceExtensions.cs" />
+    <Compile Include="Diagnostics\Structured\AssemblyStructuredTrace-TEvendId,TTarget.cs" />
+    <Compile Include="Diagnostics\Structured\StandardEventId.cs" />
+    <Compile Include="Diagnostics\Structured\IStructuredTrace-TEventId,TTarget.cs" />
+    <Compile Include="Diagnostics\Structured\IStructuredTrace-TEventId.cs" />
+    <Compile Include="Diagnostics\Structured\StructuredTrace-TEventId.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resource.Structured.Designer.cs">
+      <DependentUpon>Resource.Structured.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Essential.Diagnostics.StructuredExtensions.nuspec">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Essential.Diagnostics.StructuredExtensions.ReadMe.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <EmbeddedResource Include="Resource.Structured.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource.Structured.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Essential.Diagnostics.Core\Essential.Diagnostics.Core.csproj">
