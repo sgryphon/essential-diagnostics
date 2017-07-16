@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B9917D64-76EC-4322-8A86-611FE10BACEF}</ProjectGuid>
+    <ProjectGuid>{CE62C10E-0EF9-4834-BC46-5398D2C607E8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Essential.Diagnostics.Tests</RootNamespace>
-    <AssemblyName>Essential.Diagnostics.StructuredExtensions.Tests</AssemblyName>
+    <AssemblyName>Essential.Diagnostics.Structured.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -32,29 +32,31 @@
   <ItemGroup>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TraceSourceExtensionsTests.cs" />
+    <Compile Include="StructuredTraceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Essential.Diagnostics.Core\Essential.Diagnostics.Core.csproj">
       <Project>{aae26c8f-ae78-4458-ba5d-00876105a4b7}</Project>
       <Name>Essential.Diagnostics.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Essential.Diagnostics.StructuredExtensions\Essential.Diagnostics.StructuredExtensions.csproj">
-      <Project>{ff57608e-b2d0-4a37-85f3-4ad2703a86ba}</Project>
-      <Name>Essential.Diagnostics.StructuredExtensions</Name>
+    <ProjectReference Include="..\..\Essential.Diagnostics.Structured\Essential.Diagnostics.Structured.csproj">
+      <Project>{27184453-ddc3-4b57-a1b6-afe72042d270}</Project>
+      <Name>Essential.Diagnostics.Structured</Name>
     </ProjectReference>
     <ProjectReference Include="..\Essential.Diagnostics.Tests.Utility\Essential.Diagnostics.Tests.Utility.csproj">
-      <Project>{8509f6b4-fb5e-49ef-b2b1-94ac150719eb}</Project>
+      <Project>{8509F6B4-FB5E-49EF-B2B1-94AC150719EB}</Project>
       <Name>Essential.Diagnostics.Tests.Utility</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
