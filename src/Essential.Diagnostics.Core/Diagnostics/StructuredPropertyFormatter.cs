@@ -41,7 +41,7 @@ namespace Essential
         public static string DestructureObject(object obj)
         {
             var writer = new StringWriter();
-            DestructurePropertyValue(obj, writer);
+            DestructurePropertyValue(obj, writer, 0, 0);
             return writer.ToString();
         }
 
@@ -51,12 +51,12 @@ namespace Essential
             {
                 if (!excludeKeys.Contains(kvp.Key))
                 {
-                    WriteProperty(kvp.Key, kvp.Value, output, ref delimiter);
+                    WriteProperty(kvp.Key, kvp.Value, output, 0, 0, ref delimiter);
                 }
             }
         }
 
-        static void DestructurePropertyValue(object obj, TextWriter output)
+        static void DestructurePropertyValue(object obj, TextWriter output, int arrayCount, int destructureCount)
         {
             if (obj == null)
             {
@@ -68,10 +68,11 @@ namespace Essential
             var publicProperties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty);
             output.Write("(");
             var delimiter = "";
+            destructureCount = destructureCount + 1;
             foreach (var propertyInfo in publicProperties)
             {
                 var propertyValue = propertyInfo.GetValue(obj, null);
-                WriteProperty(propertyInfo.Name, propertyValue, output, ref delimiter);
+                WriteProperty(propertyInfo.Name, propertyValue, output, arrayCount, destructureCount, ref delimiter);
             }
             output.Write(")");
         }
@@ -147,9 +148,10 @@ namespace Essential
             return s;
         }
 
-        static void WriteArray(IList array, TextWriter output)
+        static void WriteArray(IList array, TextWriter output, int arrayCount, int destructureCount)
         {
             output.Write("[");
+            arrayCount = arrayCount + 1;
             for (var index = 0; index < array.Count; index++)
             {
                 if (index > 0)
@@ -157,9 +159,21 @@ namespace Essential
                     output.Write(",");
                 }
                 var value = array[index];
-                WritePropertyValue(value, output);
+                WritePropertyValue(value, output, arrayCount, destructureCount);
             }
             output.Write("]");
+        }
+
+        static void WriteDictionary(IDictionary<string, object> dictionary, TextWriter output, int arrayCount, int destructureCount)
+        {
+            output.Write("(");
+            destructureCount = destructureCount + 1;
+            var delimiter = "";
+            foreach (var kvp in dictionary)
+            {
+                WriteProperty(kvp.Key, kvp.Value, output, arrayCount, destructureCount, ref delimiter);
+            }
+            output.Write(")");
         }
 
         static void WriteBoolean(bool value, TextWriter output)
@@ -191,18 +205,19 @@ namespace Essential
             output.Write(value.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'sszzz"));
         }
 
-        static void WriteProperty(string name, object value, TextWriter output, ref string delimiter)
+        static void WriteProperty(string name, object value, TextWriter output, int arrayCount, int destructureCount, ref string delimiter)
         {
             output.Write(delimiter);
             var destructure = name.StartsWith("@");
             WritePropertyName(name, output);
+            // TODO: Support IDictionary<string, object> as well ... but really need to start being careful of circular references
             if (name.StartsWith("@"))
             {
-                DestructurePropertyValue(value, output);
+                DestructurePropertyValue(value, output, arrayCount, destructureCount);
             }
             else
             {
-                WritePropertyValue(value, output);
+                WritePropertyValue(value, output, arrayCount, destructureCount);
             }
             delimiter = " ";
         }
@@ -223,7 +238,7 @@ namespace Essential
             output.Write("=");
         }
 
-        static void WritePropertyValue(object value, TextWriter output)
+        static void WritePropertyValue(object value, TextWriter output, int arrayCount, int destructureCount)
         {
             if (value == null)
             {
@@ -236,11 +251,21 @@ namespace Essential
                 writer(value, output);
                 return;
             }
-            // TODO: Support IDictionary<string, object> as well ... but really need to start being careful of circular references
-            if (value is IList)
+            if (arrayCount < 1)
             {
-                WriteArray((IList)value, output);
-                return;
+                if (value is IList)
+                {
+                    WriteArray((IList)value, output, arrayCount, destructureCount);
+                    return;
+                }
+            }
+            if (destructureCount < 1 && arrayCount < 1)
+            {
+                if (value is IDictionary<string, object>)
+                {
+                    WriteDictionary((IDictionary<string, object>)value, output, arrayCount, destructureCount);
+                    return;
+                }
             }
             WriteString(value.ToString(), output);
         }
