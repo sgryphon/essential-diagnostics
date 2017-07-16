@@ -190,6 +190,19 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod()]
+        public void StructuredEnumValue()
+        {
+            var properties = new Dictionary<string, object>() {
+                { "a", (TestEnum)5 },
+            };
+
+            IStructuredData data = new StructuredData(properties);
+            var actual = data.ToString();
+
+            Assert.AreEqual("a='Flag1, Flag3'", actual);
+        }
+
+        [TestMethod()]
         public void StructuredArrayValues()
         {
             var properties = new Dictionary<string, object>() {
@@ -363,5 +376,13 @@ namespace Essential.Diagnostics.Tests
             public object N { get; set; }
         }
 
+        [Flags]
+        enum TestEnum
+        {
+            None = 0,
+            Flag1 = 1,
+            Flag2 = 2,
+            Flag3 = 4
+        }
     }
 }
