@@ -2,7 +2,7 @@ Essential.Diagnostics.StructuredExtensions
 ==========================================
 
 Copyright 2017 Sly Gryphon. This library distributed under the 
-Microsoft Public License (Ms-PL).
+Microsoft Reciprocal License (Ms-RL).
 
 https://github.com/sgryphon/essential-diagnostics/
 

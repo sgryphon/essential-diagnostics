@@ -2,9 +2,9 @@ Essential.Diagnostics.SeqTraceListener
 ======================================
 
 Copyright 2017 Sly Gryphon. This library distributed under the 
-Microsoft Public License (Ms-PL).
+Microsoft Reciprocal License (Ms-RL).
 
-http://essentialdiagnostics.codeplex.com/
+https://github.com/sgryphon/essential-diagnostics/
 
 Using and extending System.Diagnostics trace logging. 
 
@@ -30,4 +30,4 @@ includes easy encapsulation of activity and logical operation scopes,
 as well as abstractions and templated classes for a simpler 
 logging API and support for dependency injection frameworks.
 
-See the project site on CodePlex for examples and documentation.
+See the project site on GitHub for examples and documentation.

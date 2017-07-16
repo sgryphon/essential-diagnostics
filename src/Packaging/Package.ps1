@@ -380,6 +380,7 @@ function Package-NuPackAll($solutionPath, $configuration, $version, $dependencyV
 
 	Package-NuPackProject $solutionpath $configuration $version $dependencyVersion "Essential.Diagnostics.Fluent"
 	Package-NuPackProject $solutionpath $configuration $version $dependencyVersion "Essential.Diagnostics.StructuredExtensions"
+	Package-NuPackProject $solutionpath $configuration $version $dependencyVersion "Essential.Diagnostics.Structured"
 }
 
 function Package-NuPackProject($solutionPath, $configuration, $version, $dependencyVersion, $project, $includeSqlTool = $false) {

@@ -3,12 +3,12 @@
 namespace Essential.Diagnostics.Structured
 {
     /// <summary>
-    /// Defines an alternate fluent interface to log trace messages, following the popular pattern
+    /// Defines an alternate fluent interface to trace structured data, following the pattern
     /// of having a method per level, but reinforcing the concept of event IDs.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Using ITraceLog, and the derived classes, instead of directly using System.Diagnostics.TraceSource, 
+    /// Using IStructuredTrace, and the derived classes, instead of directly using System.Diagnostics.TraceSource, 
     /// may provider a more readable interface for logging trace messages, whilst supporting strongly typed
     /// event IDs.
     /// </para>

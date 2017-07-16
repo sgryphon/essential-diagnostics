@@ -1,5 +1,5 @@
-Essential.Diagnostics.Core
-==========================
+Essential.Diagnostics.Structured
+================================
 
 Copyright 2017 Sly Gryphon. This library distributed under the 
 Microsoft Reciprocal License (Ms-RL).
@@ -8,10 +8,15 @@ https://github.com/sgryphon/essential-diagnostics/
 
 Using and extending System.Diagnostics trace logging. 
 
-Core library for Essential.Diagnostics, with a common base class for 
-trace listeners. It also includes a generic formatter, a generic 
-expression-based trace filter, a file watcher for configuration 
-changes, and support for structured data.
+Provides a templated interface and implementation that makes tracing
+structured data easy via System.Diagnostics, using a fluent interface. 
+Information is traced as StructuredData, with a message template, 
+template values, and additional properties. 
+
+Structured trace information is forwarded to an underlying TraceSource,
+which then sends to any configured TraceListeners, e.q. a Seq server.
+The interface can be used for easy integration with a dependency 
+injection framework.
 
 Other Essential.Diagnostics packages extend the .NET Framework 
 System.Diagnostics trace logging with additional trace listeners. 

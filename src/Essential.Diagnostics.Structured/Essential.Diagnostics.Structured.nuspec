@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
-    <id>Essential.Diagnostics.SeqTraceListener</id>
+    <id>Essential.Diagnostics.Structured</id>
     <version>2.1.0.0</version>
     <authors>sgryphon</authors>
     <owners>sgryphon</owners>
@@ -10,7 +10,9 @@
     <iconUrl>https://raw.githubusercontent.com/sgryphon/essential-diagnostics/master/docs/images/Essential-Diagnostics-64.png</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>
-      Seq trace listener extension for System.Diagnostics, along with required config sections. Writes to the specified Seq server URL, with additional properties as configured.
+      Provides a templated interface and implementation that makes tracing structured data easy via System.Diagnostics, using a fluent interface. Information is traced as StructuredData, with a message template, template values, and additional properties.
+
+      Structured trace information is forwarded to an underlying TraceSource, which then sends to any configured TraceListeners, e.q. a Seq server. The interface can be used for easy integration with a dependency injection framework.
 
       Other Essential.Diagnostics packages extend the .NET Framework System.Diagnostics trace logging with additional trace listeners. Included are colored console (that allows custom formats), SQL database (including a tool to create tables), rolling file (with custom formats), rolling XML, email (per trace or batched), and an in-memory trace listener.
 
@@ -22,9 +24,9 @@
       Version 2.1: Addition of structured logging.
     </releaseNotes>
     <copyright>Copyright © Gryphon Technology Pty Ltd 2017</copyright>
-    <tags>Logging Tracing Diagnostics Log Trace TraceListener Seq</tags>
+    <tags>Logging Tracing Diagnostics Log Trace TraceListener Structured Semantic</tags>
     <dependencies>
-      <dependency id="Essential.Diagnostics.Core" version="2.0.0.0" />
+      <dependency id="Essential.Diagnostics.Core" version="2.1.0.0" />
     </dependencies>
   </metadata>
 </package>
