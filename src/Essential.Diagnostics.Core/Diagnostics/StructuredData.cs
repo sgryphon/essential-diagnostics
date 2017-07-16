@@ -1,10 +1,7 @@
 ﻿using Essential.Collections;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
-using System.Text;
 
 namespace Essential.Diagnostics
 {
@@ -13,6 +10,7 @@ namespace Essential.Diagnostics
     /// </summary>
     public class StructuredData : IStructuredData
     {
+        // Internally use ordered dictionary, to preserve the order passed in
         OrderedDictionary<string, object> _allProperties;
         OrderedDictionary<string, object> _baseProperties;
         Exception _exception;
