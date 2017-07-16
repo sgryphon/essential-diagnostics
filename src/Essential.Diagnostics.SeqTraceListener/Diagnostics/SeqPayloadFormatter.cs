@@ -181,17 +181,18 @@ namespace Essential.Diagnostics
 
             payload.Write("{");
 
+            var parentCollection = new ArrayList();
             var delim = "";
 
-            WriteJsonProperty("Timestamp", traceData.DateTime, ref delim, payload);
-            WriteJsonProperty("Level", level, ref delim, payload);
+            WriteJsonProperty("Timestamp", traceData.DateTime, ref delim, payload, parentCollection);
+            WriteJsonProperty("Level", level, ref delim, payload, parentCollection);
 
-            WriteJsonProperty("MessageTemplate", traceData.MessageFormat ?? string.Empty, ref delim, payload);
+            WriteJsonProperty("MessageTemplate", traceData.MessageFormat ?? string.Empty, ref delim, payload, parentCollection);
 
             // First (if any) Exception found in the message args
             if (traceData.Exception != null)
             {
-                WriteJsonProperty("Exception", traceData.Exception, ref delim, payload);
+                WriteJsonProperty("Exception", traceData.Exception, ref delim, payload, parentCollection);
             }
 
             payload.Write(",\"Properties\":{");
@@ -199,29 +200,29 @@ namespace Essential.Diagnostics
             var pdelim = "";
             var seenKeys = new List<string>();
 
-            WriteJsonProperty(EventTypeKey, traceData.EventType, ref pdelim, payload);
+            WriteJsonProperty(EventTypeKey, traceData.EventType, ref pdelim, payload, parentCollection);
             seenKeys.Add(EventTypeKey);
 
             if (traceData.Source != null)
             {
-                WriteJsonProperty(SourceKey, traceData.Source, ref pdelim, payload);
+                WriteJsonProperty(SourceKey, traceData.Source, ref pdelim, payload, parentCollection);
                 seenKeys.Add(SourceKey);
-                WriteJsonProperty(EventIdKey, traceData.Id, ref pdelim, payload);
+                WriteJsonProperty(EventIdKey, traceData.Id, ref pdelim, payload, parentCollection);
                 seenKeys.Add(EventIdKey);
             }
 
-            WriteJsonProperty(ActivityIdKey, traceData.ActivityId, ref pdelim, payload);
+            WriteJsonProperty(ActivityIdKey, traceData.ActivityId, ref pdelim, payload, parentCollection);
             seenKeys.Add(ActivityIdKey);
 
             if (traceData.RelatedActivityId.HasValue)
             {
-                WriteJsonProperty(RelatedActivityIdKey, traceData.RelatedActivityId, ref pdelim, payload);
+                WriteJsonProperty(RelatedActivityIdKey, traceData.RelatedActivityId, ref pdelim, payload, parentCollection);
                 seenKeys.Add(RelatedActivityIdKey);
             }
 
             if (traceData.Data != null && traceData.Data.Count > 0)
             {
-                WriteJsonProperty("Data", traceData.Data, ref pdelim, payload);
+                WriteJsonProperty("Data", traceData.Data, ref pdelim, payload, parentCollection);
                 seenKeys.Add("Data");
             }
 
@@ -230,7 +231,7 @@ namespace Essential.Diagnostics
                 for (var i = 0; i < traceData.MessageArgs.Count; ++i)
                 {
                     var argKey = i.ToString(CultureInfo.InvariantCulture);
-                    WriteJsonProperty(argKey, traceData.MessageArgs[i], ref pdelim, payload);
+                    WriteJsonProperty(argKey, traceData.MessageArgs[i], ref pdelim, payload, parentCollection);
                     seenKeys.Add(argKey);
                 }
             }
@@ -244,7 +245,7 @@ namespace Essential.Diagnostics
                         continue;
 
                     seenKeys.Add(sanitizedKey);
-                    WriteJsonProperty(sanitizedKey, property.Value, ref pdelim, payload);
+                    WriteJsonProperty(sanitizedKey, property.Value, ref pdelim, payload, parentCollection);
                 }
             }
 
@@ -252,9 +253,10 @@ namespace Essential.Diagnostics
             payload.Write("}");
         }
 
-        static void WriteArray(IList array, TextWriter output)
+        static void WriteArray(IList array, TextWriter output, ArrayList parentCollections)
         {
-            // TODO: Add detection for circular references (in recursive arrays)
+            var newParentCollections = new ArrayList(parentCollections);
+            newParentCollections.Add(array);
             output.Write("[");
             for (var index = 0; index < array.Count; index++)
             {
@@ -263,7 +265,7 @@ namespace Essential.Diagnostics
                     output.Write(",");
                 }
                 var value = array[index];
-                WritePropertyValue(value, output);
+                WritePropertyValue(value, output, newParentCollections);
             }
             output.Write("]");
         }
@@ -287,23 +289,24 @@ namespace Essential.Diagnostics
             output.Write("\"");
         }
 
-        static void WriteDictionary(IDictionary<string, object> dictionary, TextWriter output)
+        static void WriteDictionary(IDictionary<string, object> dictionary, TextWriter output, ArrayList parentCollections)
         {
-            // TODO: Add detection for circular references (in recursive arrays)
+            var newParentCollections = new ArrayList(parentCollections);
+            newParentCollections.Add(dictionary);
             output.Write("{");
             var delimiter = "";
             foreach (var kvp in dictionary)
             {
-                WriteJsonProperty(kvp.Key, kvp.Value, ref delimiter, output);
+                WriteJsonProperty(kvp.Key, kvp.Value, ref delimiter, output, newParentCollections);
             }
             output.Write("}");
         }
 
-        static void WriteJsonProperty(string name, object value, ref string precedingDelimiter, TextWriter output)
+        static void WriteJsonProperty(string name, object value, ref string precedingDelimiter, TextWriter output, ArrayList parentCollections)
         {
             output.Write(precedingDelimiter);
             WritePropertyName(name, output);
-            WritePropertyValue(value, output);
+            WritePropertyValue(value, output, parentCollections);
             precedingDelimiter = ",";
         }
 
@@ -314,21 +317,21 @@ namespace Essential.Diagnostics
             output.Write("\":");
         }
 
-        static void WritePropertyValue(object value, TextWriter output)
+        static void WritePropertyValue(object value, TextWriter output, ArrayList parentCollections)
         {
             if (value == null)
             {
                 output.Write("null");
                 return;
             }
-            if (value is IList)
+            if (value is IDictionary<string, object> && !parentCollections.Contains(value))
             {
-                WriteArray((IList)value, output);
+                WriteDictionary((IDictionary<string, object>)value, output, parentCollections);
                 return;
             }
-            if (value is IDictionary<string, object>)
+            if (value is IList && !parentCollections.Contains(value))
             {
-                WriteDictionary((IDictionary<string, object>)value, output);
+                WriteArray((IList)value, output, parentCollections);
                 return;
             }
             Action<object, TextWriter> writer;

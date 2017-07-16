@@ -251,19 +251,19 @@ namespace Essential
                 writer(value, output);
                 return;
             }
-            if (arrayCount < 1)
-            {
-                if (value is IList)
-                {
-                    WriteArray((IList)value, output, arrayCount, destructureCount);
-                    return;
-                }
-            }
             if (destructureCount < 1 && arrayCount < 1)
             {
                 if (value is IDictionary<string, object>)
                 {
                     WriteDictionary((IDictionary<string, object>)value, output, arrayCount, destructureCount);
+                    return;
+                }
+            }
+            if (arrayCount < 1)
+            {
+                if (value is IList)
+                {
+                    WriteArray((IList)value, output, arrayCount, destructureCount);
                     return;
                 }
             }

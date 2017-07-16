@@ -521,12 +521,21 @@ namespace Essential.Diagnostics
             {
                 return value;
             }
+            // TODO: Should convert child dictionary/list into recorded values
+            if (value is IDictionary<string, object>)
+            {
+                return value;
+            }
+            if (value is IList)
+            {
+                return value;
+            }
             return value.ToString();
         }
 
         private bool IsFormatterLiteral(object value)
         {
-            return SeqPayloadFormatter.IsLiteral(value) || value is IList;
+            return SeqPayloadFormatter.IsLiteral(value);
         }
     }
 }
