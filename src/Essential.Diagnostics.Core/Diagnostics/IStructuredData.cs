@@ -2,9 +2,7 @@
 
 namespace Essential.Diagnostics
 {
-    public interface IStructuredData
+    public interface IStructuredData : IDictionary<string, object>
     {
-        IDictionary<string, object> Properties { get; }
-        string MessageTemplate { get; }
     }
 }

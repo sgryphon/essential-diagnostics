@@ -26,8 +26,8 @@ namespace Essential.Diagnostics.Tests
             Assert.AreEqual(TraceEventType.Critical, events[0].EventType);
             Assert.AreEqual(9000, events[0].Id);
             var data = (IStructuredData)events[0].Data[0];
-            Assert.AreEqual("c{a}", data.MessageTemplate);
-            Assert.AreEqual(1, data.Properties["a"]);
+            Assert.AreEqual("c{a}", data["MessageTemplate"]);
+            Assert.AreEqual(1, data["a"]);
         }
     }
 }

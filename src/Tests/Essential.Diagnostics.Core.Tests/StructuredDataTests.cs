@@ -15,9 +15,9 @@ namespace Essential.Diagnostics.Tests
             var template = "x{a}";
 
             IStructuredData data = new StructuredData(template, "A");
-            var actual = data.Properties;
+            IDictionary<string, object> actual = data;
 
-            Assert.AreEqual(1, actual.Count);
+            Assert.AreEqual(1 + 1, actual.Count);
             Assert.AreEqual("a", actual.Keys.First());
             Assert.AreEqual("A", actual["a"]);
         }
@@ -30,9 +30,9 @@ namespace Essential.Diagnostics.Tests
             var b = "B";
 
             IStructuredData data = new StructuredData(template, a, b);
-            var actual = data.Properties;
+            IDictionary<string, object> actual = data;
 
-            Assert.AreEqual(2, actual.Count);
+            Assert.AreEqual(2 + 1, actual.Count);
             Assert.AreEqual("A", actual["b"]);
             Assert.AreEqual("B", actual["a"]);
         }
@@ -51,9 +51,9 @@ namespace Essential.Diagnostics.Tests
             {
                 data = new StructuredData(ex, template, "A");
             }
-            var actual = data.Properties;
+            IDictionary<string, object> actual = data;
 
-            Assert.AreEqual(2, actual.Count);
+            Assert.AreEqual(2 + 1, actual.Count);
             Assert.AreEqual("A", actual["a"]);
             Assert.AreEqual("B", ((Exception)actual["Exception"]).Message);
         }
@@ -65,9 +65,9 @@ namespace Essential.Diagnostics.Tests
             var additional = new Dictionary<string, object>() { { "b", "B" } };
 
             IStructuredData data = new StructuredData(additional, template, "A");
-            var actual = data.Properties;
+            IDictionary<string, object> actual = data;
 
-            Assert.AreEqual(2, actual.Count);
+            Assert.AreEqual(2 + 1, actual.Count);
             Assert.AreEqual("A", actual["a"]);
             Assert.AreEqual("B", actual["b"]);
         }
@@ -119,7 +119,7 @@ namespace Essential.Diagnostics.Tests
             IStructuredData data = new StructuredData(template, a);
             var actual = data.ToString();
 
-            Assert.AreEqual("Axy", actual);
+            Assert.AreEqual("Ax{b}y", actual);
         }
 
         [TestMethod()]

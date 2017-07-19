@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Collections;
 
 namespace Essential.Diagnostics
 {
@@ -10,14 +11,17 @@ namespace Essential.Diagnostics
     /// </summary>
     public class StructuredData : IStructuredData
     {
+        public const string ExceptionProperty = "Exception";
+        public const string MessageTemplateProperty = "MessageTemplate";
+
         // Internally use ordered dictionary, to preserve the order passed in
         OrderedDictionary<string, object> _allProperties;
         OrderedDictionary<string, object> _baseProperties;
         Exception _exception;
-        string _message;
         string _messageTemplate;
         IList<string> _messageTemplateKeys;
         List<object> _templateValues;
+        string _toString;
 
         /// <summary>
         /// Constructor. Creates structured data with the specified properties.
@@ -104,42 +108,171 @@ namespace Essential.Diagnostics
             }
         }
 
-        public IEnumerable<KeyValuePair<string, object>> BaseProperties { get { return _baseProperties; } }
+        public IEnumerable<KeyValuePair<string, object>> BaseProperties
+        {
+            get { return _baseProperties; }
+        }
 
-        public Exception Exception { get { return _exception; } }
-
-        public string MessageTemplate { get { return _messageTemplate; } }
-
-        public IEnumerable<object> TemplateValues { get { return _templateValues; } }
-
-        IDictionary<string, object> IStructuredData.Properties
+        public int Count
         {
             get
             {
-                BuildAllProperties();
-                return _allProperties;
+                EnsureAllProperties();
+                return _allProperties.Count;
             }
+        }
+
+        public Exception Exception {
+            get
+            {
+                if (_exception == null)
+                {
+                    // Could be from either base properties or template values
+                    EnsureAllProperties();
+                    object exceptionFromAllProperties;
+                    if (_allProperties.TryGetValue(ExceptionProperty, out exceptionFromAllProperties))
+                    {
+                        if (exceptionFromAllProperties is Exception)
+                        {
+                            return (Exception)exceptionFromAllProperties;
+                        }
+                    }
+                }
+                return _exception;
+            }
+        }
+
+        public string MessageTemplate {
+            get
+            {
+                EnsureMessageTemplate();
+                return _messageTemplate;
+            }
+        }
+
+        public IEnumerable<object> TemplateValues { get { return _templateValues; } }
+
+        public object this[string key]
+        {
+            get
+            {
+                EnsureAllProperties();
+                return ((IDictionary<string, object>)_allProperties)[key];
+            }
+            set
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        public bool ContainsKey(string key)
+        {
+            EnsureAllProperties();
+            return _allProperties.ContainsKey(key);
+        }
+
+        public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+        {
+            EnsureAllProperties();
+            return _allProperties.GetEnumerator();
         }
 
         public override string ToString()
         {
-            BuildMessage();
-            return _message;
+            EnsureToString();
+            return _toString;
         }
 
-        private void BuildAllProperties()
+        public bool TryGetValue(string key, out object value)
+        {
+            EnsureAllProperties();
+            return _allProperties.TryGetValue(key, out value);
+        }
+
+        #region IDictionary
+
+        ICollection<string> IDictionary<string, object>.Keys
+        {
+            get
+            {
+                EnsureAllProperties();
+                return _allProperties.Keys;
+            }
+        }
+
+        ICollection<object> IDictionary<string, object>.Values
+        {
+            get
+            {
+                EnsureAllProperties();
+                return _allProperties.Values;
+            }
+        }
+
+        bool ICollection<KeyValuePair<string, object>>.IsReadOnly
+        {
+            get { return true; }
+        }
+
+
+        void IDictionary<string, object>.Add(string key, object value)
+        {
+            throw new NotSupportedException();
+        }
+
+        bool IDictionary<string, object>.Remove(string key)
+        {
+            throw new NotSupportedException();
+        }
+
+        void ICollection<KeyValuePair<string, object>>.Add(KeyValuePair<string, object> item)
+        {
+            throw new NotSupportedException();
+        }
+
+        void ICollection<KeyValuePair<string, object>>.Clear()
+        {
+            throw new NotSupportedException();
+        }
+
+        bool ICollection<KeyValuePair<string, object>>.Contains(KeyValuePair<string, object> item)
+        {
+            EnsureAllProperties();
+            return _allProperties.Contains(item);
+        }
+
+        void ICollection<KeyValuePair<string, object>>.CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
+        {
+            EnsureAllProperties();
+            _allProperties.CopyTo(array, arrayIndex);
+        }
+
+        bool ICollection<KeyValuePair<string, object>>.Remove(KeyValuePair<string, object> item)
+        {
+            throw new NotSupportedException();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            EnsureAllProperties();
+            return _allProperties.GetEnumerator();
+        }
+
+        #endregion
+
+        private void EnsureAllProperties()
         {
             if (_allProperties == null)
             {
                 var allProperties = new OrderedDictionary<string, object>();
+                // Get message template, or if not there, see if there is one in base properties
+                EnsureMessageTemplate();
+                // Start with base properties
                 foreach (var kvp in _baseProperties)
                 {
                     allProperties.Add(kvp.Key, kvp.Value);
                 }
-                if (_exception != null)
-                {
-                    ((IDictionary<string,object>)allProperties)["Exception"] = _exception;
-                }
+                // If have a template, extract keys
                 if (_messageTemplate != null)
                 {
                     var keyExtractor = new MessageTemplateKeyExtractor(_messageTemplate);
@@ -149,6 +282,7 @@ namespace Essential.Diagnostics
                 {
                     _messageTemplateKeys = new List<string>();
                 }
+                // Get properties from template values
                 if (_templateValues != null && _templateValues.Count > 0)
                 {
                     var extraCount = 0;
@@ -165,15 +299,41 @@ namespace Essential.Diagnostics
                         }
                     }
                 }
+                // Set the template actually used (will overwrite template values)
+                if (_messageTemplate != null)
+                {
+                    ((IDictionary<string, object>)allProperties)[MessageTemplateProperty] = _messageTemplate;
+                }
+                // Set the exception (will overwrite)
+                if (_exception != null)
+                {
+                    ((IDictionary<string, object>)allProperties)[ExceptionProperty] = _exception;
+                }
                 _allProperties = allProperties;
             }
         }
 
-        private void BuildMessage()
+        private void EnsureMessageTemplate()
         {
-            if (_message == null)
+            if (_messageTemplate == null)
             {
-                BuildAllProperties();
+                object _basePropertiesMessageTemplate;
+                if (_baseProperties.TryGetValue(MessageTemplateProperty, out _basePropertiesMessageTemplate))
+                {
+                    if (_basePropertiesMessageTemplate is string)
+                    {
+                        _messageTemplate = (string)_basePropertiesMessageTemplate;
+                    }
+                }
+            }
+        }
+
+        private void EnsureToString()
+        {
+            if (_toString == null)
+            {
+                EnsureMessageTemplate();
+                EnsureAllProperties();
                 var writer = new StringWriter();
                 var delimiter = "";
                 if (_messageTemplate != null)
@@ -182,8 +342,10 @@ namespace Essential.Diagnostics
                     writer.Write(messageFromTemplate);
                     delimiter = "; ";
                 }
-                StructuredPropertyFormatter.FormatProperties(_allProperties, _messageTemplateKeys, writer, ref delimiter);
-                _message = writer.GetStringBuilder().ToString();
+                var excludeKeys = _messageTemplateKeys;
+                excludeKeys.Add(MessageTemplateProperty);
+                StructuredPropertyFormatter.FormatProperties(_allProperties, excludeKeys, writer, ref delimiter);
+                _toString = writer.GetStringBuilder().ToString();
             }
         }
 
@@ -198,11 +360,10 @@ namespace Essential.Diagnostics
             }
             else
             {
-                value = null;
+                value = "{" + name + "}";
             }
             return true;
         }
-
 
         class MessageTemplateKeyExtractor
         {

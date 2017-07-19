@@ -369,7 +369,7 @@ namespace Essential.Diagnostics
 
         private void AddStructuredData(Dictionary<string, object> properties, IStructuredData structuredData, ref Exception exception, ref string messageFormat)
         {
-            foreach (var kvp in structuredData.Properties)
+            foreach (var kvp in structuredData)
             {
                 if (kvp.Key.StartsWith("@"))
                 {
@@ -397,7 +397,11 @@ namespace Essential.Diagnostics
                     exception = (Exception)kvp.Value;
                 }
             }
-            messageFormat = structuredData.MessageTemplate;
+            object messageTemplateProperty;
+            if (structuredData.TryGetValue(StructuredData.MessageTemplateProperty, out messageTemplateProperty))
+            {
+                messageFormat = messageTemplateProperty as string;
+            }
         }
 
         private List<object> BuildRecordedArgs(object[] messageArgs, ref Exception exception)
