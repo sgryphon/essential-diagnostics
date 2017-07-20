@@ -367,7 +367,7 @@ namespace Essential.Diagnostics
             }
         }
 
-        private void AddStructuredData(Dictionary<string, object> properties, IStructuredData structuredData, ref Exception exception, ref string messageFormat)
+        private void AddStructuredData(Dictionary<string, object> properties, IDictionary<string, object> structuredData, ref Exception exception, ref string messageFormat)
         {
             foreach (var kvp in structuredData)
             {
@@ -457,9 +457,11 @@ namespace Essential.Diagnostics
             object[] recordedDataArray = null;
             if (messageFormat == null
                 && (messageArgs == null || messageArgs.Length == 0)
-                && (data != null && data.Length == 1 && data[0] is IStructuredData))
+                && data != null 
+                && data.Length == 1 
+                && (data[0] is IStructuredData || data[0] is IDictionary<string, object>))
             {
-                var structuredData = (IStructuredData)data[0];
+                var structuredData = (IDictionary<string, object>)data[0];
                 AddStructuredData(properties, structuredData, ref exception, ref messageFormat);
             }
             else

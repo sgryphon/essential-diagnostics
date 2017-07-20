@@ -37,6 +37,8 @@ namespace Essential.Diagnostics.Tests
             Console.WriteLine(requestBody);
             StringAssert.Contains(requestBody, "\"MessageTemplate\":\"{a}\"");
             StringAssert.Contains(requestBody, "\"a\":1");
+            var regexData = new Regex("\"Data\":");
+            StringAssert.DoesNotMatch(requestBody, regexData);
         }
 
         [TestMethod]
@@ -285,6 +287,38 @@ namespace Essential.Diagnostics.Tests
             StringAssert.Contains(requestBody, "\"MessageTemplate\":\"{a}|{b}\"");
             StringAssert.Contains(requestBody, "\"a\":{\"A\":1,\"B\":{\"X\":2,\"Y\":\"System.Collections.Generic.Dictionary`2[System.String,System.Object]\"}}");
             StringAssert.Contains(requestBody, "\"b\":{\"X\":2,\"Y\":{\"A\":1,\"B\":\"System.Collections.Generic.Dictionary`2[System.String,System.Object]\"}}");
+        }
+
+
+        [TestMethod]
+        public void SeqHandlesStructuredDictionary()
+        {
+            var mockRequestFactory = new MockHttpWebRequestFactory();
+            mockRequestFactory.ResponseQueue.Enqueue(
+                new MockHttpWebResponse(HttpStatusCode.OK, null)
+                );
+
+            var listener = new SeqTraceListener("http://testuri");
+            listener.BatchSize = 0;
+            listener.BatchSender.HttpWebRequestFactory = mockRequestFactory;
+
+            var dictionaryData = new Dictionary<string, object>() {
+                { "MessageTemplate", "{a}" },
+                { "a",  1 }
+            };
+            listener.TraceData(null, "TestSource", TraceEventType.Warning, 1, dictionaryData);
+
+            Assert.AreEqual(1, mockRequestFactory.RequestsCreated.Count);
+
+            var request = mockRequestFactory.RequestsCreated[0];
+            var requestBody = request.RequestBody;
+            Console.WriteLine(requestBody);
+            StringAssert.Contains(requestBody, "\"MessageTemplate\":\"{a}\"");
+            StringAssert.Contains(requestBody, "\"a\":1");
+            //var regexTemplateData = new Regex("\"MessageTemplate\":\"{Data}\"");
+            //StringAssert.DoesNotMatch(requestBody, regexTemplateData);
+            var regexData = new Regex("\"Data\":");
+            StringAssert.DoesNotMatch(requestBody, regexData);
         }
 
         [TestMethod]
