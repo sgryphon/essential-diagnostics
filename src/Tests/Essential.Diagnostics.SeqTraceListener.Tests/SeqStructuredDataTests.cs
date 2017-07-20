@@ -289,7 +289,6 @@ namespace Essential.Diagnostics.Tests
             StringAssert.Contains(requestBody, "\"b\":{\"X\":2,\"Y\":{\"A\":1,\"B\":\"System.Collections.Generic.Dictionary`2[System.String,System.Object]\"}}");
         }
 
-
         [TestMethod]
         public void SeqHandlesStructuredDictionary()
         {
@@ -319,6 +318,36 @@ namespace Essential.Diagnostics.Tests
             //StringAssert.DoesNotMatch(requestBody, regexTemplateData);
             var regexData = new Regex("\"Data\":");
             StringAssert.DoesNotMatch(requestBody, regexData);
+        }
+
+        [TestMethod]
+        public void SeqIgnoresStructuredDictionaryWhenTurnedOff()
+        {
+            var mockRequestFactory = new MockHttpWebRequestFactory();
+            mockRequestFactory.ResponseQueue.Enqueue(
+                new MockHttpWebResponse(HttpStatusCode.OK, null)
+                );
+
+            var listener = new SeqTraceListener("http://testuri");
+            listener.BatchSize = 0;
+            listener.BatchSender.HttpWebRequestFactory = mockRequestFactory;
+            listener.ProcessDictionaryData = false;
+
+            var dictionaryData = new Dictionary<string, object>() {
+                { "MessageTemplate", "{a}" },
+                { "a",  1 }
+            };
+            listener.TraceData(null, "TestSource", TraceEventType.Warning, 1, dictionaryData);
+
+            Assert.AreEqual(1, mockRequestFactory.RequestsCreated.Count);
+
+            var request = mockRequestFactory.RequestsCreated[0];
+            var requestBody = request.RequestBody;
+            Console.WriteLine(requestBody);
+            var regexTemplateData = new Regex("\"MessageTemplate\":\"{Data}\"");
+            StringAssert.Matches(requestBody, regexTemplateData);
+            var regexData = new Regex("\"Data\":");
+            StringAssert.Matches(requestBody, regexData);
         }
 
         [TestMethod]

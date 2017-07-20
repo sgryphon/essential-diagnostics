@@ -44,6 +44,7 @@ namespace Essential.Diagnostics
             "batchTimeout", "BatchTimeout", "batchtimeout", "batchTimeOut", "BatchTimeOut",
             "maxQueueSize", "MaxQueueSize", "maxqueuesize",
             "maxRetries", "MaxRetries", "maxretries",
+            "processDictionaryData", "ProcessDictionaryData", "processdictionarydata",
         };
 
         /// <summary>
@@ -276,6 +277,26 @@ namespace Essential.Diagnostics
         }
 
         /// <summary>
+        /// Gets or sets whether a single data of type IDictionary&lt;string,object&gt; is treated as structured data. Default is true.
+        /// </summary>
+        public bool ProcessDictionaryData
+        {
+            get
+            {
+                var processDictionaryData = true;
+                if (Attributes.ContainsKey("processDictionaryData"))
+                {
+                    bool.TryParse(Attributes["processDictionaryData"], out processDictionaryData);
+                }
+                return processDictionaryData;
+            }
+            set
+            {
+                Attributes["processDictionaryData"] = value.ToString(CultureInfo.InvariantCulture);
+            }
+        }
+
+        /// <summary>
         /// Allowed attributes for this trace listener.
         /// </summary>
         protected override string[] GetSupportedAttributes()
@@ -459,7 +480,8 @@ namespace Essential.Diagnostics
                 && (messageArgs == null || messageArgs.Length == 0)
                 && data != null 
                 && data.Length == 1 
-                && (data[0] is IStructuredData || data[0] is IDictionary<string, object>))
+                && (data[0] is IStructuredData || 
+                    (data[0] is IDictionary<string, object> && ProcessDictionaryData)))
             {
                 var structuredData = (IDictionary<string, object>)data[0];
                 AddStructuredData(properties, structuredData, ref exception, ref messageFormat);
