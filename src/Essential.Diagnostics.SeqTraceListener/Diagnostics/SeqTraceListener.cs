@@ -45,6 +45,7 @@ namespace Essential.Diagnostics
             "maxQueueSize", "MaxQueueSize", "maxqueuesize",
             "maxRetries", "MaxRetries", "maxretries",
             "processDictionaryData", "ProcessDictionaryData", "processdictionarydata",
+            "processDictionaryLogicalOperationStack", "ProcessDictionaryLogicalOperationStack", "processdictionarylogicaloperationstack",
         };
 
         /// <summary>
@@ -297,6 +298,26 @@ namespace Essential.Diagnostics
         }
 
         /// <summary>
+        /// Gets or sets whether logical operation stack items of type IDictionary&lt;string,object&gt; are treated as structured data. Default is true.
+        /// </summary>
+        public bool ProcessDictionaryLogicalOperationStack
+        {
+            get
+            {
+                var processDictionaryLogicalOperationStack = true;
+                if (Attributes.ContainsKey("processDictionaryLogicalOperationStack"))
+                {
+                    bool.TryParse(Attributes["processDictionaryLogicalOperationStack"], out processDictionaryLogicalOperationStack);
+                }
+                return processDictionaryLogicalOperationStack;
+            }
+            set
+            {
+                Attributes["processDictionaryLogicalOperationStack"] = value.ToString(CultureInfo.InvariantCulture);
+            }
+        }
+
+        /// <summary>
         /// Allowed attributes for this trace listener.
         /// </summary>
         protected override string[] GetSupportedAttributes()
@@ -341,20 +362,6 @@ namespace Essential.Diagnostics
                 }
             }
 
-            if (_propertyLogicalOperationStack || (TraceOutputOptions & TraceOptions.LogicalOperationStack) == TraceOptions.LogicalOperationStack)
-            {
-                var stack = (eventCache != null ? eventCache.LogicalOperationStack : null) ?? Trace.CorrelationManager.LogicalOperationStack;
-                var logicalOperationStack = new List<object>();
-                if (stack != null && stack.Count > 0)
-                {
-                    foreach (object stackItem in stack)
-                    {
-                        logicalOperationStack.Add(GetRecordedValue(stackItem));
-                    }
-                    properties.Add("LogicalOperationStack", logicalOperationStack.ToArray());
-                }
-            }
-
             if (_propertyProcessId || (TraceOutputOptions & TraceOptions.ProcessId) == TraceOptions.ProcessId)
             {
                 var processId = eventCache != null ? eventCache.ProcessId : 0;
@@ -385,6 +392,45 @@ namespace Essential.Diagnostics
                     principalName = Thread.CurrentPrincipal.Identity.Name;
                 }
                 properties.Add("PrincipalName", principalName);
+            }
+        }
+
+        private void AddLogicalStack(Dictionary<string, object> properties, TraceEventCache eventCache)
+        {
+            EnsureAttributesParsed();
+
+            var stack = (eventCache != null ? eventCache.LogicalOperationStack : null) ?? Trace.CorrelationManager.LogicalOperationStack;
+            if (stack != null && stack.Count > 0)
+            {
+                var recordStack = _propertyLogicalOperationStack || (TraceOutputOptions & TraceOptions.LogicalOperationStack) == TraceOptions.LogicalOperationStack;
+                List<object> logicalOperationStack = null;
+                if (recordStack)
+                {
+                    logicalOperationStack = new List<object>();
+                }
+                foreach (object stackItem in stack)
+                {
+                    if ((stackItem is IStructuredData) ||
+                        (stackItem is IDictionary<string, object> && ProcessDictionaryLogicalOperationStack))
+                    {
+                        var stackItemDictionary = (IDictionary<string, object>)stackItem;
+                        foreach (var kvp in stackItemDictionary)
+                        {
+                            if (kvp.Key != StructuredData.MessageTemplateProperty)
+                            {
+                                properties[kvp.Key] = kvp.Value;
+                            }
+                        }
+                    }
+                    if (recordStack)
+                    {
+                        logicalOperationStack.Add(GetRecordedValue(stackItem));
+                    }
+                }
+                if (recordStack)
+                {
+                    properties.Add("LogicalOperationStack", logicalOperationStack.ToArray());
+                }
             }
         }
 
@@ -470,8 +516,8 @@ namespace Essential.Diagnostics
 
             // Properties
             var properties = new Dictionary<string, object>();
-
             AddAttributeProperties(properties, eventCache);
+            AddLogicalStack(properties, eventCache);
 
             object[] recordedArgsArray = null;
             var exception = default(Exception);

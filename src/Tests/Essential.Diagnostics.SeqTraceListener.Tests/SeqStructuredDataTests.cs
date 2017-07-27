@@ -351,6 +351,98 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod]
+        public void SeqHandlesStructuredOperationAsTraceOutput()
+        {
+            var mockRequestFactory = new MockHttpWebRequestFactory();
+            mockRequestFactory.ResponseQueue.Enqueue(
+                new MockHttpWebResponse(HttpStatusCode.OK, null)
+                );
+
+            var listener = new SeqTraceListener("http://testuri");
+            listener.BatchSize = 0;
+            listener.BatchSender.HttpWebRequestFactory = mockRequestFactory;
+            listener.TraceOutputOptions = TraceOptions.LogicalOperationStack;
+
+            var structuredData = new StructuredData(new Dictionary<string, object>() { { "a", 1 } });
+            Trace.CorrelationManager.StartLogicalOperation(structuredData);
+            listener.TraceEvent(null, "TestSource", TraceEventType.Warning, 1, "x{0}", "y");
+            Trace.CorrelationManager.StopLogicalOperation();
+
+            Assert.AreEqual(1, mockRequestFactory.RequestsCreated.Count);
+
+            var request = mockRequestFactory.RequestsCreated[0];
+            var requestBody = request.RequestBody;
+            Console.WriteLine(requestBody);
+            StringAssert.Contains(requestBody, "\"MessageTemplate\":\"x{0}\"");
+            StringAssert.Contains(requestBody, "\"0\":\"y\"");
+            StringAssert.Contains(requestBody, "\"LogicalOperationStack\":[{\"a\":1}]");
+            var regexData = new Regex("\"Data\":");
+            StringAssert.DoesNotMatch(requestBody, regexData);
+        }
+
+        [TestMethod]
+        public void SeqHandlesStructuredOperationAsPropertiesOnly()
+        {
+            var mockRequestFactory = new MockHttpWebRequestFactory();
+            mockRequestFactory.ResponseQueue.Enqueue(
+                new MockHttpWebResponse(HttpStatusCode.OK, null)
+                );
+
+            var listener = new SeqTraceListener("http://testuri");
+            listener.BatchSize = 0;
+            listener.BatchSender.HttpWebRequestFactory = mockRequestFactory;
+
+            var structuredData = new StructuredData(new Dictionary<string, object>() { { "a", 1 } });
+            Trace.CorrelationManager.StartLogicalOperation(structuredData);
+            listener.TraceEvent(null, "TestSource", TraceEventType.Warning, 1, "x{0}", "y");
+            Trace.CorrelationManager.StopLogicalOperation();
+
+            Assert.AreEqual(1, mockRequestFactory.RequestsCreated.Count);
+
+            var request = mockRequestFactory.RequestsCreated[0];
+            var requestBody = request.RequestBody;
+            Console.WriteLine(requestBody);
+            StringAssert.Contains(requestBody, "\"MessageTemplate\":\"x{0}\"");
+            StringAssert.Contains(requestBody, "\"0\":\"y\"");
+            StringAssert.Contains(requestBody, "\"a\":1");
+            var regexData = new Regex("\"Data\":");
+            StringAssert.DoesNotMatch(requestBody, regexData);
+            var regexStack = new Regex("\"LogicalOperationStack\":");
+            StringAssert.DoesNotMatch(requestBody, regexStack);
+        }
+
+        [TestMethod]
+        public void SeqHandlesDictionaryOperationAsProperties()
+        {
+            var mockRequestFactory = new MockHttpWebRequestFactory();
+            mockRequestFactory.ResponseQueue.Enqueue(
+                new MockHttpWebResponse(HttpStatusCode.OK, null)
+                );
+
+            var listener = new SeqTraceListener("http://testuri");
+            listener.BatchSize = 0;
+            listener.BatchSender.HttpWebRequestFactory = mockRequestFactory;
+
+            var dictionaryData = new Dictionary<string, object>() { { "a", 1 } };
+            Trace.CorrelationManager.StartLogicalOperation(dictionaryData);
+            listener.TraceEvent(null, "TestSource", TraceEventType.Warning, 1, "x{0}", "y");
+            Trace.CorrelationManager.StopLogicalOperation();
+
+            Assert.AreEqual(1, mockRequestFactory.RequestsCreated.Count);
+
+            var request = mockRequestFactory.RequestsCreated[0];
+            var requestBody = request.RequestBody;
+            Console.WriteLine(requestBody);
+            StringAssert.Contains(requestBody, "\"MessageTemplate\":\"x{0}\"");
+            StringAssert.Contains(requestBody, "\"0\":\"y\"");
+            StringAssert.Contains(requestBody, "\"a\":1");
+            var regexData = new Regex("\"Data\":");
+            StringAssert.DoesNotMatch(requestBody, regexData);
+            var regexStack = new Regex("\"LogicalOperationStack\":");
+            StringAssert.DoesNotMatch(requestBody, regexStack);
+        }
+
+        [TestMethod]
         public void SeqStructuredCustomObject()
         {
             var mockRequestFactory = new MockHttpWebRequestFactory();
