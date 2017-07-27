@@ -162,6 +162,23 @@ namespace Essential.Diagnostics.Structured
         /// <param name="templateValues">Values, assigned in sequence, to keys in the template</param>
         void Information(TEventId id, string messageTemplate, params object[] templateValues);
 
+        // Logical Operation Scope
+
+        /// <summary>
+        /// Starts a new structured data logical operation scope, typically output as additional structured properties.
+        /// </summary>
+        /// <param name="key">The additional structured property to include</param>
+        /// <param name="value">The additional structured property value</param>
+        /// <returns>A scope object that ends the scope whem disposed.</returns>
+        IDisposable BeginScope(string key, object value);
+
+        /// <summary>
+        /// Starts a new structured data logical operation scope, typically output as additional structured properties.
+        /// </summary>
+        /// <param name="structuredData">The additional structured data to include</param>
+        /// <returns>A scope object that ends the scope whem disposed.</returns>
+        IDisposable BeginScope(IStructuredData structuredData);
+
         // Verbose
 
         /// <summary>

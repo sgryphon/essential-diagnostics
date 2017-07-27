@@ -236,6 +236,30 @@ namespace Essential.Diagnostics.Structured
             TraceStructuredData(TraceEventType.Information, id.ToInt32(CultureInfo.InvariantCulture), properties, exception, messageTemplate, templateValues);
         }
 
+        // Logical Operation Scope
+
+        /// <summary>
+        /// Starts a new structured data logical operation scope, typically output as additional structured properties.
+        /// </summary>
+        /// <param name="key">The additional structured property to include</param>
+        /// <param name="value">The additional structured property value</param>
+        /// <returns>A scope object that ends the scope whem disposed.</returns>
+        public IDisposable BeginScope(string key, object value)
+        {
+            var structuredData = new StructuredData(new Dictionary<string, object>() { { key, value } });
+            return BeginScope(structuredData);
+        }
+
+        /// <summary>
+        /// Starts a new structured data logical operation scope, typically output as additional structured properties.
+        /// </summary>
+        /// <param name="structuredData">The additional structured data to include</param>
+        /// <returns>A scope object that ends the scope whem disposed.</returns>
+        public IDisposable BeginScope(IStructuredData structuredData)
+        {
+            return new StructuredDataScope(structuredData);
+        }
+
         // Verbose
 
         /// <summary>

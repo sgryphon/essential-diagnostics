@@ -35,6 +35,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Diagnostics\Structured\AssemblyStructuredTrace-TEvendId,TTarget.cs" />
+    <Compile Include="Diagnostics\Structured\StructuredDataScope.cs" />
     <Compile Include="Diagnostics\Structured\StandardEventId.cs" />
     <Compile Include="Diagnostics\Structured\IStructuredTrace-TEventId,TTarget.cs" />
     <Compile Include="Diagnostics\Structured\IStructuredTrace-TEventId.cs" />
