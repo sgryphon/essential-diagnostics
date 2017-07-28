@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Essential.Diagnostics.Structured</id>
+    <version>2.1.0.0</version>
+    <authors>sgryphon</authors>
+    <owners>sgryphon</owners>
+    <licenseUrl>https://github.com/sgryphon/essential-diagnostics/blob/master/license.md</licenseUrl>
+    <projectUrl>https://github.com/sgryphon/essential-diagnostics</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/sgryphon/essential-diagnostics/master/docs/images/Essential-Diagnostics-64.png</iconUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>
+      Provides a templated interface and implementation that makes tracing structured data easy via System.Diagnostics, using a fluent interface. Information is traced as StructuredData, with a message template, template values, and additional properties.
+
+      Structured trace information is forwarded to an underlying TraceSource, which then sends to any configured TraceListeners, e.q. a Seq server. The interface can be used for easy integration with a dependency injection framework.
+
+      Other Essential.Diagnostics packages extend the .NET Framework System.Diagnostics trace logging with additional trace listeners. Included are colored console (that allows custom formats), SQL database (including a tool to create tables), rolling file (with custom formats), rolling XML, email (per trace or batched), and an in-memory trace listener.
+
+      The Essential.Diagnostics project also publishes structured data (semantic) tracing extensions and a fluent client library that includes easy encapsulation of activity and logical operation scopes, as well as abstractions and templated classes for a simpler logging API and support for dependency injection frameworks.
+
+      See the project site on GitHub for examples and documentation.
+    </description>
+    <releaseNotes>
+      Version 2.1: Addition of structured logging.
+    </releaseNotes>
+    <copyright>Copyright © Gryphon Technology Pty Ltd 2017</copyright>
+    <tags>Logging Tracing Diagnostics Log Trace TraceListener Structured Semantic</tags>
+    <dependencies>
+      <dependency id="Essential.Diagnostics.Core" version="2.1.0.0" />
+    </dependencies>
+  </metadata>
+</package>

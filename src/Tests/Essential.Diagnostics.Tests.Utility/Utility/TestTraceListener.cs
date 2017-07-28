@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
+using System.Collections;
 
 namespace Essential.Diagnostics.Tests.Utility
 {
@@ -41,8 +42,8 @@ namespace Essential.Diagnostics.Tests.Utility
                 RelatedActivityId = relatedActivityId,
                 Data = data,
                 ActivityId = Trace.CorrelationManager.ActivityId,
-                LogicalOperationStack = currentStack.OfType<string>().ToArray()
-        };
+                LogicalOperationStack = currentStack.ToArray().Select(x => x.ToString()).ToArray()
+            };
             MethodCallInformation.Add(traceInfo);
         }
 

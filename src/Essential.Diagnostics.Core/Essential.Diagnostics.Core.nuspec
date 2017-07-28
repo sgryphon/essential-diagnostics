@@ -2,24 +2,24 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Essential.Diagnostics.Core</id>
-    <version>2.0.0.0</version>
+    <version>2.1.0.0</version>
     <authors>sgryphon</authors>
     <owners>sgryphon</owners>
-    <licenseUrl>http://essentialdiagnostics.codeplex.com/license</licenseUrl>
-    <projectUrl>http://essentialdiagnostics.codeplex.com/</projectUrl>
-    <iconUrl>https://download-codeplex.sec.s-msft.com/Download?ProjectName=essentialdiagnostics&amp;DownloadId=1634951&amp;Build=21031</iconUrl>
+    <licenseUrl>https://github.com/sgryphon/essential-diagnostics/blob/master/license.md</licenseUrl>
+    <projectUrl>https://github.com/sgryphon/essential-diagnostics</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/sgryphon/essential-diagnostics/master/docs/images/Essential-Diagnostics-64.png</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>
       Core library for Essential.Diagnostics, with a common base class for trace listeners. It also includes a generic formatter, a generic expression-based trace filter, and a file watcher for configuration changes.
 
       Other Essential.Diagnostics packages extend the .NET Framework System.Diagnostics trace logging with additional trace listeners. Included are colored console (that allows custom formats), SQL database (including a tool to create tables), rolling file (with custom formats), rolling XML, email (per trace or batched), and an in-memory trace listener.
 
-      The Essential.Diagnostics project also publishes a fluent client library that includes easy encapsulation of activity and logical operation scopes, as well as abstractions and templated classes for a simpler logging API and support for dependency injection frameworks.
+      The Essential.Diagnostics project also publishes structured data (semantic) tracing extensions and a fluent client library that includes easy encapsulation of activity and logical operation scopes, as well as abstractions and templated classes for a simpler logging API and support for dependency injection frameworks.
 
-      See the project site on CodePlex for examples and documentation.
+      See the project site on GitHub for examples and documentation.
     </description>
     <releaseNotes>
-      Version 2.0: Major re-organisation of project into separate packages for each trace listener. This allows projects to add just the listeners they need.
+      Version 2.1: Addition of structured logging.
     </releaseNotes>
     <copyright>Copyright © Gryphon Technology Pty Ltd 2017</copyright>
     <tags>Logging Tracing Diagnostics Log Trace TraceListener</tags>
