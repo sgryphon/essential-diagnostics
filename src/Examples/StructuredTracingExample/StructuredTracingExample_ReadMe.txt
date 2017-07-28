@@ -5,7 +5,7 @@ Examples of structured tracing, also known as semantic logging, support in Micro
 
 Base support is provided in Essential.Diagnostics.Core, with a StructuredData class that can store
 properties, a message template, and template values, and will then render the properties out to
-existing trace listeners.
+existing trace listeners (see the output in C:\Temp\Logs for example output).
 
 The real power of structured data comes when combined with a trace listener and tool that supports it.
 Support for handling structured data is provided by the SeqTraceListener class, which writes to a 
@@ -29,6 +29,6 @@ Instructions
 1. Download and install Seq Server - the personal developer version is sufficient
 2. Build the application.
 3. Run the application from the command line.
-4. Examine the trace output.
+4. Examine the trace output in C:\Temp\Logs.
 5. Examine the output in Seq.
 

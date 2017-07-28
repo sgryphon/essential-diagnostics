@@ -18,6 +18,9 @@ namespace StructuredTracing.Example
         static void Main(string[] args)
         {
             var trace = new TraceSource("StructuredTracing.Example");
+
+            // Using Essential.Diagnostics.Core only (.NET 2.0)
+
             trace.TraceData(TraceEventType.Verbose, 0, 
                 new StructuredData(new Dictionary<string, object>
                 {
@@ -28,6 +31,9 @@ namespace StructuredTracing.Example
                 new StructuredData("City {Place} has coordinates {@Location}", 
                 "Brisbane", new Location() { Latitude = -27.5, Longitude = 153.0 }, Guid.NewGuid()));
 
+
+            // Using Essential.Diagnostics.StructuredExtensions (.NET 3.5)
+
             trace.TraceStructuredData(TraceEventType.Warning, 3001, new Dictionary<string, object>
                 {
                     { "CurrentValue", 49 },
@@ -37,15 +43,24 @@ namespace StructuredTracing.Example
             trace.TraceStructuredData(TraceEventType.Error, 5001, new ApplicationException(), 
                 "There was an error processing {OrderId}", 12345);
 
+
+            // Using Essential.Diagnostics.Structured (.NET 2.0 fluent)
+
             var structuredTrace = new AssemblyStructuredTrace<StandardEventId, Program>();
 
             structuredTrace.Information(StandardEventId.ConfigurationStart, 
                 "Configuration started: {Address}", new IPAddress(new byte[] { 192, 168, 1, 1 }));
 
-            structuredTrace.Critical(StandardEventId.SystemCriticalError, 
-                new ApplicationException(), "System error");
+            using (structuredTrace.BeginScope("Request", 1234))
+            {
+                using (structuredTrace.BeginScope("Transaction", 5678))
+                {
+                    structuredTrace.Verbose("Item is between {Low} and {High}", 22, 24);
 
-            structuredTrace.Verbose("Item is between {Low} and {High}", 22, 24);
+                    structuredTrace.Critical(StandardEventId.SystemCriticalError,
+                        new ApplicationException(), "System error");
+                }
+            }
 
             Console.WriteLine("Done");
             Console.ReadKey();
