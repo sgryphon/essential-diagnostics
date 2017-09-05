@@ -202,7 +202,7 @@ namespace Essential.Diagnostics.Tests
         {
             GivenTestSource()
                 .WhenTraceAction(source => Trace.Write(1))
-                .ThenVerifyTraceInfo(null, TraceEventType.Verbose, 0, null, new object[] { 1 }, null);
+                .ThenVerifyTraceInfo(default(string), TraceEventType.Verbose, 0, null, new object[] { 1 }, null);
         }
 
         [TestMethod]
@@ -210,7 +210,7 @@ namespace Essential.Diagnostics.Tests
         {
             GivenTrace()
                 .WhenTraceAction(source => Trace.Write("ab"))
-                .ThenVerifyTraceInfo(null, TraceEventType.Verbose, 0, "ab", null, null);
+                .ThenVerifyTraceInfo(default(string), TraceEventType.Verbose, 0, "ab", null, null);
         }
 
         [TestMethod]
@@ -219,7 +219,7 @@ namespace Essential.Diagnostics.Tests
             object param = null;
             GivenTestSource()
                 .WhenTraceAction(source => Trace.Write(param))
-                .ThenVerifyTraceInfo(null, TraceEventType.Verbose, 0, null, null, null);
+                .ThenVerifyTraceInfo(default(string), TraceEventType.Verbose, 0, null, null, null);
         }
 
         [TestMethod]
@@ -228,7 +228,7 @@ namespace Essential.Diagnostics.Tests
             string s = null;
             GivenTrace()
                 .WhenTraceAction(source => Trace.Write(s))
-                .ThenVerifyTraceInfo(null, TraceEventType.Verbose, 0, null, null, null);
+                .ThenVerifyTraceInfo(default(string), TraceEventType.Verbose, 0, null, null, null);
         }
 
         [TestMethod]
@@ -236,7 +236,7 @@ namespace Essential.Diagnostics.Tests
         {
             GivenTrace()
                 .WhenTraceAction(source => Trace.Write("ab", "c1"))
-                .ThenVerifyTraceInfo(null, TraceEventType.Verbose, 0, "c1: ab", null, null);
+                .ThenVerifyTraceInfo(default(string), TraceEventType.Verbose, 0, "c1: ab", null, null);
         }
 
         [TestMethod]
@@ -244,7 +244,7 @@ namespace Essential.Diagnostics.Tests
         {
             GivenTrace()
                 .WhenTraceAction(source => Trace.Write(1, "c1"))
-                .ThenVerifyTraceInfo(null, TraceEventType.Verbose, 0, "c1", new object[] { 1 }, null);
+                .ThenVerifyTraceInfo(default(string), TraceEventType.Verbose, 0, "c1", new object[] { 1 }, null);
         }
 
         [TestMethod]
@@ -253,7 +253,7 @@ namespace Essential.Diagnostics.Tests
             string s = null;
             GivenTrace()
                 .WhenTraceAction(source => Trace.Write(s, "c1"))
-                .ThenVerifyTraceInfo(null, TraceEventType.Verbose, 0, "c1: ", null, null);
+                .ThenVerifyTraceInfo(default(string), TraceEventType.Verbose, 0, "c1: ", null, null);
         }
 
         [TestMethod]
@@ -261,7 +261,7 @@ namespace Essential.Diagnostics.Tests
         {
             GivenTrace()
                 .WhenTraceAction(source => Trace.Write("", "c1"))
-                .ThenVerifyTraceInfo(null, TraceEventType.Verbose, 0, "c1: ", null, null);
+                .ThenVerifyTraceInfo(default(string), TraceEventType.Verbose, 0, "c1: ", null, null);
         }
 
         [TestMethod]
@@ -269,7 +269,7 @@ namespace Essential.Diagnostics.Tests
         {
             GivenTrace()
                 .WhenTraceAction(source => Trace.Write("ab", null))
-                .ThenVerifyTraceInfo(null, TraceEventType.Verbose, 0, "ab", null, null);
+                .ThenVerifyTraceInfo(default(string), TraceEventType.Verbose, 0, "ab", null, null);
         }
 
         [TestMethod]
@@ -277,14 +277,14 @@ namespace Essential.Diagnostics.Tests
         {
             GivenTrace()
                 .WhenTraceAction(source => Trace.Write("ab", ""))
-                .ThenVerifyTraceInfo(null, TraceEventType.Verbose, 0, ": ab", null, null);
+                .ThenVerifyTraceInfo(default(string), TraceEventType.Verbose, 0, ": ab", null, null);
         }
 
         [TestMethod]
         public void BaseHandlesTraceTraceInformation()
         {
             //var sourceNameForStaticTrace = "PROGRAM";
-            var sourceNameForStaticTrace = "vstest.executionengine.x86.exe";
+            var sourceNameForStaticTrace = new string[] { "vstest.executionengine.x86.exe", "vstest.console.exe" };
             GivenTrace()
                 .WhenTraceAction(source => Trace.TraceInformation("a{0}b", 1))
                 .ThenVerifyTraceInfo(sourceNameForStaticTrace, TraceEventType.Information, 0, "a1b", null, null);
@@ -328,8 +328,16 @@ namespace Essential.Diagnostics.Tests
 
             public void ThenVerifyTraceInfo(string source, TraceEventType eventType, int id, string message, object[] data, Guid? activityId)
             {
+                ThenVerifyTraceInfo(new string[] { source }, eventType, id, message, data, activityId);
+            }
+
+            public void ThenVerifyTraceInfo(IEnumerable<string> sources, TraceEventType eventType, int id, string message, object[] data, Guid? activityId)
+            {
                 var info = listener.MethodCallInformation[0];
-                Assert.AreEqual(source, info.Source);
+
+                var sourceCollection = new List<string>(sources);
+                CollectionAssert.Contains(sourceCollection, info.Source);
+
                 Assert.AreEqual(eventType, info.EventType);
                 Assert.AreEqual(id, info.Id);
                 Assert.AreEqual(message, info.Message);

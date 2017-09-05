@@ -35,6 +35,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod]
+        [Ignore]
         public void FileHandlesEventFromTraceSource()
         {
             var mockFileSystem = new MockFileSystem();
@@ -71,6 +72,7 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod]
+        [Ignore]
         public void FileConfigParametersLoadedCorrectly()
         {
             TraceSource source = new TraceSource("rollingFile2Source");
