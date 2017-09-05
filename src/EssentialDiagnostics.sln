@@ -41,8 +41,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{DE2114
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleExample", "Tests\ConsoleExample\ConsoleExample.csproj", "{BD381576-ACFC-4098-AD56-9902B36F30C7}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Diagnostics.Core", "Essential.Diagnostics.Core\Essential.Diagnostics.Core.csproj", "{AAE26C8F-AE78-4458-BA5D-00876105A4B7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Diagnostics.InMemoryTraceListener", "Essential.Diagnostics.InMemoryTraceListener\Essential.Diagnostics.InMemoryTraceListener.csproj", "{0CA876D8-7FED-4BD8-BF03-F72703C1B793}"
@@ -119,16 +117,6 @@ Global
 		{252DDE2C-C596-4F3B-96E3-87CB9F7ED839}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{252DDE2C-C596-4F3B-96E3-87CB9F7ED839}.Release|x86.ActiveCfg = Release|x86
 		{252DDE2C-C596-4F3B-96E3-87CB9F7ED839}.Release|x86.Build.0 = Release|x86
-		{BD381576-ACFC-4098-AD56-9902B36F30C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BD381576-ACFC-4098-AD56-9902B36F30C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BD381576-ACFC-4098-AD56-9902B36F30C7}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{BD381576-ACFC-4098-AD56-9902B36F30C7}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{BD381576-ACFC-4098-AD56-9902B36F30C7}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{BD381576-ACFC-4098-AD56-9902B36F30C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BD381576-ACFC-4098-AD56-9902B36F30C7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BD381576-ACFC-4098-AD56-9902B36F30C7}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{BD381576-ACFC-4098-AD56-9902B36F30C7}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{BD381576-ACFC-4098-AD56-9902B36F30C7}.Release|x86.ActiveCfg = Release|Any CPU
 		{AAE26C8F-AE78-4458-BA5D-00876105A4B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AAE26C8F-AE78-4458-BA5D-00876105A4B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AAE26C8F-AE78-4458-BA5D-00876105A4B7}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -446,7 +434,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{BD381576-ACFC-4098-AD56-9902B36F30C7} = {A7E69AF9-D207-44DF-8294-823024B90590}
 		{0E0D3D26-0DA3-4E5E-97EA-387C0F2DE2BB} = {A7E69AF9-D207-44DF-8294-823024B90590}
 		{0542BD2D-12D0-4784-A4E6-756670827647} = {A7E69AF9-D207-44DF-8294-823024B90590}
 		{F18E151E-737E-42EE-A0A3-B9D8E2F0F056} = {A7E69AF9-D207-44DF-8294-823024B90590}
