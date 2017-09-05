@@ -108,6 +108,37 @@ namespace Essential.Diagnostics.Tests
             StringAssert.Contains(requestBody, "MachineName");
         }
 
+        [TestMethod]
+        public void SeqParameterOrder()
+        {
+            var mockRequestFactory = new MockHttpWebRequestFactory();
+            mockRequestFactory.ResponseQueue.Enqueue(
+                new MockHttpWebResponse(HttpStatusCode.OK, null)
+                );
+
+            TraceSource source = new TraceSource("seq1Source");
+            var listener = source.Listeners.OfType<SeqTraceListener>().First();
+            listener.BatchSender.HttpWebRequestFactory = mockRequestFactory;
+
+            source.TraceEvent(TraceEventType.Warning, 2, "{1}-{0}", 3, "B");
+
+            Assert.AreEqual(1, mockRequestFactory.RequestsCreated.Count);
+
+            var request = mockRequestFactory.RequestsCreated[0];
+            Assert.AreEqual("POST", request.Method);
+            Assert.AreEqual("application/json; charset=utf-8", request.ContentType);
+            Assert.AreEqual("http://127.0.0.1:5341/api/events/raw", request.Uri);
+            Assert.AreEqual(1, request.Headers.Count);
+
+            var requestBody = request.RequestBody;
+            Console.WriteLine(requestBody);
+            StringAssert.Contains(requestBody, "seq1Source");
+            StringAssert.Contains(requestBody, "{1}-{0}");
+            StringAssert.Contains(requestBody, "\"0\":3");
+            StringAssert.Contains(requestBody, "\"1\":\"B\"");
+        }
+
+
         // TODO: Test to check _all_ parameters work.
 
         // TODO: Test to check max message length trimming works.
