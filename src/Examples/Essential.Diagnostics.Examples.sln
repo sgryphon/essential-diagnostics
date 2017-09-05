@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3A947E8F-0D68-4312-900B-ADC4DC4052B0}"
 	ProjectSection(SolutionItems) = preProject
@@ -13,6 +13,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{F6BF98
 		.nuget\NuGet.Config = .nuget\NuGet.Config
 		.nuget\NuGet.exe = .nuget\NuGet.exe
 		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Minimal", "Minimal", "{CCE66487-51A7-44B2-8089-C95D2063CC4A}"
+	ProjectSection(SolutionItems) = preProject
+		Minimal\ETWHello.cs = Minimal\ETWHello.cs
+		Minimal\Hello.cs = Minimal\Hello.cs
+		Minimal\Hello.exe.config = Minimal\Hello.exe.config
+		Minimal\MinimalExamples_ReadMe.txt = Minimal\MinimalExamples_ReadMe.txt
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloLogging", "HelloLogging\HelloLogging.csproj", "{1B94311E-4CD8-405F-8B3A-ECF9527241CE}"
@@ -35,27 +43,19 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BufferedEmailExample", "Buf
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloNet20", "HelloNet20\HelloNet20.csproj", "{C45EEE44-BD6F-45E0-B6E8-7BEA638D0F47}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "TestNetCore", "TestNetCore\TestNetCore.xproj", "{766C05AE-A4B7-45A3-A778-34B88C73829F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestNetCore", "TestNetCore\TestNetCore.csproj", "{766C05AE-A4B7-45A3-A778-34B88C73829F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogRetentionExample", "LogRetentionExample\LogRetentionExample.csproj", "{2CCFF701-3797-4C04-85E6-3396044D74F0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventSourceExample", "EventSourceExample\EventSourceExample.csproj", "{88388050-196D-4BA9-BE80-579AEFA46DAF}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Minimal", "Minimal", "{CCE66487-51A7-44B2-8089-C95D2063CC4A}"
-	ProjectSection(SolutionItems) = preProject
-		Minimal\ETWHello.cs = Minimal\ETWHello.cs
-		Minimal\Hello.cs = Minimal\Hello.cs
-		Minimal\Hello.exe.config = Minimal\Hello.exe.config
-		Minimal\MinimalExamples_ReadMe.txt = Minimal\MinimalExamples_ReadMe.txt
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtensionsLoggingNet451", "ExtensionsLoggingNet451\ExtensionsLoggingNet451.csproj", "{ECD9F06B-498B-4A98-9BF1-FE8D7AD7A9FA}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ExtensionsLoggingNetCore10", "ExtensionsLoggingNetCore10\ExtensionsLoggingNetCore10.xproj", "{42C8C262-8AAF-4D89-8A64-BCD52781BD58}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExtensionsLoggingNetCore10", "ExtensionsLoggingNetCore10\ExtensionsLoggingNetCore10.csproj", "{42C8C262-8AAF-4D89-8A64-BCD52781BD58}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SeqExample", "SeqExample\SeqExample.csproj", "{EEC23E9D-930F-4B33-9BF1-30F6C0A6A088}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "TestAspNetCoreOnNetFx", "TestAspNetCoreOnNetFx\TestAspNetCoreOnNetFx.xproj", "{6B8A6FA8-0A1E-4B9A-BDB5-BAC53F69F5A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestAspNetCoreOnNetFx", "TestAspNetCoreOnNetFx\TestAspNetCoreOnNetFx.csproj", "{6B8A6FA8-0A1E-4B9A-BDB5-BAC53F69F5A3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StructuredTracingExample", "StructuredTracingExample\StructuredTracingExample.csproj", "{09AF5907-5B9F-42F1-A395-86F12C98D678}"
 EndProject
