@@ -100,6 +100,7 @@ namespace Essential.Diagnostics.Tests
 
         [TestMethod]
         [TestCategory("MailIntegration")]
+        [Ignore]
         public void EmailSendManyMaxUnlimited()
         {
             TraceSource source = new TraceSource("emailSource");
@@ -117,6 +118,7 @@ namespace Essential.Diagnostics.Tests
 
         [TestMethod]
         [TestCategory("MailIntegration")]
+        [Ignore]
         public void EmailSendManyThreadsMaxUnlimited()
         {
             TraceSource source = new TraceSource("emailSource");
