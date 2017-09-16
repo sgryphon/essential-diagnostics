@@ -1,12 +1,8 @@
 ﻿using Essential.Diagnostics.Structured;
 using Essential.Diagnostics.Tests.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Essential.Diagnostics.Tests
 {
