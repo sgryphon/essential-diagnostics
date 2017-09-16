@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Essential.Diagnostics.Core</id>
-    <version>2.1.0.0</version>
+    <version>$version$</version>
     <authors>sgryphon</authors>
     <owners>sgryphon</owners>
     <licenseUrl>https://github.com/sgryphon/essential-diagnostics/blob/master/license.md</licenseUrl>
@@ -21,7 +21,7 @@
     <releaseNotes>
       Version 2.1: Addition of structured logging.
     </releaseNotes>
-    <copyright>Copyright © Gryphon Technology Pty Ltd 2017</copyright>
+    <copyright>$copyright$</copyright>
     <tags>Logging Tracing Diagnostics Log Trace TraceListener</tags>
   </metadata>
 </package>

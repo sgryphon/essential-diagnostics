@@ -60,14 +60,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Essential.Diagnostics.Structured.ReadMe.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <None Include="..\License.txt">
+      <Link>License.txt</Link>
+    </None>
+    <None Include="Essential.Diagnostics.Structured.ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Essential.Diagnostics.Structured.nuspec">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Include="Essential.Diagnostics.Structured.nuspec" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

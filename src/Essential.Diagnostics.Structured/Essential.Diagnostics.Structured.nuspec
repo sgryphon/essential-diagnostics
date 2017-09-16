@@ -2,13 +2,16 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Essential.Diagnostics.Structured</id>
-    <version>2.1.0.0</version>
+    <version>$version$</version>
     <authors>sgryphon</authors>
     <owners>sgryphon</owners>
     <licenseUrl>https://github.com/sgryphon/essential-diagnostics/blob/master/license.md</licenseUrl>
     <projectUrl>https://github.com/sgryphon/essential-diagnostics</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/sgryphon/essential-diagnostics/master/docs/images/Essential-Diagnostics-64.png</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <summary>
+      Provides a templated interface and implementation that makes tracing structured data easy via System.Diagnostics, using a fluent interface. Information is traced as StructuredData, with a message template, template values, and additional properties.
+    </summary>
     <description>
       Provides a templated interface and implementation that makes tracing structured data easy via System.Diagnostics, using a fluent interface. Information is traced as StructuredData, with a message template, template values, and additional properties.
 
@@ -23,10 +26,15 @@
     <releaseNotes>
       Version 2.1: Addition of structured logging.
     </releaseNotes>
-    <copyright>Copyright © Gryphon Technology Pty Ltd 2017</copyright>
+    <copyright>$copyright$</copyright>
     <tags>Logging Tracing Diagnostics Log Trace TraceListener Structured Semantic</tags>
     <dependencies>
-      <dependency id="Essential.Diagnostics.Core" version="2.1.0.0" />
+      <dependency id="Essential.Diagnostics.Core" version="2.1.728" />
     </dependencies>
   </metadata>
+  <files>
+    <file src="bin\$configuration$\$id$.pdb" target="lib\net20" />
+    <file src="$id$.ReadMe.txt" target="\ReadMe.txt" />
+    <file src="..\License.txt" target="\" />
+  </files>
 </package>
