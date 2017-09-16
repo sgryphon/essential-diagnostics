@@ -27,7 +27,7 @@ namespace Essential.Diagnostics.Structured
     /// </remarks>
     /// <typeparam name="TEventId">Strongly typed enum of event IDs</typeparam>
     /// <typeparam name="TTarget">Target type to base the trace source on.</typeparam>
-    public interface IStructuredTrace<TEventId, TTarget>
+    public interface IStructuredTrace<TEventId, TTarget> : IStructuredTrace<TEventId>
         where TEventId : struct, IConvertible
     {
     }

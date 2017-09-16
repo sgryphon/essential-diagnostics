@@ -18,6 +18,8 @@ namespace SeqFrameworkDiagnostics.Example
             source.TraceEvent(TraceEventType.Information, (int)ExampleEventId.StartExample, "Hello, {0}, from .NET Framework", Environment.UserName);
             source.TraceData(TraceEventType.Information, (int)ExampleEventId.DataTrace, "Data Item", 42.80D, Guid.NewGuid());
 
+            source.TraceEvent(TraceEventType.Verbose, 0, "a={1} b={0}", "B", "A");
+
             // Detailed source
             var detailedSource = new TraceSource("SeqFrameworkDiagnostics.Example.Detailed");
             detailedSource.TraceEvent(TraceEventType.Warning, (int)ExampleEventId.DetailedWarning, "Sample detailed warning");
