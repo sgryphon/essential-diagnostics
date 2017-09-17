@@ -24,12 +24,11 @@
       See the project site on GitHub for examples and documentation.
     </description>
     <releaseNotes>
-      Version 2.1: Addition of structured logging.
     </releaseNotes>
     <copyright>$copyright$</copyright>
     <tags>Logging Tracing Diagnostics Log Trace TraceListener Structured Semantic</tags>
     <dependencies>
-      <dependency id="Essential.Diagnostics.Core" version="2.1.728" />
+      <dependency id="Essential.Diagnostics.Core" version="$version$" />
     </dependencies>
   </metadata>
   <files>

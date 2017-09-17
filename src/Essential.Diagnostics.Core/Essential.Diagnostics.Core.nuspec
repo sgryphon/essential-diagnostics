@@ -24,4 +24,9 @@
     <copyright>$copyright$</copyright>
     <tags>Logging Tracing Diagnostics Log Trace TraceListener</tags>
   </metadata>
+  <files>
+    <file src="bin\$configuration$\$id$.pdb" target="lib\net20" />
+    <file src="$id$.ReadMe.txt" target="\ReadMe.txt" />
+    <file src="..\License.txt" target="\" />
+  </files>
 </package>
