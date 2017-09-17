@@ -86,12 +86,4 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <PropertyGroup>
-    <TFSBaseBuildYear>2017</TFSBaseBuildYear>
-  </PropertyGroup>
-  <Import Project="..\TFSBuildNumber.targets" />
-  <Target Name="BeforeBuild" DependsOnTargets="GetMajorMinorFromCSharpAssemblyInfoFile;WriteProjectTextAssemblyVersionFile;UpdateCSharpAssemblyInfoFile">
-  </Target>
-  <Target Name="AfterBuild" DependsOnTargets="ResetCSharpAssemblyInfoFile">
-  </Target>
 </Project>
