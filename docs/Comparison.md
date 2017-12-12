@@ -90,7 +90,7 @@ Base test framework: 56 ms
 Logging overhead (ms for 1 million log messages, lower is better):
 
 | Scenario (logged messages) | System. Diagnostics — FileLog | ![EX](images/ex.png) RollingFile | log4net — RollingFile | NLog — File | Enterprise Application Block — RollingFlatFile |
-| -------------------------- | ----------------------------- | -------------------------------- | --------------------- | ----------- } ---------------------------------------------- |
+| -------------------------- | ----------------------------- | -------------------------------- | --------------------- | ----------- | ---------------------------------------------- |
 | Logging off (0) | 50 | 50 | 46 | 3 | > 20,000 |
 | Single filtered (16) | 59 | 54 | 43 | 8 | > 20,000 |
 | Multiple filtered (245) | 89 | 64 | 49 | 61 | > 20,000 |
