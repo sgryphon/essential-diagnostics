@@ -24,7 +24,7 @@ Please contact me if you think any information in this table is out of date.
 | Minimum trust | ![](images/Comparison_cross.png) | TBA | TBA | ![](images/Comparison_cross.png) |
 | Trace .NET framework (WCF, WIF, System.Net, etc) | ![](images/Comparison_tick.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_cross.png) |
 | Source from .NET Trace | ![](images/Comparison_tick.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_tick.png) |
-|| Log Information || System. Diagnostics || Log4net || NLog || Enterprise Library ||
+| *Log Information* | *System. Diagnostics* | *log4net* | *NLog* | *Enterprise Library* |
 | Event ID | ![](images/Comparison_tick.png) | contrib extension | ![](images/Comparison_cross.png) | ![](images/Comparison_tick.png) |
 | Priority | ![](images/Comparison_cross.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_tick.png) |
 | Process/thread information | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) |
@@ -33,14 +33,14 @@ Please contact me if you think any information in this table is out of date.
 | > Correlation identifier | ![](images/Comparison_tick.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_tick.png) |
 | > Cross-process correlation | ![](images/Comparison_tick.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_tick.png) |
 | Exceptions | ![](images/Comparison_cross.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | via exception block |
-|| Filters || System. Diagnostics || Log4net || NLog || Enterprise Library ||
+| *Filters* | *System. Diagnostics* | *log4net* | *NLog* | *Enterprise Library* |
 | Event level | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) |
 | Source | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) |
 | Property | ![](images/ex.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_cross.png) |
 | String match | ![](images/Comparison_cross.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_cross.png) |
 | Expression | ![](images/ex.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_cross.png) |
 | Priority | ![](images/Comparison_cross.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_cross.png) | ![](images/Comparison_tick.png) |
-|| Listeners || System. Diagnostics || Log4net || NLog || Enterprise Library ||
+| *Listeners* | *System. Diagnostics* | *log4net* | *NLog* | *Enterprise Library* |
 | > Forward to .NET Trace | ![](images/Comparison_tick.png) | limited | limited | ![](images/Comparison_tick.png) |
 | ASP.NET Trace | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_cross.png) |
 | Chainsaw (log4j) | ![](images/Comparison_cross.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_tick.png) | ![](images/Comparison_cross.png) |
@@ -90,7 +90,7 @@ Base test framework: 56 ms
 Logging overhead (ms for 1 million log messages, lower is better):
 
 | Scenario (logged messages) | System. Diagnostics — FileLog | ![EX](images/ex.png) RollingFile | log4net — RollingFile | NLog — File | Enterprise Application Block — RollingFlatFile |
-| --- | --- | --- | --- | --- } --- |
+| -------------------------- | ----------------------------- | -------------------------------- | --------------------- | ----------- } ---------------------------------------------- |
 | Logging off (0) | 50 | 50 | 46 | 3 | > 20,000 |
 | Single filtered (16) | 59 | 54 | 43 | 8 | > 20,000 |
 | Multiple filtered (245) | 89 | 64 | 49 | 61 | > 20,000 |
@@ -116,3 +116,4 @@ If you don't clear the list it may look like you have no listeners but instead y
    </listeners>
 </source>
 ```
+
