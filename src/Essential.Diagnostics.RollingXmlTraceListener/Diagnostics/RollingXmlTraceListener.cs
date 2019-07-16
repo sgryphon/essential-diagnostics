@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -41,7 +42,8 @@ namespace Essential.Diagnostics
         // Default format matches Microsoft.VisualBasic.Logging.FileLogTraceListener
         private const string _defaultFilePathTemplate = "{ApplicationName}-{DateTime:yyyy-MM-dd}.svclog";
         private static string[] _supportedAttributes = new string[] 
-            { 
+            {
+                "newStreamOnError", "NewStreamOnError"
             };
         TraceFormatter traceFormatter = new TraceFormatter();
 
@@ -125,12 +127,42 @@ namespace Essential.Diagnostics
             get { return rollingTextWriter.FilePathTemplate; }
         }
 
+        private bool? _newStreamOnError = null;
+        /// <summary>
+        /// Gets or sets whether errors writing to the file should cause a new file stream to be instantiated.
+        /// Useful when the drive containing the file has a transient fault (usb stick removed and reinserted, network outage of mapped drive, etc.)
+        /// </summary>
+        [SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Boolean.TryParse(System.String,System.Boolean@)", Justification = "Default value is acceptable if conversion fails.")]
+        public bool NewStreamOnError
+        {
+            get
+            {
+                if(_newStreamOnError.HasValue)
+                {
+                    return _newStreamOnError.Value;
+                }
+
+                // Default behaviour is to convert Write to event.
+                var newStreamOnError = false;
+                if (Attributes.ContainsKey("newStreamOnError"))
+                {
+                    bool.TryParse(Attributes["newStreamOnError"], out newStreamOnError);
+                }
+                _newStreamOnError = newStreamOnError;
+                return newStreamOnError;
+            }
+            set
+            {
+                Attributes["newStreamOnError"] = value.ToString(CultureInfo.InvariantCulture);
+            }
+        }
+
         /// <summary>
         /// Flushes the output buffer.
         /// </summary>
         public override void Flush()
         {
-            rollingTextWriter.Flush();
+            rollingTextWriter.Flush(NewStreamOnError);
         }
 
         /// <summary>
@@ -170,7 +202,7 @@ namespace Essential.Diagnostics
 
             AppendFooter(output, eventCache);
 
-            rollingTextWriter.WriteLine(eventCache, output.ToString());
+            rollingTextWriter.WriteLine(eventCache, output.ToString(), NewStreamOnError);
         }
 
         private static void AppendData(StringBuilder output, object data)

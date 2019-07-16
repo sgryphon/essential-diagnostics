@@ -74,34 +74,67 @@ namespace Essential.Diagnostics
             }
         }
 
-        public void Flush()
+        public void Flush(bool clearWriterOnError)
         {
             lock (_fileLock)
             {
                 if (_currentWriter != null)
                 {
-                    _currentWriter.Flush();
+                    try
+                    {
+                        _currentWriter.Flush();
+                    }
+                    catch
+                    {
+                        if (clearWriterOnError)
+                        {
+                            DestroyCurrentWriter();
+                        }
+                        throw;
+                    }
                 }
             }
         }
 
-        public void Write(TraceEventCache eventCache, string value)
+        public void Write(TraceEventCache eventCache, string value, bool clearWriterOnError)
         {
             string filePath = GetCurrentFilePath(eventCache);
             lock (_fileLock)
             {
                 EnsureCurrentWriter(filePath);
-                _currentWriter.Write(value);
+                try
+                {
+                    _currentWriter.Write(value);
+                }
+                catch
+                {
+                    if(clearWriterOnError)
+                    {
+                        DestroyCurrentWriter();
+                    }
+                    throw;
+                }
             }
         }
 
-        public void WriteLine(TraceEventCache eventCache, string value)
+        public void WriteLine(TraceEventCache eventCache, string value, bool clearWriterOnError)
         {
             string filePath = GetCurrentFilePath(eventCache);
             lock (_fileLock)
             {
                 EnsureCurrentWriter(filePath);
-                _currentWriter.WriteLine(value);
+                try
+                {
+                    _currentWriter.WriteLine(value);
+                }
+                catch
+                {
+                    if (clearWriterOnError)
+                    {
+                        DestroyCurrentWriter();
+                    }
+                    throw;
+                }
             }
         }
 
@@ -145,6 +178,18 @@ namespace Essential.Diagnostics
                 }
 
                 throw new InvalidOperationException(Resource_RollingFile.RollingTextWriter_ExhaustedLogfileNames);
+            }
+        }
+
+        private void DestroyCurrentWriter()
+        {
+            // NOTE: This is called inside lock(_fileLock)
+            if (_currentWriter != null)
+            {
+                _currentWriter.Close();
+                _currentWriter.Dispose();
+                _currentWriter = null;
+                _currentPath = null;
             }
         }
 

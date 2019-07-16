@@ -37,6 +37,7 @@ namespace Essential.Diagnostics
             { 
                 "template", "Template", 
                 "convertWriteToEvent", "ConvertWriteToEvent",
+                "newStreamOnError", "NewStreamOnError"
             };
         TraceFormatter traceFormatter = new TraceFormatter();
         private RollingTextWriter rollingTextWriter;
@@ -108,6 +109,36 @@ namespace Essential.Diagnostics
             set
             {
                 Attributes["convertWriteToEvent"] = value.ToString(CultureInfo.InvariantCulture);
+            }
+        }
+
+        private bool? _newStreamOnError = null;
+        /// <summary>
+        /// Gets or sets whether errors writing to the file should cause a new file stream to be instantiated.
+        /// Useful when the drive containing the file has a transient fault (usb stick removed and reinserted, network outage of mapped drive, etc.)
+        /// </summary>
+        [SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Boolean.TryParse(System.String,System.Boolean@)", Justification = "Default value is acceptable if conversion fails.")]
+        public bool NewStreamOnError
+        {
+            get
+            {
+                if (_newStreamOnError.HasValue)
+                {
+                    return _newStreamOnError.Value;
+                }
+
+                // Default behaviour is to convert Write to event.
+                var newStreamOnError = false;
+                if (Attributes.ContainsKey("newStreamOnError"))
+                {
+                    bool.TryParse(Attributes["newStreamOnError"], out newStreamOnError);
+                }
+                _newStreamOnError = newStreamOnError;
+                return newStreamOnError;
+            }
+            set
+            {
+                Attributes["newStreamOnError"] = value.ToString(CultureInfo.InvariantCulture);
             }
         }
 
@@ -194,7 +225,7 @@ namespace Essential.Diagnostics
         /// </summary>
         public override void Flush()
         {
-            rollingTextWriter.Flush();
+            rollingTextWriter.Flush(NewStreamOnError);
         }
 
         /// <summary>
@@ -218,7 +249,7 @@ namespace Essential.Diagnostics
             }
             else
             {
-                rollingTextWriter.Write(null, message);
+                rollingTextWriter.Write(null, message, NewStreamOnError);
             }
         }
 
@@ -235,7 +266,7 @@ namespace Essential.Diagnostics
             }
             else
             {
-                rollingTextWriter.WriteLine(null, message);
+                rollingTextWriter.WriteLine(null, message, NewStreamOnError);
             }
         }
 
@@ -266,7 +297,7 @@ namespace Essential.Diagnostics
                 relatedActivityId,
                 data
                 );
-            rollingTextWriter.WriteLine(eventCache, output);
+            rollingTextWriter.WriteLine(eventCache, output, NewStreamOnError);
         }
 
         protected override void Dispose(bool disposing)
