@@ -44,4 +44,4 @@ If you aren't writing directly to the Windows Event Log, then the EventLogTraceL
 
 When the program is run, messages based on the switchValue settings for individual sources will be sent to both trace listeners. The console trace listener will output all messages, however the event log trace listener will only record warning and above messages.
 
-**Next: [Hello Color](Hello-Color)**
+**Next: [Hello Color](Hello-Color.md)**
