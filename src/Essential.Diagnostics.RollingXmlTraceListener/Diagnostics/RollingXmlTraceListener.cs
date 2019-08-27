@@ -41,14 +41,32 @@ namespace Essential.Diagnostics
         private readonly string machineName = Environment.MachineName;
         // Default format matches Microsoft.VisualBasic.Logging.FileLogTraceListener
         private const string _defaultFilePathTemplate = "{ApplicationName}-{DateTime:yyyy-MM-dd}.svclog";
+        private readonly string _filePathTemplate;
         private static string[] _supportedAttributes = new string[] 
             {
                 "newStreamOnError", "NewStreamOnError"
             };
         TraceFormatter traceFormatter = new TraceFormatter();
 
-        private RollingTextWriter rollingTextWriter;
-
+        private object _rollingTextWriterLock = new object();
+        private RollingTextWriter _rollingTextWriter = null;
+        private RollingTextWriter RollingTextWriter
+        {
+            get
+            {
+                if (_rollingTextWriter == null)
+                {
+                    lock (_rollingTextWriterLock)
+                    {
+                        if (_rollingTextWriter == null)
+                        {
+                            _rollingTextWriter = RollingTextWriter.Create(_filePathTemplate, NewStreamOnError);
+                        }
+                    }
+                }
+                return _rollingTextWriter;
+            }
+        }
         /// <summary>
         /// Constructor. Writes to a rolling text file using the default name.
         /// </summary>
@@ -86,11 +104,11 @@ namespace Essential.Diagnostics
         {
             if (string.IsNullOrEmpty(filePathTemplate))
             {
-                rollingTextWriter = new RollingTextWriter(_defaultFilePathTemplate);
+                _filePathTemplate = _defaultFilePathTemplate;
             }
             else
             {
-                rollingTextWriter = RollingTextWriter.Create(filePathTemplate);
+                _filePathTemplate = filePathTemplate;
             }
         }
 
@@ -99,8 +117,8 @@ namespace Essential.Diagnostics
         /// </summary>
         public IFileSystem FileSystem
         {
-            get { return rollingTextWriter.FileSystem; }
-            set { rollingTextWriter.FileSystem = value; }
+            get { return RollingTextWriter.FileSystem; }
+            set { RollingTextWriter.FileSystem = value; }
         }
 
         /// <summary>
@@ -124,7 +142,7 @@ namespace Essential.Diagnostics
         /// </remarks>
         public string FilePathTemplate
         {
-            get { return rollingTextWriter.FilePathTemplate; }
+            get { return RollingTextWriter.FilePathTemplate; }
         }
 
         private bool? _newStreamOnError = null;
@@ -162,7 +180,7 @@ namespace Essential.Diagnostics
         /// </summary>
         public override void Flush()
         {
-            rollingTextWriter.Flush(NewStreamOnError);
+            RollingTextWriter.Flush();
         }
 
         /// <summary>
@@ -202,7 +220,7 @@ namespace Essential.Diagnostics
 
             AppendFooter(output, eventCache);
 
-            rollingTextWriter.WriteLine(eventCache, output.ToString(), NewStreamOnError);
+            RollingTextWriter.WriteLine(eventCache, output.ToString());
         }
 
         private static void AppendData(StringBuilder output, object data)

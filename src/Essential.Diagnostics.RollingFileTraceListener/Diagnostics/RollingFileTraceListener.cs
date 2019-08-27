@@ -33,6 +33,7 @@ namespace Essential.Diagnostics
         private const string _defaultFilePathTemplate = "{ApplicationName}-{DateTime:yyyy-MM-dd}.log";
         // Default format matches Microsoft.VisualBasic.Logging.FileLogTraceListener
         private const string _defaultTemplate = "{DateTime:u} [{Thread}] {EventType} {Source} {Id}: {Message}{Data}";
+        private readonly string _filePathTemplate;
         private static string[] _supportedAttributes = new string[] 
             { 
                 "template", "Template", 
@@ -40,7 +41,25 @@ namespace Essential.Diagnostics
                 "newStreamOnError", "NewStreamOnError"
             };
         TraceFormatter traceFormatter = new TraceFormatter();
-        private RollingTextWriter rollingTextWriter;
+        private object _rollingTextWriterLock = new object();
+        private RollingTextWriter _rollingTextWriter = null;
+        private RollingTextWriter RollingTextWriter
+        {
+            get
+            {
+                if (_rollingTextWriter == null)
+                {
+                    lock (_rollingTextWriterLock)
+                    {
+                        if (_rollingTextWriter == null)
+                        {
+                            _rollingTextWriter = RollingTextWriter.Create(_filePathTemplate, NewStreamOnError);
+                        }
+                    }
+                }
+                return _rollingTextWriter;
+            }
+        }
 
         /// <summary>
         /// Constructor. Writes to a rolling text file using the default name.
@@ -79,11 +98,11 @@ namespace Essential.Diagnostics
         {
             if (string.IsNullOrEmpty(filePathTemplate))
             {
-                rollingTextWriter = new RollingTextWriter(_defaultFilePathTemplate);
+                _filePathTemplate = _defaultFilePathTemplate;
             }
             else
             {
-                rollingTextWriter = RollingTextWriter.Create(filePathTemplate);
+                _filePathTemplate = filePathTemplate;
             }
         }
 
@@ -151,8 +170,8 @@ namespace Essential.Diagnostics
         /// </summary>
         public IFileSystem FileSystem
         {
-            get { return rollingTextWriter.FileSystem; }
-            set { rollingTextWriter.FileSystem = value; }
+            get { return RollingTextWriter.FileSystem; }
+            set { RollingTextWriter.FileSystem = value; }
         }
 
         /// <summary>
@@ -221,7 +240,7 @@ namespace Essential.Diagnostics
         /// </remarks>
         public string FilePathTemplate
         {
-            get { return rollingTextWriter.FilePathTemplate; }
+            get { return RollingTextWriter.FilePathTemplate; }
         }
 
         /// <summary>
@@ -229,7 +248,7 @@ namespace Essential.Diagnostics
         /// </summary>
         public override void Flush()
         {
-            rollingTextWriter.Flush(NewStreamOnError);
+            RollingTextWriter.Flush();
         }
 
         /// <summary>
@@ -253,7 +272,7 @@ namespace Essential.Diagnostics
             }
             else
             {
-                rollingTextWriter.Write(null, message, NewStreamOnError);
+                RollingTextWriter.Write(null, message);
             }
         }
 
@@ -270,7 +289,7 @@ namespace Essential.Diagnostics
             }
             else
             {
-                rollingTextWriter.WriteLine(null, message, NewStreamOnError);
+                RollingTextWriter.WriteLine(null, message);
             }
         }
 
@@ -301,16 +320,16 @@ namespace Essential.Diagnostics
                 relatedActivityId,
                 data
                 );
-            rollingTextWriter.WriteLine(eventCache, output, NewStreamOnError);
+            RollingTextWriter.WriteLine(eventCache, output);
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                if (rollingTextWriter != null)
+                if (RollingTextWriter != null)
                 {
-                    rollingTextWriter.Dispose();
+                    RollingTextWriter.Dispose();
                 }
             }
             base.Dispose(disposing);

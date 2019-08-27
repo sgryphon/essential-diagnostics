@@ -16,10 +16,12 @@ namespace Essential.Diagnostics
         private string _filePathTemplate;
         private IFileSystem _fileSystem = new FileSystem();
         TraceFormatter traceFormatter = new TraceFormatter();
+        private bool _newStreamOnError;
 
-        public RollingTextWriter(string filePathTemplate)
+        public RollingTextWriter(string filePathTemplate, bool newStreamOnError)
         {
             _filePathTemplate = filePathTemplate;
+            _newStreamOnError = newStreamOnError;
         }
 
         /// <summary>
@@ -27,7 +29,7 @@ namespace Essential.Diagnostics
         /// </summary>
         /// <param name="filePathTemplate"></param>
         /// <returns></returns>
-        public static RollingTextWriter Create(string filePathTemplate)
+        public static RollingTextWriter Create(string filePathTemplate, bool newStreamOnError)
         {
             var segments = filePathTemplate.Split('%');
             if (segments.Length > 3)
@@ -50,10 +52,10 @@ namespace Essential.Diagnostics
                     }
                 }
                 var filePath = rootFolder + segments[2];
-                return new RollingTextWriter(filePath);
+                return new RollingTextWriter(filePath, newStreamOnError);
             }
 
-            return new RollingTextWriter(filePathTemplate);
+            return new RollingTextWriter(filePathTemplate, newStreamOnError);
 
         }
 
@@ -74,7 +76,7 @@ namespace Essential.Diagnostics
             }
         }
 
-        public void Flush(bool clearWriterOnError)
+        public void Flush()
         {
             lock (_fileLock)
             {
@@ -86,7 +88,7 @@ namespace Essential.Diagnostics
                     }
                     catch
                     {
-                        if (clearWriterOnError)
+                        if (_newStreamOnError)
                         {
                             DestroyCurrentWriter();
                         }
@@ -96,7 +98,7 @@ namespace Essential.Diagnostics
             }
         }
 
-        public void Write(TraceEventCache eventCache, string value, bool clearWriterOnError)
+        public void Write(TraceEventCache eventCache, string value)
         {
             string filePath = GetCurrentFilePath(eventCache);
             lock (_fileLock)
@@ -108,7 +110,7 @@ namespace Essential.Diagnostics
                 }
                 catch
                 {
-                    if(clearWriterOnError)
+                    if(_newStreamOnError)
                     {
                         DestroyCurrentWriter();
                     }
@@ -117,7 +119,7 @@ namespace Essential.Diagnostics
             }
         }
 
-        public void WriteLine(TraceEventCache eventCache, string value, bool clearWriterOnError)
+        public void WriteLine(TraceEventCache eventCache, string value)
         {
             string filePath = GetCurrentFilePath(eventCache);
             lock (_fileLock)
@@ -129,7 +131,7 @@ namespace Essential.Diagnostics
                 }
                 catch
                 {
-                    if (clearWriterOnError)
+                    if (_newStreamOnError)
                     {
                         DestroyCurrentWriter();
                     }
