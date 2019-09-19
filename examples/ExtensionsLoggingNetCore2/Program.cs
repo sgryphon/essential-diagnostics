@@ -14,9 +14,10 @@ namespace ExtensionsLoggingNetCore2
             Console.WriteLine("Microsoft.Extensions.Logging (.NET Core 2)");
 
             var hostBuilder = new HostBuilder()
-                .ConfigureLogging(configureLogging =>
+                .ConfigureLogging(logging =>
                 {
-                    configureLogging.AddConsole(configure => configure.IncludeScopes = true);
+                    logging.AddConsole(configure => configure.IncludeScopes = true);
+                    logging.AddProvider(new CustomProvider());
                 });
 
             using (var host = hostBuilder.Build())
