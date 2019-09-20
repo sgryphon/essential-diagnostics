@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
 using Essential.Diagnostics.Abstractions;
 
 namespace Essential.Diagnostics
@@ -114,6 +115,9 @@ namespace Essential.Diagnostics
 
             _startMessage = startMessage ?? Resource_Fluent.LogicalOperationScope_Start;
             _stopMessage = stopMessage ?? Resource_Fluent.LogicalOperationScope_Stop;
+
+            // Touch execution context to ensure storage slot is cloned for async code
+            _ = Thread.CurrentThread.ExecutionContext;
 
             // Start Logical Operation
             if (_operationId == null)
