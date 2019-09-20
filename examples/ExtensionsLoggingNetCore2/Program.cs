@@ -18,11 +18,17 @@ namespace ExtensionsLoggingNetCore2
                 {
                     logging.AddConsole(configure => configure.IncludeScopes = true);
                     logging.AddProvider(new CustomProvider());
+                })
+                .ConfigureServices(services =>
+                {
+                    services.AddTransient<Nested>();
                 });
 
             using (var host = hostBuilder.Build())
             {
                 ILogger logger = host.Services.GetService<ILogger<Program>>();
+
+                var nested = host.Services.GetService<Nested>();
 
                 logger.LogInformation(2001, "Test message: {MessageId}", Guid.NewGuid());
                 using (var scope = logger.BeginScope("Session {SessionId}", 12345))
@@ -31,6 +37,7 @@ namespace ExtensionsLoggingNetCore2
                     using (var scope2 = logger.BeginScope(data))
                     {
                         logger.LogInformation(2002, "Inner message: {InnerId}", Guid.NewGuid());
+                        nested.Operation();
                     }
                     try
                     {
