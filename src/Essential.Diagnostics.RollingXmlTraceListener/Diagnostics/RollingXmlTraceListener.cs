@@ -160,11 +160,14 @@ namespace Essential.Diagnostics
                     return _newStreamOnError.Value;
                 }
 
-                // Default behaviour is to convert Write to event.
-                var newStreamOnError = false;
+                // Default behaviour is to create a new stream on error
+                var newStreamOnError = true;
                 if (Attributes.ContainsKey("newStreamOnError"))
                 {
-                    bool.TryParse(Attributes["newStreamOnError"], out newStreamOnError);
+                    if (bool.TryParse(Attributes["newStreamOnError"], out newStreamOnError) == false)
+                    {
+                        newStreamOnError = true;
+                    }
                 }
                 _newStreamOnError = newStreamOnError;
                 return newStreamOnError;
