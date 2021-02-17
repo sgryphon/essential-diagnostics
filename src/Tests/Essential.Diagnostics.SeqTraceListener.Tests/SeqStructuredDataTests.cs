@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -186,7 +187,7 @@ namespace Essential.Diagnostics.Tests
             listener.BatchSize = 0;
             listener.BatchSender.HttpWebRequestFactory = mockRequestFactory;
 
-            var structuredData = new StructuredData("{a}", new [] { 1, 2, 3 });
+            var structuredData = new StructuredData("{a}", new[] { 1, 2, 3 });
             listener.TraceData(null, "TestSource", TraceEventType.Warning, 1, structuredData);
 
             Assert.AreEqual(1, mockRequestFactory.RequestsCreated.Count);
@@ -268,7 +269,7 @@ namespace Essential.Diagnostics.Tests
             listener.BatchSize = 0;
             listener.BatchSender.HttpWebRequestFactory = mockRequestFactory;
 
-            var dictionary1 = new Dictionary<string,object>() {
+            var dictionary1 = new Dictionary<string, object>() {
                 { "A", 1 }
             };
             var dictionary2 = new Dictionary<string, object>() {
@@ -470,6 +471,7 @@ namespace Essential.Diagnostics.Tests
         [TestMethod]
         public void SeqDestructureCustomObject()
         {
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
             var mockRequestFactory = new MockHttpWebRequestFactory();
             mockRequestFactory.ResponseQueue.Enqueue(
                 new MockHttpWebResponse(HttpStatusCode.OK, null)

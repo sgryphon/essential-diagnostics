@@ -15,9 +15,12 @@ namespace Essential.Diagnostics
         private static TimeSpan DefaultBatchTimeOut = TimeSpan.FromMilliseconds(1000);
         private const int DefaultMaxQueueSize = 1000;
         private const int DefaultMaxRetries = 10; // 2^10 = 1,024 secs = 17 mins 
+        private const bool DefaultSyncErrorHandling = false;
 
         List<string> _additionalPropertyNames = null;
         SeqBatchSender _batchSender;
+        bool _syncErrorHandling;
+        bool _syncErrorHandlingParsed;
         int _batchSize;
         bool _batchSizeParsed;
         TimeSpan _batchTimeout;
@@ -160,6 +163,43 @@ namespace Essential.Diagnostics
             {
                 _batchSize = value;
                 _batchSizeParsed = true;
+                Attributes["batchSize"] = value.ToString(CultureInfo.InvariantCulture);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the error handling of sync batches. Use true to catch each exception. Default is false.
+        /// </summary>
+        public bool SyncErrorHandling
+        {
+            get
+            {
+                if (!_syncErrorHandlingParsed)
+                {
+                    if (Attributes.ContainsKey("syncErrorHandling"))
+                    {
+                        bool syncErrorHandling;
+                        if (bool.TryParse(Attributes["batchSize"], out syncErrorHandling))
+                        {
+                            _syncErrorHandling = syncErrorHandling;
+                        }
+                        else
+                        {
+                            _syncErrorHandling = DefaultSyncErrorHandling;
+                        }
+                    }
+                    else
+                    {
+                        _syncErrorHandling = DefaultSyncErrorHandling;
+                    }
+                    _syncErrorHandlingParsed = true;
+                }
+                return _syncErrorHandling;
+            }
+            set
+            {
+                _syncErrorHandling = value;
+                _syncErrorHandlingParsed = true;
                 Attributes["batchSize"] = value.ToString(CultureInfo.InvariantCulture);
             }
         }
@@ -524,9 +564,9 @@ namespace Essential.Diagnostics
             object[] recordedDataArray = null;
             if (messageFormat == null
                 && (messageArgs == null || messageArgs.Length == 0)
-                && data != null 
-                && data.Length == 1 
-                && (data[0] is IStructuredData || 
+                && data != null
+                && data.Length == 1
+                && (data[0] is IStructuredData ||
                     (data[0] is IDictionary<string, object> && ProcessDictionaryData)))
             {
                 var structuredData = (IDictionary<string, object>)data[0];
