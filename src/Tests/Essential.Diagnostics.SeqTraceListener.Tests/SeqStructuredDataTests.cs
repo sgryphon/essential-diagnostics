@@ -471,7 +471,6 @@ namespace Essential.Diagnostics.Tests
         [TestMethod]
         public void SeqDestructureCustomObject()
         {
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
             var mockRequestFactory = new MockHttpWebRequestFactory();
             mockRequestFactory.ResponseQueue.Enqueue(
                 new MockHttpWebResponse(HttpStatusCode.OK, null)

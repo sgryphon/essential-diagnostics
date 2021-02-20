@@ -15,12 +15,12 @@ namespace Essential.Diagnostics
         private static TimeSpan DefaultBatchTimeOut = TimeSpan.FromMilliseconds(1000);
         private const int DefaultMaxQueueSize = 1000;
         private const int DefaultMaxRetries = 10; // 2^10 = 1,024 secs = 17 mins 
-        private const bool DefaultSyncErrorHandling = false;
+        private const bool DefaultIndividualSendIgnoreErrors = false;
 
         List<string> _additionalPropertyNames = null;
         SeqBatchSender _batchSender;
-        bool _syncErrorHandling;
-        bool _syncErrorHandlingParsed;
+        bool _individualSendIgnoreErrors;
+        bool _individualSendIgnoreErrorsParsed;
         int _batchSize;
         bool _batchSizeParsed;
         TimeSpan _batchTimeout;
@@ -49,6 +49,7 @@ namespace Essential.Diagnostics
             "maxRetries", "MaxRetries", "maxretries",
             "processDictionaryData", "ProcessDictionaryData", "processdictionarydata",
             "processDictionaryLogicalOperationStack", "ProcessDictionaryLogicalOperationStack", "processdictionarylogicaloperationstack",
+            "individualSendIgnoreErrors", "IndividualSendIgnoreErrors", "individualsendIgnoreerrors",
         };
 
         /// <summary>
@@ -168,39 +169,39 @@ namespace Essential.Diagnostics
         }
 
         /// <summary>
-        /// Gets or sets the error handling of sync batches. Use true to catch each exception. Default is false.
+        /// Gets or sets a flag whether to ignore errors when using individual send mode (batch size is 0). Use true to catch and ignore all exceptions when sending. Default is false. It has no effect if batch size is > 0.
         /// </summary>
-        public bool SyncErrorHandling
+        public bool IndividualSendIgnoreErrors
         {
             get
             {
-                if (!_syncErrorHandlingParsed)
+                if (!_individualSendIgnoreErrorsParsed)
                 {
-                    if (Attributes.ContainsKey("syncErrorHandling"))
+                    if (Attributes.ContainsKey("individualSendIgnoreErrors"))
                     {
-                        bool syncErrorHandling;
-                        if (bool.TryParse(Attributes["batchSize"], out syncErrorHandling))
+                        bool individualSendIgnoreErrors;
+                        if (bool.TryParse(Attributes["individualSendIgnoreErrors"], out individualSendIgnoreErrors))
                         {
-                            _syncErrorHandling = syncErrorHandling;
+                            _individualSendIgnoreErrors = individualSendIgnoreErrors;
                         }
                         else
                         {
-                            _syncErrorHandling = DefaultSyncErrorHandling;
+                            _individualSendIgnoreErrors = DefaultIndividualSendIgnoreErrors;
                         }
                     }
                     else
                     {
-                        _syncErrorHandling = DefaultSyncErrorHandling;
+                        _individualSendIgnoreErrors = DefaultIndividualSendIgnoreErrors;
                     }
-                    _syncErrorHandlingParsed = true;
+                    _individualSendIgnoreErrorsParsed = true;
                 }
-                return _syncErrorHandling;
+                return _individualSendIgnoreErrors;
             }
             set
             {
-                _syncErrorHandling = value;
-                _syncErrorHandlingParsed = true;
-                Attributes["batchSize"] = value.ToString(CultureInfo.InvariantCulture);
+                _individualSendIgnoreErrors = value;
+                _individualSendIgnoreErrorsParsed = true;
+                Attributes["individualSendIgnoreErrors"] = value.ToString(CultureInfo.InvariantCulture);
             }
         }
 

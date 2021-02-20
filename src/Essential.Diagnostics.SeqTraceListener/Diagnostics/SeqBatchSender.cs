@@ -44,7 +44,7 @@ namespace Essential.Diagnostics
                 }
                 catch
                 {
-                    if (!_associatedTraceListener.SyncErrorHandling)
+                    if (!_associatedTraceListener.IndividualSendIgnoreErrors)
                     {
                         throw;
                     }
