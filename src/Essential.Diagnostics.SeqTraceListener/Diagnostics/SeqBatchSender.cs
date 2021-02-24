@@ -42,11 +42,16 @@ namespace Essential.Diagnostics
                 {
                     PostBatch(new[] { traceData });
                 }
-                catch
+                catch (Exception ex)
                 {
                     if (!_associatedTraceListener.IndividualSendIgnoreErrors)
                     {
                         throw;
+                    }
+                    else
+                    {
+                        if (Console.Error != null)
+                            Console.Error.WriteLine($"SeqBatchSender exception sending batch, exception supressed: {ex.Message}");
                     }
                 }
             }
