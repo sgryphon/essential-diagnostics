@@ -16,7 +16,7 @@ namespace Essential.Diagnostics
 
         SeqTraceListener _associatedTraceListener;
         IHttpWebRequestFactory _httpWebRequestFactory;
-        
+
         bool isProcessing = false;
         Queue<TraceData> queue = new Queue<TraceData>();
         AutoResetEvent sendTrigger = new AutoResetEvent(false);
@@ -38,7 +38,22 @@ namespace Essential.Diagnostics
             }
             else
             {
-                PostBatch(new[] { traceData });
+                try
+                {
+                    PostBatch(new[] { traceData });
+                }
+                catch (Exception ex)
+                {
+                    if (!_associatedTraceListener.IndividualSendIgnoreErrors)
+                    {
+                        throw;
+                    }
+                    else
+                    {
+                        if (Console.Error != null)
+                            Console.Error.WriteLine($"SeqBatchSender exception sending batch, exception supressed: {ex.Message}");
+                    }
+                }
             }
         }
 
@@ -62,7 +77,7 @@ namespace Essential.Diagnostics
 
         private void EnqueueTraceData(TraceData traceData)
         {
-//Console.WriteLine(string.Format("Enqueue {0}", traceData.Id));
+            //Console.WriteLine(string.Format("Enqueue {0}", traceData.Id));
 
             lock (stateLock)
             {
@@ -94,7 +109,7 @@ namespace Essential.Diagnostics
 
         private void Process()
         {
-//Console.WriteLine("Process started");
+            //Console.WriteLine("Process started");
 
             bool finished = false;
             List<TraceData> currentBatch = new List<TraceData>();
@@ -105,13 +120,13 @@ namespace Essential.Diagnostics
             {
                 if (currentBatch.Count > 0)
                 {
-//Console.WriteLine("Wait retry timeout");
+                    //Console.WriteLine("Wait retry timeout");
                     // Wait retry timeout.
                     Thread.Sleep(retryTimeout);
                 }
                 else
                 {
-//Console.WriteLine("Wait next check or trigger");
+                    //Console.WriteLine("Wait next check or trigger");
                     // Wait for next check (unless triggered early)
                     var triggered = sendTrigger.WaitOne(_associatedTraceListener.BatchTimeout);
                 }
@@ -119,7 +134,7 @@ namespace Essential.Diagnostics
                 // If we don't already have a batch, try and get one
                 if (currentBatch.Count == 0)
                 {
-//Console.WriteLine("Getting batch from queue");
+                    //Console.WriteLine("Getting batch from queue");
                     lock (stateLock)
                     {
                         if (queue.Count > 0)
@@ -138,7 +153,7 @@ namespace Essential.Diagnostics
                         }
                         else
                         {
-//Console.WriteLine("Finish");
+                            //Console.WriteLine("Finish");
                             // Tried to get batch, but nothing there:
                             // So finish (local variable to this thread)
                             finished = true;
@@ -158,12 +173,13 @@ namespace Essential.Diagnostics
                     }
                     catch (Exception ex)
                     {
-                        if (Console.Error != null) Console.Error.WriteLine(string.Format("SeqBatchSender exception sending batch: {0}", ex.Message));
+                        if (Console.Error != null)
+                            Console.Error.WriteLine(string.Format("SeqBatchSender exception sending batch: {0}", ex.Message));
                     }
                     // Retry when batch fails
                     if (success)
                     {
-//Console.WriteLine("Post batch success");
+                        //Console.WriteLine("Post batch success");
                         currentBatch.Clear();
                         retryCount = 0;
                         retryTimeout = TimeSpan.Zero;
@@ -172,7 +188,8 @@ namespace Essential.Diagnostics
                     {
                         if (retryCount >= _associatedTraceListener.MaxRetries)
                         {
-                            if (Console.Error != null) Console.Error.WriteLine("SeqBatchSender exceeded retry count; abandoning batch.");
+                            if (Console.Error != null)
+                                Console.Error.WriteLine("SeqBatchSender exceeded retry count; abandoning batch.");
                             currentBatch.Clear();
                             retryCount = 0;
                             retryTimeout = TimeSpan.Zero;
@@ -192,7 +209,8 @@ namespace Essential.Diagnostics
                                 retryTimeout = retryTimeout + retryTimeout;
                             }
                             // Can't really trace this anywhere else
-                            if (Console.Error != null) Console.Error.WriteLine(string.Format("SeqBatchSender retry {0} with timeout {1}", retryCount, retryTimeout));
+                            if (Console.Error != null)
+                                Console.Error.WriteLine(string.Format("SeqBatchSender retry {0} with timeout {1}", retryCount, retryTimeout));
                         }
                     }
                 }

@@ -38,6 +38,7 @@ If the maximum number of retries is reached, then the failing batch is dropped; 
 | batchTimeout | Timeout after which incomplete batches are sent anyway, default 1,000 milliseconds. |
 | maxQueueSize | Maximum number of messages to queue; once this limit is reached, messages are dropped. Default is 1,000. |
 | maxRetries | Maximum number of retries where transmission to the Seq server fails, e.g. HTTP timeout. Retries have a backoff algorithm that doubles the wait time each attempt; the default is 10 retries, which works out at around 17 minutes. After the specified number of retries the batch is dropped (e.g. if it contains a poison message). |
+| individualSendIgnoreErrors | Gets or sets a flag whether to ignore errors when using individual send mode (batch size is 0). Use true to catch and ignore all exceptions when sending. Default is false. It has no effect if batch size is > 0. |
 
 ## Example Config
 
@@ -82,6 +83,7 @@ Events are sent to the specified Seq server, where they can be queried, filtered
   batchSize="100|use 0 to disable"
   batchTimeout="00:00:01.00"
   maxQueueSize="1000"
-  maxRetries="10"  
+  maxRetries="10" 
+  individualSendIgnoreErrors="false"
 />
 ```
