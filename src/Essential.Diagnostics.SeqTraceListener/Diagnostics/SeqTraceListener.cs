@@ -41,15 +41,15 @@ namespace Essential.Diagnostics
 
         private static string[] _supportedAttributes = new string[]
         {
-            "apiKey", "ApiKey", "apikey",
             "additionalProperties", "AdditionalProperties", "additionalproperties",
+            "apiKey", "ApiKey", "apikey",
             "batchSize", "BatchSize", "batchsize",
             "batchTimeout", "BatchTimeout", "batchtimeout", "batchTimeOut", "BatchTimeOut",
+            "individualSendIgnoreErrors", "IndividualSendIgnoreErrors", "individualsendignoreerrors",
             "maxQueueSize", "MaxQueueSize", "maxqueuesize",
             "maxRetries", "MaxRetries", "maxretries",
             "processDictionaryData", "ProcessDictionaryData", "processdictionarydata",
             "processDictionaryLogicalOperationStack", "ProcessDictionaryLogicalOperationStack", "processdictionarylogicaloperationstack",
-            "individualSendIgnoreErrors", "IndividualSendIgnoreErrors", "individualsendIgnoreerrors",
         };
 
         /// <summary>
@@ -169,43 +169,6 @@ namespace Essential.Diagnostics
         }
 
         /// <summary>
-        /// Gets or sets a flag whether to ignore errors when using individual send mode (batch size is 0). Use true to catch and ignore all exceptions when sending. Default is false. It has no effect if batch size is > 0.
-        /// </summary>
-        public bool IndividualSendIgnoreErrors
-        {
-            get
-            {
-                if (!_individualSendIgnoreErrorsParsed)
-                {
-                    if (Attributes.ContainsKey("individualSendIgnoreErrors"))
-                    {
-                        bool individualSendIgnoreErrors;
-                        if (bool.TryParse(Attributes["individualSendIgnoreErrors"], out individualSendIgnoreErrors))
-                        {
-                            _individualSendIgnoreErrors = individualSendIgnoreErrors;
-                        }
-                        else
-                        {
-                            _individualSendIgnoreErrors = DefaultIndividualSendIgnoreErrors;
-                        }
-                    }
-                    else
-                    {
-                        _individualSendIgnoreErrors = DefaultIndividualSendIgnoreErrors;
-                    }
-                    _individualSendIgnoreErrorsParsed = true;
-                }
-                return _individualSendIgnoreErrors;
-            }
-            set
-            {
-                _individualSendIgnoreErrors = value;
-                _individualSendIgnoreErrorsParsed = true;
-                Attributes["individualSendIgnoreErrors"] = value.ToString(CultureInfo.InvariantCulture);
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the timeout to wait before sending incomplete batches. Default is 1 second.
         /// </summary>
         public TimeSpan BatchTimeout
@@ -239,6 +202,43 @@ namespace Essential.Diagnostics
                 _batchTimeout = value;
                 _batchTimeoutParsed = true;
                 Attributes["batchTimeout"] = value.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a flag whether to ignore errors when using individual send mode (batch size is 0). Use true to catch and ignore all exceptions when sending. Default is false. It has no effect if batch size is > 0.
+        /// </summary>
+        public bool IndividualSendIgnoreErrors
+        {
+            get
+            {
+                if (!_individualSendIgnoreErrorsParsed)
+                {
+                    if (Attributes.ContainsKey("individualSendIgnoreErrors"))
+                    {
+                        bool individualSendIgnoreErrors;
+                        if (bool.TryParse(Attributes["individualSendIgnoreErrors"], out individualSendIgnoreErrors))
+                        {
+                            _individualSendIgnoreErrors = individualSendIgnoreErrors;
+                        }
+                        else
+                        {
+                            _individualSendIgnoreErrors = DefaultIndividualSendIgnoreErrors;
+                        }
+                    }
+                    else
+                    {
+                        _individualSendIgnoreErrors = DefaultIndividualSendIgnoreErrors;
+                    }
+                    _individualSendIgnoreErrorsParsed = true;
+                }
+                return _individualSendIgnoreErrors;
+            }
+            set
+            {
+                _individualSendIgnoreErrors = value;
+                _individualSendIgnoreErrorsParsed = true;
+                Attributes["individualSendIgnoreErrors"] = value.ToString(CultureInfo.InvariantCulture);
             }
         }
 
