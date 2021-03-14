@@ -15,7 +15,11 @@ be customised).
 
 To create the required table, there is an included 
 diagnostics_regsql.exe utility in the package tools directory. 
-Use ".\diagnostics_regsql.exe -?" to display instructions
+Use ".\diagnostics_regsql.exe -?" to display instructions.
+
+The tool can be found in packages\Essential.Diagnostics.SqlDatabaseTraceListener.2.0.206\tools
+(replace with the version you have installed). The raw SQL scripts
+are also in this folder.
 
 The utility runs the InstallTrace.sql script, which can also be run 
 manually. It creates a table diagnostics_Trace, by default in

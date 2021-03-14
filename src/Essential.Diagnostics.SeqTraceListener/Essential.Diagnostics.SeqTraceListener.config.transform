@@ -12,13 +12,16 @@
           
           Options:
             initializeData="Seq server URL"
-            apiKey="your API key, or blank for localhost"
+            traceOutputOptions="CallStack,LogicalOperationStack,ProcessId,ThreadId,User"
             additionalProperties="CallStack,LogicalOperationStack,MachineName,PrincipalName,ProcessId,ThreadId,User"
+            apiKey="your API key, or blank for localhost"
             batchSize="100|use 0 to disable batching"
             batchTimeout="00:00:01.00|default 1 second timeout"
-            traceOutputOptions="CallStack,LogicalOperationStack,ProcessId,ThreadId,User"
+            individualSendIgnoreErrors="false|use true to ignore Exceptions when sending invdividual messages"
             maxQueueSize="1000|message discarded when queue is full"
             maxRetries="10|wait time doubles every retry; this is about 17 mins"
+            processDictionaryData="true|treat dictionary as structured data, use false to disable"
+            processDictionaryLogicalOperationStack="true|treat dictionary as structured data, use false to disable"
 
           Children:
             <filter 

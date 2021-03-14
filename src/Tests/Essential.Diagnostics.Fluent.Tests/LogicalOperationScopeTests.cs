@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Essential.Diagnostics.Tests.Utility;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Essential.Diagnostics.Tests.Utility;
+using System.Threading.Tasks;
 
 namespace Essential.Diagnostics.Tests
 {
@@ -111,5 +111,39 @@ namespace Essential.Diagnostics.Tests
             Assert.AreEqual(12, events[2].Id);
         }
 
+        [TestMethod]
+        public async Task ScopeAsyncShouldPreserve()
+        {
+            var stackPeekValues = new List<object>();
+            Console.WriteLine("count {0} peek {1}",
+                Trace.CorrelationManager.LogicalOperationStack.Count,
+                Trace.CorrelationManager.LogicalOperationStack.Count > 0 ? Trace.CorrelationManager.LogicalOperationStack.Peek() : null);
+            stackPeekValues.Add(Trace.CorrelationManager.LogicalOperationStack.Count > 0 ? Trace.CorrelationManager.LogicalOperationStack.Peek() : null);
+            using (var scope1 = new LogicalOperationScope("A"))
+            {
+                Console.WriteLine(Trace.CorrelationManager.LogicalOperationStack.Peek());
+                stackPeekValues.Add(Trace.CorrelationManager.LogicalOperationStack.Count > 0 ? Trace.CorrelationManager.LogicalOperationStack.Peek() : null);
+                await InnerOperationAsync();
+                Console.WriteLine(Trace.CorrelationManager.LogicalOperationStack.Peek());
+                stackPeekValues.Add(Trace.CorrelationManager.LogicalOperationStack.Count > 0 ? Trace.CorrelationManager.LogicalOperationStack.Peek() : null);
+            }
+            Console.WriteLine("count {0} peek {1}",
+                Trace.CorrelationManager.LogicalOperationStack.Count,
+                Trace.CorrelationManager.LogicalOperationStack.Count > 0 ? Trace.CorrelationManager.LogicalOperationStack.Peek() : null);
+            stackPeekValues.Add(Trace.CorrelationManager.LogicalOperationStack.Count > 0 ? Trace.CorrelationManager.LogicalOperationStack.Peek() : null);
+
+            Assert.AreEqual(null, stackPeekValues[0], "first");
+            Assert.AreEqual("A", stackPeekValues[1], "second");
+            Assert.AreEqual("A", stackPeekValues[2], "third");
+            Assert.AreEqual(null, stackPeekValues[3], "last");
+        }
+
+        static async Task InnerOperationAsync()
+        {
+            using (var scope2 = new LogicalOperationScope("B"))
+            {
+                await Task.Yield();
+            }
+        }
     }
 }

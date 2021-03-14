@@ -32,12 +32,15 @@ If the maximum number of retries is reached, then the failing batch is dropped; 
 | --------- | ----------- |
 | initializeData | URL of the Seq server (e.g. local development is usually http://localhost:5341). |
 | traceOutputOptions | If specified, sent as additional properties (can be specified either here, or in additionalProperties). |
-| apiKey | Your API key for the Seq server (for local development this can be empty). |
 | additionalProperties | Additional named properties to include in the Seq message. |
+| apiKey | Your API key for the Seq server (for local development this can be empty). |
 | batchSize | Number of messages per batch, default 100. A batch size of 0 will disable batching and each message is sent as a separate HTTP request, with no retries. |
 | batchTimeout | Timeout after which incomplete batches are sent anyway, default 1,000 milliseconds. |
+| individualSendIgnoreErrors | Gets or sets a flag whether to ignore errors when using individual send mode (batch size is 0). Use true to catch and ignore all exceptions when sending. Default is false. It has no effect if batch size is > 0. |
 | maxQueueSize | Maximum number of messages to queue; once this limit is reached, messages are dropped. Default is 1,000. |
 | maxRetries | Maximum number of retries where transmission to the Seq server fails, e.g. HTTP timeout. Retries have a backoff algorithm that doubles the wait time each attempt; the default is 10 retries, which works out at around 17 minutes. After the specified number of retries the batch is dropped (e.g. if it contains a poison message). |
+| processDictionaryData | By default if the first data element is `IDictionary<string, object>` then it is treated as structured data and expanded into key-value pairs. Set to `false` to turn this behaviour off. |
+| processDictionaryLogicalOperationStack | By default any members of the logical operation stack that are `IDictionary<string, object>` are treated as structured data and expanded into key-value pairs. Set to `false` to turn this behaviour off. |
 
 ## Example Config
 
@@ -81,7 +84,10 @@ Events are sent to the specified Seq server, where they can be queried, filtered
   apiKey="your API key, or blank for localhost"
   batchSize="100|use 0 to disable"
   batchTimeout="00:00:01.00"
+  individualSendIgnoreErrors="false"
   maxQueueSize="1000"
-  maxRetries="10"  
+  maxRetries="10" 
+  processDictionaryData="true"
+  processDictionaryLogicalOperationStack="true"
 />
 ```

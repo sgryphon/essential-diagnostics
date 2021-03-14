@@ -15,9 +15,12 @@ namespace Essential.Diagnostics
         private static TimeSpan DefaultBatchTimeOut = TimeSpan.FromMilliseconds(1000);
         private const int DefaultMaxQueueSize = 1000;
         private const int DefaultMaxRetries = 10; // 2^10 = 1,024 secs = 17 mins 
+        private const bool DefaultIndividualSendIgnoreErrors = false;
 
         List<string> _additionalPropertyNames = null;
         SeqBatchSender _batchSender;
+        bool _individualSendIgnoreErrors;
+        bool _individualSendIgnoreErrorsParsed;
         int _batchSize;
         bool _batchSizeParsed;
         TimeSpan _batchTimeout;
@@ -38,10 +41,11 @@ namespace Essential.Diagnostics
 
         private static string[] _supportedAttributes = new string[]
         {
-            "apiKey", "ApiKey", "apikey",
             "additionalProperties", "AdditionalProperties", "additionalproperties",
+            "apiKey", "ApiKey", "apikey",
             "batchSize", "BatchSize", "batchsize",
             "batchTimeout", "BatchTimeout", "batchtimeout", "batchTimeOut", "BatchTimeOut",
+            "individualSendIgnoreErrors", "IndividualSendIgnoreErrors", "individualsendignoreerrors",
             "maxQueueSize", "MaxQueueSize", "maxqueuesize",
             "maxRetries", "MaxRetries", "maxretries",
             "processDictionaryData", "ProcessDictionaryData", "processdictionarydata",
@@ -198,6 +202,43 @@ namespace Essential.Diagnostics
                 _batchTimeout = value;
                 _batchTimeoutParsed = true;
                 Attributes["batchTimeout"] = value.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a flag whether to ignore errors when using individual send mode (batch size is 0). Use true to catch and ignore all exceptions when sending. Default is false. It has no effect if batch size is > 0.
+        /// </summary>
+        public bool IndividualSendIgnoreErrors
+        {
+            get
+            {
+                if (!_individualSendIgnoreErrorsParsed)
+                {
+                    if (Attributes.ContainsKey("individualSendIgnoreErrors"))
+                    {
+                        bool individualSendIgnoreErrors;
+                        if (bool.TryParse(Attributes["individualSendIgnoreErrors"], out individualSendIgnoreErrors))
+                        {
+                            _individualSendIgnoreErrors = individualSendIgnoreErrors;
+                        }
+                        else
+                        {
+                            _individualSendIgnoreErrors = DefaultIndividualSendIgnoreErrors;
+                        }
+                    }
+                    else
+                    {
+                        _individualSendIgnoreErrors = DefaultIndividualSendIgnoreErrors;
+                    }
+                    _individualSendIgnoreErrorsParsed = true;
+                }
+                return _individualSendIgnoreErrors;
+            }
+            set
+            {
+                _individualSendIgnoreErrors = value;
+                _individualSendIgnoreErrorsParsed = true;
+                Attributes["individualSendIgnoreErrors"] = value.ToString(CultureInfo.InvariantCulture);
             }
         }
 
@@ -524,9 +565,9 @@ namespace Essential.Diagnostics
             object[] recordedDataArray = null;
             if (messageFormat == null
                 && (messageArgs == null || messageArgs.Length == 0)
-                && data != null 
-                && data.Length == 1 
-                && (data[0] is IStructuredData || 
+                && data != null
+                && data.Length == 1
+                && (data[0] is IStructuredData ||
                     (data[0] is IDictionary<string, object> && ProcessDictionaryData)))
             {
                 var structuredData = (IDictionary<string, object>)data[0];

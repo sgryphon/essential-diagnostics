@@ -24,6 +24,15 @@ namespace Essential.Diagnostics
         string _toString;
 
         /// <summary>
+        /// Constructor. Creates empty structured data, to support dictionary initializer syntax.
+        /// </summary>
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        public StructuredData()
+            : this(null, null, null, null)
+        {
+        }
+
+        /// <summary>
         /// Constructor. Creates structured data with the specified properties.
         /// </summary>
         /// <param name="properties">The key-value properties to trace</param>
@@ -152,6 +161,12 @@ namespace Essential.Diagnostics
 
         public IEnumerable<object> TemplateValues { get { return _templateValues; } }
 
+        /// <summary>
+        /// Gets the value associated with the provided key. Set is provided to support dictionary initializer syntax, and will fail after initial data setup.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">
+        /// The setter will thrown an exception if called after initial setup, i.e. after any values have been read from the object.
+        /// </exception>
         public object this[string key]
         {
             get
@@ -159,10 +174,27 @@ namespace Essential.Diagnostics
                 EnsureAllProperties();
                 return ((IDictionary<string, object>)_allProperties)[key];
             }
+            [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
             set
             {
-                throw new NotSupportedException();
+                Add(key, value);
             }
+        }
+
+        /// <summary>
+        /// Adds the key-value pair to the base properties, to support dictionary initializer syntax, and will fail after initial data setup.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when Add is called after initial setup, i.e. after any values have been read from the object.
+        /// </exception>
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        public void Add(string key, object value)
+        {
+            if (_allProperties != null)
+            {
+                throw new InvalidOperationException("Properties should not be added after the initial construction.");
+            }
+            _baseProperties.Add(key, value);
         }
 
         public bool ContainsKey(string key)

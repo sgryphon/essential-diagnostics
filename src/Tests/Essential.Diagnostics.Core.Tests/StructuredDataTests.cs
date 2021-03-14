@@ -153,6 +153,73 @@ namespace Essential.Diagnostics.Tests
         }
 
         [TestMethod()]
+        public void StructuredDictionaryInitializerSyntaxAdd()
+        {
+            var data = new StructuredData
+            {
+                { "a", 1 },
+            };
+
+            var actual = data.ToString();
+
+            Assert.AreEqual("a=1", actual);
+        }
+
+
+        [TestMethod()]
+        public void StructuredDictionaryInitializerSyntaxIndexer()
+        {
+            var data = new StructuredData
+            {
+                ["a"] = 1,
+            };
+
+            var actual = data.ToString();
+
+            Assert.AreEqual("a=1", actual);
+        }
+
+        [TestMethod()]
+        public void StructuredAddShouldFailAfterInitialSetup()
+        {
+            var data = new StructuredData();
+            data.Add("a", 1);
+            var count = data.Count;
+
+            Exception caught = null;
+            try
+            {
+                data.Add("b", 2);
+            }
+            catch (InvalidOperationException ex)
+            {
+                caught = ex;
+            }
+            Assert.AreEqual(1, count);
+            Assert.IsNotNull(caught);
+        }
+
+        [TestMethod()]
+        public void StructuredIndexerShouldFailAfterInitialSetup()
+        {
+            var data = new StructuredData();
+            data["a"] = 1;
+            var count = data.Count;
+
+            Exception caught = null;
+            try
+            {
+                data["b"] = 2;
+            }
+            catch (InvalidOperationException ex)
+            {
+                caught = ex;
+            }
+            Assert.AreEqual(1, count);
+            Assert.IsNotNull(caught);
+        }
+
+        [TestMethod()]
         public void StructuredStringMessageAndProperty()
         {
             var properties = new Dictionary<string, object>() {
