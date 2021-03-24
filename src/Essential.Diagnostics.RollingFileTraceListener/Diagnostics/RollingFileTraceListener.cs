@@ -33,13 +33,33 @@ namespace Essential.Diagnostics
         private const string _defaultFilePathTemplate = "{ApplicationName}-{DateTime:yyyy-MM-dd}.log";
         // Default format matches Microsoft.VisualBasic.Logging.FileLogTraceListener
         private const string _defaultTemplate = "{DateTime:u} [{Thread}] {EventType} {Source} {Id}: {Message}{Data}";
+        private readonly string _filePathTemplate;
         private static string[] _supportedAttributes = new string[] 
             { 
                 "template", "Template", 
                 "convertWriteToEvent", "ConvertWriteToEvent",
+                "newStreamOnError", "NewStreamOnError"
             };
         TraceFormatter traceFormatter = new TraceFormatter();
-        private RollingTextWriter rollingTextWriter;
+        private object _rollingTextWriterLock = new object();
+        private RollingTextWriter _rollingTextWriter = null;
+        private RollingTextWriter RollingTextWriter
+        {
+            get
+            {
+                if (_rollingTextWriter == null)
+                {
+                    lock (_rollingTextWriterLock)
+                    {
+                        if (_rollingTextWriter == null)
+                        {
+                            _rollingTextWriter = RollingTextWriter.Create(_filePathTemplate, NewStreamOnError);
+                        }
+                    }
+                }
+                return _rollingTextWriter;
+            }
+        }
 
         /// <summary>
         /// Constructor. Writes to a rolling text file using the default name.
@@ -78,11 +98,11 @@ namespace Essential.Diagnostics
         {
             if (string.IsNullOrEmpty(filePathTemplate))
             {
-                rollingTextWriter = new RollingTextWriter(_defaultFilePathTemplate);
+                _filePathTemplate = _defaultFilePathTemplate;
             }
             else
             {
-                rollingTextWriter = RollingTextWriter.Create(filePathTemplate);
+                _filePathTemplate = filePathTemplate;
             }
         }
 
@@ -111,13 +131,47 @@ namespace Essential.Diagnostics
             }
         }
 
+        private bool? _newStreamOnError = null;
+        /// <summary>
+        /// Gets or sets whether errors writing to the file should cause a new file stream to be instantiated.
+        /// Useful when the drive containing the file has a transient fault (usb stick removed and reinserted, network outage of mapped drive, etc.)
+        /// </summary>
+        [SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Boolean.TryParse(System.String,System.Boolean@)", Justification = "Default value is acceptable if conversion fails.")]
+        public bool NewStreamOnError
+        {
+            get
+            {
+                if (_newStreamOnError.HasValue)
+                {
+                    return _newStreamOnError.Value;
+                }
+
+                // Default behaviour is to create a new stream on error
+                var newStreamOnError = true;
+                if (Attributes.ContainsKey("newStreamOnError"))
+                {
+                    if(bool.TryParse(Attributes["newStreamOnError"], out newStreamOnError) == false)
+                    {
+                        newStreamOnError = true;
+                    }
+                }
+                _newStreamOnError = newStreamOnError;
+                return newStreamOnError;
+            }
+            set
+            {
+                Attributes["newStreamOnError"] = value.ToString(CultureInfo.InvariantCulture);
+                _newStreamOnError = value;
+            }
+        }
+
         /// <summary>
         /// Gets or sets the file system to use; this defaults to an adapter for System.IO.File.
         /// </summary>
         public IFileSystem FileSystem
         {
-            get { return rollingTextWriter.FileSystem; }
-            set { rollingTextWriter.FileSystem = value; }
+            get { return RollingTextWriter.FileSystem; }
+            set { RollingTextWriter.FileSystem = value; }
         }
 
         /// <summary>
@@ -186,7 +240,7 @@ namespace Essential.Diagnostics
         /// </remarks>
         public string FilePathTemplate
         {
-            get { return rollingTextWriter.FilePathTemplate; }
+            get { return RollingTextWriter.FilePathTemplate; }
         }
 
         /// <summary>
@@ -194,7 +248,7 @@ namespace Essential.Diagnostics
         /// </summary>
         public override void Flush()
         {
-            rollingTextWriter.Flush();
+            RollingTextWriter.Flush();
         }
 
         /// <summary>
@@ -218,7 +272,7 @@ namespace Essential.Diagnostics
             }
             else
             {
-                rollingTextWriter.Write(null, message);
+                RollingTextWriter.Write(null, message);
             }
         }
 
@@ -235,7 +289,7 @@ namespace Essential.Diagnostics
             }
             else
             {
-                rollingTextWriter.WriteLine(null, message);
+                RollingTextWriter.WriteLine(null, message);
             }
         }
 
@@ -266,16 +320,16 @@ namespace Essential.Diagnostics
                 relatedActivityId,
                 data
                 );
-            rollingTextWriter.WriteLine(eventCache, output);
+            RollingTextWriter.WriteLine(eventCache, output);
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                if (rollingTextWriter != null)
+                if (RollingTextWriter != null)
                 {
-                    rollingTextWriter.Dispose();
+                    RollingTextWriter.Dispose();
                 }
             }
             base.Dispose(disposing);

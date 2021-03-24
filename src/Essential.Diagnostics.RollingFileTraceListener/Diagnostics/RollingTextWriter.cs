@@ -16,10 +16,12 @@ namespace Essential.Diagnostics
         private string _filePathTemplate;
         private IFileSystem _fileSystem = new FileSystem();
         TraceFormatter traceFormatter = new TraceFormatter();
+        private bool _newStreamOnError;
 
-        public RollingTextWriter(string filePathTemplate)
+        public RollingTextWriter(string filePathTemplate, bool newStreamOnError)
         {
             _filePathTemplate = filePathTemplate;
+            _newStreamOnError = newStreamOnError;
         }
 
         /// <summary>
@@ -27,7 +29,7 @@ namespace Essential.Diagnostics
         /// </summary>
         /// <param name="filePathTemplate"></param>
         /// <returns></returns>
-        public static RollingTextWriter Create(string filePathTemplate)
+        public static RollingTextWriter Create(string filePathTemplate, bool newStreamOnError)
         {
             var segments = filePathTemplate.Split('%');
             if (segments.Length > 3)
@@ -50,10 +52,10 @@ namespace Essential.Diagnostics
                     }
                 }
                 var filePath = rootFolder + segments[2];
-                return new RollingTextWriter(filePath);
+                return new RollingTextWriter(filePath, newStreamOnError);
             }
 
-            return new RollingTextWriter(filePathTemplate);
+            return new RollingTextWriter(filePathTemplate, newStreamOnError);
 
         }
 
@@ -80,7 +82,18 @@ namespace Essential.Diagnostics
             {
                 if (_currentWriter != null)
                 {
-                    _currentWriter.Flush();
+                    try
+                    {
+                        _currentWriter.Flush();
+                    }
+                    catch
+                    {
+                        if (_newStreamOnError)
+                        {
+                            DestroyCurrentWriter();
+                        }
+                        throw;
+                    }
                 }
             }
         }
@@ -91,7 +104,18 @@ namespace Essential.Diagnostics
             lock (_fileLock)
             {
                 EnsureCurrentWriter(filePath);
-                _currentWriter.Write(value);
+                try
+                {
+                    _currentWriter.Write(value);
+                }
+                catch
+                {
+                    if(_newStreamOnError)
+                    {
+                        DestroyCurrentWriter();
+                    }
+                    throw;
+                }
             }
         }
 
@@ -101,7 +125,18 @@ namespace Essential.Diagnostics
             lock (_fileLock)
             {
                 EnsureCurrentWriter(filePath);
-                _currentWriter.WriteLine(value);
+                try
+                {
+                    _currentWriter.WriteLine(value);
+                }
+                catch
+                {
+                    if (_newStreamOnError)
+                    {
+                        DestroyCurrentWriter();
+                    }
+                    throw;
+                }
             }
         }
 
@@ -145,6 +180,18 @@ namespace Essential.Diagnostics
                 }
 
                 throw new InvalidOperationException(Resource_RollingFile.RollingTextWriter_ExhaustedLogfileNames);
+            }
+        }
+
+        private void DestroyCurrentWriter()
+        {
+            // NOTE: This is called inside lock(_fileLock)
+            if (_currentWriter != null)
+            {
+                _currentWriter.Close();
+                _currentWriter.Dispose();
+                _currentWriter = null;
+                _currentPath = null;
             }
         }
 

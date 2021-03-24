@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -40,13 +41,32 @@ namespace Essential.Diagnostics
         private readonly string machineName = Environment.MachineName;
         // Default format matches Microsoft.VisualBasic.Logging.FileLogTraceListener
         private const string _defaultFilePathTemplate = "{ApplicationName}-{DateTime:yyyy-MM-dd}.svclog";
+        private readonly string _filePathTemplate;
         private static string[] _supportedAttributes = new string[] 
-            { 
+            {
+                "newStreamOnError", "NewStreamOnError"
             };
         TraceFormatter traceFormatter = new TraceFormatter();
 
-        private RollingTextWriter rollingTextWriter;
-
+        private object _rollingTextWriterLock = new object();
+        private RollingTextWriter _rollingTextWriter = null;
+        private RollingTextWriter RollingTextWriter
+        {
+            get
+            {
+                if (_rollingTextWriter == null)
+                {
+                    lock (_rollingTextWriterLock)
+                    {
+                        if (_rollingTextWriter == null)
+                        {
+                            _rollingTextWriter = RollingTextWriter.Create(_filePathTemplate, NewStreamOnError);
+                        }
+                    }
+                }
+                return _rollingTextWriter;
+            }
+        }
         /// <summary>
         /// Constructor. Writes to a rolling text file using the default name.
         /// </summary>
@@ -84,11 +104,11 @@ namespace Essential.Diagnostics
         {
             if (string.IsNullOrEmpty(filePathTemplate))
             {
-                rollingTextWriter = new RollingTextWriter(_defaultFilePathTemplate);
+                _filePathTemplate = _defaultFilePathTemplate;
             }
             else
             {
-                rollingTextWriter = RollingTextWriter.Create(filePathTemplate);
+                _filePathTemplate = filePathTemplate;
             }
         }
 
@@ -97,8 +117,8 @@ namespace Essential.Diagnostics
         /// </summary>
         public IFileSystem FileSystem
         {
-            get { return rollingTextWriter.FileSystem; }
-            set { rollingTextWriter.FileSystem = value; }
+            get { return RollingTextWriter.FileSystem; }
+            set { RollingTextWriter.FileSystem = value; }
         }
 
         /// <summary>
@@ -122,7 +142,40 @@ namespace Essential.Diagnostics
         /// </remarks>
         public string FilePathTemplate
         {
-            get { return rollingTextWriter.FilePathTemplate; }
+            get { return RollingTextWriter.FilePathTemplate; }
+        }
+
+        private bool? _newStreamOnError = null;
+        /// <summary>
+        /// Gets or sets whether errors writing to the file should cause a new file stream to be instantiated.
+        /// Useful when the drive containing the file has a transient fault (usb stick removed and reinserted, network outage of mapped drive, etc.)
+        /// </summary>
+        [SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Boolean.TryParse(System.String,System.Boolean@)", Justification = "Default value is acceptable if conversion fails.")]
+        public bool NewStreamOnError
+        {
+            get
+            {
+                if(_newStreamOnError.HasValue)
+                {
+                    return _newStreamOnError.Value;
+                }
+
+                // Default behaviour is to create a new stream on error
+                var newStreamOnError = true;
+                if (Attributes.ContainsKey("newStreamOnError"))
+                {
+                    if (bool.TryParse(Attributes["newStreamOnError"], out newStreamOnError) == false)
+                    {
+                        newStreamOnError = true;
+                    }
+                }
+                _newStreamOnError = newStreamOnError;
+                return newStreamOnError;
+            }
+            set
+            {
+                Attributes["newStreamOnError"] = value.ToString(CultureInfo.InvariantCulture);
+            }
         }
 
         /// <summary>
@@ -130,7 +183,7 @@ namespace Essential.Diagnostics
         /// </summary>
         public override void Flush()
         {
-            rollingTextWriter.Flush();
+            RollingTextWriter.Flush();
         }
 
         /// <summary>
@@ -170,7 +223,7 @@ namespace Essential.Diagnostics
 
             AppendFooter(output, eventCache);
 
-            rollingTextWriter.WriteLine(eventCache, output.ToString());
+            RollingTextWriter.WriteLine(eventCache, output.ToString());
         }
 
         private static void AppendData(StringBuilder output, object data)
