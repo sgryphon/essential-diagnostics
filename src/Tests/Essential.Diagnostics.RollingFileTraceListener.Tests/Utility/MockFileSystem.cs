@@ -7,6 +7,8 @@ namespace Essential.Diagnostics.Tests.Utility
 {
     public class MockFileSystem : IFileSystem
     {
+        public bool CreateSubdirectories { get; set; }
+
         public IList<Tuple<string,MemoryStream>> OpenedItems = new List<Tuple<string,MemoryStream>>();
 
         public Stream Open(string path, FileMode mode, FileAccess access, FileShare share)

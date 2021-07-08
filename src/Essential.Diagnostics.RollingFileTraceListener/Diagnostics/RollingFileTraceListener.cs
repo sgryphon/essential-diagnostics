@@ -37,9 +37,15 @@ namespace Essential.Diagnostics
             { 
                 "template", "Template", 
                 "convertWriteToEvent", "ConvertWriteToEvent",
+                "createSubdirectories", "CreateSubdirectories"
             };
         TraceFormatter traceFormatter = new TraceFormatter();
         private RollingTextWriter rollingTextWriter;
+
+        // Indicate whether all subdirectories in full file path
+        // should be checked for existence and re-created if missed
+        // before opening the file     
+        private bool? createSubdirectories;
 
         /// <summary>
         /// Constructor. Writes to a rolling text file using the default name.
@@ -108,6 +114,42 @@ namespace Essential.Diagnostics
             set
             {
                 Attributes["convertWriteToEvent"] = value.ToString(CultureInfo.InvariantCulture);
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets the value indicating whether all subdirectories in full file path
+        ///     should be checked for existence and re-created if missed
+        ///     before opening the file. Default value is <c>False</c>.
+        /// </summary>
+        [SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Boolean.TryParse(System.String,System.Boolean@)", Justification = "Default value is acceptable if conversion fails.")]
+        public bool CreateSubdirectories
+        {
+            get
+            {
+                if (createSubdirectories.HasValue)
+                {
+                    return createSubdirectories.Value;
+                }
+
+                if (Attributes.ContainsKey("createSubdirectories"))
+                {
+                    bool parsed;
+                    if (bool.TryParse(Attributes["createSubdirectories"], out parsed))
+                    {
+                        createSubdirectories = parsed;
+                        return createSubdirectories.Value;
+                    }
+                }
+
+                // Default behaviour is do NOT check and fail if any of
+                // the subdirectories in log file path are not exists.
+                return false;
+            }
+            set
+            {
+                createSubdirectories = value;
+                Attributes["createSubdirectories"] = value.ToString(CultureInfo.InvariantCulture);
             }
         }
 
@@ -218,6 +260,7 @@ namespace Essential.Diagnostics
             }
             else
             {
+                rollingTextWriter.FileSystem.CreateSubdirectories = CreateSubdirectories;
                 rollingTextWriter.Write(null, message);
             }
         }
@@ -235,6 +278,7 @@ namespace Essential.Diagnostics
             }
             else
             {
+                rollingTextWriter.FileSystem.CreateSubdirectories = CreateSubdirectories;
                 rollingTextWriter.WriteLine(null, message);
             }
         }
@@ -266,6 +310,7 @@ namespace Essential.Diagnostics
                 relatedActivityId,
                 data
                 );
+            rollingTextWriter.FileSystem.CreateSubdirectories = CreateSubdirectories;
             rollingTextWriter.WriteLine(eventCache, output);
         }
 

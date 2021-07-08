@@ -8,6 +8,13 @@ namespace Essential.IO
     public interface IFileSystem
     {
         /// <summary>
+        ///     Gets or sets the value indicating whether all subdirectories in full file path
+        ///     should be checked for existence and re-created if missed
+        ///     before opening the file. Default value is <c>False</c>.
+        /// </summary>
+        bool CreateSubdirectories { get; set; }
+
+        /// <summary>
         /// Opens a System.IO.FileStream on the specified path, 
         /// having the specified mode with read, write, or read/write access
         /// and the specified sharing option.
